@@ -1,20 +1,20 @@
-# Communication Protocols
+# 多 Agent 通信协议：点对点、广播与基于中枢的协议设计
 
-> Agents that can't speak the same language aren't a team. They're strangers shouting into the void.
+> 掌握点对点（P2P）、广播（Broadcast）与中枢路由（Hub-and-Spoke）消息协议的设计与实现。
 
 **Type:** Build
 **Languages:** TypeScript
-**Prerequisites:** Phase 14 (Agent Engineering), Lesson 16.01 (Why Multi-Agent)
-**Time:** ~120 minutes
+**Prerequisites:** Phase 16 Lesson 01
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Implement MCP tool discovery and invocation so agents can use tools exposed by external servers
 - Build an A2A agent card and task endpoint that allows one agent to delegate work to another over HTTP
 - Compare MCP (tool access), A2A (agent-to-agent), ACP (enterprise audit), and ANP (decentralized trust) and explain which protocol solves which problem
 - Wire multiple protocols together in a single system where agents discover tools via MCP and delegate tasks via A2A
 
-## The Problem
+## 问题切入
 
 You split your system into multiple agents. A researcher, a coder, a reviewer. They're great at their individual jobs. But now you need them to actually talk to each other.
 
@@ -31,7 +31,7 @@ The AI ecosystem has responded with four protocols, each solving a different sli
 
 This lesson goes deep. You will read real wire formats from each spec, build working implementations, and connect all four into a unified system.
 
-## The Concept
+## 核心概念
 
 ### The Protocol Landscape
 
@@ -599,7 +599,7 @@ graph TB
 - **ACP** wraps responses in trajectory metadata for auditability
 - **ANP** provides identity verification for agents you don't control
 
-## Build It
+## 动手实现
 
 ### Step 1: Core Message Types
 
@@ -1432,7 +1432,7 @@ Protocols solve the happy path. Here's what breaks in production:
 
 **Discovery thundering herd.** 50 agents all query `GET /agents` simultaneously on startup. Fix: cache Agent Cards with TTL, stagger discovery intervals, or use push-based registration instead of polling.
 
-## Use It
+## 应用场景
 
 ### Real Implementations
 
@@ -1467,13 +1467,13 @@ graph TD
     style BROKER fill:#e0e7ff,stroke:#4338ca
 ```
 
-## Ship It
+## 产出成果
 
 This lesson produces:
 - `code/main.ts` -- complete implementation of all four protocol patterns
 - `outputs/prompt-protocol-selector.md` -- a prompt that helps you choose protocols for your system
 
-## Exercises
+## 练习题
 
 1. **Multi-hop task delegation.** Extend the `TaskManager` so an agent handler can delegate subtasks to other agents. The researcher receives a task, delegates "search" and "summarize" subtasks to two specialist agents, waits for both to complete, then merges the results into its own artifacts.
 
@@ -1485,7 +1485,7 @@ This lesson produces:
 
 5. **Rate-limited discovery.** Add a `RateLimitedRegistry` wrapper that caches Agent Card lookups with a configurable TTL and limits discovery queries per agent per second. Simulate a thundering herd of 100 agents discovering each other on startup and measure the difference.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|----------------------|
@@ -1499,7 +1499,7 @@ This lesson produces:
 | Meta-protocol | "Agents negotiating how to talk" | ANP's approach where agents use natural language to dynamically agree on data formats, then generate code to handle them. |
 | Task | "A unit of work" | A2A's stateful object tracking work from submission through completion. Immutable once terminal. |
 
-## Further Reading
+## 深入阅读
 
 - [Google A2A specification](https://github.com/google/A2A) -- official spec and SDKs (v1.0.0, Linux Foundation)
 - [IBM/BeeAI ACP specification](https://github.com/i-am-bee/acp) -- OpenAPI 3.1 spec for agent runs and trajectory metadata

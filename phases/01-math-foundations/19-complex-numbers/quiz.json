@@ -2,63 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the imaginary unit i defined by?",
+      "question": "欧拉公式 $e^{i \theta} = \\cos\theta + i \\sin\theta$ 在复数几何中表示什么？",
       "options": [
-        "i = sqrt(2)",
-        "i^2 = -1",
-        "i = -1",
-        "i^2 = 1"
+        "复平面单位圆上的一个点（模长为 1，辐角为 $\theta$ 的旋转）",
+        "一条抛物线",
+        "纯实数乘法",
+        "矩阵的转置"
       ],
-      "correct": 1,
-      "explanation": "The imaginary unit i is defined by the property i^2 = -1. It extends the real number line into a 2D plane. Geometrically, multiplying by i is a 90-degree rotation — two multiplications (i^2) give a 180-degree rotation, which is -1."
+      "correct": 0,
+      "explanation": "欧拉公式是复数极坐标表达的基础，将复数乘法优雅地转化为模长相乘与辐角相加（旋转）。"
     },
     {
       "stage": "pre",
-      "question": "What does Euler's formula e^(i*theta) equal?",
+      "question": "复数的模长 $|z|$ 和共轭复数 $\bar{z}$ 满足什么代数关系（设 $z = a + bi$）？",
       "options": [
-        "theta + i",
-        "cos(theta) + i*sin(theta)",
-        "sin(theta) + cos(theta)",
-        "i^theta"
+        "$z \bar{z} = a^2 + b^2 = |z|^2$",
+        "$z \bar{z} = a^2 - b^2$",
+        "$z \bar{z} = 0$",
+        "$z + \bar{z} = 2bi$"
       ],
-      "correct": 1,
-      "explanation": "Euler's formula states e^(i*theta) = cos(theta) + i*sin(theta). This connects complex exponentials to trigonometry and shows that e^(i*theta) traces the unit circle as theta varies."
+      "correct": 0,
+      "explanation": "复数与其共轭相乘抹去了虚部，得到该复数在复平面上到原点几何欧氏距离的平方。"
     },
     {
       "stage": "post",
-      "question": "What is the result of (3 + 2i)(1 + 4i)?",
+      "question": "在信号处理与现代 RoPE（旋转位置编码）中，为什么复数旋转极其高效？",
       "options": [
-        "3 + 8i",
-        "4 + 6i",
-        "-5 + 14i",
-        "5 + 14i"
+        "将二维平面上的向量旋转转换为一次复数乘法（$z \\cdot e^{i\theta}$），运算优雅且数值稳定性高",
+        "复数可以消除所有的矩阵运算",
+        "复数不需要占用内存",
+        "复数旋转会减少参数的维度"
       ],
-      "correct": 2,
-      "explanation": "Using FOIL: (3)(1) + (3)(4i) + (2i)(1) + (2i)(4i) = 3 + 12i + 2i + 8i^2 = 3 + 14i + 8(-1) = 3 + 14i - 8 = -5 + 14i."
+      "correct": 0,
+      "explanation": "RoPE 利用二维平面复数旋转直接在 Token Query/Key 特征上注入相对位置信息。"
     },
     {
       "stage": "post",
-      "question": "Why are complex numbers used in Rotary Position Embedding (RoPE) for transformers?",
+      "question": "复平面（Complex Plane / Argand Diagram）的横轴与纵轴分别代表什么？",
       "options": [
-        "Complex numbers compress the position encoding to use less memory",
-        "Multiplying query/key vectors by complex rotations encodes relative position as a rotation angle",
-        "Complex numbers are required by the attention softmax function",
-        "RoPE uses imaginary numbers to handle negative positions"
+        "横轴为实轴（Real Axis），纵轴为虚轴（Imaginary Axis）",
+        "横轴为时间，纵轴为频率",
+        "横轴为样本量，纵轴为损失值",
+        "横轴与纵轴都是实数"
       ],
-      "correct": 1,
-      "explanation": "RoPE multiplies query and key vectors by complex rotation matrices e^(i*m*theta) where m is the position. The relative position between two tokens becomes a rotation angle, and attention naturally becomes sensitive to relative (not absolute) position through complex multiplication."
+      "correct": 0,
+      "explanation": "复平面将复数 $a+bi$ 映射为二维空间坐标 $(a, b)$。"
     },
     {
       "stage": "post",
-      "question": "The N-th roots of unity are N equally spaced points on the unit circle. What is their sum?",
+      "question": "复矩阵中的共轭转置（Hermitian Transpose, $A^H$ 或 $A^\\dagger$）等价于实数矩阵的什么操作？",
       "options": [
-        "N",
-        "1",
-        "0",
-        "N/2"
+        "实数矩阵的转置操作 $A^T$",
+        "矩阵求逆",
+        "矩阵求迹",
+        "行列式计算"
       ],
-      "correct": 2,
-      "explanation": "The N roots of unity are e^(2*pi*i*k/N) for k = 0, ..., N-1. They are symmetrically distributed around the unit circle, so their vector sum cancels out to zero. This symmetry property is what makes the DFT invertible."
+      "correct": 0,
+      "explanation": "对复矩阵取共轭并转置，是定义复向量内积与埃尔米特（Hermitian）正交矩阵的标准运算。"
     }
   ]
 }

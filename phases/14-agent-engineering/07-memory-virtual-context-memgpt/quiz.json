@@ -1,90 +1,90 @@
 {
   "lesson": "07-memory-virtual-context-memgpt",
-  "title": "Agent Memory — Virtual Context and Memory Paging",
+  "title": "MemGPT：操作系统式虚拟上下文管理与多层存储 hierarchy",
   "questions": [
     {
       "stage": "pre",
-      "question": "What OS analogy does MemGPT build on?",
+      "question": "MemGPT 的核心设计灵感来自操作系统的什么机制？",
       "options": [
-        "Processes and threads",
-        "Virtual memory: main context as RAM, external store as disk, memory tools as page in and out",
-        "Network sockets",
-        "File descriptors"
+        "虚拟内存与分层存储体系（RAM/Disk 交换）",
+        "多线程抢占式调度",
+        "文件系统权限控制",
+        "中断处理程序"
       ],
-      "correct": 1,
-      "explanation": "MemGPT maps prompt to RAM, external store to disk, and memory tools to page-fault-style transfers."
+      "correct": 0,
+      "explanation": "MemGPT 将有限的上下文窗口视为 RAM，将外部向量/文本存储视为 Disk，通过显式内存管理指令实现虚存分页交换。"
     },
     {
       "stage": "pre",
-      "question": "Why do bigger context windows not fully solve memory?",
+      "question": "MemGPT 架构中，工作内存（Working Memory）包含哪两个主要区块？",
       "options": [
-        "Providers cap them at 4k tokens",
-        "Overflow, dilution of attention, and lack of cross-session persistence still bite even with 128k windows",
-        "Long context costs nothing",
-        "The model refuses long input"
+        "Core Memory（Persona 和 Human 模块）与 Context Window（近期消息）",
+        "Disk Memory 与 Remote Storage",
+        "SQL Database 与 Redis",
+        "Vector Store 与 Index"
       ],
-      "correct": 1,
-      "explanation": "Mem0 measured 128k-window baselines still missing facts a 4k agent with external memory catches; overflow, dilution, and persistence remain."
+      "correct": 0,
+      "explanation": "工作内存包含直接呈现在上下文中的 Persona（Agent 角色）、Human（用户偏好）以及当前消息队列。"
     },
     {
       "stage": "check",
-      "question": "Which of these is NOT one of MemGPT's canonical memory tools?",
+      "question": "MemGPT 中 Agent 如何将长期记忆写入持久化存储？",
       "options": [
-        "core_memory_append",
-        "archival_memory_search",
-        "conversation_search",
-        "gradient_memory_update"
+        "通过调用显式的内存管理函数（如 `core_memory_append`, `archival_memory_insert`）",
+        "等待上下文窗口满后自动写入",
+        "修改底层模型权重",
+        "由外部人工定期手动导入"
       ],
-      "correct": 3,
-      "explanation": "There is no gradient memory tool; the surface is core/archival/conversation operations."
+      "correct": 0,
+      "explanation": "MemGPT 的 Agent 被赋予了专门的内存操作工具，在判断有价值信息时主动触发写入。"
     },
     {
       "stage": "check",
-      "question": "What does the interrupt pattern do in MemGPT?",
+      "question": "归档内存（Archival Memory）主要用于存储什么类型的数据？",
       "options": [
-        "It halts the entire agent run on any error",
-        "Mid-conversation the agent invokes a memory tool, the runtime executes it, and the result splices into the next turn",
-        "It bypasses the context window entirely",
-        "It triggers a model retrain"
+        "当前一轮的对话临时变量",
+        "海量长篇文档、历史日志以及通过向量检索查阅的大规模数据",
+        "系统提示词语法定义",
+        "LLM 的 Token 字典"
       ],
       "correct": 1,
-      "explanation": "Memory-as-interrupt: invoke memory tool, runtime fetches, result returns as a new observation on the next turn (like a Unix read())."
+      "explanation": "归档内存用于保存超长历史和大规模知识库，在需要时通过检索加载到工作内存。"
     },
     {
       "stage": "check",
-      "question": "Which production system did MemGPT evolve into in 2024?",
+      "question": "MemGPT 机制如何解决“在长对话中丢失最初用户偏好”的问题？",
       "options": [
-        "Mem0",
-        "Letta",
-        "Zep",
-        "Pinecone"
+        "通过定期清空历史记录",
+        "通过在 Core Memory 中固定并实时更新用户画像（Human Block），使其不受上下文滑动窗口清空的影响",
+        "通过增加上下文窗口大小到无限",
+        "通过强制每次回答前重新询问用户"
       ],
       "correct": 1,
-      "explanation": "MemGPT became Letta in September 2024; the research repo cpacker/MemGPT still exists as the origin."
+      "explanation": "Core Memory 被永久保留在 Prompt 的固定区域，随着对话由 Agent 随时补充和更新。"
     },
     {
       "stage": "post",
-      "question": "What is memory poisoning in this context?",
+      "question": "相比单纯靠滑动窗口截断历史，MemGPT 架构的核心优势是什么？",
       "options": [
-        "A bug that corrupts vector indices",
-        "An attacker's content gets stored as a memory note and is re-ingested on future recalls",
-        "Reading from disk when RAM is available",
-        "Embedding model version drift"
+        "运行成本降低为零",
+        "突破了物理上下文窗口限制，实现了长期状态与跨会话记忆的持久化与精细化调控",
+        "完全不需要向量数据库",
+        "不需要模型具备函数调用能力"
       ],
       "correct": 1,
-      "explanation": "External memory is retrieved text; if attacker-reachable content lands in a memory note the agent re-ingests it next session."
+      "explanation": "通过将内存管理权移交给 Agent，实现了跨会话的高效状态与知识检索。"
     },
     {
       "stage": "post",
-      "question": "Why does the lesson say production memory systems are MemGPT variants?",
+      "question": "在生产环境中部署类似 MemGPT 架构时，最主要的挑战是什么？",
       "options": [
-        "They use the same vector DB",
-        "Letta, Mem0, Assistants threads, and Claude Agent SDK all run the two-tier (or more) paged-memory pattern; differences are operational shape",
-        "MemGPT owns the trademark",
-        "They share weights"
+        "Agent 可能会误删除或错误更新 Core Memory 中的关键状态（内存污染）",
+        "磁盘存储空间不足",
+        "无法支持 Python 语言",
+        "JSON 无法解析"
       ],
-      "correct": 1,
-      "explanation": "Pick by operational shape, not pattern; all share the MemGPT page in/out skeleton."
+      "correct": 0,
+      "explanation": "Agent 可能会写错 Core Memory，需要严格的校验与备份回滚机制。"
     }
   ]
 }

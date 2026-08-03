@@ -1,11 +1,11 @@
-# Singular Value Decomposition
+# 奇异值分解 (SVD)
 
-> SVD is the Swiss Army knife of linear algebra. Every matrix has one. Every data scientist needs one.
+> 矩阵分解的瑞士军刀。掌握 SVD 的极分解、低秩近似与数据压缩。
 
-**Type:** Build
-**Languages:** Python, Julia
-**Prerequisites:** Phase 1, Lessons 01 (Linear Algebra Intuition), 02 (Vectors & Matrices Operations), 03 (Matrix Transformations)
-**Time:** ~120 minutes
+**Type:** 构建
+**Languages:** Python
+**Prerequisites:** Phase 1, Lesson 02 (向量与矩阵运算)
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

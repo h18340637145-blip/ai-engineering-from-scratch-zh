@@ -1,11 +1,11 @@
-# Chain Rule & Automatic Differentiation
+# 链式法则与自动微分
 
-> The chain rule is the engine behind every neural network that learns.
+> 反向传播的数学引擎。掌握多元链式法则、计算图与反向模式自动微分算法。
 
-**Type:** Build
+**Type:** 构建
 **Language:** Python
-**Prerequisites:** Phase 1, Lesson 04 (Derivatives & Gradients)
-**Time:** ~90 minutes
+**Prerequisites:** Phase 1, Lesson 04 (机器学习中的微积分)
+**Time:** ~50 分钟
 
 ## Learning Objectives
 

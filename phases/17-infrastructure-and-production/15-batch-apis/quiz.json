@@ -1,6 +1,6 @@
 {
   "lesson": "15-batch-apis",
-  "title": "Batch APIs — the 50% Discount as Industry Standard",
+  "title": "离线 Batch API 批处理：降低 50% 成本的非实时推理",
   "questions": [
     {
       "stage": "pre",

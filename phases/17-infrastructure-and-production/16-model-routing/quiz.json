@@ -1,6 +1,6 @@
 {
   "lesson": "16-model-routing",
-  "title": "Model Routing as a Cost-Reduction Primitive",
+  "title": "模型智能路由：根据复杂性与成本动态派发请求",
   "questions": [
     {
       "stage": "pre",

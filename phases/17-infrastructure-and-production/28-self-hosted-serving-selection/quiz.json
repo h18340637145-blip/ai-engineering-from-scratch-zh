@@ -1,6 +1,6 @@
 {
   "lesson": "28-self-hosted-serving-selection",
-  "title": "Self-Hosted Serving Selection — Matching Engine to Hardware and Scale",
+  "title": "自建推理服务选型指南：vLLM vs SGLang vs TensorRT-LLM",
   "questions": [
     {
       "stage": "pre",

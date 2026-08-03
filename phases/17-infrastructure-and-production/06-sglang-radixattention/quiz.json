@@ -1,6 +1,6 @@
 {
   "lesson": "06-sglang-radixattention",
-  "title": "Prefix-Cache Serving — RadixAttention and KV Reuse",
+  "title": "SGLang 与 RadixAttention：基于前缀树的高效 Prompt 缓存",
   "questions": [
     {
       "stage": "pre",

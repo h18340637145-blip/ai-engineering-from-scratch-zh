@@ -2,63 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does temperature < 1.0 do to a language model's output distribution?",
+      "question": "马尔可夫链蒙特卡洛（MCMC）采样的核心目的是什么？",
       "options": [
-        "Makes the distribution more uniform (more random)",
-        "Sharpens the distribution, making the highest-probability token more likely",
-        "Removes all tokens except the top one",
-        "Has no effect on the output"
+        "从高维复杂且无法精确求积分的概率分布中生成代表性样本",
+        "对数组进行快速排序",
+        "压缩图片文件体积",
+        "自动计算导数"
       ],
-      "correct": 1,
-      "explanation": "Temperature < 1.0 divides logits by a number less than 1, which amplifies differences between logits. After softmax, the highest-probability token gets an even larger share. Temperature approaches 0 gives greedy (argmax) decoding."
+      "correct": 0,
+      "explanation": "在贝叶斯推断中后验分布极难解析求积分，MCMC 通过构造平稳分布等于目标分布的马尔可夫链来抽取样本。"
     },
     {
       "stage": "pre",
-      "question": "What is the key difference between top-k and top-p (nucleus) sampling?",
+      "question": "拒绝采样（Rejection Sampling）是如何工作的？",
       "options": [
-        "Top-k is faster than top-p",
-        "Top-k keeps a fixed number of tokens; top-p keeps a variable number based on cumulative probability",
-        "Top-p only works with temperature = 1.0",
-        "Top-k works on logits while top-p works on probabilities"
+        "从简单提议分布（Proposal Distribution）采样，并按提议密度与目标密度的比例概率决定接受还是拒绝该样本",
+        "拒绝所有包含负数的样本",
+        "随机删除一半数据",
+        "只保留符合离群点标准的数据"
       ],
-      "correct": 1,
-      "explanation": "Top-k always keeps exactly k tokens regardless of the probability distribution. Top-p adaptively keeps the smallest set of tokens whose cumulative probability exceeds p. When the model is confident, top-p keeps few tokens; when uncertain, it keeps many."
+      "correct": 0,
+      "explanation": "当在包络函数（Envelope function $C \\cdot q(x)$）下方均匀随机采样时，落入目标曲线 $p(x)$ 下方的点被接受。"
     },
     {
       "stage": "post",
-      "question": "Why can't you backpropagate through a standard sampling operation z ~ N(mu, sigma^2)?",
+      "question": "重要性采样（Importance Sampling）核心利用了什么数学思想？",
       "options": [
-        "Normal distributions don't have gradients",
-        "The sampling operation is non-deterministic and has no well-defined derivative with respect to mu and sigma",
-        "PyTorch doesn't support normal distributions",
-        "The gradient is always exactly zero"
+        "通过引入提议分布并赋予样本权重（$\frac{p(x)}{q(x)}$），将针对目标分布的期望计算转化为针对简单分布的加权期望计算",
+        "只对高概率事件进行采样",
+        "忽略分布的归一化常数",
+        "将连续变量转换为离散变量"
       ],
-      "correct": 1,
-      "explanation": "Sampling introduces a stochastic discontinuity — you can't compute d(sample)/d(mu) for a random draw. The reparameterization trick solves this by writing z = mu + sigma * epsilon (where epsilon ~ N(0,1)), making z a deterministic, differentiable function of mu and sigma."
+      "correct": 0,
+      "explanation": "重要性采样不直接生成分布样本，而是估计目标函数在特定分布下的积分/期望。"
     },
     {
       "stage": "post",
-      "question": "In Metropolis-Hastings MCMC, what happens if the proposal standard deviation is set much too large?",
+      "question": "在变分自编码器（VAE）中，重参数化技巧（Reparameterization Trick）解决了什么问题？",
       "options": [
-        "The chain converges faster because it takes bigger steps",
-        "Most proposals land in low-probability regions and are rejected, so the chain barely moves",
-        "The stationary distribution changes to a uniform distribution",
-        "The burn-in period becomes zero"
+        "将随机节点表示为 $\\mathbf{z} = \boldsymbol{\\mu} + \boldsymbol{\\sigma} \\odot \boldsymbol{\\epsilon}$（其中 $\boldsymbol{\\epsilon} \\sim \\mathcal{N}(0, I)$），使梯度能够跨越随机采样步骤反向传播",
+        "把图像分辨率放大 2 倍",
+        "消除模型中的激活函数",
+        "防止模型显存溢出"
       ],
-      "correct": 1,
-      "explanation": "With a large proposal standard deviation, proposed points are far from the current position and likely land in low-probability regions. These are rejected, causing the chain to stay stuck at the current point. The optimal acceptance rate is about 23% for high-dimensional Gaussian proposals."
+      "correct": 0,
+      "explanation": "不可导的随机采样步骤被移动到独立节点 $\boldsymbol{\\epsilon}$ 上，使得均值和方差参数可直接求导更新。"
     },
     {
       "stage": "post",
-      "question": "In rejection sampling, what happens to the acceptance rate as the dimensionality of the target distribution increases?",
+      "question": "吉布斯采样（Gibbs Sampling）相比一般 Metropolis-Hastings 的特点是？",
       "options": [
-        "It stays constant regardless of dimension",
-        "It increases because there are more dimensions to accept in",
-        "It drops exponentially because most of the proposal volume gets rejected",
-        "It approaches 50% in all cases"
+        "每次轮流沿着单坐标维度从全条件分布（Full Conditional Distribution）采样，其接受率恒等于 100%",
+        "吉布斯采样容易拒绝样本",
+        "吉布斯采样不需要知道任何条件分布",
+        "吉布斯采样只能在二维运行"
       ],
-      "correct": 2,
-      "explanation": "In high dimensions, the volume of the proposal distribution that overlaps with the target distribution shrinks exponentially. The bound M grows, and the acceptance rate (1/M) drops exponentially. This is the curse of dimensionality for rejection sampling."
+      "correct": 0,
+      "explanation": "吉布斯采样是 MH 算法的特例，因利用了完全条件分布，避开了提议拒绝阶段。"
     }
   ]
 }

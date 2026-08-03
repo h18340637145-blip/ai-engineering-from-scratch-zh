@@ -1,11 +1,11 @@
-# Bayes' Theorem
+# 贝叶斯定理与似然估计
 
-> Probability is about what you expect. Bayes' theorem is about what you learn.
+> 在不确定性下更新信念。掌握先验、似然、后验与极大似然估计（MLE）。
 
-**Type:** Build
+**Type:** 构建
 **Language:** Python
-**Prerequisites:** Phase 1, Lesson 06 (Probability Fundamentals)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 1, Lesson 06 (概率论与概率分布)
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

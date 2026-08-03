@@ -1,6 +1,6 @@
 {
   "lesson": "26-failure-modes-agentic",
-  "title": "Failure Modes: Why Agents Break",
+  "title": "Agent 常见失效模式：死循环、上下文漂移与死锁分析",
   "questions": [
     {
       "stage": "pre",

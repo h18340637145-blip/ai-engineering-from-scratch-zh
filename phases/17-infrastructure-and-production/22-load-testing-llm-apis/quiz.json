@@ -1,6 +1,6 @@
 {
   "lesson": "22-load-testing-llm-apis",
-  "title": "Load Testing LLM APIs — Why k6 and Locust Lie",
+  "title": "LLM 服务压力测试与容量规划",
   "questions": [
     {
       "stage": "pre",

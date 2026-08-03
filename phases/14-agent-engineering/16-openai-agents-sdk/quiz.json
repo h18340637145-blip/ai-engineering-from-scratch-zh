@@ -1,6 +1,6 @@
 {
   "lesson": "16-openai-agents-sdk",
-  "title": "OpenAI Agents SDK: Handoffs, Guardrails, Tracing",
+  "title": "OpenAI Agents SDK：Handoffs, Guardrails 与 Tracing 标准",
   "questions": [
     {
       "stage": "pre",

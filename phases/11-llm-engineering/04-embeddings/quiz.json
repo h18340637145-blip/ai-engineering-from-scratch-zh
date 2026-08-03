@@ -1,37 +1,62 @@
 [
   {
-    "question": "What problem do embeddings solve that keyword search cannot?",
-    "options": ["Embeddings are faster", "Embeddings capture semantic meaning, matching 'payment didn't go through' with 'charge was declined' even though they share no words", "Embeddings use less storage", "Embeddings work offline"],
+    "stage": "pre",
+    "question": "在向量检索和 RAG 系统中，文本嵌入（Embedding）的核心作用是什么？",
+    "options": [
+      "将文本压缩为更小的字符长度",
+      "将非结构化文本映射到高维密集向量空间，使语义相似的文本在空间距离上彼此靠近",
+      "将文本加密以确保数据传输安全",
+      "将非英语文本翻译为英文"
+    ],
     "correct": 1,
-    "explanation": "Keyword search treats words as independent symbols. Embeddings map text to high-dimensional vectors where semantic similarity = geometric proximity. Texts with the same meaning cluster together regardless of word choice.",
-    "stage": "pre"
+    "explanation": "嵌入模型将文本转换为包含高维语义信息的密集向量（Dense Vector）。余弦相似度或欧氏距离可以衡量文本间的语义相关性。"
   },
   {
-    "question": "What does cosine similarity measure between two embedding vectors?",
-    "options": ["The Euclidean distance", "The angle between the vectors, indicating how similar their directions are regardless of magnitude", "The sum of their components", "The number of matching dimensions"],
+    "stage": "pre",
+    "question": "以下哪种距离/相似度度量最常用于归一化嵌入向量的比较？",
+    "options": [
+      "汉明距离（Hamming Distance）",
+      "余弦相似度（Cosine Similarity）与点积（Dot Product）",
+      "编辑距离（Levenshtein Distance）",
+      "曼哈顿距离（Manhattan Distance）"
+    ],
     "correct": 1,
-    "explanation": "Cosine similarity = dot(A,B) / (|A|*|B|). It ranges from -1 (opposite) to 1 (identical direction). Two texts with the same meaning will have vectors pointing in nearly the same direction, giving cosine similarity near 1.",
-    "stage": "pre"
+    "explanation": "在归一化向量中，余弦相似度等于向量点积，计算速度极快且能够准确反映向量维度的夹角（语义重合度）。"
   },
   {
-    "question": "What is the typical dimensionality of modern text embedding models?",
-    "options": ["2-10 dimensions", "50-100 dimensions", "768-3072 dimensions", "100,000+ dimensions"],
-    "correct": 2,
-    "explanation": "Modern embedding models (OpenAI text-embedding-3, BGE, E5) produce vectors with 768 to 3072 dimensions. Higher dimensions capture more nuance but cost more to store and search.",
-    "stage": "post"
+    "stage": "post",
+    "question": "非对称检索（Asymmetrical Retrieval，如查询很短但文档很长）时面临的主要挑战是什么？",
+    "options": [
+      "向量维度不够大",
+      "短查询与长文档在向量空间中的分布不同，直接匹配容易导致相关度漂移",
+      "模型无法处理长文档",
+      "索引构建速度太慢"
+    ],
+    "correct": 1,
+    "explanation": "短查询与长文档在语义表示的密度上存在差异。使用支持非对称检索说明的嵌入模型（如指令型 Embedding 模型）或 HyDE 技术能显著改善匹配效果。"
   },
   {
-    "question": "Why should you evaluate embedding quality using retrieval benchmarks rather than just inspecting similarity scores?",
-    "options": ["Similarity scores are always wrong", "Absolute similarity values vary by model; what matters is whether relevant documents rank higher than irrelevant ones (precision@k, recall)", "Retrieval benchmarks are faster", "Similarity scores don't use cosine distance"],
+    "stage": "post",
+    "question": "使用多模态或领域特定 Embedding 模型（如 Code Embedding）的主要优势是什么？",
+    "options": [
+      "它们消耗更少的内存",
+      "它们针对特定领域数据（如代码语法树、医疗术语）进行了表征优化，检索准确率更高",
+      "它们不需要使用向量数据库",
+      "它们生成向量的速度快 100 倍"
+    ],
     "correct": 1,
-    "explanation": "A cosine similarity of 0.85 might mean 'very similar' for one model and 'somewhat similar' for another. Retrieval metrics (precision@k, recall) measure what actually matters: does the right document come back?",
-    "stage": "post"
+    "explanation": "通用 Embedding 模型在专业领域（如代码结构、医学文献）上的语义相关性建模较弱。领域微调模型能捕获该领域的特定特征。"
   },
   {
-    "question": "When would you use a local/open-source embedding model instead of an API-based one?",
-    "options": ["Local models are always better", "When you need data privacy, offline operation, lower cost at scale, or domain-specific fine-tuning", "Local models produce higher quality embeddings", "API models don't support batching"],
+    "stage": "post",
+    "question": "向量数据库中的 HNSW 索引相比暴力全量搜索（Flat Search）的主要权衡是什么？",
+    "options": [
+      "HNSW 100% 准确且不消耗显存",
+      "HNSW 牺牲了微小的召回率（近似最近邻），换取了对大规模向量集亚毫秒级的对数级搜索延迟",
+      "HNSW 只能处理低于 100 维的向量",
+      "HNSW 无法支持过滤操作"
+    ],
     "correct": 1,
-    "explanation": "API embeddings (OpenAI, Cohere) are easy but send your data externally. Local models (BGE, E5, Nomic) keep data private, eliminate per-call costs at scale, and can be fine-tuned on domain-specific data.",
-    "stage": "post"
+    "explanation": "HNSW 是基于图的近似最近邻（ANN）索引，通过极小的召回率损失在百万/千万级向量检索中实现了巨大的速度提升。"
   }
 ]

@@ -1,24 +1,24 @@
-# OpenAI Agents SDK: Handoffs, Guardrails, Tracing
+# OpenAI Agents SDK：Handoffs, Guardrails 与 Tracing 标准
 
-> OpenAI Agents SDK is the lightweight multi-agent framework built on the Responses API. Five primitives: Agent, Handoff, Guardrail, Session, Tracing. Handoffs are tools named `transfer_to_<agent>`. Guardrails trip on input or output. Tracing is on by default.
+> 深入 OpenAI 官方 Agents SDK：掌握以 Agent、Handoff（接管转交）、Guardrail（防护栏）与 Tracing 为核心的生产级编排范式。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 01 (Agent Loop), Phase 14 · 06 (Tool Use)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 14 Lesson 01, Lesson 06
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name the five primitives of the OpenAI Agents SDK.
 - Explain handoffs: why they are modeled as tools, what name shape the model sees, and how context transfers.
 - Distinguish input guardrails, output guardrails, and tool guardrails; explain `run_in_parallel` vs blocking mode.
 - Implement a stdlib runtime with handoffs + guardrails + span-style tracing.
 
-## The Problem
+## 问题切入
 
 Agents that cannot delegate cleanly end up stuffing everything into one prompt. Agents without guardrails ship PII, policy-violating output, or loop forever. OpenAI's SDK codifies the three primitives that make multi-agent work tractable.
 
-## The Concept
+## 核心概念
 
 ### Five primitives
 
@@ -67,7 +67,7 @@ On by default. Every LLM generation, tool call, handoff, and guardrail emits a s
 - **Guardrail bypass.** Tool guardrails only fire on function tools; built-in tools (file reader, web fetch) need separate policy.
 - **Over-tracing.** Sensitive content in spans. Pair with OTel GenAI content-capture rules (Lesson 23) — store externally, reference by ID.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements the SDK shape in stdlib:
 
@@ -84,18 +84,18 @@ python3 code/main.py
 
 The trace shows two successful handoffs, one input guardrail trip, and a span tree mirroring what the real SDK emits.
 
-## Use It
+## 应用场景
 
 - **OpenAI Agents SDK** for OpenAI-first products.
 - **Claude Agent SDK** (Lesson 17) for Claude-first products.
 - **LangGraph** (Lesson 13) when you want explicit state and durable resume.
 - **Custom** when you need exact control (voice, multi-provider, federated deployments).
 
-## Ship It
+## 产出成果
 
 `outputs/skill-agents-sdk-scaffold.md` scaffolds an Agents SDK app with a triage agent, handoffs, input/output/tool guardrails, session store, and a trace processor.
 
-## Exercises
+## 练习题
 
 1. Add a handoff hop counter: refuse after N transfers. Trace the behavior.
 2. Implement `nest_handoff_history` as an option — collapse prior messages into one summary before transferring.
@@ -103,7 +103,7 @@ The trace shows two successful handoffs, one input guardrail trip, and a span tr
 4. Wire `add_trace_processor` to a JSON logger. What shape does it emit per span?
 5. Read the SDK docs. Port your stdlib toy to `openai-agents-python`. What did you model wrong?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -116,7 +116,7 @@ The trace shows two successful handoffs, one input guardrail trip, and a span tr
 | Blocking guardrail | "Sequential check" | Guardrail runs first; no token waste on trip |
 | Parallel guardrail | "Concurrent check" | Guardrail runs alongside; lower latency, wastes tokens on trip |
 
-## Further Reading
+## 深入阅读
 
 - [OpenAI Agents SDK docs](https://openai.github.io/openai-agents-python/) — primitives, handoffs, guardrails, tracing
 - [Claude Agent SDK overview](https://platform.claude.com/docs/en/agent-sdk/overview) — Claude-flavored counterpart

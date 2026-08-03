@@ -1,20 +1,20 @@
-# The Minimal Agent Workbench
+# 最小 Agent 工作台：单文件交互与实验环境
 
-> The smallest useful workbench is three files: a root instructions router, a state file, and a task board. Everything else is layered on top. If a repo cannot carry these three, no model will save it.
+> 用极简的代码构建功能完整的 Agent 调试工作台，支持交互式单步执行、状态复盘与即时变量替换。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 31 (Why Capable Models Still Fail)
-**Time:** ~45 minutes
+**Prerequisites:** Phase 14 Lesson 01
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Define the three files that form the minimum viable workbench.
 - Explain why a short root router beats a long monolithic `AGENTS.md`.
 - Build a state file the agent can read at every turn and write at the end.
 - Build a task board that survives multi-session work without chat history.
 
-## The Problem
+## 问题切入
 
 Most teams reach for a workbench by writing a 3000-line `AGENTS.md` and calling it done. The model loads it, ignores the parts it cannot summarize, and still fails on the same surfaces it always failed on.
 
@@ -22,7 +22,7 @@ You need the opposite. A tiny root file that routes the agent into deeper files 
 
 Three files. Each one with a job. Each one machine-readable enough to evolve into a real system later.
 
-## The Concept
+## 核心概念
 
 ```mermaid
 flowchart LR
@@ -60,7 +60,7 @@ A task on the board has an id, a goal, an owner (`builder`, `reviewer`, or `huma
 
 Later lessons add scope contracts, feedback runners, verification gates, reviewer checklists, and handoff packets. The three files here are what they all assume.
 
-## Build It
+## 动手实现
 
 `code/main.py` writes the minimal workbench into an empty repo and demonstrates a single agent turn that:
 
@@ -77,7 +77,7 @@ python3 code/main.py
 
 The script creates `workdir/` next to itself, lays down the three files, runs one turn, and prints the diff. Re-run it to see how the second turn picks up where the first left off.
 
-## Use It
+## 应用场景
 
 Inside production agent products, the same three files show up under different names:
 
@@ -97,11 +97,11 @@ The minimum workbench survives contact with real monorepos when three patterns a
 
 **Cross-tool symlinks.** A single root file with symlinks (`ln -s AGENTS.md CLAUDE.md`, `ln -s AGENTS.md .github/copilot-instructions.md`, `ln -s AGENTS.md .cursorrules`) keeps every coding agent on the same source of truth. Nx's `nx ai-setup` automates this across Claude Code, Cursor, Copilot, Gemini, Codex, and OpenCode from a single config.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-minimal-workbench.md` generates the three-file workbench for any new repo: an `AGENTS.md` router tuned to the project, an `agent_state.json` with the right keys, and a `task_board.json` seeded with the current backlog.
 
-## Exercises
+## 练习题
 
 1. Add a `last_run` timestamp to `agent_state.json`. Refuse to run if the file is older than 24 hours unless an operator confirms.
 2. Add a `priority` field to the task board and change the puller to always pick the highest priority `todo`.
@@ -109,7 +109,7 @@ The minimum workbench survives contact with real monorepos when three patterns a
 4. Write a `lint_workbench.py` that fails if `AGENTS.md` is over 80 lines or references a file that does not exist.
 5. Decide which one of the three files would hurt the most to lose. Defend it.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -118,7 +118,7 @@ The minimum workbench survives contact with real monorepos when three patterns a
 | Task board | "The backlog" | JSON queue of work with status, owner, acceptance |
 | System of record | "Source of truth" | The file the workbench treats as authoritative when chat is gone |
 
-## Further Reading
+## 深入阅读
 
 - [agents.md — the open spec](https://agents.md/) — adopted by Cursor, Codex, Claude Code, Copilot, Gemini, OpenCode
 - [Augment Code, A good AGENTS.md is a model upgrade. A bad one is worse than no docs at all](https://www.augmentcode.com/blog/how-to-write-good-agents-dot-md-files) — measured quality jumps

@@ -1,6 +1,6 @@
 {
   "lesson": "03-gpu-autoscaling-kubernetes",
-  "title": "GPU Autoscaling on Kubernetes — Karpenter, KAI Scheduler, Gang Scheduling",
+  "title": "Kubernetes 上的 GPU 弹性自动扩缩容",
   "questions": [
     {
       "stage": "pre",

@@ -1,6 +1,6 @@
 {
   "lesson": "14-prompt-semantic-caching",
-  "title": "Prompt Caching and Semantic Caching Economics",
+  "title": "Prompt 语义缓存：基于向量相似度的请求拦截与加速",
   "questions": [
     {
       "stage": "pre",

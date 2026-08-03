@@ -1,11 +1,11 @@
-# MARL — MADDPG, QMIX, MAPPO
+# 多 Agent 强化学习（MARL）：MADDPG, QMIX 与 MAPPO
 
-> The reinforcement-learning heritage of multi-agent coordination, which still informs LLM-agent systems in 2026. **MADDPG** (Lowe et al., NeurIPS 2017, arXiv:1706.02275) introduced Centralized Training, Decentralized Execution (CTDE): each critic sees all agents' states and actions during training; at test time only local actors run. Works for cooperative, competitive, and mixed settings. **QMIX** (Rashid et al., ICML 2018, arXiv:1803.11485) is value-decomposition with a monotonic mixing network; per-agent Qs combine into joint Q so `argmax` distributes cleanly — dominant on StarCraft Multi-Agent Challenge (SMAC). **MAPPO** (Yu et al., NeurIPS 2022, arXiv:2103.01955) is PPO with a centralized value function; "surprisingly effective" on particle-world, SMAC, Google Research Football, Hanabi with minimal tuning. These underpin training policies for agent teams that must act decentrally. MAPPO is the **default 2026 cooperative-MARL baseline**. This lesson builds each from a small grid-world toy and lands the three ideas in muscle memory before touching LLM-agent training.
+> 介绍 MARL 经典算法在多 Agent 协同与对抗环境中的训练与决策融合。
 
 **Type:** Learn
 **Languages:** Python (stdlib, small NumPy-free implementations)
-**Prerequisites:** Phase 09 (Reinforcement Learning), Phase 16 · 09 (Parallel Swarm Networks)
-**Time:** ~90 minutes
+**Prerequisites:** Phase 16 Lesson 01
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -97,7 +97,7 @@ In LLM-agent systems, non-stationarity manifests as "my agent worked last month,
 
 Training actual networks is a Phase 09 topic. This lesson builds scripted-policy versions that demonstrate the CTDE, value-decomposition, and centralized-value patterns without gradient updates. The goal is to internalize the patterns before you pick up a full MARL library (PyMARL, MARLlib, RLlib multi-agent).
 
-## Build It
+## 动手实现
 
 `code/main.py` implements three pattern demonstrations, all on a tiny 2-agent cooperative grid-world:
 
@@ -117,11 +117,11 @@ python3 code/main.py
 
 Expected output: independent agents take ~6 steps on average; CTDE variants converge toward ~3.5 steps (optimal for the 4x4 grid is 3). The pattern difference shows up despite scripted policies.
 
-## Use It
+## 应用场景
 
 `outputs/skill-marl-picker.md` is a skill that picks a MARL algorithm for a given multi-agent task: cooperative vs competitive, homogeneous vs heterogeneous, action-space type, scale, reward signal.
 
-## Ship It
+## 产出成果
 
 MARL in production is rare. When you do use it:
 
@@ -131,7 +131,7 @@ MARL in production is rare. When you do use it:
 - **Reward shaping warning.** MARL is exquisitely sensitive to reward design. One coordination bug in the shaping and agents learn to exploit it. Run adversarial tests.
 - **For LLM agents**, consider prompt-level policies first. Only invest in MARL training when interaction data + reward signal + infrastructure are all present.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Measure the steps-to-goal gap between independent and MAPPO-style agents. Does the gap grow or shrink on a 6x6 grid?
 2. Implement a competitive variant: two agents, one pellet, only the first to reach gets reward. Which pattern handles competition cleanly? MADDPG historically.
@@ -139,7 +139,7 @@ MARL in production is rare. When you do use it:
 4. Read MAPPO (arXiv:2103.01955). Why do the authors argue centralized value + PPO beats off-policy MARL on their benchmarks? List the three strongest claims.
 5. Apply CTDE as a design pattern to a hypothetical LLM-agent system (e.g., research agent + summarizer + coder). What is the joint information available at design time that is not available at runtime?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -153,7 +153,7 @@ MARL in production is rare. When you do use it:
 | On-policy / off-policy | "Learn from current / replay" | PPO is on-policy (MAPPO); DDPG and Q-learning are off-policy. |
 | SMAC | "StarCraft Multi-Agent Challenge" | Cooperative micromanagement benchmark; QMIX's homegrown ground. |
 
-## Further Reading
+## 深入阅读
 
 - [Lowe et al. — Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments](https://arxiv.org/abs/1706.02275) — MADDPG; NeurIPS 2017
 - [Rashid et al. — QMIX: Monotonic Value Function Factorisation for Deep Multi-Agent Reinforcement Learning](https://arxiv.org/abs/1803.11485) — QMIX; ICML 2018

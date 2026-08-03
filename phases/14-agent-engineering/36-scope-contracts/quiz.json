@@ -1,6 +1,6 @@
 {
   "lesson": "36-scope-contracts",
-  "title": "Scope Contracts and Task Boundaries",
+  "title": "作用域契约（Scope Contracts）：限定 Agent 读写修改边界",
   "questions": [
     {
       "stage": "pre",

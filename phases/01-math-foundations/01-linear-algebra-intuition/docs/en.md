@@ -1,11 +1,11 @@
-# Linear Algebra Intuition
+# 线性代数直觉
 
-> Every AI model is just matrix math wearing a fancy hat.
+> 将矩阵视为对空间的拉伸、旋转和压扁。建立从抽象代数到直观几何变换的映射。
 
-**Type:** Learn
-**Languages:** Python, Julia
-**Prerequisites:** Phase 0
-**Time:** ~60 minutes
+**Type:** 学习
+**Languages:** Python
+**Prerequisites:** 无
+**Time:** ~40 分钟
 
 ## Learning Objectives
 

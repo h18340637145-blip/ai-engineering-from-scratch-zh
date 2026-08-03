@@ -2,63 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the Fourier transform do to a signal?",
+      "question": "傅里叶变换（Fourier Transform）的核心物理意义是什么？",
       "options": [
-        "Compresses the signal to use less storage",
-        "Decomposes the signal into sine waves of different frequencies, amplitudes, and phases",
-        "Removes noise from the signal",
-        "Converts the signal from analog to digital"
+        "将时域/空域信号分解为不同频率的正弦与余弦正交波形成分的叠加（从时域映射到频域）",
+        "把彩色图像转换为黑白图像",
+        "压缩文本文件体积",
+        "计算矩阵的逆"
       ],
-      "correct": 1,
-      "explanation": "The Fourier transform converts a signal from the time domain to the frequency domain. Each frequency coefficient X[k] tells you the amplitude and phase of a sine wave at frequency k. The signal is re-expressed as a sum of these sine waves."
+      "correct": 0,
+      "explanation": "傅里叶变换揭示了复杂复杂信号底层由哪些不同频率成分所构成。"
     },
     {
       "stage": "pre",
-      "question": "What is the time complexity of the Fast Fourier Transform (FFT) compared to the direct DFT?",
+      "question": "快速傅里叶变换（FFT）算法的计算复杂度是多少？",
       "options": [
-        "Both are O(N^2)",
-        "FFT is O(N log N), DFT is O(N^2)",
-        "FFT is O(N), DFT is O(N log N)",
-        "FFT is O(log N), DFT is O(N)"
+        "$O(N \\log N)$（直接离散傅里叶变换 DFT 为 $O(N^2)$）",
+        "$O(N^3)$",
+        "$O(N)$",
+        "$O(1)$"
       ],
-      "correct": 1,
-      "explanation": "The direct DFT computes N outputs, each summing over N inputs: O(N^2). The Cooley-Tukey FFT splits the signal into even/odd halves recursively, doing O(N) work at each of log2(N) levels, giving O(N log N). For N = 1 million, this is 20 million vs 1 trillion operations."
+      "correct": 0,
+      "explanation": "Cooley-Tukey FFT 算法利用分治递归与旋转因子的对称性，将复杂度从二次降至 $O(N\\log N)$。"
     },
     {
       "stage": "post",
-      "question": "What does the convolution theorem state?",
+      "question": "卷积定理（Convolution Theorem）指出，时域中的卷积运算在频域中对应什么操作？",
       "options": [
-        "Convolution in the time domain equals addition in the frequency domain",
-        "Convolution in the time domain equals pointwise multiplication in the frequency domain",
-        "Convolution always increases the length of a signal",
-        "Convolution and correlation are identical operations"
+        "时域的卷积相当于频域的逐项按元素点乘（$f * g \\iff \\mathcal{F}(f) \\cdot \\mathcal{F}(g)$）",
+        "频域的除法",
+        "频域的矩阵求逆",
+        "频域的求导"
       ],
-      "correct": 1,
-      "explanation": "The convolution theorem states that convolution in the time domain equals pointwise multiplication in the frequency domain: x * h = IFFT(FFT(x) . FFT(h)). This is why FFT-based convolution is O(N log N) instead of O(N*M) for large kernels."
+      "correct": 0,
+      "explanation": "通过 FFT 将输入与核函数转到频域点乘再用 IFFT 转回，是大尺度卷积算法加速的理论基础。"
     },
     {
       "stage": "post",
-      "question": "Why does zero-padding a signal before FFT NOT increase the true frequency resolution?",
+      "question": "奈奎斯特-香农采样定理（Nyquist-Shannon Sampling Theorem）规定采样频率必须满足什么要求才能无失真还原信号？",
       "options": [
-        "Zero-padding introduces noise that cancels the improvement",
-        "Zero-padding interpolates between existing frequency bins but cannot reveal frequency detail absent from the original samples",
-        "Zero-padding only works for power-of-2 signal lengths",
-        "The FFT algorithm ignores zero-padded samples"
+        "采样频率必须至少是信号中最高频率成分的 2 倍（$f_s \\ge 2 f_{max}$）",
+        "采样频率等于最高频率的 1/2",
+        "采样频率必须恒为 44.1 kHz",
+        "采样频率与信号频率无关"
       ],
-      "correct": 1,
-      "explanation": "True frequency resolution depends on the observation time T = N/fs. Zero-padding adds more frequency bins (finer grid) but only interpolates the existing spectrum — it gives a smoother-looking result without resolving frequencies closer than 1/T Hz apart."
+      "correct": 0,
+      "explanation": "如果采样率不足，高频成分会折叠混叠（Aliasing）为虚假的低频信号造成数据失真。"
     },
     {
       "stage": "post",
-      "question": "In the original Transformer's sinusoidal positional encodings, why are different dimension pairs assigned geometrically spaced frequencies?",
+      "question": "在现代语音 AI 模型（如 Whisper, Tacotron）中，梅尔频谱图（Mel-Spectrogram）的作用是？",
       "options": [
-        "It reduces the computational cost of attention",
-        "Each frequency provides a different resolution — high frequencies encode fine position, low frequencies encode coarse position, giving each position a unique fingerprint",
-        "Geometric spacing is required by the FFT algorithm",
-        "It ensures all encoding values are between 0 and 1"
+        "通过短时傅里叶变换（STFT）并经过非线性梅尔刻度滤波，将一维音频波形转换为贴合人类听觉感知的二维频图输入",
+        "自动对声音进行降噪",
+        "把音频翻译为中文字幕",
+        "直接播放音频"
       ],
-      "correct": 1,
-      "explanation": "High-frequency dimensions change rapidly with position (fine resolution), while low-frequency dimensions change slowly (coarse resolution). Together, the multi-frequency encoding gives every position a unique pattern — similar to how Fourier coefficients uniquely identify a signal."
+      "correct": 0,
+      "explanation": "梅尔刻度模拟了人耳对低频高敏感、对高频低敏感的对数听觉机制。"
     }
   ]
 }

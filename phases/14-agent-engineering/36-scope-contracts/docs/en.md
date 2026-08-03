@@ -1,26 +1,26 @@
-# Scope Contracts and Task Boundaries
+# 作用域契约（Scope Contracts）：限定 Agent 读写修改边界
 
-> The model does not know where the work ends. A scope contract is a per-task file that says where the work begins, where it ends, and how to roll back if it spills. The contract turns "stay in scope" from a wish into a check.
+> 通过定义严格的作用域契约，限制 Agent 只能修改受信任的子目录与指定文件，防止非预期的系统越界修改。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 32 (Minimal Workbench), Phase 14 · 33 (Rules as Constraints)
-**Time:** ~50 minutes
+**Prerequisites:** Phase 14 Lesson 27
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Write a scope contract that an agent reads at task start and a verifier reads at task end.
 - Specify allowed files, forbidden files, acceptance criteria, rollback plan, and approval boundaries.
 - Implement a scope checker that compares a diff against the contract and flags violations.
 - Make scope creep visible, automatic, and reviewable.
 
-## The Problem
+## 问题切入
 
 Agents creep. The task is "fix the login bug." The diff touches the login route, the email helper, the database driver, the README, and the release script. Each touch had a plausible reason in the moment. Together they are a different change than the one that was reviewed.
 
 Scope creep is the most under-monitored failure mode in agent work because the agent narrates each step in good faith. The fix is not a stricter prompt. The fix is a contract on disk that says what was promised and a check that compares the result against the promise.
 
-## The Concept
+## 核心概念
 
 ```mermaid
 flowchart LR
@@ -90,7 +90,7 @@ Two rules make the list load-bearing instead of decorative. First, the invariant
 
 The contract and the list compose by least privilege, the same merge described below: the task contract's `allowed_files` must sit inside whatever the active feature touches, never outside it.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -119,7 +119,7 @@ A practitioner running "specsmaxxing" (scope contracts in YAML before invoking t
 
 **Multi-contract merge semantics (least privilege).** When two scope contracts apply (e.g., a project-wide contract plus a task-specific one), the merge is: **intersect** `allowed_files` (both contracts must permit the path), **union** `forbidden_files` (either can prohibit), `time_budget_minutes` is the most restrictive (min), `approvals_required` accumulates. `network_egress` is `None` for no enforcement, `[]` for deny-all, `[...]` as an allowlist; under merge, `None` defers to the other side, two lists intersect, and deny-all stays deny-all. State this in the contract schema so the merge is mechanical and reviewable.
 
-## Use It
+## 应用场景
 
 Production patterns:
 
@@ -129,11 +129,11 @@ Production patterns:
 
 The contract travels with the task. When the task closes, the contract is archived under `outputs/scope/closed/`.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-scope-contract.md` generates a scope contract for a task description and a glob-aware checker that runs in CI on every agent diff.
 
-## Exercises
+## 练习题
 
 1. Add a `network_egress` field listing allowed external hosts. Refuse runs that touch other hosts.
 2. Extend the checker to fail soft on `docs/**` and hard on `scripts/**`. Justify the asymmetry.
@@ -141,7 +141,7 @@ The contract travels with the task. When the task closes, the contract is archiv
 4. Add a `time_budget_minutes` and refuse to continue once the wall clock exceeds it.
 5. Run two contracts against the same diff. What is the right merge semantics when both apply?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -151,7 +151,7 @@ The contract travels with the task. When the task closes, the contract is archiv
 | Approval boundary | "Needs sign-off" | An action listed in the contract as requiring explicit human approval |
 | Diff check | "Path audit" | Comparing touched files against the contract globs |
 
-## Further Reading
+## 深入阅读
 
 - [LangGraph human-in-the-loop interrupts](https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/)
 - [OpenAI Agents SDK tool approval policies](https://platform.openai.com/docs/guides/agents-sdk)

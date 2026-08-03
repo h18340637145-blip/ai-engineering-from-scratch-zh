@@ -1,6 +1,6 @@
 {
   "lesson": "13-langgraph-stateful-graphs",
-  "title": "Stateful Graph Orchestration — Durable Execution and Checkpoints",
+  "title": "LangGraph：基于状态图与检查点机制的 Agent 编排",
   "questions": [
     {
       "stage": "pre",

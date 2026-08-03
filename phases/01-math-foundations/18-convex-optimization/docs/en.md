@@ -1,11 +1,11 @@
-# Convex Optimization
+# 凸优化基础与拉格朗日对偶
 
-> Convex problems have one valley. Neural networks have millions. Knowing the difference matters.
+> 保证找到全局最优解。掌握凸集、KKT 条件、拉格朗日对偶性与 SVM 凸规划。
 
-**Type:** Build
+**Type:** 学习
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 04 (Calculus for ML), 08 (Optimization)
-**Time:** ~90 minutes
+**Prerequisites:** Phase 1, Lesson 08 (最优化方法)
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

@@ -1,87 +1,87 @@
 {
   "lesson": "05-autonomous-research-agent",
-  "title": "Capstone 05 — Autonomous Research Agent (AI-Scientist Class)",
+  "title": "综合项目 05——自主研究智能体（AI Scientist 级）",
   "questions": [
     {
       "stage": "pre",
-      "question": "What search shape does the AI-Scientist-class agent use to explore experiments?",
+      "question": "AI Scientist 级智能体使用哪种搜索结构探索实验？",
       "options": [
-        "Beam search over token outputs",
-        "Best-first tree search over experiment nodes with a novelty x quality x budget score",
-        "Pure reinforcement learning from human feedback",
-        "Breadth-first expansion with random scoring"
+        "对 Token 输出进行束搜索",
+        "依据新颖性 × 质量 × 预算评分，对实验节点进行最佳优先树搜索",
+        "纯粹的基于人类反馈的强化学习",
+        "采用随机评分的广度优先扩展"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "Why is the sandbox configured with --network=none and bounded resource caps?",
+      "question": "为什么要使用 `--network=none` 和有界资源上限配置沙盒？",
       "options": [
-        "To force the agent to use prompt caching",
-        "To enforce deterministic floating-point arithmetic",
-        "To allow GPU passthrough by default",
-        "To prevent network egress and contain experiment side effects within a reproducible envelope"
+        "强制智能体使用提示词缓存",
+        "强制执行确定性浮点运算",
+        "默认允许 GPU 直通",
+        "阻止网络出站，并将实验副作用限制在可复现范围内"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the role of the vision critique step in the writer loop?",
+      "question": "写作循环中的视觉评审步骤有什么作用？",
       "options": [
-        "Translates figures into bar charts",
-        "Compiles the LaTeX draft to PDF, then has a VLM critique layout, figure legibility, and claim-evidence alignment",
-        "Generates new experiment ideas from screenshots",
-        "Replaces matplotlib at render time"
+        "将图形转换为柱状图",
+        "将 LaTeX 草稿编译为 PDF，再由 VLM 评审布局、图形可读性以及声明—证据一致性",
+        "根据截图生成新实验想法",
+        "渲染时替代 matplotlib"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does the reviewer ensemble gate the pipeline?",
+      "question": "评审器集成如何对流水线设门？",
       "options": [
-        "A single judge accepts or rejects on a binary flag",
-        "Reviewers vote anonymously and the majority wins",
-        "Reviews run after publication only",
-        "Five judges score on NeurIPS-style rubrics and the weighted aggregate must clear a threshold, otherwise the draft loops back to the writer"
+        "单个评审器通过二元标志接受或拒绝",
+        "评审器匿名投票，多数票获胜",
+        "只在发布后运行评审",
+        "5 个评审器按 NeurIPS 风格标准评分；加权总分必须超过阈值，否则草稿返回写作器重写"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which cost discipline does the capstone enforce per paper?",
+      "question": "本综合项目对每篇论文执行哪种成本约束？",
       "options": [
-        "A $30 hard budget tracked through Langfuse counters and pre-run estimates",
-        "Cost-only optimization without quality checks",
-        "Unbounded compute, hard wall-clock only",
-        "GPU-hours tracked but never capped"
+        "通过 Langfuse 计数器和运行前估算跟踪 30 美元硬预算",
+        "只优化成本，不做质量检查",
+        "计算资源不设限，只限制实际时长",
+        "跟踪 GPU 小时数但不设置上限"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which scoring function ranks tree nodes for further expansion?",
+      "question": "使用哪个评分函数对树节点排序以继续扩展？",
       "options": [
-        "Novelty x quality x remaining budget",
-        "Citation count of related papers",
-        "Random uniform priority",
-        "Output length and token count"
+        "新颖性 × 质量 × 剩余预算",
+        "相关论文的引用数",
+        "随机均匀优先级",
+        "输出长度和 Token 数"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does the red-team report exercise against the system?",
+      "question": "红队报告针对系统测试什么？",
       "options": [
-        "Caching hit rate on system prompts",
-        "Multi-tenant data leakage in the vector DB",
-        "Latency tail under packet loss",
-        "Sandbox-escape attempts such as fork bombs, network exfiltration, and filesystem escapes"
+        "系统提示词的缓存命中率",
+        "向量数据库中的多租户数据泄露",
+        "丢包情况下的尾延迟",
+        "fork 炸弹、网络外传和文件系统逃逸等沙盒逃逸尝试"
       ],
       "correct": 3,
       "explanation": ""

@@ -1,20 +1,20 @@
-# Batch APIs — the 50% Discount as Industry Standard
+# 离线 Batch API 批处理：降低 50% 成本的非实时推理
 
-> Every major provider ships an async batch API with a 50% discount and ~24-hour turnaround. OpenAI, Anthropic, Google, and most of the inference platforms (Fireworks batch tier, Together batch) implement the same pattern. Stack batch with prompt caching and overnight pipelines drop to ~10% of synchronous-uncached cost. The rule is brutally simple: if it is not interactive, it belongs on batch. Content generation pipelines, document classification, data extraction, report generation, bulk labeling, catalog tagging — anything tolerant of 24-hour latency is money left on the table until it moves to batch. The 2026 production pattern is to triage every new LLM workload into three lanes: interactive (synchronous with caching), semi-interactive (async queue with fallback), batch (overnight, cached input stacked). Workloads that pretend to be interactive but tolerate minutes of latency waste most.
+> 利用异步 Batch API 处理非实时任务：架构设计、任务队列管理与比在线 API 节省 50% 成本的优势。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy batch-vs-sync cost simulator)
-**Prerequisites:** Phase 17 · 14 (Prompt & Semantic Caching)
-**Time:** ~45 minutes
+**Prerequisites:** Phase 17 Lesson 01
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name the three provider batch APIs (OpenAI, Anthropic, Google) and the common 50% discount + 24h turnaround guarantees.
 - Compute the cost for stacking batch + cached-input on an overnight classification workload and compare to synchronous-uncached baseline.
 - Triage a workload into interactive / semi-interactive / batch and justify the lane.
 - Name the two traps: partial interactivity (user expects faster than 24h) and output-schema drift (batch file format differs per provider).
 
-## The Problem
+## 问题切入
 
 Your team ships a nightly report generation pipeline. 50,000 documents, summarize each, cluster the summaries, draft an executive brief. Running synchronously it takes 4 hours at $2,000/night. You hear about batch APIs.
 
@@ -22,7 +22,7 @@ The batch gets you 50% off. You also enable prompt caching on the system prompt 
 
 Batch is the cheapest lever in the LLM cost toolkit that nobody pulls. The reason is mostly organizational: teams think "real-time" when the SLA actually is "by morning." This lesson is about not leaving 90% of the bill on the table.
 
-## The Concept
+## 核心概念
 
 ### The three batch APIs
 
@@ -79,15 +79,15 @@ Writing "one batch client" across providers means adapter code per provider. Gat
 - Stacked batch + cached input: ~10% of sync uncached cost.
 - Workload triage rule: if 24h latency acceptable, always batch.
 
-## Use It
+## 应用场景
 
 `code/main.py` computes costs across sync, sync+cache, batch, and batch+cache for a 50k-document workload. Reports savings in $ and percent.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-batch-triager.md`. Given workload characteristics, triages into interactive/semi/batch and estimates savings.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. For a 100k-doc pipeline with 3K-token system prompt and 500-token output, compute the savings of full stack (batch + cache) vs sync baseline.
 2. Pick three features in a real product you know. Triage each into interactive/semi/batch.
@@ -95,7 +95,7 @@ This lesson produces `outputs/skill-batch-triager.md`. Given workload characteri
 4. Your batch API return SLA is 24h but P99 is 20 hours. How do you communicate this to the user — what is the downstream system behavior on the edge case?
 5. Compute break-even: at what shared-prefix length does batch + cache become cheaper than running overnight on your own reserved GPU?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -108,7 +108,7 @@ This lesson produces `outputs/skill-batch-triager.md`. Given workload characteri
 | Output schema | "response format" | Per-provider JSONL layout; not portable |
 | Stacked discount | "batch + cache" | ~10% of uncached sync bill when both apply |
 
-## Further Reading
+## 深入阅读
 
 - [OpenAI Batch API](https://platform.openai.com/docs/guides/batch) — JSONL format and `/v1/batches` semantics.
 - [Anthropic Message Batches](https://docs.anthropic.com/en/docs/build-with-claude/batch-processing) — batch format and `cache_control` interaction.

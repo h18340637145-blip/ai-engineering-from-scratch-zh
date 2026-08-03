@@ -2,63 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the Markov property?",
+      "question": "马尔可夫无记忆性（Markov Property）的核心定义是？",
       "options": [
-        "The process always returns to its starting state",
-        "The next state depends only on the current state, not on the history of previous states",
-        "All states are equally likely at every step",
-        "The process must have a finite number of states"
+        "给定当前状态，过程未来的状态分布只依赖于当前状态，而与过去的特定历史状态无关（$P(X_{t+1}|X_t, X_{t-1}, \\dots) = P(X_{t+1}|X_t)$）",
+        "未来的状态与当前状态无关",
+        "过程在任何时刻状态都不会发生改变",
+        "过去的状态决定一切，当前状态不重要"
       ],
-      "correct": 1,
-      "explanation": "The Markov property (memorylessness) means P(X_{t+1} = j | X_t = i, X_{t-1}, ...) = P(X_{t+1} = j | X_t = i). The future depends only on where you are, not how you got there. This enables compact representation via a transition matrix."
+      "correct": 0,
+      "explanation": "马尔可夫链“无记忆性”大幅简化了时序过程的建模复杂度。"
     },
     {
       "stage": "pre",
-      "question": "In a 1D random walk, how does the expected distance from the origin scale with the number of steps n?",
+      "question": "平稳随机过程（Stationary Process）意味着什么？",
       "options": [
-        "Linearly: proportional to n",
-        "As the square root: proportional to sqrt(n)",
-        "Logarithmically: proportional to log(n)",
-        "It stays constant regardless of n"
+        "随机过程的统计特性（如均值、方差、自相关函数）随着时间的推移保持恒定不变",
+        "过程中的每个随机变量都必须是常数",
+        "过程只能在一个方向上运动",
+        "过程的方差无限大"
       ],
-      "correct": 1,
-      "explanation": "Each step is +/-1 with equal probability. The variance after n steps is n, so the standard deviation (typical distance from origin) is sqrt(n). After 10,000 steps, the expected distance is about 100, not 10,000."
+      "correct": 0,
+      "explanation": "严平稳要求联合分布具有时间平移不变性，弱/宽平稳要求一阶矩恒定、自相关只取决于时间差。"
     },
     {
       "stage": "post",
-      "question": "What is the stationary distribution of a Markov chain?",
+      "question": "在扩散模型（Diffusion Models, 如 DDPM/Stable Diffusion）中，前向加噪过程是一个怎样的随机过程？",
       "options": [
-        "The initial distribution of states",
-        "The distribution that does not change under the transition matrix: pi * P = pi",
-        "The distribution of states after exactly one transition",
-        "The uniform distribution over all states"
+        "一个不断向原始数据添加高斯噪声的高斯马尔可夫链（Markov Chain）",
+        "一个没有任何规律的随机跳跃",
+        "一个纯平移过程",
+        "一个确定性多项式方程"
       ],
-      "correct": 1,
-      "explanation": "The stationary distribution pi satisfies pi * P = pi — applying the transition matrix leaves it unchanged. It represents the long-run fraction of time spent in each state. For an irreducible, aperiodic chain, any initial distribution converges to pi."
+      "correct": 0,
+      "explanation": "前向过程在 $T$ 步内逐步将数据分布平滑转化为无结构的各向同性标准高斯分布。"
     },
     {
       "stage": "post",
-      "question": "In Langevin dynamics x_{t+1} = x_t - dt * grad(U) + sqrt(2*T*dt) * z, what happens as temperature T approaches 0?",
+      "question": "维纳过程（Wiener Process / 布朗运动 Brownian Motion）具有什么核心性质？",
       "options": [
-        "The process becomes a pure random walk",
-        "The process becomes pure gradient descent (deterministic optimization)",
-        "The process diverges to infinity",
-        "The process freezes at the initial position"
+        "具有独立增量、增量服从高斯分布（$B_t - B_s \\sim \\mathcal{N}(0, t-s)$）且轨迹连续但处处不可微",
+        "轨迹是光滑可导的曲线",
+        "增量服从均匀分布",
+        "它的方差随时间增加而减小"
       ],
-      "correct": 1,
-      "explanation": "At T = 0, the noise term sqrt(2*T*dt)*z vanishes, leaving x_{t+1} = x_t - dt * grad(U), which is standard gradient descent. At high T, the noise dominates and the process is nearly a random walk. Intermediate T balances exploration and exploitation."
+      "correct": 0,
+      "explanation": "布朗运动是连续时间随机游走（Stochastic Calculus/SDE）的基础物理与数学模型。"
     },
     {
       "stage": "post",
-      "question": "In a diffusion model, what does the forward process do to a data sample over T steps?",
+      "question": "马尔可夫链的平稳分布（Stationary Distribution, $\\pi = \\pi P$）代表什么？",
       "options": [
-        "It sharpens the image by removing noise at each step",
-        "It gradually adds Gaussian noise until the sample becomes pure noise, following a Markov chain",
-        "It compresses the image to a lower resolution",
-        "It applies learned transformations to generate new data"
+        "当马尔可夫链运行足够长步数后，状态转移达成的动态平衡概率分布（各状态概率不再随时间演化）",
+        "所有状态概率都相等的分布",
+        "初始时刻的状态分布",
+        "状态转移矩阵的行列式"
       ],
-      "correct": 1,
-      "explanation": "The forward process is a Markov chain: x_t = sqrt(alpha_t) * x_{t-1} + sqrt(1 - alpha_t) * noise. After T steps, x_T is approximately N(0, I) — pure Gaussian noise. The reverse process (learned by a neural network) then denoises step-by-step to generate new data."
+      "correct": 0,
+      "explanation": "对于遍历马尔可夫链，无论初始状态如何，最终都会收敛到唯一的稳定平稳分布 $\\pi$。"
     }
   ]
 }

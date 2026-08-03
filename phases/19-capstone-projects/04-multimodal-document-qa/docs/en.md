@@ -1,28 +1,28 @@
-# Capstone 04 — Multimodal Document QA (Vision-First PDF, Tables, Charts)
+# 第 04 章 — 多模态文档问答（以视觉优先的 PDF、表格、图表）
 
-> The 2026 document-QA frontier moved away from OCR-then-text and toward vision-first late interaction. ColPali, ColQwen2.5, and ColQwen3-omni treat each PDF page as an image, embed it with multi-vector late interaction, and let the query attend to patches directly. On financial 10-Ks, scientific papers, and handwritten notes this pattern beats OCR-first by a large margin. Build the pipeline end to end on 10k pages and publish the side-by-side against OCR-then-text.
+> 2026 年的文档问答前沿，已经从 OCR 再转文本，转向了以视觉优先的晚交互。ColPali、ColQwen2.5 和 ColQwen3-omni 会把每一页 PDF 当作一张图像，用多向量晚交互来编码，让查询直接关注图像 patch。面对财报 10-K、科研论文和手写笔记，这种方式明显优于先 OCR 再转文本。把整条流水线在 1 万页上完整做出来，并和 OCR-then-text 做并排对比。
 
 **Type:** Capstone
-**Languages:** Python (pipeline), TypeScript (viewer UI)
-**Prerequisites:** Phase 4 (computer vision), Phase 5 (NLP), Phase 7 (transformers), Phase 11 (LLM engineering), Phase 12 (multimodal), Phase 17 (infrastructure)
+**Languages:** Python（流水线）、TypeScript（查看器 UI）
+**Prerequisites:** 第 4 章（计算机视觉）、第 5 章（NLP）、第 7 章（Transformer）、第 11 章（LLM 工程）、第 12 章（多模态）、第 17 章（基础设施）
 **Phases exercised:** P4 · P5 · P7 · P11 · P12 · P17
-**Time:** 30 hours
+**Time:** 30 小时
 
-## Problem
+## 问题
 
-Enterprises sit on PDFs that OCR pipelines mangle: scanned 10-Ks with rotated tables, scientific papers dense with equations, charts that only make sense as images, handwritten annotations. Treating these as text-first means losing half the signal. The 2026 answer is late-interaction multi-vector retrieval on raw page images. ColPali (Illuin Tech) introduced it; ColQwen2.5-v0.2 and ColQwen3-omni pushed accuracy. On ViDoRe v3, vision-first retrieval scores above OCR-then-text by meaningful margins — and the gap widens on charts, tables, and handwriting.
+企业手里的 PDF 往往会把 OCR 流水线难倒：扫描版 10-K 里有旋转表格，科研论文里满是公式，图表只有作为图像才看得懂，还有手写批注。把这些内容当成纯文本处理，会丢掉一半信号。2026 年的答案，是在原始页面图像上做晚交互式多向量检索。ColPali（Illuin Tech）率先提出了这条路；ColQwen2.5-v0.2 和 ColQwen3-omni 又把准确率推得更高。在 ViDoRe v3 上，视觉优先检索比 OCR-then-text 的得分高出明显一截，而且在图表、表格和手写体上差距更大。
 
-The trade-off is storage and latency. A ColQwen embedding is ~2048 patch vectors per page, not a single 1024-dim vector. Raw storage balloons. DocPruner (2026) brings 50% pruning without measurable accuracy loss. You will index 10k pages, measure ViDoRe v3 nDCG@5, serve answers under 2s, and compare directly against an OCR-then-text baseline.
+代价是存储和延迟。一个 ColQwen embedding 每页大约是 2048 个 patch 向量，而不是一个 1024 维的单向量。原始存储会迅速膨胀。DocPruner（2026）带来了 50% 的裁剪，同时几乎不损失准确率。你要索引 1 万页，测 ViDoRe v3 的 nDCG@5，保证答案在 2s 内返回，并和 OCR-then-text 基线直接对比。
 
-## Concept
+## 概念
 
-Late interaction means every query token scores against every patch token, and the maximum score per query token is summed. You get fine-grained matching without needing a single pooled vector. A multi-vector index (Vespa, Qdrant multi-vector, or AstraDB) stores the per-patch embeddings and runs MaxSim at retrieval time.
+晚交互的意思是，每个查询 token 都会和每个 patch token 打分，然后把每个查询 token 的最大分数加总。这样就能得到很细粒度的匹配，而不必先压成一个 pooled vector。多向量索引（Vespa、Qdrant multi-vector 或 AstraDB）负责存每个 patch 的 embedding，并在检索时执行 MaxSim。
 
-The answerer is a vision-language model that takes the query plus the top-k retrieved pages as images and writes an answer with evidence regions (bounding boxes or page references). Qwen3-VL-30B, Gemini 2.5 Pro, and InternVL3 are the 2026 frontier choices. For equations and scientific notation, an OCR fallback (Nougat, dots.ocr) is spliced in as an optional text channel.
+回答器是一个视觉语言模型，它会把查询和检索到的 top-k 页面图像一起输入，然后输出带有证据区域（bounding box 或页码引用）的答案。Qwen3-VL-30B、Gemini 2.5 Pro 和 InternVL3 是 2026 年的前沿选择。对于公式和科学记号，可以再接一个 OCR 回退（Nougat、dots.ocr）作为可选文本通道。
 
-Evaluation is a two-dimensional matrix. One axis: content type (plain text paragraphs, dense tables, bar/line charts, handwritten notes, equations). Other axis: retrieval approach (vision-first late interaction vs OCR-then-text vs hybrid). Each cell gets nDCG@5 and answer accuracy. The report is the deliverable.
+评估本质上是一个二维矩阵。一个轴是内容类型（纯文本段落、密集表格、柱状 / 折线图、手写笔记、公式）；另一个轴是检索方式（视觉优先晚交互、OCR-then-text、混合式）。每个格子都要给出 nDCG@5 和答案准确率。最终报告就是交付物。
 
-## Architecture
+## 架构
 
 ```
 PDFs -> page renderer (PyMuPDF, 180 DPI)
@@ -50,34 +50,34 @@ query ----+----> retrieve top-k pages (MaxSim)
 
 ## Stack
 
-- Page rendering: PyMuPDF (fitz) at 180 DPI, portrait-normalized
-- Late-interaction model: ColQwen2.5-v0.2 or ColQwen3-omni (vidore team on Hugging Face)
-- Index: Vespa with multi-vector field, or Qdrant multi-vector, or AstraDB with MaxSim
-- Pruning: DocPruner 2026 policy (keep high-variance patches, 50% compression at < 0.5% accuracy loss)
-- OCR fallback (equations / dense tables): dots.ocr or Nougat
-- VLM answerer: Qwen3-VL-30B self-hosted or Gemini 2.5 Pro hosted; InternVL3 as fallback
-- Evaluation: ViDoRe v3 benchmark, M3DocVQA for multi-page reasoning
-- Viewer UI: Next.js 15 with canvas overlay for evidence regions
+- 页面渲染：PyMuPDF（fitz），180 DPI，统一为竖版
+- 晚交互模型：ColQwen2.5-v0.2 或 ColQwen3-omni（Hugging Face 上的 vidore 团队版本）
+- 索引：带多向量字段的 Vespa、Qdrant multi-vector，或带 MaxSim 的 AstraDB
+- 裁剪：DocPruner 2026 策略（保留高方差 patch，在准确率损失小于 0.5% 的前提下压缩 50%）
+- OCR 回退（公式 / 密集表格）：dots.ocr 或 Nougat
+- VLM 回答器：自托管 Qwen3-VL-30B 或托管 Gemini 2.5 Pro；InternVL3 作为回退
+- 评测：ViDoRe v3 基准、用于多页推理的 M3DocVQA
+- 查看器 UI：带证据区域 canvas 覆盖层的 Next.js 15
 
 ## Build It
 
-1. **Ingest.** Walk a corpus of 10k PDF pages across 10-Ks, scientific papers, and scanned documents. Render each page to a 1536x2048 PNG. Persist `{doc_id, page_num, image_path}`.
+1. **采集。** 遍历一个包含 10-K、科研论文和扫描文档的 1 万页 PDF 语料。把每页渲染成 1536x2048 的 PNG，并持久化 `{doc_id, page_num, image_path}`。
 
-2. **Embed.** Run ColQwen2.5-v0.2 on each page image. Output shape ~2048 patch embeddings of dim 128. Apply DocPruner to keep the highest-signal half. Write to Vespa multi-vector field or Qdrant multi-vector.
+2. **嵌入。** 对每一页图像运行 ColQwen2.5-v0.2。输出形状约为 2048 个、维度 128 的 patch embedding。再用 DocPruner 保留信号最强的一半。写入 Vespa multi-vector 字段或 Qdrant multi-vector。
 
-3. **Query.** For each incoming query, embed with the query tower (token-level embeddings). Run MaxSim against the index: for every query token, take the max dot-product over page patch embeddings, sum. Return top-k pages.
+3. **查询。** 对每个新查询，用查询塔做 embedding（token 级 embedding）。再对索引运行 MaxSim：对每个查询 token，在页面 patch embedding 上取最大点积，再求和。返回 top-k 页面。
 
-4. **Synthesize.** Call Qwen3-VL-30B with the query and the top-5 page images. Prompt: "Answer using only the supplied pages. Cite each claim by (doc_id, page) and name the region (figure, table, paragraph)."
+4. **合成答案。** 用查询和 top-5 页面图像调用 Qwen3-VL-30B。提示词：“只使用提供的页面来回答。每条结论都用 (doc_id, page) 引用，并标明区域类型（figure、table、paragraph）。”
 
-5. **Evidence regions.** Post-process the answer to extract cited regions. If the VLM emits bounding boxes (Qwen3-VL does), render them as overlays in the viewer.
+5. **证据区域。** 对答案做后处理，提取引用到的区域。如果 VLM 输出了 bounding box（Qwen3-VL 会这样），就在查看器里把它们画成覆盖层。
 
-6. **OCR fallback.** For pages identified as equation-dense (heuristic on image variance), run Nougat or dots.ocr and pass the OCR text as an extra channel alongside the image.
+6. **OCR 回退。** 对于被判定为公式密集的页面（基于图像方差的启发式判断），运行 Nougat 或 dots.ocr，并把 OCR 文本作为额外通道与图像一起输入。
 
-7. **Eval.** Run ViDoRe v3 (retrieval nDCG@5) and M3DocVQA (multi-page QA accuracy). Also run OCR-then-text pipeline on the same corpus with the same synthesizer. Produce a content-type × approach matrix.
+7. **评测。** 运行 ViDoRe v3（检索 nDCG@5）和 M3DocVQA（多页问答准确率）。同时在同一语料上跑 OCR-then-text 流水线，使用相同的答案器。输出一个内容类型 × 方案 的矩阵。
 
-8. **UI.** Streamlit prototype first; Next.js 15 production viewer with page-by-page evidence-region overlay.
+8. **UI。** 先做 Streamlit 原型；再做带逐页证据区域覆盖层的 Next.js 15 生产版查看器。
 
-## Use It
+## 使用示例
 
 ```
 $ doc-qa ask "what was the 2024 operating margin change for segment EMEA?"
@@ -90,50 +90,50 @@ answer:
 [viewer]     open with highlighted bounding boxes overlaid on p.88 Table 4
 ```
 
-## Ship It
+## 交付
 
-`outputs/skill-doc-qa.md` describes the deliverable: a vision-first multimodal document QA system tuned to a specific corpus and evaluated against an OCR-then-text baseline on ViDoRe v3.
+`outputs/skill-doc-qa.md` 描述的是最终交付物：一个以视觉优先为核心的多模态文档问答系统，针对特定语料调优，并在 ViDoRe v3 上和 OCR-then-text 基线做评估对比。
 
-| Weight | Criterion | How it is measured |
+| 权重 | 标准 | 评测方式 |
 |:-:|---|---|
-| 25 | ViDoRe v3 / M3DocVQA accuracy | Benchmark numbers vs OCR-text baseline and published leaderboard |
-| 20 | Evidence-region grounding | Fraction of cited regions that actually contain the answer span |
-| 20 | Storage and latency engineering | DocPruner compression ratio, index p95, answer p95 |
-| 20 | Multi-page reasoning | Accuracy on a hand-labeled 100-question multi-page set |
-| 15 | Source-inspection UX | Viewer clarity, overlay fidelity, side-by-side comparison tools |
+| 25 | ViDoRe v3 / M3DocVQA 准确率 | 相对 OCR-文本基线和公开排行榜的基准分数 |
+| 20 | 证据区域落地 | 被引用区域里真正包含答案片段的比例 |
+| 20 | 存储与延迟工程 | DocPruner 压缩率、索引 p95、答案 p95 |
+| 20 | 多页推理 | 在一个人工标注的 100 题多页集合上的准确率 |
+| 15 | 源文检查 UX | 查看器清晰度、覆盖层保真度、并排对比工具 |
 | **100** | | |
 
-## Exercises
+## 练习
 
-1. Measure ColQwen2.5-v0.2 vs ColQwen3-omni on the same corpus. Which pages does one get right and the other miss? Add a "content class" tag to the index to route by type.
+1. 在同一语料上比较 ColQwen2.5-v0.2 和 ColQwen3-omni。哪类页面一个能答对、另一个会漏掉？给索引加一个“内容类别”标签，用来按类型路由。
 
-2. Prune embeddings aggressively (75%, 90%). Find the compression cliff: the point where ViDoRe nDCG@5 drops below the OCR baseline.
+2. 激进裁剪 embedding（75%、90%）。找出压缩悬崖：也就是 ViDoRe nDCG@5 掉到 OCR 基线以下的临界点。
 
-3. Build a hybrid: run OCR-then-text and ColQwen in parallel, fuse with RRF, rerank with a cross-encoder. Does the hybrid beat either alone? Where does it help most?
+3. 做一个混合方案：并行运行 OCR-then-text 和 ColQwen，用 RRF 融合，再用 cross-encoder 重排。这个混合方案能不能超过单独方案？在哪些场景最有帮助？
 
-4. Swap Qwen3-VL-30B for a smaller VLM (Qwen2.5-VL-7B). Measure the accuracy-per-dollar curve.
+4. 把 Qwen3-VL-30B 换成更小的 VLM（Qwen2.5-VL-7B）。测准确率 / 成本曲线。
 
-5. Add handwritten-note support. Render the handwriting corpus, embed with ColQwen, measure retrieval. Compare against a handwriting OCR pipeline.
+5. 加上手写笔记支持。渲染手写语料，用 ColQwen 做 embedding 并测检索效果，再和手写 OCR 流水线比较。
 
-## Key Terms
+## 关键术语
 
-| Term | What people say | What it actually means |
+| 术语 | 大家怎么说 | 实际含义 |
 |------|-----------------|------------------------|
-| Late interaction | "ColPali-style retrieval" | Query tokens score against page patches independently; MaxSim aggregates |
-| Multi-vector | "Per-patch embedding" | Each document has many vectors, not one pooled vector |
-| MaxSim | "Late-interaction scoring" | For every query token, take max similarity over document vectors; sum |
-| DocPruner | "Patch compression" | 2026 pruning that keeps 50% of patches with negligible accuracy loss |
-| ViDoRe v3 | "Document-retrieval benchmark" | The 2026 standard for measuring visual-document retrieval |
-| Evidence region | "Cited bounding box" | A bbox on the source page that localizes the answer span |
-| OCR fallback | "Equation channel" | Text pipeline used alongside vision for equation- or table-heavy pages |
+| 晚交互 | “ColPali 风格检索” | 查询 token 分别和页面 patch 打分，最后由 MaxSim 聚合 |
+| 多向量 | “逐 patch embedding” | 每个文档有很多向量，而不是一个 pooled vector |
+| MaxSim | “晚交互打分” | 对每个查询 token，在文档向量上取最大相似度再求和 |
+| DocPruner | “Patch 压缩” | 2026 年的裁剪方法，在几乎不损失准确率的前提下保留 50% 的 patch |
+| ViDoRe v3 | “文档检索基准” | 2026 年衡量视觉文档检索的标准基准 |
+| 证据区域 | “引用 bounding box” | 源页面上定位答案片段的 bbox |
+| OCR 回退 | “公式通道” | 在视觉之外、为公式或表格密集页面配套使用的文本流水线 |
 
-## Further Reading
+## 延伸阅读
 
-- [ColPali (Illuin Tech) repository](https://github.com/illuin-tech/colpali) — reference late-interaction doc retrieval
-- [ColPali paper (arXiv:2407.01449)](https://arxiv.org/abs/2407.01449) — the foundational method paper
-- [ColQwen family on Hugging Face](https://huggingface.co/vidore) — production-ready checkpoints
-- [M3DocRAG (Adobe)](https://arxiv.org/abs/2411.04952) — multi-page multimodal RAG baseline
-- [Vespa multi-vector tutorial](https://docs.vespa.ai/en/colpali.html) — reference serving stack
-- [Qdrant multi-vector support](https://qdrant.tech/documentation/concepts/vectors/#multivectors) — alternate index
-- [AstraDB multi-vector](https://docs.datastax.com/en/astra-db-serverless/databases/vector-search.html) — alternate managed index
-- [Nougat OCR](https://github.com/facebookresearch/nougat) — equation-capable OCR fallback
+- [ColPali（Illuin Tech）仓库](https://github.com/illuin-tech/colpali) — 晚交互文档检索参考实现
+- [ColPali 论文（arXiv:2407.01449）](https://arxiv.org/abs/2407.01449) — 基础方法论文
+- [Hugging Face 上的 ColQwen 系列](https://huggingface.co/vidore) — 可直接用于生产的 checkpoint
+- [M3DocRAG（Adobe）](https://arxiv.org/abs/2411.04952) — 多页多模态 RAG 基线
+- [Vespa multi-vector 教程](https://docs.vespa.ai/en/colpali.html) — 参考服务栈
+- [Qdrant multi-vector 支持](https://qdrant.tech/documentation/concepts/vectors/#multivectors) — 另一种索引方案
+- [AstraDB multi-vector](https://docs.datastax.com/en/astra-db-serverless/databases/vector-search.html) — 另一种托管索引方案
+- [Nougat OCR](https://github.com/facebookresearch/nougat) — 支持公式的 OCR 回退

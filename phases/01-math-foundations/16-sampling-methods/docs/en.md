@@ -1,11 +1,11 @@
-# Sampling Methods
+# 采样方法与 Monte Carlo 算法
 
-> Sampling is how AI explores the space of possibilities.
+> 在复杂分布中抽取代表性样本。掌握拒绝采样、重要性采样、MCMC 与重参数化技巧。
 
-**Type:** Build
+**Type:** 构建
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 06-07 (Probability, Bayes' Theorem)
-**Time:** ~120 minutes
+**Prerequisites:** Phase 1, Lesson 06 (概率论与概率分布)
+**Time:** ~50 分钟
 
 ## Learning Objectives
 

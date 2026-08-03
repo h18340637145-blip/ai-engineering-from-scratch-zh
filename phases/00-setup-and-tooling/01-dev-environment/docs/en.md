@@ -1,13 +1,13 @@
-# Dev Environment
+# 开发环境搭建
 
-> Your tools shape your thinking. Set them up once, set them up right.
+> 每一个 AI 工程里程碑都始于一个稳健、可复现的开发环境。搞定驱动、包管理器与项目结构。
 
-**Type:** Build
-**Languages:** Python, Node.js, Rust
-**Prerequisites:** None
-**Time:** ~45 minutes
+**Type:** 构建
+**Languages:** Python, Bash
+**Prerequisites:** 无
+**Time:** ~45 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Set up Python 3.11+, Node.js 20+, and Rust toolchains from scratch
 - Configure virtual environments and package managers for reproducible builds

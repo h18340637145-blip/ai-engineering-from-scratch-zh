@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does 'optimization' mean in the context of training a neural network?",
-      "options": ["Making the code run faster", "Finding the model weights that minimize the loss function", "Reducing the number of parameters in the model", "Choosing the best hardware for training"],
-      "correct": 1,
-      "explanation": "Training a neural network IS optimization. The loss function measures how wrong the model is, and optimization finds the weight values that make it as small as possible."
+      "question": "梯度下降法中学习率（Learning Rate）过大或过小分别会导致什么现象？",
+      "options": [
+        "过大导致极小值点无法收敛甚至发散发散；过小导致收敛速度极慢",
+        "过大导致内存溢出；过小导致显存不足",
+        "过大使损失函数变为 0；过小引发 NaN",
+        "没有任何区别"
+      ],
+      "correct": 0,
+      "explanation": "学习率是步长系数。步子太大容易在极小值两侧剧烈震荡发散，步子太小则需要极漫长的训练迭代。"
     },
     {
       "stage": "pre",
-      "question": "What happens if the learning rate is too large during gradient descent?",
-      "options": ["Training converges faster to the global minimum", "The optimizer overshoots the minimum and the loss diverges (bounces or increases)", "The gradients become zero", "The model automatically reduces the learning rate"],
+      "question": "随机梯度下降（SGD）相比全批量梯度下降（Batch GD）的核心优势是什么？",
+      "options": [
+        "SGD 能保证损失函数单调递减",
+        "SGD 每次仅用小批量（Mini-batch）估计梯度，单步计算极快，且引入随机噪声有助于跳出浅局部极小值与鞍点",
+        "SGD 不需要计算梯度",
+        "SGD 不需要设定学习率"
+      ],
       "correct": 1,
-      "explanation": "A learning rate that is too large causes each step to overshoot the valley, potentially bouncing between walls or diverging entirely. The loss increases instead of decreasing."
+      "explanation": "Batch GD 每次需扫描完整数据集，大数据集下极慢；SGD/Mini-batch SGD 带来了极高的吞吐与优良的泛化效果。"
     },
     {
       "stage": "post",
-      "question": "How does Adam differ from vanilla gradient descent?",
-      "options": ["Adam uses a fixed learning rate while GD uses adaptive rates", "Adam tracks running averages of gradients and squared gradients to give each weight its own adaptive learning rate", "Adam computes exact second derivatives while GD uses first derivatives", "Adam processes the full dataset per step while GD uses mini-batches"],
-      "correct": 1,
-      "explanation": "Adam maintains per-weight first moment (gradient direction) and second moment (gradient magnitude) estimates. Dividing by sqrt(second moment) gives small steps for weights with large gradients and large steps for weights with small gradients."
+      "question": "Adam 优化器核心结合了哪两种技术的优势？",
+      "options": [
+        "动量法（Momentum: 跟踪一阶导数均值）与 RMSProp（跟踪二阶导数均值以自适应调整各参数学习率）",
+        "牛顿法与拟牛顿法",
+        "L1 正则化与 L2 正则化",
+        "网格搜索与随机搜索"
+      ],
+      "correct": 0,
+      "explanation": "Adam 通过滑动平均维护一阶矩（动量）与二阶矩（自适应缩放），对稀疏梯度与平坦/陡峭曲面均有优异表现。"
     },
     {
       "stage": "post",
-      "question": "Why is the noise in mini-batch SGD considered beneficial rather than just a nuisance?",
-      "options": ["Noise reduces memory usage during training", "Noise helps the optimizer escape shallow local minima and saddle points that a noiseless optimizer would get stuck in", "Noise is not beneficial; it always slows convergence", "Noise makes the loss function convex"],
+      "question": "在训练深层网络时，动量项（Momentum, 如 $\\gamma=0.9$）发挥什么作用？",
+      "options": [
+        "减少显存开销",
+        "冲淡梯度的随机震荡，在坡度平缓但方向一致的维度加速前进",
+        "自动终止训练",
+        "将梯度转换为二值"
+      ],
       "correct": 1,
-      "explanation": "The stochastic noise from random mini-batches provides random perturbations that can push the optimizer out of shallow local minima and saddle points, leading to better generalization."
+      "explanation": "动量模拟了物理世界小球滚动惯性，累积历史方向，减小横向震荡，加速纵向平稳下降。"
     },
     {
       "stage": "post",
-      "question": "What does a cosine annealing learning rate schedule do?",
-      "options": ["Increases the learning rate throughout training following a cosine curve", "Starts with a high learning rate and smoothly decreases it following a cosine curve, with optional warmup", "Alternates the learning rate between two fixed values", "Sets the learning rate to the cosine of the current epoch number"],
-      "correct": 1,
-      "explanation": "Cosine annealing smoothly reduces the learning rate from lr_max to lr_min following a half-cosine curve. This provides large steps early for fast progress and small steps late for fine convergence."
+      "question": "学习率衰减策略（Learning Rate Schedule, 如余弦退火 Cosine Annealing）的核心思想是？",
+      "options": [
+        "在训练初期使用较大步长快速探索解空间，后期逐渐减小步长以精细收敛到优良极小值点",
+        "训练全程保持学习率恒定",
+        "随时间推移不断增大学习率",
+        "随机跳跃变化学习率"
+      ],
+      "correct": 0,
+      "explanation": "动态学习率规划平衡了前期快速探索（Exploration）与后期平稳收敛（Exploitation）的要求。"
     }
   ]
 }

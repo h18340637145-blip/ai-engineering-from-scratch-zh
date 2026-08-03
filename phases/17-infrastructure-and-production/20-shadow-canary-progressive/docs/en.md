@@ -1,26 +1,26 @@
-# Shadow Traffic, Canary Rollout, and Progressive Deployment for LLMs
+# 渐进式部署：Shadow 流量复制与 Canary 金丝雀发布
 
-> LLM rollouts combine the hardest parts of software deployment: no unit tests, diffuse failure modes, delayed signals. The sequence is (1) shadow mode — duplicate prod requests to candidate model, log, compare with zero user impact; catches obvious distribution issues but is not a quality guarantee; (2) canary rollout — progressive traffic shift 10% → 25% → 50% → 75% → 100% with gates at each step; track latency percentiles, cost/request, error/refusal rate, output length distribution, user-feedback rate; (3) A/B testing for distinct alternatives after stability confirmed. Non-determinism is irreducible — up to 15% accuracy variation across runs with identical inputs due to GPU FP non-associativity plus batch-size variance. Cost is a variable, not constant — a 20% better model can be 3x more expensive per call. Rollback speed is decisive: if rollback requires redeploy, you are too slow. Policy lives in config/flags; model lives in registry with pinned digests; rollback = flip policy + revert threshold + pin old model in seconds.
+> 无风险更新模型版本：利用 Shadow 流量实时影子测试与 Canary 渐进切流保障服务稳定性。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy canary-progression simulator)
-**Prerequisites:** Phase 17 · 13 (Observability), Phase 17 · 21 (A/B Testing)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 19
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Distinguish shadow mode (zero-impact compare), canary (live traffic progressive), and A/B (stability-confirmed comparison).
 - Enumerate five LLM-specific canary metrics (latency, cost/request, error/refusal, output-length distribution, user feedback).
 - Explain why LLM non-determinism (up to 15%) changes what "stable" means in a rollout.
 - Design a rollback path that takes seconds (policy flip) not hours (redeploy).
 
-## The Problem
+## 问题切入
 
 You ship a new model. Offline evals show 3% accuracy gain. You flip it on in production. Within 24 hours, cost is up 40%, user thumbs-down is up 8%, three customer tickets report "weird answers." You roll back. Redeploy takes 3 hours. Your weekend is ruined.
 
 Every piece of that was avoidable. Shadow mode would have caught the 40% cost spike before any user saw it. Canary would have stopped at 10% when thumbs-down moved. Policy-flag rollback would have taken 30 seconds. The discipline is what fills in the gap between "offline evals look good" and "real users are happy."
 
-## The Concept
+## 核心概念
 
 ### Shadow mode
 
@@ -91,15 +91,15 @@ If the new model is distinctly different (different behavior, different cost cur
 - Cost gate: >20% above baseline is a breach.
 - Rollback: seconds, not hours.
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates a canary rollout with injected regressions. Reports which stage the rollout halts at and which gate triggered.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-rollout-runbook.md`. Given candidate model, baseline, and risk tolerance, designs shadow→canary→100% plan.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Inject a 25% cost regression. At which stage does the canary halt?
 2. Your new model has 3% accuracy gain offline but cost/request is +18%. Is it a ship? Depends on the policy — write both paths.
@@ -107,7 +107,7 @@ This lesson produces `outputs/skill-rollout-runbook.md`. Given candidate model, 
 4. Non-determinism shows ±7% on your eval. Set canary gates so you don't false-alarm. What multipliers do you use?
 5. Shadow mode catches a 40% cost spike before canary. Write the alert rule that fires in shadow.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -121,7 +121,7 @@ This lesson produces `outputs/skill-rollout-runbook.md`. Given candidate model, 
 | KServe | "inference K8s" | Model serving with canary primitives |
 | Istio weighted | "mesh split" | Service-mesh traffic splitter |
 
-## Further Reading
+## 深入阅读
 
 - [TianPan — Releasing AI Features Without Breaking Production](https://tianpan.co/blog/2026-04-09-llm-gradual-rollout-shadow-canary-ab-testing)
 - [MarkTechPost — Safely Deploying ML Models](https://www.marktechpost.com/2026/03/21/safely-deploying-ml-models-to-production-four-controlled-strategies-a-b-canary-interleaved-shadow-testing/)

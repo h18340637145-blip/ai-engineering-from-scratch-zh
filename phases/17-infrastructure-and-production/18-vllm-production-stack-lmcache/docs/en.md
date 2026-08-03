@@ -1,20 +1,20 @@
-# Production Serving Stack — KV Offloading and Cache-Aware Routing
+# vLLM 生产技术栈与 LMCache 跨节点缓存共享
 
-> A production serving stack wires router, engines, and observability into one Kubernetes deployment — and treats KV cache as a resource that can leave the GPU. KV offloading extracts KV cache out of GPU memory and reuses it across queries and engines (CPU DRAM, then disk/Ceph). vLLM's production-stack is the reference deployment; LMCache is the offloading layer. The vLLM 0.11.0 KV Offloading Connector (January 2026) makes this asynchronous and pluggable via the Connector API (v0.9.0+). The offload path is usually hidden from the request path, though cache misses and promotions can add end-to-end latency. LMCache is valuable even without shared prefixes — when a GPU runs out of KV slots, preempted requests can be restored from CPU instead of recomputing prefill. Published benchmarks on 16x H100 (80GB HBM) across 4 a3-highgpu-4g: when KV cache exceeds HBM, both native CPU offload and LMCache substantially improve throughput; at low KV footprint, all configs match baseline with small overhead.
+> 结合 LMCache 实现 vLLM 跨节点与持久化存储的 KV Cache 共享，实现接近零延迟的极长 Context 响应。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy KV-spill simulator)
-**Prerequisites:** Phase 17 · 04 (Serving Engine Internals), Phase 17 · 06 (SGLang/RadixAttention)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 04, Lesson 06
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Diagram the vLLM production-stack layers: router, engines, KV offload, observability.
 - Explain the KV Offloading Connector API (v0.9.0+) and how the 0.11.0 asynchronous path hides offload latency.
 - Quantify when LMCache CPU-DRAM helps (KV > HBM) vs adds overhead (KV small enough to fit HBM).
 - Pick between native vLLM CPU offload and LMCache connector given deployment constraints.
 
-## The Problem
+## 问题切入
 
 Your vLLM serving shows GPUs at 100% HBM with preemption events whenever concurrency climbs. Requests get evicted, requeued, and you re-prefill the same 2K-token prompt four times in a minute. GPU compute is spent on redundant prefills; goodput is well below raw throughput.
 
@@ -22,7 +22,7 @@ Adding more GPUs costs linearly. Adding more HBM is not possible. But CPU DRAM i
 
 LMCache extracts KV cache to CPU DRAM so preempted requests recover fast, and repeated prefixes across engines share cache without each engine re-prefilling.
 
-## The Concept
+## 核心概念
 
 ### vLLM production-stack
 
@@ -86,15 +86,15 @@ Phase 17 · 17 disaggregated serving + LMCache compounds: KV transfers from pref
 zero-sharding
 ```
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates a preemption-heavy workload with and without LMCache. Reports re-prefills avoided, throughput gain, and the break-even HBM utilization.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-vllm-stack-decider.md`. Given workload shape and vLLM deployment, decides native vs LMCache vs neither.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. At what HBM utilization does LMCache start paying?
 2. A tenant shares a 6K-token system prompt across 200 queries/hour. Compute expected LMCache savings per tenant.
@@ -102,7 +102,7 @@ This lesson produces `outputs/skill-vllm-stack-decider.md`. Given workload shape
 4. LMCache stores to Ceph on spinning disk. For a 4K-token KV at 70B FP8 (500 MB), what's the read time vs re-prefill?
 5. Argue whether the vLLM 0.11.0 asynchronous path is "free" — where does the overhead hide?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -115,7 +115,7 @@ This lesson produces `outputs/skill-vllm-stack-decider.md`. Given workload shape
 | Prefix reuse | "same system prompt" | Multiple queries share beginning; cache hit |
 | Ceph tier | "disk tier" | Durable storage below DRAM in the cache hierarchy |
 
-## Further Reading
+## 深入阅读
 
 - [vLLM Blog — KV Offloading Connector (Jan 2026)](https://blog.vllm.ai/2026/01/08/kv-offloading-connector.html)
 - [vLLM Production Stack GitHub](https://github.com/vllm-project/production-stack) — Helm chart + operator.

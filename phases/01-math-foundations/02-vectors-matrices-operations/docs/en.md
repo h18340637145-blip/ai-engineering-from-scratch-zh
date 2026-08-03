@@ -1,11 +1,11 @@
-# Vectors, Matrices & Operations
+# 向量与矩阵运算
 
-> Every neural network is just matrix multiplication with extra steps.
+> 从点积到矩阵乘法。掌握机器学习中大规模张量计算的基础代数工具。
 
-**Type:** Build
-**Languages:** Python, Julia
-**Prerequisites:** Phase 1, Lesson 01 (Linear Algebra Intuition)
-**Time:** ~60 minutes
+**Type:** 构建
+**Languages:** Python
+**Prerequisites:** Phase 1, Lesson 01 (线性代数直觉)
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

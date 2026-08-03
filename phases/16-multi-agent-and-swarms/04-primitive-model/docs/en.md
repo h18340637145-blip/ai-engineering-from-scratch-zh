@@ -1,11 +1,11 @@
-# The Multi-Agent Primitive Model
+# 多 Agent 基础原语与交互模式
 
-> Four primitives, nothing more — the agent, the handoff, the shared state, the orchestrator — span a four-dimensional design space, and the major multi-agent frameworks shipping in 2026 (AutoGen, LangGraph, CrewAI, OpenAI Agents SDK, Microsoft Agent Framework) are points in it. This lesson builds them from zero, runs a toy system on all four, then maps every major framework onto the same axes so you can read any new release in one paragraph.
+> 构建多 Agent 系统的基本抽象：Agent 实例、消息信封、状态变迁与协同调度器。
 
 **Type:** Learn
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 (Agent Engineering), Phase 16 · 01 (Why Multi-Agent)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 16 Lesson 01
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -111,7 +111,7 @@ Once the primitives are fixed, the remaining design decisions are:
 
 All implementable on top of the primitives. None of them are new primitives.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements the four primitives in ~150 lines of stdlib Python. No real LLM — each agent is a scripted policy so the focus stays on the coordination structure.
 
@@ -132,17 +132,17 @@ python3 code/main.py
 
 Expected output: three orchestrator runs, one per pattern. Each prints the final message pool. The handoff-driven run reaches fewer agents if the researcher decides it is done early — that is the LLM-routing tradeoff in miniature.
 
-## Use It
+## 应用场景
 
 `outputs/skill-primitive-mapper.md` is a skill that reads any multi-agent codebase or framework doc and returns the four-primitive mapping. Run it on a new framework release to get a one-paragraph understanding before reading docs in depth.
 
-## Ship It
+## 产出成果
 
 Before adopting a new framework, write the primitive mapping for it. If you cannot, the docs are incomplete or the framework is inventing a fifth primitive (rare — check for a shared-state flavor you have not seen).
 
 Pin the mapping in your architecture doc. When a new team member joins, send them the mapping before the API docs. When framework versions change, diff the mapping, not the changelog.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py` three times with different agent policies. Observe how the orchestrator choice changes which agents run.
 2. Implement a fourth orchestrator type: a queue-driven one where agents poll shared state for work. What deadlock can happen, and how do you detect it?
@@ -150,7 +150,7 @@ Pin the mapping in your architecture doc. When a new team member joins, send the
 4. Read the OpenAI Swarm cookbook (https://developers.openai.com/cookbook/examples/orchestrating_agents). Identify which of the four primitives Swarm makes most ergonomic, and which one it pushes to the caller.
 5. Find one framework in this table that hides shared state entirely. Explain what breaks when agents need to coordinate across handoffs without re-reading history.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -163,7 +163,7 @@ Pin the mapping in your architecture doc. When a new team member joins, send the
 | Projected state | "Scoped view" | Role-specific view into shared state. Scales, requires schema design. |
 | Speaker selection | "Who talks next" | Orchestrator pattern where a function (often an LLM) picks the next agent from a group. |
 
-## Further Reading
+## 深入阅读
 
 - [OpenAI cookbook: Orchestrating Agents — Routines and Handoffs](https://developers.openai.com/cookbook/examples/orchestrating_agents) — the clearest articulation of handoff-driven orchestration
 - [AutoGen stable docs](https://microsoft.github.io/autogen/stable/) — GroupChat + speaker selection is the reference for LLM-selected orchestration

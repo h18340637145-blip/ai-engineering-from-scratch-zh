@@ -1,24 +1,24 @@
-# Agent Observability: Langfuse, Phoenix, Opik
+# Agent 可观测性平台：LangSmith, Phoenix 与 Arize
 
-> Three open-source agent observability platforms dominate 2026. Langfuse (MIT) — 6M+ installs/month, tracing + prompt management + evals + session replay. Arize Phoenix (Elastic 2.0) — deep agent-specific evals, RAG relevancy, OpenInference auto-instrumentation. Comet Opik (Apache 2.0) — automated prompt optimization, guardrails, LLM-judge hallucination detection.
+> 对比主流 Agent 可观测性与调试平台：在 LangSmith、Phoenix 与 Arize 中实现运行轨迹可视化与在线评估。
 
 **Type:** Learn
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 23 (OTel GenAI)
-**Time:** ~45 minutes
+**Prerequisites:** Phase 14 Lesson 23
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name the three top open-source agent observability platforms and their licenses.
 - Distinguish what each one is strongest at: Langfuse (prompt mgmt + sessions), Phoenix (RAG + auto-instrumentation), Opik (optimization + guardrails).
 - Explain why 89% of organizations report having agent observability in place by 2026.
 - Implement a stdlib trace-to-dashboard pipeline with LLM-judge evaluation.
 
-## The Problem
+## 问题切入
 
 OTel GenAI (Lesson 23) gives you the schema. You still need the platform that ingests spans, runs evaluations, stores prompt versions, and surfaces regressions. The three contenders each emphasize different parts of the lifecycle.
 
-## The Concept
+## 核心概念
 
 ### Langfuse (MIT)
 
@@ -63,7 +63,7 @@ Per Maxim (2026 field analysis): 89% of organizations have agent observability i
 - **Self-rolled LLM-judge without grounding.** CRITIC pattern (Lesson 05) applies — judges need external tools for factual verification.
 - **Prompt versions not tied to traces.** When prod regresses, you cannot bisect to the prompt that caused it.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements a stdlib trace collector + LLM-judge evaluator:
 
@@ -80,18 +80,18 @@ python3 code/main.py
 
 Output: per-session eval scores and failure categorization matching what Langfuse/Phoenix/Opik would show.
 
-## Use It
+## 应用场景
 
 - **Langfuse** self-hosted or cloud; wire via OTel or their SDK.
 - **Arize Phoenix** self-hosted; auto-instrument OpenInference.
 - **Comet Opik** self-hosted or cloud; automated optimization loop.
 - **Datadog LLM Observability** for mixed ops+ML teams that already run Datadog.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-obs-platform-wiring.md` picks a platform and wires traces + evals + prompt versions into an existing agent.
 
-## Exercises
+## 练习题
 
 1. Export a week of OTel traces to Langfuse cloud (free tier). Which sessions failed? Why?
 2. Write an LLM-judge rubric for your domain (factual correctness, tone, scope adherence). Test on 50 traces.
@@ -99,7 +99,7 @@ Output: per-session eval scores and failure categorization matching what Langfus
 4. Read Opik's guardrail docs. Wire a PII redaction guardrail to one of your agent runs.
 5. Benchmark the three on your corpus. Ignore vendor-published numbers; measure your own.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -111,7 +111,7 @@ Output: per-session eval scores and failure categorization matching what Langfus
 | Trace clustering | "Behavioral grouping" | Cluster similar runs for drift detection |
 | Guardrail enforcement | "Policy at log time" | PII/toxicity/scope checks on logged content |
 
-## Further Reading
+## 深入阅读
 
 - [Langfuse docs](https://langfuse.com/) — tracing, evals, prompt mgmt
 - [Arize Phoenix docs](https://docs.arize.com/phoenix) — auto-instrumentation, drift

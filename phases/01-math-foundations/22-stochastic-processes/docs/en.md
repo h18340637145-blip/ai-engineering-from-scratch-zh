@@ -1,11 +1,11 @@
-# Stochastic Processes
+# 随机过程与马尔可夫链
 
-> Randomness with structure. The math behind random walks, Markov chains, and diffusion models.
+> 建模随时间演化的随机系统。掌握马尔可夫无记忆性、平稳分布与扩散过程。
 
-**Type:** Learn
+**Type:** 学习
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 06-07 (probability, Bayes)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 1, Lesson 06 (概率论与概率分布)
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

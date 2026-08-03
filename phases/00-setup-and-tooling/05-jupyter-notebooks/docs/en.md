@@ -1,13 +1,13 @@
-# Jupyter Notebooks
+# Jupyter Notebook 最佳实践
 
-> Notebooks are the lab bench of AI engineering. You prototype here, then move what works into production.
+> 交互式探索非常适合实验，但生产代码需要严谨性。掌握 Notebook 技巧、魔法命令以及重构流程。
 
-**Type:** Build
-**Languages:** Python
-**Prerequisites:** Phase 0, Lesson 01
-**Time:** ~30 minutes
+**Type:** 构建
+**Languages:** Python, Jupyter
+**Prerequisites:** 无
+**Time:** ~35 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Install and launch JupyterLab, Jupyter Notebook, or VS Code with the Jupyter extension
 - Use magic commands (`%timeit`, `%%time`, `%matplotlib inline`) to benchmark and visualize inline

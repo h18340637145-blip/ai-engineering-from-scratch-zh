@@ -2,63 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the 'shape' of a tensor describe?",
+      "question": "在深度学习框架中，张量（Tensor）与阶数（Rank/Order）的关系是？",
       "options": [
-        "A tuple listing the size along each axis",
-        "The total number of elements in the tensor",
-        "The data type of the tensor elements",
-        "The memory address of the tensor"
+        "0 阶张量是标量，1 阶张量是向量，2 阶张量是矩阵，N 阶张量是 N 维数组",
+        "张量阶数必定等于 2",
+        "张量阶数是指张量占用的内存 Gigabytes 数量",
+        "张量只能在 CPU 上计算"
       ],
       "correct": 0,
-      "explanation": "The shape is a tuple listing the size along each axis. For example, a tensor with shape (2, 3, 4) has 2 elements along axis 0, 3 along axis 1, and 4 along axis 2."
+      "explanation": "张量是多维数值数组的通用数学统称，阶数对应其维度的数量（如 RGB 图像张量阶数为 3，形状如 `[C, H, W]`）。"
     },
     {
       "stage": "pre",
-      "question": "In PyTorch, what layout does an image batch tensor use by default?",
+      "question": "爱因斯坦求和约定（Einsum, 如 `torch.einsum('ij,jk->ik', A, B)`）有什么优点？",
       "options": [
-        "NHWC (batch, height, width, channels)",
-        "NCHW (batch, channels, height, width)",
-        "CHWN (channels, height, width, batch)",
-        "WHCN (width, height, channels, batch)"
+        "用简洁、直观的索引符号表达复杂的多维张量乘法、转置、求迹与缩约操作",
+        "自动对张量进行压缩保存",
+        "防止张量发生类型转换",
+        "仅能用于一维向量相加"
       ],
-      "correct": 1,
-      "explanation": "PyTorch defaults to NCHW (channels-first) layout. TensorFlow defaults to NHWC (channels-last). Mismatched layouts cause silent errors or performance issues."
+      "correct": 0,
+      "explanation": "Einsum 规范了索引重复即求和的表达逻辑，避免了显式 reshape/permute/transpose 操作带来的冗余代码。"
     },
     {
       "stage": "post",
-      "question": "What is the result shape when broadcasting tensors of shape (8, 1, 6, 1) and (7, 1, 5)?",
+      "question": "在内存物理底层，张量连续性（Contiguity）对 `view()` 操作有什么限制？",
       "options": [
-        "(8, 7, 6, 1)",
-        "(8, 1, 6, 5)",
-        "(8, 7, 6, 5)",
-        "Broadcasting fails — shapes are incompatible"
+        "经过 `transpose()` 等变维操作后的张量步长（Strides）发生改变，必须先调用 `.contiguous()` 重新在内存连续排布才能调用 `.view()`",
+        "不连续的张量不能参与加法",
+        "`view()` 操作会改变张量中的数值数据",
+        "连续性只对 CUDA 张量生效"
       ],
-      "correct": 2,
-      "explanation": "Align shapes from the right: (8,1,6,1) and (1,7,1,5). Dimensions are compatible when equal or one is 1. The result takes the maximum along each axis: (8, 7, 6, 5)."
+      "correct": 0,
+      "explanation": "`view()` 要求物理内存按行优先连续存放；若不连续，可使用 `.reshape()`（自动在必要时拷贝内存）或显式 `.contiguous().view()`。"
     },
     {
       "stage": "post",
-      "question": "In the einsum expression 'bhtd,bhsd->bhts', what happens to the index 'd'?",
+      "question": "在多头自注意力机制中，将形状 `[B, S, H, D]` 维度置换为 `[B, H, S, D]` 的关键目的？",
       "options": [
-        "It is kept in the output as a new axis",
-        "It is summed over (contracted) because it appears in both inputs but not the output",
-        "It is broadcast across both tensors",
-        "It is transposed between the two input tensors"
+        "将 Head 维度移动到前面，以便并行计算每个 Head 内部的 `[S, D] @ [D, S]` 矩阵乘法注意力权重",
+        "减少张量元素的总数量",
+        "将三维张量降为二维",
+        "消除 NaN 元素"
       ],
-      "correct": 1,
-      "explanation": "In einsum, any index that appears in the inputs but not the output is summed over. Index 'd' appears in both 'bhtd' and 'bhsd' but not in the output 'bhts', so it is contracted (multiplied and summed)."
+      "correct": 0,
+      "explanation": "维度置换（Permute/Transpose）使得多头矩阵乘法能够在 Batch 与 Head 两个维度上进行并行 Batch 特征计算。"
     },
     {
       "stage": "post",
-      "question": "Why does calling .view() fail on a transposed tensor in PyTorch?",
+      "question": "张量切片操作 `tensor[:, None, :]` 或 `unsqueeze(1)` 的作用是什么？",
       "options": [
-        "Transposed tensors have a different data type",
-        "The tensor is non-contiguous in memory after transpose, and view requires contiguous data",
-        "View only works on 2D tensors",
-        "Transpose changes the total number of elements"
+        "在指定索引位置插入一个大小为 1 的新维度（即扩张维度）",
+        "删除指定位置的维度",
+        "翻转张量中的数值顺序",
+        "计算张量的范数"
       ],
-      "correct": 1,
-      "explanation": "Transpose swaps strides without moving data, making the tensor non-contiguous. The .view() operation requires contiguous memory layout. Use .reshape() or call .contiguous() first."
+      "correct": 0,
+      "explanation": "插入单维度（Size-1 dimension）常用于满足广播机制（Broadcasting）的维度匹配要求。"
     }
   ]
 }

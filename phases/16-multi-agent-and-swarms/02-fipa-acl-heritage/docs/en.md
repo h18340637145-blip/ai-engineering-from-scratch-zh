@@ -1,11 +1,11 @@
-# Heritage of FIPA-ACL and Speech Acts
+# FIPA ACL 的遗产：传统 Agent 通信语言在现代 LLM 时代的应用
 
-> Before MCP, before A2A, there was FIPA-ACL. In 2000 the IEEE Foundation for Intelligent Physical Agents ratified an agent communication language with twenty performatives, two content languages, and a set of interaction protocols — contract net, subscribe/notify, request-when. It faded from industry because the ontology overhead was too heavy for the web, but the LLM revival of multi-agent systems is quietly reimplementing the same ideas without the formal semantics: JSON contracts stand in for performatives, natural language stands in for ontologies. This lesson reads FIPA-ACL seriously so you can see which 2026 protocol decisions are reinvention, which are novelty, and where the current wave is going to rediscover problems the 2000s already solved.
+> 探讨经典 FIPA ACL 通信协议在现代大语言模型多 Agent 消息传递中的继承与演进。
 
 **Type:** Learn
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 01 (Why Multi-Agent)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 16 Lesson 01
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -144,7 +144,7 @@ Mitigations without going full ontology:
 
 Reading the table top to bottom, the pattern is: keep the structural primitive, drop the formalism, let LLMs paper over the ambiguity.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements a pure-stdlib FIPA-ACL translator. It encodes and decodes the canonical ACL envelope and shows how every MCP / A2A message shape reduces to the same seven fields. The demo:
 
@@ -160,11 +160,11 @@ python3 code/main.py
 
 The output is a side-by-side trace showing each modern message in both its 2026 JSON form and its FIPA-ACL form, then a round-trip of a contract-net bid. The same protocol primitives survive the round-trip; only the syntax differs.
 
-## Use It
+## 应用场景
 
 `outputs/skill-fipa-mapper.md` is a skill that reads any agent-protocol spec and produces the FIPA-ACL mapping. Use it before adopting a new protocol to answer: "Is this genuinely new, or is it `inform` with JSON syntax?"
 
-## Ship It
+## 产出成果
 
 Do not bring FIPA-ACL back. Bring back its checklist:
 
@@ -176,7 +176,7 @@ Do not bring FIPA-ACL back. Bring back its checklist:
 
 Document these five questions for any new protocol before you ship it into production.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Observe the round-trip encoding. Identify which FIPA performative corresponds to `tools/call`, `resources/read`, and A2A task creation.
 2. Extend the contract-net demo with a `cancel` performative that lets the manager withdraw the task mid-bid. What failure case does `cancel` solve that retries alone do not?
@@ -184,7 +184,7 @@ Document these five questions for any new protocol before you ship it into produ
 4. Read Liu et al., arXiv:2505.02279. For each of MCP, A2A, ACP, ANP, list the FIPA performative families they keep and drop.
 5. Design a minimal JSON-Schema for the `content` field of a `request` performative in your own system. What does that schema give you that pure natural-language does not, and what does it cost?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -198,7 +198,7 @@ Document these five questions for any new protocol before you ship it into produ
 | Contract Net | "Task market" | Manager issues cfp; bidders propose; manager accepts. The canonical interaction protocol. |
 | Interaction protocol | "Pattern of messages" | A sequence of performatives with known correctness: request-when, subscribe-notify, etc. |
 
-## Further Reading
+## 深入阅读
 
 - [Liu et al. — A Survey of Agent Interoperability Protocols: MCP, ACP, A2A, ANP](https://arxiv.org/html/2505.02279v1) — the canonical 2025 survey connecting modern specs to FIPA heritage
 - [FIPA ACL Message Structure Specification (fipa00037)](http://www.fipa.org/specs/fipa00037/) — the ratified 2000 envelope format

@@ -1,6 +1,6 @@
 {
   "lesson": "12-anthropic-workflow-patterns",
-  "title": "Anthropic's Workflow Patterns: Simple Over Complex",
+  "title": "Anthropic 工作流模式：Prompt 链、路由与并行协同",
   "questions": [
     {
       "stage": "pre",

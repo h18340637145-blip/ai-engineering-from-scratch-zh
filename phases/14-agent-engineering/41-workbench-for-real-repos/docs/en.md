@@ -1,26 +1,26 @@
-# The Workbench on a Real Repo
+# 真实 Repo 工作台：面向大型工程的实战配置
 
-> Eleven lessons of surfaces are worth nothing if they do not survive contact with a real codebase. This lesson runs the same task twice on a small sample app: prompt-only versus workbench-guided. The numbers do the arguing.
+> 将 Agent 工作台应用于数万行真实项目：配置高效文件检索、重构分析与并发改写测试。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phases 14 · 32 to 14 · 40
-**Time:** ~60 minutes
+**Prerequisites:** Phase 14 Lesson 31, Lesson 34
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Bring the seven workbench surfaces together on a small application.
 - Run the same task twice (prompt-only and workbench-guided) and measure five outcomes.
 - Read the before/after report and decide which surfaces gave the most leverage.
 - Defend the workbench against a "but my model is good enough" pushback.
 
-## The Problem
+## 问题切入
 
 A demo on a toy task convinces no one. The case for the workbench is made when a real-feeling task on a real-feeling repo lands in production with fewer failures, fewer reverts, and a packet the next session can use.
 
 This lesson ships that real-feeling repo and runs the same task through both pipelines. The result is a before/after report you can hand to a skeptic.
 
-## The Concept
+## 核心概念
 
 ```mermaid
 flowchart TD
@@ -73,7 +73,7 @@ Workbench-guided:
 | `handoff_quality` | The next session pays for or benefits from this |
 | `reviewer_total` | Qualitative judgment on top of the gate |
 
-## Build It
+## 动手实现
 
 `code/main.py` orchestrates the two pipelines against the same sample app fixture. Both pipelines are scripted (no LLM in the loop) so the measurement is reproducible. The script writes the comparison into `before-after-report.md` and `comparison.json`.
 
@@ -103,7 +103,7 @@ The skeptic's question is "how much does the workbench actually help?" The 2026 
 
 The takeaway is not "harness wins forever." Models do absorb harness tricks over time. The takeaway is that today, the engineering load sits in the seven surfaces, and the numbers prove it.
 
-## Use It
+## 应用场景
 
 This lesson is the case file you cite when:
 
@@ -113,11 +113,11 @@ This lesson is the case file you cite when:
 
 The numbers travel further than the explanation.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-workbench-benchmark.md` is a portable evaluation harness that runs any agent product through both pipelines against a project's own sample app and reports the five outcomes.
 
-## Exercises
+## 练习题
 
 1. Add a sixth outcome: time-to-first-meaningful-edit. How do you measure it cleanly?
 2. Run the comparison on a real second-day task in your codebase. Where do the workbench numbers slip?
@@ -125,7 +125,7 @@ The numbers travel further than the explanation.
 4. Replace the scripted "agent" with a real LLM call. Which outcomes get noisier?
 5. Author a one-page summary aimed at a non-engineer. What survives the cut?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -135,7 +135,7 @@ The numbers travel further than the explanation.
 | False negative | "Workbench overkill" | Tasks where prompt-only is faster; useful to enumerate honestly |
 | Workbench benchmark | "Reliability score" | Portable harness that runs the comparison on your codebase |
 
-## Further Reading
+## 深入阅读
 
 - [LangChain, The Anatomy of an Agent Harness](https://blog.langchain.com/the-anatomy-of-an-agent-harness/) — Terminal Bench Top-30 to Top-5 receipt
 - [MongoDB, The Agent Harness: Why the LLM Is the Smallest Part of Your Agent System](https://www.mongodb.com/company/blog/technical/agent-harness-why-llm-is-smallest-part-of-your-agent-system) — Vercel + Harvey numbers

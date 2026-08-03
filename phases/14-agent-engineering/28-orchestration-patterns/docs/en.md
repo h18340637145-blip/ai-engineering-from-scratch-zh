@@ -1,24 +1,24 @@
-# Orchestration Patterns: Supervisor, Swarm, Hierarchical
+#  Agent 编排范式全景：从单 Agent 循环到复杂 DAG 网状图
 
-> Four orchestration patterns recur across 2026 frameworks: supervisor-worker, swarm / peer-to-peer, hierarchical, debate. Anthropic's guidance: "It's about building the right system for your needs." Start simple; add topology only when a single agent plus five workflow patterns is insufficient.
+> 全面总结 Agent 编排架构的选型标准：何时使用简单的 ReAct、何时采用定型的 DAG，以及何时引入拓扑网状图。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 12 (Workflow Patterns), Phase 14 · 25 (Multi-Agent Debate)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 14 Lesson 12, Lesson 13
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name the four recurring orchestration patterns and when each fits.
 - Describe the 2026 LangChain recommendation: tool-call-based supervision vs supervisor libraries.
 - Explain Anthropic's "build the right system" rule and how it gates topology choice.
 - Implement all four in stdlib against a common scripted LLM.
 
-## The Problem
+## 问题切入
 
 Teams reach for "multi-agent" before they need it. Four patterns recur across frameworks; once you can name them, you can pick the right one — or skip topology entirely.
 
-## The Concept
+## 核心概念
 
 ### Supervisor-worker
 
@@ -79,7 +79,7 @@ Decision order:
 - **Bouncing handoffs in swarm.** A -> B -> A -> B. Use hop counters.
 - **Fake hierarchy.** Three layers because "enterprise"; two actual teams. Collapse.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements all four patterns in stdlib against a scripted LLM:
 
@@ -98,18 +98,18 @@ python3 code/main.py
 
 Output: per-pattern trace + op count. Supervisor is cleanest; swarm is shortest; hierarchical is deepest; debate is most expensive.
 
-## Use It
+## 应用场景
 
 - **LangGraph** for supervisor and hierarchical (nested subgraphs).
 - **OpenAI Agents SDK** for handoffs-as-tools (supervisor-shaped).
 - **CrewAI Flow** for production deterministic.
 - **Custom** for debate or when you want exact control.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-orchestration-picker.md` picks a topology and implements it.
 
-## Exercises
+## 练习题
 
 1. Convert a supervisor-worker to a swarm by removing the router. What breaks? What improves?
 2. Add a hop counter to the swarm: refuse after 3 handoffs. Does it catch A->B->A bouncing?
@@ -117,7 +117,7 @@ Output: per-pattern trace + op count. Supervisor is cleanest; swarm is shortest;
 4. Profile the four patterns on a production-shaped workload. Which wins on which metric (latency, cost, accuracy, debuggability)?
 5. Read Anthropic's "Building Effective Agents" post. Map each of your production flows to one of the four. Any that don't map cleanly?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -129,7 +129,7 @@ Output: per-pattern trace + op count. Supervisor is cleanest; swarm is shortest;
 | Crew | "Autonomous team" | CrewAI's role-based collaboration mode |
 | Flow | "Deterministic workflow" | CrewAI's event-driven production mode |
 
-## Further Reading
+## 深入阅读
 
 - [Anthropic, Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) — five patterns + agent vs workflow
 - [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview) — supervisor, swarm, hierarchical

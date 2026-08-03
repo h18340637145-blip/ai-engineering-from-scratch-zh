@@ -1,24 +1,24 @@
-# Voice Agents: Pipecat and LiveKit
+# 实时语音 Agent：基于 Pipecat 与 LiveKit 的超低延迟打断流
 
-> Voice agents are a first-class production category in 2026. Pipecat gives you a Python frame-based pipeline (VAD → STT → LLM → TTS → transport). LiveKit Agents bridges AI models to users over WebRTC. Production latency targets land at 450–600ms end-to-end for premium stacks.
+> 构建毫秒级响应的实时语音 Agent：结合 VAD、STT、LLM 流式推理与 TTS，在 Pipecat 与 LiveKit 上实现打断支持。
 
 **Type:** Learn
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 01 (Agent Loop), Phase 14 · 12 (Workflow Patterns)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 14 Lesson 01
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Describe Pipecat's frame-based pipeline: DOWNSTREAM (source→sink) and UPSTREAM (control).
 - Name the canonical voice pipeline stages and which transports Pipecat supports.
 - Explain LiveKit Agents' two voice agent classes (MultimodalAgent, VoicePipelineAgent) and when each fits.
 - Summarize 2026 production latency expectations and how they drive architecture choices.
 
-## The Problem
+## 问题切入
 
 Voice agents are not a text loop with TTS bolted on. Latency budgets are brutal (~600ms), partial audio is the default, turn detection is a model, and transports range from telephony SIP to WebRTC. Either you build a frame-based pipeline (Pipecat) or you lean on a platform (LiveKit).
 
-## The Concept
+## 核心概念
 
 ### Pipecat (pipecat-ai/pipecat)
 
@@ -72,7 +72,7 @@ Vapi (~450–600ms on an optimized premium stack) and Retell (~600ms end-to-end 
 
 End-to-end 450–600ms is premium. 800–1200ms is common. Anything > 1500ms feels broken.
 
-## Build It
+## 动手实现
 
 `code/main.py` is a frame-based toy pipeline with:
 
@@ -89,18 +89,18 @@ python3 code/main.py
 
 The trace shows normal flow and a barge-in cancel that stops TTS mid-utterance.
 
-## Use It
+## 应用场景
 
 - **Pipecat** for full control — custom processors, Python-first, pluggable providers.
 - **LiveKit Agents** for WebRTC-first deployments and telephony.
 - **Vapi / Retell** for hosted voice agents without a WebRTC team.
 - **OpenAI Realtime / Gemini Live** for direct audio-in/audio-out (MultimodalAgent).
 
-## Ship It
+## 产出成果
 
 `outputs/skill-voice-pipeline.md` scaffolds a Pipecat-shaped voice pipeline with VAD + STT + LLM + TTS + transport plus barge-in handling.
 
-## Exercises
+## 练习题
 
 1. Add a metrics observer to your toy pipeline: count frames per stage per second. Where does latency accumulate?
 2. Implement confidence-gated STT: below threshold, request "could you repeat that?"
@@ -108,7 +108,7 @@ The trace shows normal flow and a barge-in cancel that stops TTS mid-utterance.
 4. Read Pipecat's transport docs. Swap the stdlib transport for the SmallWebRTCTransport config (stub).
 5. Measure an OpenAI Realtime vs STT+LLM+TTS cascade on the same query. What latency cost does text-level control carry?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -121,7 +121,7 @@ The trace shows normal flow and a barge-in cancel that stops TTS mid-utterance.
 | MultimodalAgent | "Direct audio agent" | Audio in, audio out; no text in the middle |
 | VoicePipelineAgent | "Cascade agent" | STT + LLM + TTS; text-level control |
 
-## Further Reading
+## 深入阅读
 
 - [Pipecat docs](https://docs.pipecat.ai/getting-started/introduction) — frame-based pipeline, processors, transports
 - [LiveKit Agents docs](https://docs.livekit.io/agents/) — WebRTC + voice primitives

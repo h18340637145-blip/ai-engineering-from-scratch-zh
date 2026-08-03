@@ -1,13 +1,13 @@
-# Python Environments
+# Python 环境隔离与包管理
 
-> Dependency hell is real. Virtual environments are the cure.
+> 彻底解决‘在我电脑上跑得好好的’难题。深度探究 `sys.path`、Wheel 编译、依赖锁定与隔离机制。
 
-**Type:** Build
-**Languages:** Shell
-**Prerequisites:** Phase 0, Lesson 01
-**Time:** ~30 minutes
+**Type:** 学习
+**Languages:** Python, Bash
+**Prerequisites:** 开发环境搭建
+**Time:** ~30 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Create isolated virtual environments using `uv`, `venv`, or `conda`
 - Write a `pyproject.toml` with optional dependency groups and generate lockfiles for reproducibility

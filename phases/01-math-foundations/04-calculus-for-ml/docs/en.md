@@ -1,11 +1,11 @@
-# Calculus for Machine Learning
+# 机器学习中的微积分
 
-> Derivatives tell you which way is downhill. That is all a neural network needs to learn.
+> 梯度是机器学习优化的罗盘。掌握偏导数、梯度向量与二阶黑塞矩阵。
 
-**Type:** Learn
+**Type:** 学习
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01-03
-**Time:** ~60 minutes
+**Prerequisites:** 无
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

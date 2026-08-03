@@ -2,63 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does cosine similarity measure between two vectors?",
+      "question": "$L_1$ 范数（曼哈顿距离/Lasso）与 $L_2$ 范数（欧氏距离/Ridge）在正则化时的核心区别是？",
       "options": [
-        "The Euclidean distance between them",
-        "The angle between them, ignoring their magnitudes",
-        "The sum of their element-wise products",
-        "The maximum difference in any single dimension"
+        "$L_1$ 范数倾向于产生稀疏解（把不重要的参数权重直接降为精确的 0）；$L_2$ 范数倾向于产生均匀平滑的较小权重",
+        "$L_2$ 范数更容易产生零参数",
+        "$L_1$ 范数计算复杂度极高",
+        "它们没有任何几何差异"
       ],
-      "correct": 1,
-      "explanation": "Cosine similarity measures the cosine of the angle between two vectors, normalized by their magnitudes. It ranges from -1 (opposite) to +1 (same direction) and ignores vector length, which is why it dominates in NLP where document length is noise."
+      "correct": 0,
+      "explanation": "$L_1$ 范数的等高线具有菱形尖角，极易在坐标轴上与 Loss 等高线首次相交，从而达成参数稀疏选择。"
     },
     {
       "stage": "pre",
-      "question": "Why is L1 distance called 'Manhattan distance'?",
+      "question": "余弦相似度（Cosine Similarity）与欧氏距离（Euclidean Distance）的核心区别是？",
       "options": [
-        "It was invented in Manhattan",
-        "It measures distance along a grid, as if walking on city blocks",
-        "It only works in exactly two dimensions",
-        "It computes the maximum difference across all dimensions"
+        "余弦相似度仅测量向量方向上的夹角余弦值，忽略向量的绝对模长大小；欧氏距离测量空间中的绝对几何距离",
+        "余弦相似度只适用于二维向量",
+        "欧氏距离不受向量模长影响",
+        "余弦相似度的范围在 $[0, \\infty)$"
       ],
-      "correct": 1,
-      "explanation": "L1 distance sums the absolute differences along each axis, which corresponds to the shortest path on a grid where you can only move along axes (no diagonals) — like walking on a city street grid."
+      "correct": 0,
+      "explanation": "在文本嵌入（Embedding）比较中，余弦相似度能消除长短文本向量模长差异带来的干扰。"
     },
     {
       "stage": "post",
-      "question": "Why does L1 regularization (Lasso) produce sparse weights while L2 regularization (Ridge) does not?",
+      "question": "马氏距离（Mahalanobis Distance）相比欧氏距离有什么独特优势？",
       "options": [
-        "L1 uses a larger penalty constant than L2",
-        "The L1 diamond constraint has corners on the axes where weights are zero; loss contours are likely to touch at corners",
-        "L2 regularization only applies to the bias terms",
-        "L1 regularization clips weights below a threshold to zero"
+        "考虑了特征之间的协方差关系与量纲差异，消除了特征相关性带来的距离失真",
+        "马氏距离不需要矩阵计算",
+        "马氏距离恒等于 0",
+        "马氏距离只适用于分类任务"
       ],
-      "correct": 1,
-      "explanation": "The L1 constraint region is a diamond shape with corners aligned with the axes. The loss function's contour ellipses are most likely to first touch the diamond at a corner, where one or more weights are exactly zero. The L2 constraint is a circle with no corners, so the touch point has all weights nonzero."
+      "correct": 0,
+      "explanation": "马氏距离公式为 $d = \\sqrt{(\\mathbf{x}-\\mathbf{y})^T \\Sigma^{-1} (\\mathbf{x}-\\mathbf{y})}$，相当于在主成分标准化空间中计算欧氏距离。"
     },
     {
       "stage": "post",
-      "question": "What advantage does Wasserstein distance have over KL divergence when comparing probability distributions?",
+      "question": "矩阵的弗罗贝尼乌斯范数（Frobenius Norm, $||A||_F$）是如何计算的？",
       "options": [
-        "Wasserstein is always smaller than KL divergence",
-        "Wasserstein provides meaningful gradients even when distributions do not overlap, while KL goes to infinity",
-        "Wasserstein is symmetric but KL is not",
-        "Both B and C are correct"
+        "矩阵所有元素平方和开根号（相当于将矩阵展开为长向量后的 $L_2$ 范数）",
+        "矩阵最大特征值的大小",
+        "矩阵每一列绝对值之和的最大值",
+        "矩阵对角线元素之和"
       ],
-      "correct": 3,
-      "explanation": "Wasserstein distance is a true metric (symmetric, satisfies triangle inequality) and provides gradients even for non-overlapping distributions. KL divergence is asymmetric and goes to infinity when distributions don't overlap, which is why WGANs replaced KL-based GANs."
+      "correct": 0,
+      "explanation": "$||A||_F = \\sqrt{\\sum_i \\sum_j a_{ij}^2}$，常用于衡量两个矩阵之间的误差程度。"
     },
     {
       "stage": "post",
-      "question": "When would you use Mahalanobis distance instead of Euclidean distance?",
+      "question": "闵可夫斯基距离（Minkowski Distance）与 $p$ 参数的关系是？",
       "options": [
-        "When features are all binary (0 or 1)",
-        "When features have different scales and are correlated with each other",
-        "When you are comparing strings instead of vectors",
-        "When you need a faster computation than L2"
+        "当 $p=1$ 时退化为曼哈顿距离，当 $p=2$ 时退化为欧氏距离，当 $p\to\\infty$ 时退化为切比雪夫距离",
+        "p 必须是偶数",
+        "p 控制向量的旋转角度",
+        "p 代表矩阵的阶数"
       ],
-      "correct": 1,
-      "explanation": "Mahalanobis distance accounts for the covariance structure of the data, decorrelating and normalizing features before computing L2 distance. It correctly handles features at different scales and with correlations, whereas Euclidean distance treats all dimensions equally."
+      "correct": 0,
+      "explanation": "闵可夫斯基距离是 $D(x,y) = (\\sum |x_i - y_i|^p)^{1/p}$ 的泛化形式。"
     }
   ]
 }

@@ -1,20 +1,20 @@
-# Security — Secrets, API Key Rotation, Audit Logs, Guardrails
+# AI 生产安全：密钥审计、数据防泄漏与合规隔离
 
-> Eliminate secret sprawl via centralized vaults (HashiCorp Vault, AWS Secrets Manager, Azure Key Vault). Never store credentials in config files, env files in VCS, spreadsheets. Use IAM roles over static keys; OIDC for CI/CD. The AI-gateway pattern is the 2026 solution: apps → gateway → model provider, with gateway pulling credentials from vault at runtime. Rotate in vault and all apps pick up in minutes — no redeploys, no Slack "who has the new key" messages. Rotation policy ≤90 days; scan with TruffleHog / GitGuardian / Gitleaks on every commit. Zero-trust: MFA, SSO, RBAC/ABAC, short-lived tokens, device posture. PII scrubbing uses entity recognition to mask PHI/PII before forwarding; consistent tokenization (Mesh approach) maps sensitive values to stable placeholders so the LLM preserves code/relationship semantics. Network egress: LLM services in dedicated VPC/VNet subnet whitelisting only `api.openai.com`, `api.anthropic.com` etc; block all other outbound. The 2026 incident driver: Vercel supply-chain attack via compromised CI/CD credentials exfiltrated env vars across thousands of customer deployments.
+> 保障生产级 AI 系统安全：防止敏感数据（PII）泄露、密钥安全审计与租户间隔离。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy PII-scrubber + audit-log writer)
-**Prerequisites:** Phase 17 · 19 (AI Gateways), Phase 17 · 13 (Observability)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 01
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Enumerate the four secret-management anti-patterns (config files in VCS, hardcoded env, spreadsheets, static keys) and name their replacements.
 - Explain the AI-gateway-pulls-from-vault pattern as 2026 production standard.
 - Implement a PII scrubber with consistent tokenization (same value → same placeholder) so semantics survive.
 - Name the 2026 Vercel supply-chain incident and what it taught about CI/CD credential hygiene.
 
-## The Problem
+## 问题切入
 
 An intern commits `.env` with API keys. They delete it quickly. The keys are already in git history — GitGuardian scan catches it, your rotation process is "Slack the team, update 40 config files, redeploy all services." 8 hours later, half your services are live and half are waiting for deploy windows.
 
@@ -24,7 +24,7 @@ Separately, your EKS cluster's LLM pod can reach any internet host. Someone exfi
 
 Security for LLM services has to address all three vectors. Vault-backed credentials. PII scrubbing. Network egress filtering. Audit logs.
 
-## The Concept
+## 核心概念
 
 ### Centralized vault + IAM-role pull
 
@@ -103,15 +103,15 @@ Supply-chain attack: compromised CI/CD credentials exfiltrated env vars across t
 - Vercel 2026: CI/CD creds compromised → thousands of customer env vars leaked.
 - Audit log retention: SOC 2 = 1 year, HIPAA = 6 years.
 
-## Use It
+## 应用场景
 
 `code/main.py` implements a toy PII scrubber with consistent tokenization and an append-only audit log.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-llm-security-plan.md`. Given regulatory scope and current state, plans the vault migration, scrubber, egress, audit log.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Send two prompts referencing the same SSN. Confirm both get the same placeholder.
 2. Design the network egress policy for a vLLM-on-EKS deployment calling OpenAI + Anthropic + Weaviate.
@@ -119,7 +119,7 @@ This lesson produces `outputs/skill-llm-security-plan.md`. Given regulatory scop
 4. Your audit log grows 10 GB/day. Design retention tiers (hot 30d, warm 12mo, cold 6yr).
 5. Argue whether reverse-tokenization (substituting real values back into LLM response) is worth the complexity versus keeping placeholders visible.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -134,7 +134,7 @@ This lesson produces `outputs/skill-llm-security-plan.md`. Given regulatory scop
 | Egress whitelist | "outbound allowlist" | Only permitted domains reachable |
 | Audit log | "immutable history" | Append-only record for compliance |
 
-## Further Reading
+## 深入阅读
 
 - [Doppler — Advanced LLM Security](https://www.doppler.com/blog/advanced-llm-security)
 - [Portkey — Manage LLM API keys with secret references](https://portkey.ai/blog/secret-references-ai-api-key-management/)

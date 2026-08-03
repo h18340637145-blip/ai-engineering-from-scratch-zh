@@ -1,13 +1,13 @@
-# Role-Based Agent Teams — Roles, Tasks, Processes
+# CrewAI：基于角色与目标的团队协作编排
 
-> Four primitives: Agent, Task, Crew, Process. Two top-level shapes: Crews (autonomous, role-based collaboration) and Flows (event-driven, deterministic). CrewAI is the 2026 reference implementation, and its docs are blunt: "for any production-ready application, start with a Flow."
+> CrewAI 强调角色（Role）、目标（Goal）与背景故事（Backstory）的结构化定义，支持 sequential 与 hierarchical 两种团队执行流。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 12 (Workflow Patterns), Phase 14 · 14 (Actor Model)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 14 Lesson 01, Lesson 12
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name CrewAI's four primitives (Agent, Task, Crew, Process) and what each owns.
 - Distinguish Sequential, Hierarchical, and the planned Consensus process; pick one per workload.
@@ -17,7 +17,7 @@
 - Implement a stdlib three-agent crew (researcher, writer, editor) that produces a brief.
 - Spot the three CrewAI failure modes: prompt-bloat, manager-LLM tax, brittle handoffs.
 
-## The Problem
+## 问题切入
 
 Teams adopting multi-agent frameworks hit the same wall. "Autonomous collaboration" sounds great in a demo. Then a customer files a bug and you need deterministic replay. Or finance asks how much an LLM-routed crew costs per run. Or on-call needs to know which agent stalled at 3 AM.
 
@@ -25,7 +25,7 @@ Free-form LLM-routed crews answer none of those cleanly. Pure DAGs answer them a
 
 CrewAI's split is honest about the trade. Crews for collaborative, role-based, exploratory work. Flows for event-driven, code-owned, auditable production. Same framework, two shapes, pick per surface.
 
-## The Concept
+## 核心概念
 
 ### Four primitives
 
@@ -133,7 +133,7 @@ Independent of LangChain. Python 3.10 to 3.13. Uses `uv`. Star count: see [crewA
 - **Brittle handoffs.** Task N's `expected_output` is "an outline". Task N+1 reads it as `context` and tries to parse three sections. The LLM produced four. The downstream Agent ad-libs. Fix with `output_pydantic` on Task N so Task N+1 reads a typed object, not free text.
 - **Crew-as-prod.** Free-form Crew shipped to production without a Flow wrapper. Output variability is high; replay is impossible; on-call cannot diff a bad run against a good one. Wrap with a Flow.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements stdlib versions of both shapes plus a three-agent crew.
 
@@ -159,7 +159,7 @@ Trace covers: sequential crew threading outputs through `context`, hierarchical 
 
 The Crew trace is fluid; the manager could in principle re-order. The Flow trace is fixed. That choice is the lesson.
 
-## Use It
+## 应用场景
 
 - **CrewAI Flow** for production. Even when the Flow is one step that calls `Crew.kickoff()`. The Flow gives the audit boundary.
 - **CrewAI Crew (Sequential)** for clear-ordering collaborative work, especially first drafts and review loops.
@@ -169,7 +169,7 @@ The Crew trace is fluid; the manager could in principle re-order. The Flow trace
 - **OpenAI Agents SDK** (Lesson 16) for OpenAI-first products with handoffs and guardrails.
 - **Claude Agent SDK** (Lesson 17) for Claude-first products with subagents and session store.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-crew-or-flow.md` picks Crew vs Flow for a task and scaffolds the minimal implementation. Hard rejects on Crew-without-backstory, Flow-without-explicit-topics, Hierarchical with under three specialists.
 
@@ -181,7 +181,7 @@ The Crew trace is fluid; the manager could in principle re-order. The Flow trace
 - **Manager prompt drift.** Hierarchical's manager prompt is implicit. If routing gets weird, dump it in verbose mode and read.
 - **Tool side effects in Crews.** A Crew can call a tool more times than expected. POST, DELETE, payment belong in a Flow step, never a Crew tool.
 
-## Exercises
+## 练习题
 
 1. Convert the Sequential crew to a Flow. Count the touchpoints where variability drops. Note where readability dropped.
 2. Add entity memory to the crew: facts about a customer persist across kickoffs. Verify retrieval pulls the right entity.
@@ -191,7 +191,7 @@ The Crew trace is fluid; the manager could in principle re-order. The Flow trace
 6. Read CrewAI's docs intro. Port the toy to the real `crewai` API. Which guarantees did the stdlib version skip?
 7. Wire AgentOps or Langfuse (Lesson 24) to a real run. Which traces did you miss in the stdlib version?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -209,7 +209,7 @@ The Crew trace is fluid; the manager could in principle re-order. The Flow trace
 | Manager LLM | "Router agent" | Extra LLM in Hierarchical process that picks the next task |
 | `expected_output` | "Task contract" | String that tells the Agent (and audit) what shape to return |
 
-## Further Reading
+## 深入阅读
 
 - [CrewAI docs introduction](https://docs.crewai.com/en/introduction): concepts and the recommended production path
 - [CrewAI Flows guide](https://docs.crewai.com/en/concepts/flows): event-driven shape, `@start`, `@listen`

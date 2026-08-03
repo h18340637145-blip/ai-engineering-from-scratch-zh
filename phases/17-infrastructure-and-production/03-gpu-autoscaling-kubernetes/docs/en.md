@@ -1,20 +1,20 @@
-# GPU Autoscaling on Kubernetes — Karpenter, KAI Scheduler, Gang Scheduling
+# Kubernetes 上的 GPU 弹性自动扩缩容
 
-> Three layers, not one. Karpenter provisions nodes dynamically (under one minute, 40% faster than Cluster Autoscaler). KAI Scheduler handles gang scheduling, topology awareness, and hierarchical queues — it prevents the 7-of-8 partial allocation trap where seven nodes wait and burn on one missing GPU. Application-level autoscalers (NVIDIA Dynamo Planner, llm-d Workload Variant Autoscaler) scale on inference-specific signals — queue depth, KV cache utilization — not CPU/DCGM duty cycle. The classic HPA trap is that `DCGM_FI_DEV_GPU_UTIL` is a duty-cycle measurement: 100% could be 10 requests or 100. vLLM pre-allocates KV cache memory, so memory never triggers scale-down. This lesson teaches you to compose the three layers and avoid the default Karpenter `WhenEmptyOrUnderutilized` policy that terminates running GPU jobs mid-inference.
+> 使用 Kubernetes、KEDA 与 Ray 针对实时推理并发与队列深度实现 GPU 节点的高效自动扩缩容。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy queue-depth autoscaler simulator)
-**Prerequisites:** Phase 17 · 02 (Inference Platform Economics), Phase 17 · 04 (Serving Engine Internals)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 17 Lesson 01
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Diagram the three autoscaling layers (node provisioning, gang scheduling, application-level) and name the tool used at each layer.
 - Explain why `DCGM_FI_DEV_GPU_UTIL` is the wrong HPA signal for vLLM and name two replacements (queue depth, KV cache utilization).
 - Describe gang scheduling and the partial-allocation failure mode KAI Scheduler prevents (7 of 8 GPUs idle).
 - Name the Karpenter consolidation policy (`WhenEmptyOrUnderutilized`) that terminates running GPU jobs and state the 2026 safe alternative.
 
-## The Problem
+## 问题切入
 
 Your team ships an LLM-serving service on Kubernetes. You set up HPA with `DCGM_FI_DEV_GPU_UTIL` as the signal. The service pins at 100% utilization during business hours. HPA never scales up — it already thinks you're full. You add a replica manually; TTFT drops. HPA still doesn't scale. The signal is lying to you.
 
@@ -24,7 +24,7 @@ Separately again, you deploy a 70B model requiring 8 GPUs across 2 nodes. The cl
 
 Three layers, three different failure modes. GPU-aware autoscaling in 2026 is not "turn on HPA." It's composing node provisioning, gang scheduling, and application-signal autoscaling.
 
-## The Concept
+## 核心概念
 
 ### Layer 1 — node provisioning (Karpenter)
 
@@ -98,15 +98,15 @@ Cold-start mitigation (Phase 17 · 10) is where node provisioning time becomes u
 autoscaling
 ```
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates a three-layer autoscaler on a bursty GPU workload. Compares naive HPA (duty cycle), queue-depth HPA, and KAI-gang-scheduled scaling. Reports unmet requests, idle-GPU minutes, and a composite score.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-gpu-autoscaler-plan.md`. Given cluster topology, workload shape, and SLO, it designs a three-layer autoscaling plan.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Under a bursty workload, how many requests does naive duty-cycle HPA drop that queue-depth HPA catches? Where does the difference come from?
 2. Design a Karpenter NodePool for a cluster serving Llama 3.3 70B FP8 on H100 SXM5. Specify `capacity-type`, `disruption.consolidationPolicy`, `consolidateAfter`, and a taint that keeps non-GPU workloads off these nodes.
@@ -114,7 +114,7 @@ This lesson produces `outputs/skill-gpu-autoscaler-plan.md`. Given cluster topol
 4. Pick a signal to autoscale disaggregated prefill pods and a different signal for decode pods. Justify both.
 5. Compute the cost of the `WhenEmptyOrUnderutilized` consolidation trap on a 24x7 production service that averages 60 request-dropping events/day at P99 TTFT > 10s.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -129,7 +129,7 @@ This lesson produces `outputs/skill-gpu-autoscaler-plan.md`. Given cluster topol
 | Consolidation | "Karpenter consolidation" | Node termination to cheaper instance type |
 | `WhenEmpty + 1h` | "safe consolidation" | Policy that doesn't evict running GPU jobs |
 
-## Further Reading
+## 深入阅读
 
 - [KAI Scheduler GitHub](https://github.com/kai-scheduler/KAI-Scheduler) — design docs and configuration examples.
 - [Karpenter Disruption Controls](https://karpenter.sh/docs/concepts/disruption/) — consolidation policy semantics and GPU-safe defaults.

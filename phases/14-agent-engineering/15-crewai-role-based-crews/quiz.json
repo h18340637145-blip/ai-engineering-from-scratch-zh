@@ -1,6 +1,6 @@
 {
   "lesson": "15-crewai-role-based-crews",
-  "title": "Role-Based Agent Teams — Roles, Tasks, Processes",
+  "title": "CrewAI：基于角色与目标的团队协作编排",
   "questions": [
     {
       "stage": "pre",

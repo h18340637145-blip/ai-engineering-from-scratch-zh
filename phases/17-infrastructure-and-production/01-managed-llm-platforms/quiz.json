@@ -1,6 +1,6 @@
 {
   "lesson": "01-managed-llm-platforms",
-  "title": "Managed LLM Platforms — Bedrock, Vertex AI, Azure OpenAI",
+  "title": "托管型 LLM 平台与 API 服务选型",
   "questions": [
     {
       "stage": "pre",

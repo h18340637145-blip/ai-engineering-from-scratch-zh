@@ -1,13 +1,13 @@
-# Git & Collaboration
+# Git 与 AI 项目协作
 
-> Version control is not optional. Every experiment, every model, every lesson you build here gets tracked.
+> 版本控制不仅针对代码——也关乎模型、实验与大型数据集。掌握 Git 工作流、Git LFS 以及团队提交规范。
 
-**Type:** Learn
-**Languages:** --
-**Prerequisites:** Phase 0, Lesson 01
-**Time:** ~30 minutes
+**Type:** 构建
+**Languages:** Bash, Python
+**Prerequisites:** 无
+**Time:** ~30 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Configure git identity and use the daily workflow of add, commit, and push
 - Create and merge branches for isolated experiments without breaking main

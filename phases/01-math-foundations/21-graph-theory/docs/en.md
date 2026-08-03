@@ -1,11 +1,11 @@
-# Graph Theory for Machine Learning
+# 图论基础与图神经网络
 
-> Graphs are the data structure of relationships. If your data has connections, you need graph theory.
+> 对非欧氏结构拓扑建模。掌握邻接矩阵、图拉普拉斯矩阵与消息传递机制。
 
-**Type:** Build
+**Type:** 学习
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01-03 (linear algebra, matrices)
-**Time:** ~90 minutes
+**Prerequisites:** Phase 1, Lesson 02 (向量与矩阵运算)
+**Time:** ~40 分钟
 
 ## Learning Objectives
 

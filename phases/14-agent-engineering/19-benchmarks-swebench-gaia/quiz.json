@@ -1,6 +1,6 @@
 {
   "lesson": "19-benchmarks-swebench-gaia",
-  "title": "Benchmarks: SWE-bench, GAIA, AgentBench",
+  "title": "Agent 评估基准：SWE-bench 与 GAIA 严苛测试集",
   "questions": [
     {
       "stage": "pre",

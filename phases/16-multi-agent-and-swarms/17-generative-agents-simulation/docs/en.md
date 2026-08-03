@@ -1,11 +1,11 @@
-# Generative Agents and Emergent Simulation
+# 生成式 Agent 社会模拟：以 Smallville 为例
 
-> Park et al. 2023 (UIST '23, arXiv:2304.03442) populated **Smallville**, a sandbox of 25 agents, with a three-part architecture: **memory stream** (natural-language log), **reflection** (higher-level syntheses the agent generates about its own stream), and **plan** (day-level behavior, then sub-plans). The landmark result was the Valentine's Day party emergence: one agent seeded with "wants to throw a Valentine's Day party," without further scripting, produced invitations spread through the population, coordinated dates, and the party happened — from 24 agents who started with no knowledge of it. Ablations show all three components are required for believability. The documented failures are spatial-norm errors (entering closed stores, sharing single-person bathrooms). This is the reference architecture for agent simulations and multi-agent social evaluation in 2026.
+> 复刻 Stanford Smallville 试验：基于计划、记忆流、反思与社交传播的虚拟小镇模拟。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 04 (Primitive Model), Phase 16 · 13 (Shared Memory)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 16 Lesson 01, Lesson 08
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -86,7 +86,7 @@ The architecture is the reference. Extensions swap components (vector store for 
 
 Smallville is the proof of concept that multi-agent emergence is cheap when the components are right. The architecture has now been replicated on open-source models (smaller LLMs lose believability gracefully, not sharply). Any production system that needs **emergent social behavior** uses this shape. Any system that needs **tight task execution** uses the supervisor / roles / primitives patterns from earlier in this phase.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements the three components in stdlib Python with scripted agent policies (no real LLM). The demo reproduces the Valentine's-party emergence in miniature:
 
@@ -103,11 +103,11 @@ python3 code/main.py
 
 Expected output: tick-by-tick trace. By the final tick, at least 3 of the 5 agents show the party in their plan, and they converge at the party location. The single seed produced the coordinated arrival without any orchestrator.
 
-## Use It
+## 应用场景
 
 `outputs/skill-simulation-designer.md` designs a generative-agent simulation: number of agents, memory schema, reflection cadence, plan horizon, and evaluation metric.
 
-## Ship It
+## 产出成果
 
 Rules for production simulations:
 
@@ -117,7 +117,7 @@ Rules for production simulations:
 - **Compact memory periodically.** Summarize-and-prune low-importance entries. Retention policy is a design decision, not a detail.
 - **Detect spatial / social norm violations** explicitly. The architecture does not learn them.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Confirm 3+ agents converge at the party. Increase agents to 10 — does the emergence still happen?
 2. Remove the reflection step. What does behavior look like? Map to the ablation finding in Park 2023.
@@ -125,7 +125,7 @@ Rules for production simulations:
 4. Add spatial constraints: Hobbs Cafe holds at most 4 agents. Does the simulation handle overflow gracefully, or does it hit the "single-person bathroom" failure pattern?
 5. Read Park et al. (arXiv:2304.03442) Section 6 (emergent behavior experiments). Identify one behavior not reproducible in your miniature. What component of the architecture would you need to enhance?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -138,7 +138,7 @@ Rules for production simulations:
 | Smallville | "Park 2023's sandbox" | 25-agent simulation that produced the Valentine's Day emergence. |
 | Believability | "The quality metric" | Human-rater score for whether behavior seems like a plausible agent. |
 
-## Further Reading
+## 深入阅读
 
 - [Park et al. — Generative Agents: Interactive Simulacra of Human Behavior](https://arxiv.org/abs/2304.03442) — the reference architecture
 - [UIST '23 paper page](https://dl.acm.org/doi/10.1145/3586183.3606763) — publication venue

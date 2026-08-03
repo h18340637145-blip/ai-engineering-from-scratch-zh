@@ -1,24 +1,24 @@
-# Production Agent Runtimes — Fast Instantiation and Typed Workflows
+# Agno 与 Mastra：高性能与 TypeScript 原生 Agent 运行时
 
-> A production agent runtime optimizes what prototyping frameworks ignore: instantiation cost, typed workflow surfaces, and a serving-ready backend. The 2026 pairing: Agno (Python) aims at microsecond agent instantiation and stateless FastAPI backends. Mastra ships agents, tools, workflows, unified model routing, and composite storage on the Vercel AI SDK substrate.
+> 探索面向生产的高性能 Agent 运行时：Agno（轻量级 Python 框架）与 Mastra（TypeScript/Next.js 全栈 Agent 框架）。
 
 **Type:** Learn
 **Languages:** Python, TypeScript
-**Prerequisites:** Phase 14 · 01 (Agent Loop), Phase 14 · 13 (LangGraph)
-**Time:** ~45 minutes
+**Prerequisites:** Phase 14 Lesson 01
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Identify Agno's performance targets and when they matter.
 - Name Mastra's three primitives — Agents, Tools, Workflows — and the supported server adapters.
 - Explain why a stateless session-scoped FastAPI backend is the recommended Agno production path.
 - Pick Agno vs Mastra for a given stack (Python-first vs TypeScript-first).
 
-## The Problem
+## 问题切入
 
 LangGraph, AutoGen, CrewAI are framework-heavy. Teams that want "just the agent loop, fast, in my runtime" reach for Agno (Python) or Mastra (TypeScript). Both trade some of the framework-owned primitives for raw speed and a tighter fit to the surrounding stack.
 
-## The Concept
+## 核心概念
 
 ### Agno
 
@@ -62,7 +62,7 @@ Neither is trying to be LangGraph. They compete on:
 - **Ecosystem lock-in.** Mastra's Vercel-flavored integration is a plus on Vercel, a minus elsewhere.
 - **Enterprise license confusion.** Mastra's `ee/` directories are source-available, not Apache 2.0. Read the licenses if you're planning to fork.
 
-## Build It
+## 动手实现
 
 This lesson is primarily comparative — no single code artifact would do both frameworks justice. See `code/main.py` for a side-by-side toy: a minimal "run an agent, stream the output, persist session" flow implemented twice (once Agno-shaped, once Mastra-shaped).
 
@@ -74,17 +74,17 @@ python3 code/main.py
 
 Two structurally different but functionally equivalent traces.
 
-## Use It
+## 应用场景
 
 - **Agno** — Python backend that needs speed and FastAPI shape.
 - **Mastra** — TypeScript backend with many providers and workflow primitives.
 - Both ship first-party observability hooks. Both integrate with Langfuse.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-runtime-picker.md` picks Agno, Mastra, LangGraph, or a provider SDK based on stack, latency budget, and operational shape.
 
-## Exercises
+## 练习题
 
 1. Read Agno's docs. Port the stdlib ReAct loop (Lesson 01) to Agno. What disappeared? What stayed?
 2. Read Mastra's docs. Port the same loop to Mastra. What changed in tool typing (Zod vs nothing)?
@@ -92,7 +92,7 @@ Two structurally different but functionally equivalent traces.
 4. Design a migration: if you've been running CrewAI in Python, what breaks if you move to Agno?
 5. Read Mastra's `ee/` license terms. What restrictions would affect an open-source fork?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -103,7 +103,7 @@ Two structurally different but functionally equivalent traces.
 | Mastra Studio | "Local debugger" | localhost:4111 UI for introspecting agents |
 | Source-available | "Not OSS" | License permits source reading but restricts commercial use |
 
-## Further Reading
+## 深入阅读
 
 - [Agno Agent Framework docs](https://www.agno.com/agent-framework) — performance targets, FastAPI integration
 - [Mastra docs](https://mastra.ai/docs) — primitives, server adapters, Model Router

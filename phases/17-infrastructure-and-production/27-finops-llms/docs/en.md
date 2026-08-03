@@ -1,20 +1,20 @@
-# FinOps for LLMs — Unit Economics and Multi-Tenant Attribution
+# LLM FinOps 财务运维：成本分摊、监控与归因优化
 
-> Traditional FinOps breaks on LLM spend. Costs are token-transactions, not resource-uptime. Tags don't map — an API call is a transaction, not an asset. Engineering decisions (prompt design, context window, output length) are financial decisions. The 2026 playbook has three attribution dimensions to instrument on day one: per-user (`user_id`) for seat pricing and expansion, per-task (`task_id` + `route`) for product surface cost and prioritization, per-tenant (`tenant_id`) for unit economics and renewal. Four token layers — prompt, tool, memory, response — one bucket hides spend. Enforcement ladder for multi-tenant products: rate limits per tenant (2-3x expected peak, clear 429 + retry-after); daily spend cap (1.5-3x contracted ceiling; triggers rate tightening + alert); kill switches on spend z-score > 4 (auto-pause + page on-call). Attribution patterns: tag-and-aggregate, telemetry-joiner (trace-ID → billing; highest accuracy), sampling-and-extrapolation, model-based allocation, event-sourced, real-time streaming. Unit metric: cost per resolved query, cost per generated artifact — not $/M tokens. Retroactive tagging always misses; instrument at request creation.
+> 实施云原生 FinOps 监控：按业务团队精确分摊 LLM 与 GPU 支出，发掘成本优化空间。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy cost-attribution simulator with kill switch)
-**Prerequisites:** Phase 17 · 13 (Observability), Phase 17 · 14 (Caching)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 02
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Explain why traditional FinOps (tags + tiers) breaks on LLM spend and name the three new attribution dimensions.
 - Enumerate the four token layers (prompt, tool, memory, response) and why single-bucket billing hides cost.
 - Design an enforcement ladder (rate → spend cap → kill switch) for a multi-tenant product.
 - Pick a unit metric (cost per resolved query / artifact) instead of $/M tokens.
 
-## The Problem
+## 问题切入
 
 Your bill says $40,000. You don't know:
 - Which tenant spent it.
@@ -24,7 +24,7 @@ Your bill says $40,000. You don't know:
 
 Tag-and-aggregate on provider-side works for cloud resources (EC2, S3) where tags propagate to line items. LLM API calls do not auto-tag — you have to stamp user/task/tenant at the call site and carry through. Retroactive attribution always misses edge cases.
 
-## The Concept
+## 核心概念
 
 ### Three attribution dimensions
 
@@ -113,15 +113,15 @@ Best-case stacked: ~5-10% of naive baseline. Most teams have 2-3 levers engaged;
 - Unit metric: cost per resolved query, not $/M tokens.
 - Stacked optimizations: ~5-10% of baseline possible.
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates a multi-tenant LLM service with the three-tier enforcement ladder. Injects an abusive tenant and demonstrates the kill switch firing.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-finops-plan.md`. Given product and scale, designs the attribution schema and enforcement ladder.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. At what z-score does the kill switch fire? How do you pick the threshold?
 2. Design a per-tenant, per-task cost dashboard. What are the 5 views you build first?
@@ -129,7 +129,7 @@ This lesson produces `outputs/skill-finops-plan.md`. Given product and scale, de
 4. Compute cost per resolved ticket for a support product: 3M tokens/ticket, ~800 tickets/day, GPT-5 cached rate.
 5. Argue whether retroactive tagging can ever work. When is it acceptable?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -144,7 +144,7 @@ This lesson produces `outputs/skill-finops-plan.md`. Given product and scale, de
 | Telemetry joiner | "trace-to-billing" | Highest-accuracy attribution pattern |
 | Stacked optimization | "cache+batch+route+gateway" | Compounding savings to ~5-10% baseline |
 
-## Further Reading
+## 深入阅读
 
 - [FinOps Foundation — FinOps for AI Overview](https://www.finops.org/wg/finops-for-ai-overview/)
 - [FinOps School — Cost per Unit 2026 Guide](https://finopsschool.com/blog/cost-per-unit/)

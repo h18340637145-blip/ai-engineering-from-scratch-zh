@@ -1,11 +1,11 @@
-# Production Scaling — Queues, Checkpoints, Durability
+# 生产级多 Agent 扩缩容：消息队列、持久化检查点与状态恢复
 
-> Scaling multi-agent systems to thousands of concurrent runs requires **durable execution** — work queues plus checkpoints, so any worker can resume any run after any crash, provided lease handling, idempotent side effects, and deterministic replay are in place. LangGraph's runtime is the reference example: it writes a checkpoint after each super-step keyed by `thread_id` (Postgres by default); worker crashes release a lease and another worker resumes. Agents can sleep indefinitely waiting for human input. **MegaAgent** (arXiv:2408.09955) ran a per-agent producer-consumer queue with three states (Idle / Processing / Response) and two-layer coordination (intra-group chat + inter-group admin chat). **Fiber/async** beats thread-per-job for LLM streaming: threads sit idle 99% of the time waiting for tokens, fibers cooperatively yield on I/O. Counterpoint: Ashpreet Bedi's "Scaling Agentic Software" argues for **FastAPI + Postgres + nothing else** until load proves otherwise — simple architectures go further than expected. This lesson builds a durable checkpoint log, a per-agent work queue with state transitions, an async-vs-thread demo, and lands the pragmatic "start simple" rule.
+> 构建高可用的分布式多 Agent 生产基础设施：借助 RabbitMQ/Kafka 与数据库检查点实现容错扩缩容。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib, `asyncio`, `sqlite3`)
-**Prerequisites:** Phase 16 · 09 (Parallel Swarm Networks), Phase 16 · 13 (Shared Memory)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 16 Lesson 05, Lesson 11
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -116,7 +116,7 @@ This is standard for long-running stateful systems; the 2026 adaptation is that 
 - Rainbow/canary deployment for stateful workloads.
 - Observability: per-agent traces, super-step audit, retry counter.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -133,11 +133,11 @@ python3 code/main.py
 
 Expected output: checkpoint resume succeeds after simulated crash; async version handles 500 concurrent calls in < 1s; thread version takes several seconds and uses orders of magnitude more memory per concurrent unit.
 
-## Use It
+## 应用场景
 
 `outputs/skill-scaling-advisor.md` advises on durable-execution choice: FastAPI + Postgres, LangGraph runtime, Temporal, or custom. Calibrated by load, state-retention needs, and deploy frequency.
 
-## Ship It
+## 产出成果
 
 Canonical production hardening:
 
@@ -148,7 +148,7 @@ Canonical production hardening:
 - **Adopt durable-execution engines (Temporal / LangGraph / Restate) when** you hit specific problems: hour-long human-in-the-loop waits, cross-region coordination, complex retry/compensation policies.
 - **Async for the I/O layer.** Threads only for CPU-bound post-processing.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Confirm checkpoint resume works; measure async vs thread concurrency difference.
 2. Implement an **outbox** table: every tool call writes to outbox first, then a separate goroutine/task executes. Verify idempotency by running the tool call twice.
@@ -156,7 +156,7 @@ Canonical production hardening:
 4. Read LangGraph's runtime doc (linked below). Identify which features of the runtime would take the longest to replicate in a hand-rolled FastAPI + Postgres version. Is that a reason to adopt, or can you defer?
 5. Read MegaAgent (arXiv:2408.09955) Section 3. The two-layer coordination (intra-group + inter-group admin chat) is explicit. Sketch how you would map this to a message queue with two queue families.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -170,7 +170,7 @@ Canonical production hardening:
 | Async fiber | "Cooperative yielding" | User-mode concurrency; cheap compared to threads for I/O-bound loads. |
 | Checkpoint | "State snapshot" | Serialized state at a super-step boundary; key for resume. |
 
-## Further Reading
+## 深入阅读
 
 - [LangChain — The runtime behind production deep agents](https://www.langchain.com/conceptual-guides/runtime-behind-production-deep-agents) — LangGraph runtime design
 - [MegaAgent](https://arxiv.org/abs/2408.09955) — per-agent producer-consumer queue; two-layer coordination at thousands of concurrent agents

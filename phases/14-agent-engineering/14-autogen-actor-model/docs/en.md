@@ -1,26 +1,26 @@
-# The Actor Model for Agents — Async Messages and Typed Runtimes
+# AutoGen (v0.4)：基于 Actor 模型的异步消息传递 Agent
 
-> Agents as actors: async message exchange, event-driven handlers, fault isolation, natural concurrency. AutoGen v0.4 (Microsoft Research, Jan 2025) redesigned agent orchestration around this model; the framework is now in maintenance mode, with Microsoft Agent Framework (public preview Oct 2025) as its production successor.
+> AutoGen v0.4 引入了分布式 Actor 模型与类型化事件驱动消息管道，实现低耦合、高并发的多 Agent 协同。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 01 (Agent Loop), Phase 14 · 12 (Workflow Patterns)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 14 Lesson 01, Lesson 12
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Describe the actor model: agents as actors, messages as the only IPC, failure isolation per actor.
 - Name AutoGen v0.4's three API layers — Core, AgentChat, Extensions — and what each is for.
 - Explain why decoupling message delivery from handling gives fault isolation and natural concurrency.
 - Implement a stdlib actor runtime in Python and port a two-agent code-review flow onto it.
 
-## The Problem
+## 问题切入
 
 Most agent frameworks are synchronous: one agent produces, one agent consumes, in a call stack. Failures crash the stack. Concurrency is bolted on. Distribution requires rewriting.
 
 AutoGen v0.4's answer: the actor model. Each agent is an actor with a private inbox. Messages are the only interaction. The runtime decouples delivery from handling. Failures isolate to one actor. Concurrency is native. Distribution is just different transport.
 
-## The Concept
+## 核心概念
 
 ### Actors
 
@@ -62,7 +62,7 @@ OpenTelemetry support is built in. Every message emits a span; tool calls carry 
 
 Early 2026: AutoGen v0.7.x is stable for research and prototyping. Microsoft has shifted active development to the Microsoft Agent Framework, the production successor (public preview Oct 1 2025; 1.0 GA was targeted for end of Q1 2026). AutoGen patterns port forward cleanly — the actor model is the durable idea.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements a stdlib actor runtime:
 
@@ -79,18 +79,18 @@ python3 code/main.py
 
 The trace shows message delivery, a simulated failure in one actor that does not crash the other, and convergence on a shared verdict.
 
-## Use It
+## 应用场景
 
 - **AutoGen v0.4/v0.7** (maintenance) — stable for research, prototyping, multi-agent patterns.
 - **Microsoft Agent Framework** — the production successor (public preview Oct 2025); same actor-model ideas in a refreshed API.
 - **LangGraph swarm topology** (Lesson 13) — similar pattern via shared-tool handoffs.
 - **Custom actor runtime** — when you need specific transport (NATS, RabbitMQ, gRPC).
 
-## Ship It
+## 产出成果
 
 `outputs/skill-actor-runtime.md` generates a minimal actor runtime plus a team template (RoundRobin or Selector) for a given multi-agent task.
 
-## Exercises
+## 练习题
 
 1. Add a dead-letter queue: when a handler raises, park the failing message for human inspection. How often does DLQ get hit in your toy?
 2. Implement `SelectorGroupChat`: a selector actor picks who processes the next message based on conversation state.
@@ -98,7 +98,7 @@ The trace shows message delivery, a simulated failure in one actor that does not
 4. Wire an OTel span per message (or a no-op stand-in). Emit `gen_ai.agent.name`, `gen_ai.operation.name` per Lesson 23.
 5. Read AutoGen v0.4's architecture post. Port your toy to the real `autogen_core` API. What did you skip that matters in production?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -112,7 +112,7 @@ The trace shows message delivery, a simulated failure in one actor that does not
 | SelectorGroupChat | "Context-routed team" | Selector picks who goes next |
 | Magentic-One | "Reference team" | Multi-agent squad for web + code + files |
 
-## Further Reading
+## 深入阅读
 
 - [AutoGen v0.4, Microsoft Research](https://www.microsoft.com/en-us/research/articles/autogen-v0-4-reimagining-the-foundation-of-agentic-ai-for-scale-extensibility-and-robustness/) — the redesign post
 - [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview) — graph-shaped alternative

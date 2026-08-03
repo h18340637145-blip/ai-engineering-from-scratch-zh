@@ -1,6 +1,6 @@
 {
   "lesson": "18-agno-and-mastra-runtimes",
-  "title": "Production Agent Runtimes",
+  "title": "Agno 与 Mastra：高性能与 TypeScript 原生 Agent 运行时",
   "questions": [
     {
       "stage": "pre",

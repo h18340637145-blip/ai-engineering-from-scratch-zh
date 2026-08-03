@@ -1,11 +1,11 @@
-# Matrix Transformations
+# 矩阵变换
 
-> A matrix is a machine that reshapes space. Learn what it does to every point, and you understand the whole transformation.
+> 旋转、缩放、剪切与平移。掌握线性与仿射变换在神经网络中的映射本质。
 
-**Type:** Build
-**Languages:** Python, Julia
-**Prerequisites:** Phase 1, Lessons 01-02 (Linear Algebra Intuition, Vectors & Matrices Operations)
-**Time:** ~75 minutes
+**Type:** 构建
+**Languages:** Python
+**Prerequisites:** Phase 1, Lesson 02 (向量与矩阵运算)
+**Time:** ~40 分钟
 
 ## Learning Objectives
 

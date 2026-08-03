@@ -1,11 +1,11 @@
-# Tensor Operations
+# 张量运算与切片技巧
 
-> Tensors are the common language between data and deep learning. Every image, every sentence, every gradient flows through them.
+> 高维数组运算。掌握张量阶数、爱因斯坦求和（Einsum）、内存连续性与多头维度变换。
 
-**Type:** Build
+**Type:** 构建
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01 (Linear Algebra Intuition), 02 (Vectors, Matrices & Operations)
-**Time:** ~90 minutes
+**Prerequisites:** Phase 1, Lesson 02 (向量与矩阵运算)
+**Time:** ~40 分钟
 
 ## Learning Objectives
 

@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the 'curse of dimensionality'?",
-      "options": ["High-dimensional data takes too long to download", "As dimensions grow, distances become meaningless, volume concentrates in corners, and you need exponentially more data", "Neural networks cannot process data with more than 100 features", "High-dimensional data always contains noise"],
-      "correct": 1,
-      "explanation": "In high dimensions, all pairwise distances converge to similar values, data points spread to corners, and maintaining sample density requires exponentially more data. Dimensionality reduction counteracts these effects."
+      "question": "主成分分析（PCA）寻找第一主成分（PC1）时的几何目标是什么？",
+      "options": [
+        "寻找数据投影后方差最大（保留信息最多）的方向",
+        "寻找使数据特征全为 0 的方向",
+        "寻找与原坐标轴平行的方向",
+        "寻找连接所有数据点的多项式曲线"
+      ],
+      "correct": 0,
+      "explanation": "PCA 旨在通过线性投影最大化数据投影后的方差（等价于最小化重构均方误差）。"
     },
     {
       "stage": "pre",
-      "question": "What does PCA find?",
-      "options": ["The most important features by name", "The orthogonal directions of maximum variance in the data", "Clusters of similar data points", "The optimal number of features to keep"],
-      "correct": 1,
-      "explanation": "PCA computes the eigenvectors of the covariance matrix, which are orthogonal directions ranked by how much data variance they capture. The first principal component points along the direction of maximum spread."
+      "question": "“维数灾难”（Curse of Dimensionality）在机器学习中主要指什么现象？",
+      "options": [
+        "维度增加时数据在空间中极度稀疏，需要的样本量随维度指数级激增，导致欧氏距离失效",
+        "维度高时模型训练速度变快",
+        "维度低时模型容易过拟合",
+        "维度高时矩阵无法计算乘法"
+      ],
+      "correct": 0,
+      "explanation": "在高维空间中，绝大多数区域都是空旷的，点与点之间的距离趋于相近，几何直觉失效。"
     },
     {
       "stage": "post",
-      "question": "After running PCA on 784-dimensional MNIST data with k=50 components, you find 95% of variance is captured. What does this tell you?",
-      "options": ["Only 50 pixels matter in each image", "The data effectively lives in a ~50-dimensional subspace; the remaining 734 dimensions are mostly noise or redundancy", "95% of images belong to the same class", "The model will achieve 95% accuracy"],
+      "question": "t-SNE 算法相比传统 PCA 在降维可视化上的突出优势是？",
+      "options": [
+        "t-SNE 是线性方法，计算极快",
+        "t-SNE 是非线性降维方法，能极其优秀地保留高维数据的局部流形结构与聚类流形",
+        "t-SNE 保证距离全局线性等距",
+        "t-SNE 可以直接用于新测试样本的快速预测"
+      ],
       "correct": 1,
-      "explanation": "95% explained variance with 50 components means the essential structure of 784-dimensional data is captured by just 50 directions. The rest carries only 5% of the variation -- mostly noise."
+      "explanation": "t-SNE 运用概率分布匹配（高斯/t分布）拟合局部距离，是复杂高维特征聚类可视化的利器。"
     },
     {
       "stage": "post",
-      "question": "Why should you NOT use t-SNE as preprocessing before training a classifier?",
-      "options": ["t-SNE is too slow for large datasets", "t-SNE is designed for visualization only: it distorts global distances, is stochastic, and the output coordinates have no consistent meaning across runs", "t-SNE reduces data to exactly 2 dimensions which is too few", "t-SNE requires the labels to be known in advance"],
-      "correct": 1,
-      "explanation": "t-SNE preserves local neighborhoods but distorts global structure. Distances between clusters are meaningless, and different runs produce different layouts. Use PCA for preprocessing and t-SNE/UMAP only for visualization."
+      "question": "在运行 PCA 前，为什么通常必须对数据进行中心化（Demeaning/Zero-centering）？",
+      "options": [
+        "消除数据列均值的影响，使协方差矩阵的计算等价于矩阵转置乘积 $X^T X$",
+        "将数据值缩放到 [0, 1] 区间",
+        "删除离群点",
+        "防止矩阵秩增加"
+      ],
+      "correct": 0,
+      "explanation": "协方差计算依赖于偏离均值的离差；提前中心化使得内积直接反映协方差。"
     },
     {
       "stage": "post",
-      "question": "When would you choose kernel PCA over standard PCA?",
-      "options": ["When you have more samples than features", "When the data lies on a nonlinear manifold that standard PCA cannot separate, like concentric circles", "When you need the fastest possible computation", "When you want interpretable principal components"],
-      "correct": 1,
-      "explanation": "Standard PCA finds linear subspaces. If data has nonlinear structure (e.g., two concentric rings), PCA projects both onto the same line. Kernel PCA maps data to a higher-dimensional space where the structure becomes linear."
+      "question": "PCA 中特征值（Eigenvalues）的大小代表什么物理意义？",
+      "options": [
+        "对应主成分方向上的方差大小（贡献率）",
+        "对应特征在数据集中的缺失比例",
+        "算法的计算耗时",
+        "变量的回归系数"
+      ],
+      "correct": 0,
+      "explanation": "特征值越大，说明该主成分方向包含的数据方差占比越高。按特征值降序排序即可选择 Top-K 主成分。"
     }
   ]
 }

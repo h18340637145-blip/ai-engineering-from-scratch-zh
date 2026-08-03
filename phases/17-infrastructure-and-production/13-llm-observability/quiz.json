@@ -1,6 +1,6 @@
 {
   "lesson": "13-llm-observability",
-  "title": "LLM Observability Stack Selection",
+  "title": "LLM 生产可观测性：Tracing, Token 开销与异常监控",
   "questions": [
     {
       "stage": "pre",

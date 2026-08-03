@@ -1,26 +1,26 @@
-# Capstone: Ship a Reusable Agent Workbench Pack
+# Agent 工作台终极实战：构建完整的大型代码重构 Agent
 
-> The mini-track ends with a pack you drop into any repo. Eleven lessons of surfaces compressed into a directory you can `cp -r` and have an agent working reliably the next morning. The capstone is the artifact this curriculum trades on.
+> Phase 14 总结实战：结合记忆、规划、工具使用、自愈闭环与验证门禁，打造可用于生产环境的自动化重构 Agent。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phases 14 · 31 to 14 · 41
-**Time:** ~75 minutes
+**Prerequisites:** Phase 14 Lesson 01 - Lesson 41
+**Time:** ~90 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Package the seven workbench surfaces into one drop-in directory.
 - Pin the schemas, scripts, and templates so a new repo gets a known-good baseline.
 - Add a single installer script that lays down the pack idempotently.
 - Decide what stays in the pack and what stays out, defending the cut for each.
 
-## The Problem
+## 问题切入
 
 A workbench that lives in a Google Doc, a chat history, and three half-remembered scripts is a workbench that gets rebuilt every quarter. The cure is a versioned pack: a repo or directory with the surfaces, the schemas, the scripts, and a one-command installer.
 
 You will end this lesson with `outputs/agent-workbench-pack/` shipped on disk and a `bin/install.sh` that drops it into any target repo.
 
-## The Concept
+## 核心概念
 
 ```mermaid
 flowchart TD
@@ -83,7 +83,7 @@ A short `bin/install.sh` (or `bin/install.py`):
 
 The pack carries a `VERSION` file. Schema bumps and script changes that require migrations bump the major. Doc-only changes bump the patch. The target repo's `agent_state.json` records which pack version it was initialized against.
 
-## Build It
+## 动手实现
 
 `code/main.py` assembles the pack into `outputs/agent-workbench-pack/` next to the lesson, seeded with the schemas and scripts from the previous lessons in this mini-track and the docs you already wrote.
 
@@ -107,7 +107,7 @@ A pack is only valuable if it survives forks, updates, and an unfriendly upstrea
 
 **Skill-as-publishable. SkillKit-style distribution.** The pack ships as a SkillKit skill: `skillkit install agent-workbench-pack` lays it down across 32 AI agents from a single source. The pack repo is the source of truth; SkillKit is the distribution channel. Vendor lock-in collapses; the seven surfaces stay the same.
 
-## Use It
+## 应用场景
 
 Three places the pack ships:
 
@@ -117,11 +117,11 @@ Three places the pack ships:
 
 The pack is the recipe. Each install is a serving.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-workbench-pack.md` generates a project-tuned pack: rules sharpened to the team's history, scope globs matched to the repo, rubric dimensions extended with one domain-specific entry.
 
-## Exercises
+## 练习题
 
 1. Decide which optional fifth doc deserves promotion into the canonical pack. Defend the cut.
 2. Rewrite the installer as Python with a `--dry-run` flag. Compare ergonomics against bash.
@@ -129,7 +129,7 @@ The pack is the recipe. Each install is a serving.
 4. Add a `lint_pack.py` that fails when the pack drifts from `VERSION`. Wire it into CI for the pack's own repo.
 5. Author the migration runbook from a hand-rolled workbench to this pack. What is the order of operations that minimizes downtime?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -139,7 +139,7 @@ The pack is the recipe. Each install is a serving.
 | Drop-in pack | "cp -r and go" | Pack works without per-repo customization on day one |
 | Forkable template | "GitHub template" | Public repo that GitHub's "Use this template" can clone from |
 
-## Further Reading
+## 深入阅读
 
 - Phases 14 · 31 to 14 · 41 — every surface this pack bundles
 - [SkillKit](https://github.com/rohitg00/skillkit) — install this skill across 32 AI agents

@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does 'version control' primarily help you do?",
-      "options": ["Speed up code execution", "Track changes to files over time and collaborate with others", "Compress files to save disk space", "Automatically fix bugs in your code"],
+      "question": "为什么不应该将模型权重文件（如 `.pt` 或 `.safetensors`）直接提交到 Git 中？",
+      "options": [
+        "Git 无法处理二进制文件，会损坏模型权重",
+        "大文件会使仓库急剧膨胀，减慢每一个 git 操作",
+        "Git 只支持存储 Python 源代码文件",
+        "模型权重文件在提交前会自动加密"
+      ],
       "correct": 1,
-      "explanation": "Version control systems like git track every change made to files, allowing you to revert to previous states and collaborate with others on the same codebase."
+      "explanation": "Git 为每次提交保存完整的文件历史。直接存储多 GB 的模型权重会导致仓库极度庞大且变慢。应使用 Git LFS、DVC 或外部存储。"
     },
     {
       "stage": "pre",
-      "question": "What is a 'repository' in the context of software development?",
-      "options": ["A cloud storage service like Google Drive", "A collection of files and their complete change history managed by version control", "A database for storing user data", "A package manager for installing libraries"],
+      "question": "Conventional Commits 规范中 `feat:` 前缀表示什么意思？",
+      "options": [
+        "针对已有代码的 Bug 修复",
+        "为项目引入的新功能",
+        "仅更新文档或 README",
+        "重构代码但不改变外部行为"
+      ],
       "correct": 1,
-      "explanation": "A repository (repo) is a directory tracked by git that contains all project files along with the full history of changes made to those files."
+      "explanation": "`feat:` 前缀表示新增功能。Bug 修复使用 `fix:`，文档使用 `docs:`，重构使用 `refactor:`。"
     },
     {
       "stage": "post",
-      "question": "What is the correct sequence for saving and backing up your work in git?",
-      "options": ["git push, git add, git commit", "git commit, git add, git push", "git add, git commit, git push", "git clone, git add, git push"],
-      "correct": 2,
-      "explanation": "First you stage changes with 'git add', then save a snapshot with 'git commit', then upload to the remote with 'git push'. This is the daily workflow."
+      "question": "Git LFS 与常规 Git 存储相比有什么区别？",
+      "options": [
+        "LFS 在 Git 仓库中存储轻量级指针文件，而实际的二进制大文件保存在单独的服务器上",
+        "LFS 将所有二进制文件自动压缩为 ZIP 压缩包",
+        "LFS 只适用于 Python 脚本，不适用于模型文件",
+        "LFS 会自动加密存储的所有模型权重"
+      ],
+      "correct": 0,
+      "explanation": "Git LFS 将二进制大文件替换为文本指针。只有当你 check out 具体分支时，对应版本的实际大文件才会被下载。"
     },
     {
       "stage": "post",
-      "question": "What does 'git checkout -b experiment/new-optimizer' do?",
-      "options": ["Downloads a branch from GitHub called experiment/new-optimizer", "Creates a new branch named experiment/new-optimizer and switches to it", "Deletes the branch experiment/new-optimizer", "Reverts all files to match the experiment/new-optimizer branch"],
+      "question": "规范中推荐的规范 commit message 格式是怎样的？",
+      "options": [
+        "Update model file and fixed stuff",
+        "feat(phase-00/02): add git collaboration workflow and check script",
+        "wip: work in progress on git lesson",
+        "Added files to repo"
+      ],
       "correct": 1,
-      "explanation": "The '-b' flag creates a new branch with the given name and immediately switches to it, allowing you to experiment without affecting the main branch."
+      "explanation": "规范格式包含类型（scope）：简短说明，描述做了什么以及影响的模块范围。"
     },
     {
       "stage": "post",
-      "question": "Why should you add '.pt', '.pth', and '.safetensors' to your .gitignore?",
-      "options": ["They are Python test files that should not be committed", "They are model checkpoint files that are too large for git and can be re-generated", "They contain sensitive API keys", "Git cannot track binary files of any kind"],
+      "question": "哪一条指令最适合用来安全合并主分支上最新的更改？",
+      "options": [
+        "git reset --hard origin/main",
+        "git fetch origin main && git merge origin/main",
+        "git push --force origin main",
+        "git checkout -b new-branch"
+      ],
       "correct": 1,
-      "explanation": "Model checkpoint files (.pt, .pth, .safetensors) are often gigabytes in size. Git is not designed for large binary files, so these should be excluded and re-generated or stored separately."
+      "explanation": "拉取并合并 upstream main 是安全整合最新更改的规范做法，不会丢失未提交的本地工作。"
     }
   ]
 }

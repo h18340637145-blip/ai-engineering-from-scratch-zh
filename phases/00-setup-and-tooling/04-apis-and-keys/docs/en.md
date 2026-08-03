@@ -1,13 +1,13 @@
-# APIs & Keys
+# API 与密钥安全管理
 
-> Every AI API works the same way: send a request, get a response. The details change, the pattern doesn't.
+> 安全地集成 LLM API。掌握环境变量管理、限流重试、错误处理以及 Token 计量计算。
 
-**Type:** Build
-**Languages:** Python, TypeScript
-**Prerequisites:** Phase 0, Lesson 01
-**Time:** ~30 minutes
+**Type:** 构建
+**Languages:** Python, Bash
+**Prerequisites:** 无
+**Time:** ~30 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Store API keys securely using environment variables and `.env` files
 - Make an LLM API call using both the Anthropic Python SDK and raw HTTP

@@ -1,28 +1,28 @@
-# Capstone 02 — RAG over Codebase (Cross-Repo Semantic Search)
+# 综合项目 02——面向代码库的 RAG（跨仓库语义搜索）
 
-> Every serious engineering org in 2026 runs an internal code search that understands meaning, not just strings. Sourcegraph Amp, Cursor's codebase answers, Augment's enterprise graph, Aider's repomap, Pinterest's internal MCP — same shape. Ingest many repos, parse with tree-sitter, embed function- and class-level chunks, hybrid-search, re-rank, answer with citations. This capstone asks you to build one that handles 2M lines of code across 10 repos and survives incremental re-indexing on every git push.
+> 2026 年，所有成熟的工程组织都在运行能够理解语义而非只匹配字符串的内部代码搜索。Sourcegraph Amp、Cursor 的代码库问答、Augment 的企业图、Aider 的 repomap，以及 Pinterest 的内部 MCP，都采用相同形态：摄取多个仓库，使用 tree-sitter 解析，对函数级和类级分块做嵌入，执行混合搜索与重排，并给出带引用的答案。本综合项目要求你构建这样一个系统：处理 10 个仓库中的 200 万行代码，并能在每次 Git 推送后可靠完成增量重建索引。
 
-**Type:** Capstone
-**Languages:** Python (ingestion), TypeScript (API + UI)
-**Prerequisites:** Phase 5 (NLP foundations), Phase 7 (transformers), Phase 11 (LLM engineering), Phase 13 (tools), Phase 17 (infrastructure)
-**Phases exercised:** P5 · P7 · P11 · P13 · P17
-**Time:** 30 hours
+**类型：** 综合项目
+**语言：** Python（摄取）、TypeScript (API + UI)
+**前置课程：** 阶段 5（NLP 基础）、阶段 7（Transformer）、阶段 11（LLM 工程）、阶段 13（工具）、阶段 17（基础设施）
+**涉及阶段：** P5 · P7 · P11 · P13 · P17
+**时间：** 30 小时
 
-## Problem
+## 问题
 
-By 2026 every frontier coding agent ships with a codebase retrieval layer because context windows alone do not solve cross-repo questions. Claude's 1M-token context helps; it does not eliminate the need for ranked retrieval. Naive cosine search over raw chunks poisons results on generated code, on monorepo duplication, and on the long tail of rarely-imported symbols. The production answer is a hybrid (dense + BM25) search over AST-aware chunks with a re-ranker, backed by a graph of symbol references.
+到 2026 年，每个前沿编码智能体都配备了代码库检索层，因为仅靠上下文窗口无法解决跨仓库问题。Claude 的 100 万 Token 上下文有所帮助，但不能消除排序检索的必要性。对原始分块执行朴素余弦搜索时，生成代码、单体仓库中的重复内容，以及很少被导入的长尾符号都会污染结果。生产级方案是在 AST 感知分块上执行稠密检索与 BM25 相结合的混合搜索，并使用重排器和符号引用图提供支持。
 
-You learn this by indexing a real fleet — not one tutorial repo — and measuring MRR@10, citation faithfulness, and incremental freshness. The failure modes are infrastructural: a 100k-file monorepo, a push that retouches half the files, a query that needs to cross four repos to answer correctly.
+你需要通过索引一组真实仓库来学习，而不是只处理一个教程仓库；同时衡量 MRR@10、引用忠实度和增量新鲜度。故障模式主要来自基础设施：包含 10 万个文件的单体仓库、一次改动一半文件的推送，以及必须跨越 4 个仓库才能正确回答的查询。
 
-## Concept
+## 核心概念
 
-An AST-aware ingestion pipeline parses each file with tree-sitter, extracts function and class nodes, and chunks at node boundaries rather than fixed token windows. Each chunk gets three representations: a dense embedding (Voyage-code-3 or nomic-embed-code), sparse BM25 terms, and a short natural-language summary. The summary adds a third retrievable modality — users ask "how is X authorized" and the summary mentions "authz", even if the code only has `check_permission`.
+AST 感知摄取流水线使用 tree-sitter 解析每个文件，提取函数和类节点，并在节点边界而不是固定 Token 窗口处分块。每个分块都有 3 种表示：稠密嵌入（Voyage-code-3 或 nomic-embed-code）、稀疏 BM25 词项，以及简短的自然语言摘要。摘要增加了第 3 种可检索模态：用户可能询问「X 如何获得授权」，摘要中会出现「authz」，即使代码里只有 `check_permission`。
 
-Retrieval is hybrid. A query fires both dense and BM25 searches, merges top-k, and hands the union to a cross-encoder re-ranker (Cohere rerank-3 or bge-reranker-v2-gemma-2b). The re-ranked list goes to a long-context synthesizer (Claude Sonnet 4.7 with prompt caching, or Llama 3.3 70B self-hosted) with instructions to cite every claim by file and line range. Answers without citations are rejected by a post-filter.
+检索采用混合方式。一个查询会同时触发稠密搜索和 BM25 搜索，合并 top-k 后，将并集交给交叉编码器重排器（Cohere rerank-3 或 bge-reranker-v2-gemma-2b）。重排后的列表进入长上下文综合器（启用提示词缓存的 Claude Sonnet 4.7，或自托管 Llama 3.3 70B），并要求每项声明都引用文件和行号范围。后置过滤器会拒绝没有引用的答案。
 
-Incremental freshness is the infrastructure problem. Git push triggers a diff: which files changed, which symbols changed. Only affected chunks re-embed. Affected cross-file symbol edges (imports, method calls) get recomputed. The index stays consistent without reprocessing 2M lines each commit.
+增量新鲜度是基础设施问题。Git 推送会触发 Diff，判断哪些文件和符号发生变化。只有受影响的分块重新嵌入，受影响的跨文件符号边（导入、方法调用）也会重新计算。这样无需每次提交都重新处理 200 万行代码，索引仍能保持一致。
 
-## Architecture
+## 架构
 
 ```
 git push --> webhook --> ingest worker (LlamaIndex Workflow)

@@ -1,6 +1,6 @@
 {
   "lesson": "24-chaos-engineering-llm",
-  "title": "Chaos Engineering for LLM Production",
+  "title": "LLM 混沌工程：故障注入与高可用演练",
   "questions": [
     {
       "stage": "pre",

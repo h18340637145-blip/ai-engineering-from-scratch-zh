@@ -1,6 +1,6 @@
 {
   "lesson": "40-multi-session-handoff",
-  "title": "Multi-Session Handoff",
+  "title": "多会话交接（Multi-Session Handoff）：跨会话持久化上下文转交",
   "questions": [
     {
       "stage": "pre",

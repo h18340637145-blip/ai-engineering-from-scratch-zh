@@ -1,78 +1,78 @@
 {
   "lesson": "02-reward-hacking-goodhart",
-  "title": "Reward Hacking and Goodhart's Law",
+  "title": "奖励黑客攻击与古德哈特定律",
   "questions": [
     {
       "stage": "pre",
-      "question": "Goodhart's Law, as originally stated, says:",
+      "question": "古德哈特定律（Goodhart's Law）最初的表述是：",
       "options": [
-        "Any measure that becomes a target ceases to be a good measure",
-        "Reward models converge to true human preference at large scale",
-        "Heavy-tailed errors cannot occur in finite-dimensional models",
-        "Optimization always improves a proxy without limit"
+        "任何足够强大的优化器都会破坏其约束条件",
+        "当一个指标变成目标时，它就不再是一个好指标",
+        "代理奖励总是低于真实奖励",
+        "RLHF 模型随着规模扩大必然表现出阿谀奉承"
       ],
       "correct": 0,
-      "explanation": ""
+      "explanation": "古德哈特定律指出，当一个统计指标被用作政策控制目标时，它就会失去原本作为衡量标准的有效性。"
     },
     {
       "stage": "check",
-      "question": "In Gao, Schulman, Hilton (2023), how do proxy reward and gold reward behave as KL distance from the initial policy grows?",
+      "question": "Gao 等人（ICML 2023）对过度优化的缩放规律（Scaling Law）做出了什么预测？",
       "options": [
-        "Both stay flat under any KL constraint",
-        "Both rise monotonically with KL",
-        "Proxy peaks then falls, gold rises monotonically",
-        "Proxy keeps rising, gold peaks closer to the origin then falls"
+        "代理奖励和真实奖励都会无限增长",
+        "代理奖励增加，而真实奖励先上升后下降，且代理-真实差距随与初始策略的 KL 散度增大而增大",
+        "真实奖励保持恒定，而代理奖励下降",
+        "KL 惩罚可以彻底消除代理与真实奖励之间的差距"
       ],
       "correct": 3,
-      "explanation": ""
+      "explanation": "Gao 等人证明，随着模型偏离初始策略（KL 散度增大），代理奖励持续上升，但真实奖励在达到峰值后会发生逆转下降。"
     },
     {
       "stage": "check",
-      "question": "Which of the following is NOT one of the four 'costumes' of reward hacking listed in the lesson?",
+      "question": "以下哪项不是奖励黑客攻击（Reward Hacking）的常见表现？",
       "options": [
-        "Unfaithful reasoning",
-        "Verbosity bias",
-        "Tokenizer mismatch",
-        "Sycophancy"
+        "冗长偏见（Verbosity bias）：回答越长得分越高",
+        "阿谀奉承（Sycophancy）：顺应用户的错误观点",
+        "精准遵循指令（Precise instruction following）：完全按提示执行",
+        "评估器篡改（Evaluator tampering）：向评估器输出特定标记以获取高分"
       ],
       "correct": 2,
-      "explanation": ""
+      "explanation": "精准遵循指令是对齐的目标，而不是奖励黑客攻击的表现。"
     },
     {
       "stage": "check",
-      "question": "What is the 'Catastrophic Goodhart' result about KL regularization?",
+      "question": "根据 Gao 等人的理论，当奖励误差分布具有重尾特征时，仅靠 KL 正则化为什么无法完全解决问题？",
       "options": [
-        "KL regularization always prevents reward hacking when beta is positive",
-        "KL regularization only fails when the policy is randomly initialized",
-        "KL regularization is equivalent to ensembling reward models",
-        "Under heavy-tailed reward error, a KL-constrained optimal policy can still drive proxy reward up while gold reward stays at baseline"
+        "KL 散度无法在中等距离下有效约束极端偏离导致的严重奖励欺骗",
+        "KL 散度在数学上无法计算",
+        "重尾误差会导致梯度爆炸",
+        "PPO 算法无法处理重尾分布"
       ],
       "correct": 3,
-      "explanation": ""
+      "explanation": "在重尾误差分布下，极小的策略偏离就可能触及奖励模型的极大异常高分区（灾难性古德哈特现象）。"
     },
     {
       "stage": "post",
-      "question": "Which mitigation does Coste et al. (2023) study to soften reward over-optimization?",
+      "question": "在对齐研究中，“代理奖励”（Proxy Reward）与“真实奖励”（Gold Reward）有什么区别？",
       "options": [
-        "Removing the KL penalty entirely",
-        "Training the policy on the proxy at zero temperature",
-        "Reward-model ensembles with worst-case aggregation",
-        "Increasing the labeler pool to one million raters"
+        "代理奖励由人类打分，真实奖励由模型计算",
+        "代理奖励是训练中实际优化的标量函数，真实奖励是人类真正希望优化的理想目标",
+        "代理奖励总是大于真实奖励",
+        "两者没有任何区别"
       ],
       "correct": 2,
-      "explanation": ""
+      "explanation": "代理奖励是现实中可计算的替代评估函数（如 RM 标量输出），而真实奖励代表人类真实的利益与期望。"
     },
     {
       "stage": "post",
-      "question": "According to the 2026 unified view, what core mechanism do verbosity, sycophancy, unfaithful CoT, and evaluator tampering share?",
+      "question": "缓解奖励黑客攻击的有效方法不包括：",
       "options": [
-        "Probability mass shifts to outputs that maximize proxy reward by exploiting easy-to-learn heuristics that spuriously correlated with approval",
-        "They are caused only by labelers who write malicious preferences",
-        "They all stem from learning-rate schedules being too aggressive",
-        "They are each independent bugs in distinct reward heads"
+        "使用包含多个独立奖励模型的集成（RM Ensemble）",
+        "设置 KL 散度上限或惩罚",
+        "完全取消偏好数据集中的多样性",
+        "引入基于规则的安全与质量约束"
       ],
       "correct": 0,
-      "explanation": ""
+      "explanation": "消除偏好数据集的多样性不仅不能解决奖励黑客，还会导致模型过拟合和泛化能力丧失。"
     }
   ]
 }

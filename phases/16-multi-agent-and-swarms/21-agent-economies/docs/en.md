@@ -1,11 +1,11 @@
-# Agent Economies, Token Incentives, Reputation
+# Agent 经济学：基于 Token 预算与内部货币的资源分配
 
-> Long-horizon autonomous agents (METR's 1-hour to 8-hour work-curve) need economic agency. The emerging **5-layer stack** is: **DePIN** (physical compute) → **Identity** (W3C DIDs + reputation capital) → **Cognition** (RAG + MCP) → **Settlement** (account abstraction) → **Governance** (Agentic DAOs). Production agent-incentive networks include **Bittensor** (TAO subnets reward task-specific models), **Fetch.ai / ASI Alliance** (ASI-1 Mini LLM + FET token), and **Gonka** (transformer-based PoW that reallocates compute to productive AI tasks). Academic work: AAMAS 2025's decentralized LaMAS uses **Shapley-value credit attribution** to fairly reward contributing agents; Google Research "Mechanism design for large language models" proposes **token auctions** with second-price payment under monotone aggregation. This lesson builds a minimal agent marketplace, applies Shapley-value credit attribution to a multi-agent pipeline, and runs a second-price token auction so the game-theory machinery lands concretely.
+> 建立多 Agent 内部经济市场：通过 Token 预算定价、服务出价与资源交易优化系统整体效用。
 
 **Type:** Learn
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 16 (Negotiation and Bargaining), Phase 16 · 09 (Parallel Swarm Networks)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 16 Lesson 01, Lesson 16
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -91,7 +91,7 @@ The LaMAS proposal (AAMAS 2025) combines: DID identity, Shapley-value credit att
 
 In closed corporate systems, economics gives way to simpler allocation (managers assign work, metrics are internal). The economics literature applies mostly to open networks.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -110,11 +110,11 @@ python3 code/main.py
 
 Expected output: Shapley values for each agent; auction result showing truthful-bid equilibrium; rep-weighted routing showing 10-20% quality gain over random after warmup.
 
-## Use It
+## 应用场景
 
 `outputs/skill-economy-designer.md` designs a minimal agent economy: choice of identity layer, credit attribution mechanism, payment mechanism, reputation rule.
 
-## Ship It
+## 产出成果
 
 Running an agent economy in 2026:
 
@@ -124,7 +124,7 @@ Running an agent economy in 2026:
 - **Cap decay factor and floor reputation.** Unbounded decay wipes legitimate contributors; too-slow decay rewards stale high-rep agents.
 - **Audit mechanisms adversarially.** Run red-team scenarios before opening the network. Every mechanism has a game theory; you want to find the holes, not the attackers.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Confirm Shapley values sum to total value (efficiency axiom). Change the value function; do Shapley allocations change in the expected direction?
 2. Implement Shapley *sampling* (Monte Carlo over K orderings). How does K affect approximation accuracy? Compare to exact for N=4.
@@ -132,7 +132,7 @@ Running an agent economy in 2026:
 4. Read the Google Research mechanism-design post. Identify one assumption that, if violated, breaks truthfulness. What does that failure mode look like in an LLM setting?
 5. Read the AAMAS 2025 decentralized LaMAS paper. Implement their Shapley step over 10 agents on a synthetic task. How long does exact computation take? How close does sampling get with 100 draws?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -145,7 +145,7 @@ Running an agent economy in 2026:
 | Agentic DAO | "Agents + humans govern" | DAO with agent voters as first-class, voting power tied to reputation. |
 | TAO / FET / GPU credits | "Token denominations" | Bittensor TAO, Fetch.ai FET, various DePIN tokens. |
 
-## Further Reading
+## 深入阅读
 
 - [The Agent Economy](https://arxiv.org/abs/2602.14219) — 2026 survey of the 5-layer agent-economy stack
 - [Google Research — Mechanism design for large language models](https://research.google/blog/mechanism-design-for-large-language-models/) — token auctions with monotone aggregation

@@ -1,11 +1,11 @@
-# Probability and Distributions
+# 概率论与概率分布
 
-> Probability is the language AI uses to express uncertainty.
+> 建模现实世界的随机性。掌握概率密度函数（PDF）、期望、方差与高斯分布。
 
-**Type:** Learn
+**Type:** 学习
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01-04
-**Time:** ~75 minutes
+**Prerequisites:** 无
+**Time:** ~40 分钟
 
 ## Learning Objectives
 

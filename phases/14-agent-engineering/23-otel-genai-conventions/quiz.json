@@ -1,6 +1,6 @@
 {
   "lesson": "23-otel-genai-conventions",
-  "title": "OpenTelemetry GenAI Semantic Conventions",
+  "title": "OpenTelemetry GenAI 规范：Agent 可观测性与 Trace 监控",
   "questions": [
     {
       "stage": "pre",

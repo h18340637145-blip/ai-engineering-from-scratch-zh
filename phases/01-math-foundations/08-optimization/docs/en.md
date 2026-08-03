@@ -1,11 +1,11 @@
-# Optimization
+# 最优化方法
 
-> Training a neural network is nothing more than finding the bottom of a valley.
+> 在陡峭的损失曲面上下行。掌握 SGD、Momentum 动量与 Adam 自适应优化算法。
 
-**Type:** Build
+**Type:** 构建
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 04-05 (Derivatives, Gradients)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 1, Lesson 04 (机器学习中的微积分)
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

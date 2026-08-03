@@ -1,6 +1,6 @@
 {
   "lesson": "21-ab-testing-llm-features",
-  "title": "A/B Testing LLM Features — GrowthBook, Statsig, and the Vibes Problem",
+  "title": "LLM 功能的 A/B 测试与在线效果评估",
   "questions": [
     {
       "stage": "pre",

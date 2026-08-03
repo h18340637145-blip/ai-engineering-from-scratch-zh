@@ -1,26 +1,26 @@
-# Runtime Feedback Loops
+# 运行时反馈闭环：利用 Lint、测试与编译结果指导修复
 
-> Agents that do not see real command output guess. A feedback runner captures stdout, stderr, exit code, and timing into a structured record the next turn can read. Then the agent reacts to facts instead of to its own prediction of facts.
+> 构建包含 linter、compiler 和 test runner 的即时反馈闭环，使 Agent 能够根据错误日志自我迭代修复。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 32 (Minimal Workbench), Phase 14 · 35 (Init Script)
-**Time:** ~50 minutes
+**Prerequisites:** Phase 14 Lesson 03, Lesson 05
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Distinguish runtime feedback from observability telemetry.
 - Build a feedback runner that wraps shell commands and persists structured records.
 - Truncate large outputs deterministically so the loop stays within token budget.
 - Refuse to advance the loop when feedback is missing.
 
-## The Problem
+## 问题切入
 
 The agent says "running tests now." The next message says "all tests pass." The reality is that no test ran. The agent imagined the output, or it ran the command and never read the result, or it read the result and silently truncated the failure line.
 
 A feedback runner removes that gap. Every command goes through the runner. Every record carries the command, the captured stdout and stderr, the exit code, the wall-clock duration, and a one-line agent note. The agent reads the record at the next turn. The verification gate reads the records at the end of the task.
 
-## The Concept
+## 核心概念
 
 ```mermaid
 flowchart LR
@@ -56,7 +56,7 @@ Telemetry (Phase 14 · 23, OTel GenAI conventions) is for human operators review
 
 If the runner errors before capturing exit, the record carries `exit_code: null` and `error: <reason>`. The agent loop must refuse to claim success on a `null` exit. No exit, no progress.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -82,7 +82,7 @@ Three patterns harden the runner enough to ship.
 
 **Parent-command id for retry chains.** Every record gets `command_id`; retries carry `parent_command_id` pointing at the previous attempt. The reviewer's "failed attempts" list (Phase 14 · 40) and the verification gate's audit both follow the chain. Without this link, retries look like independent successes and the audit hides the failure history.
 
-## Use It
+## 应用场景
 
 Production patterns:
 
@@ -92,11 +92,11 @@ Production patterns:
 
 The runner is a thin wrapper that survives every framework migration because it owns the shape of the record.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-feedback-runner.md` generates a project-specific `run_with_feedback.py` with the right truncation budget, a JSONL writer wired to the workbench, and a loader the agent reads at every turn.
 
-## Exercises
+## 练习题
 
 1. Add a `cwd` field per record so the same command run from different directories is distinguishable.
 2. Add a `redaction` step that strips lines matching `^Bearer ` or `password=`. Test on a fixture record.
@@ -104,7 +104,7 @@ The runner is a thin wrapper that survives every framework migration because it 
 4. Add a `parent_command_id` so retry chains are visible: which command produced the input that the next command consumed.
 5. Pipe the JSONL into a tiny TUI that highlights the latest non-zero exit. Eight key features the TUI must show to be useful in a review.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -114,7 +114,7 @@ The runner is a thin wrapper that survives every framework migration because it 
 | Agent note | "Expectation tag" | The one-line prediction the agent writes before reading the result |
 | Telemetry split | "Two log files" | Feedback for the next turn, telemetry for the operator |
 
-## Further Reading
+## 深入阅读
 
 - [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/)
 - [Anthropic, Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)

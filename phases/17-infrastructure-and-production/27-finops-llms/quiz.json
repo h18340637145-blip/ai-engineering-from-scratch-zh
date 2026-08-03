@@ -1,6 +1,6 @@
 {
   "lesson": "27-finops-llms",
-  "title": "FinOps for LLMs — Unit Economics and Multi-Tenant Attribution",
+  "title": "LLM FinOps 财务运维：成本分摊、监控与归因优化",
   "questions": [
     {
       "stage": "pre",

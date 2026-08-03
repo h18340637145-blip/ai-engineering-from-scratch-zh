@@ -1,13 +1,13 @@
-# Data Management
+# AI 数据管理与存储架构
 
-> Data is the fuel. How you manage it determines how fast you go.
+> 海量数据需要高效的存储与传输。掌握 Parquet 格式、Hugging Face 数据集流式读取与去重技术。
 
-**Type:** Build
+**Type:** 构建
 **Language:** Python
-**Prerequisites:** Phase 0, Lesson 01
-**Time:** ~45 minutes
+**Prerequisites:** 无
+**Time:** ~40 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Load, stream, and cache datasets using the Hugging Face `datasets` library
 - Convert between CSV, JSON, Parquet, and Arrow formats and explain their tradeoffs

@@ -1,6 +1,6 @@
 {
   "lesson": "18-vllm-production-stack-lmcache",
-  "title": "Production Serving Stack — KV Offloading and Cache-Aware Routing",
+  "title": "vLLM 生产技术栈与 LMCache 跨节点缓存共享",
   "questions": [
     {
       "stage": "pre",

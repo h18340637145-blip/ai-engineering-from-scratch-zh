@@ -1,20 +1,20 @@
-# Prefix-Cache Serving — RadixAttention and KV Reuse
+# SGLang 与 RadixAttention：基于前缀树的高效 Prompt 缓存
 
-> Treat the KV cache as a first-class, reusable resource stored in a radix tree, and scheduling changes with it: instead of FCFS (first-come, first-served) as vLLM schedules, a cache-aware scheduler prioritizes requests with longer shared prefixes — effectively a depth-first radix traversal so hot branches stay resident in HBM. SGLang is the engine that built serving around this idea. On Llama 3.1 8B with ShareGPT-like 1K prompts, SGLang hits ~16,200 tok/s to vLLM's ~12,500, a ~29% edge. On prefix-heavy RAG workloads the advantage reaches 6.4x. On voice-cloning-shaped workloads cache hit rate cleared 86%. Deployed on 400,000+ GPUs in 2026 across xAI, LinkedIn, Cursor, Oracle, GCP, Azure, AWS. The gotcha is that the 6.4x number evaporates when prefix ordering is inconsistent — ordering is the engineer's lever.
+> 探索 SGLang 的 RadixAttention 原理：自动跨请求复用与管理基数树 KV 缓存，极大降低 TTFT。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy radix-tree cache + cache-aware scheduler)
-**Prerequisites:** Phase 17 · 04 (Serving Engine Internals), Phase 14 (Agentic RAG)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 17 Lesson 04
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Diagram RadixAttention: how prefixes are stored in a radix tree and how KV blocks are shared across sequences rooted at the same branch.
 - Explain cache-aware scheduling and why FCFS is wrong for prefix-heavy traffic.
 - Compute expected speedup for a workload given prefix-cache hit rate and prompt length distribution.
 - Name the prompt-ordering discipline that makes the 6.4x number real vs a lost upside.
 
-## The Problem
+## 问题切入
 
 Classic serving treats each request's prompt as opaque. Even when 5,000 RAG requests all start with the same 2,000-token system prompt plus same retrieval preamble, vLLM prefills that 2,000-token prefix 5,000 times. The GPU does the same work over and over.
 
@@ -24,7 +24,7 @@ RadixAttention does exactly this. Tokens are indexed in a radix tree; each node 
 
 The challenge is scheduling. If two requests share a 2,000-token prefix and a third shares only 200 tokens of the same prefix, you want to serve the two long-shared requests together so the long prefix stays in HBM. FCFS does the opposite — it serves whoever arrived first, potentially evicting the hot branch before the next long-prefix request hits.
 
-## The Concept
+## 核心概念
 
 ### The radix tree as a KV index
 
@@ -90,15 +90,15 @@ The two systems are not strict competitors. In 2026 vLLM added prefix caching (`
 roofline
 ```
 
-## Use It
+## 应用场景
 
 `code/main.py` implements a toy radix-tree KV cache plus a scheduler with two policies: FCFS and cache-aware. Runs the same workload through both, reports prefix-cache hit rate and throughput delta. Then runs a "scrambled ordering" workload to show the 6.4x collapse.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-radix-scheduler-advisor.md`. Given a workload description (prompt-template shape, retrieval pattern, number of concurrent tenants), it produces a prompt-ordering prescription and a go/no-go for SGLang adoption.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Compare FCFS and cache-aware on the same workload. Where does the delta come from — prefill savings, decode savings, or queue delay?
 2. Modify the workload so prompts randomly permute `[system, tools, context]`. Re-run. What happens to hit rate? Why?
@@ -106,7 +106,7 @@ This lesson produces `outputs/skill-radix-scheduler-advisor.md`. Given a workloa
 4. Read the SGLang RadixAttention paper. Explain in three sentences why tree-shaped LRU eviction beats block-shaped LRU under prefix-heavy load.
 5. A customer reports only 8% cache hit rate. Name three likely causes and the diagnostic you would run for each.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -119,7 +119,7 @@ This lesson produces `outputs/skill-radix-scheduler-advisor.md`. Given a workloa
 | Prompt template ordering | "the cache key" | The prompt's component order determines what the tree can share |
 | System prompt pinning | "resident prefix" | Keep the immutable system portion pinned to avoid eviction thrash |
 
-## Further Reading
+## 深入阅读
 
 - [SGLang GitHub](https://github.com/sgl-project/sglang) — source and docs.
 - [SGLang documentation](https://sgl-project.github.io/) — RadixAttention and scheduling details.

@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the '~' symbol represent in a Linux file path?",
-      "options": ["The root directory of the file system", "The current user's home directory", "The temporary files directory", "The directory where system programs are installed"],
-      "correct": 1,
-      "explanation": "The tilde (~) is a shortcut for the current user's home directory, typically /home/username on Linux. 'cd ~' takes you home from anywhere."
+      "question": "在 Linux 权限系统中，`chmod +x script.sh` 命令的作用是什么？",
+      "options": [
+        "赋予 `script.sh` 文件可执行权限",
+        "删除 `script.sh` 文件",
+        "把文件压缩为 ZIP 包",
+        "将文件转换为 Python 格式"
+      ],
+      "correct": 0,
+      "explanation": "`+x` 选项添加了执行权限标志（executable bit），允许 Shell 直接运行该脚本文件。"
     },
     {
       "stage": "pre",
-      "question": "What is the purpose of 'sudo' before a command?",
-      "options": ["It speeds up the command execution", "It runs the command with root (administrator) privileges", "It runs the command in a sandboxed environment", "It logs the command output to a system file"],
+      "question": "当运行模型的进程触发系统 Out-Of-Memory (OOM) 崩溃时，发生了什么？",
+      "options": [
+        "CPU 硬件温度过高熔断",
+        "内存/显存耗尽，Linux 内核的 OOM Killer 强行终止了占用内存最大的进程",
+        "网络断开连接",
+        "磁盘写入错误"
+      ],
       "correct": 1,
-      "explanation": "sudo (superuser do) temporarily elevates your privileges to root level for a single command. Required for system-level operations like installing packages with apt."
+      "explanation": "当系统可用物理内存（或 Swap）彻底耗尽时，内核只能杀掉高内存开销进程以保障系统整体稳定。"
     },
     {
       "stage": "post",
-      "question": "You get 'Permission denied' when trying to run a shell script. What command fixes this?",
-      "options": ["sudo rm script.sh", "chmod +x script.sh", "chown root script.sh", "mv script.sh /usr/bin/"],
+      "question": "哪个 Linux 命令可以用来快速检查系统剩余可用 RAM 内存与 Swap 交换空间？",
+      "options": [
+        "lsblk",
+        "free -h",
+        "uname -a",
+        "lscpu"
+      ],
       "correct": 1,
-      "explanation": "chmod +x adds execute permission to the file. Without the execute bit set, the shell refuses to run the script even if you own it."
+      "explanation": "`free -h` 以人类易读的单位（GB/MB）直观展示已用、剩余内存和缓存开销。"
     },
     {
       "stage": "post",
-      "question": "On a remote GPU box, your training data fills the disk. Which command shows the largest directories consuming space?",
-      "options": ["ls -la /", "du -h --max-depth=1 / | sort -hr | head -20", "cat /proc/meminfo", "free -h"],
-      "correct": 1,
-      "explanation": "du -h shows disk usage per directory, --max-depth=1 limits to top-level directories, and sort -hr sorts by size in descending order. This reveals which directories are consuming the most space."
+      "question": "在 Linux 中，硬链接与符号链接（Symlink）的主要区别是什么？",
+      "options": [
+        "符号链接是包含目标文件路径的独立快捷方式指针；硬链接指向同一个磁盘 inode",
+        "硬链接只能在 Windows 上使用",
+        "符号链接不能跨目录使用",
+        "它们没有任何区别"
+      ],
+      "correct": 0,
+      "explanation": "符号链接类似于快捷方式，如果删除目标原文件，符号链接会失效（断链）；硬链接则直接共享底层的磁盘数据块。"
     },
     {
       "stage": "post",
-      "question": "What is a key difference between the macOS and Linux versions of 'sed -i'?",
-      "options": ["Linux sed is faster than macOS sed", "macOS sed requires an empty string argument after -i ('sed -i \"\"'), while Linux does not", "Linux sed does not support regular expressions", "macOS sed cannot modify files in place"],
+      "question": "系统命令 `systemctl` 的主要用途是什么？",
+      "options": [
+        "安装 Python 依赖包",
+        "管理 Linux `systemd` 系统服务（启动、停止、开机自启后台守护进程）",
+        "监控 GPU 温度",
+        "格式化磁盘分区"
+      ],
       "correct": 1,
-      "explanation": "macOS uses BSD sed which requires 'sed -i \"\" pattern file', while Linux uses GNU sed which accepts 'sed -i pattern file'. This is a common gotcha when moving scripts between systems."
+      "explanation": "`systemctl` 是现代 Linux 发行版管理守护进程和服务生命周期的标准命令。"
     }
   ]
 }

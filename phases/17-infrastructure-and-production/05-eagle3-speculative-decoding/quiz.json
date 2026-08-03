@@ -1,6 +1,6 @@
 {
   "lesson": "05-eagle3-speculative-decoding",
-  "title": "EAGLE-3 Speculative Decoding in Production",
+  "title": "EAGLE-3 与投机采样（Speculative Decoding）推理加速",
   "questions": [
     {
       "stage": "pre",

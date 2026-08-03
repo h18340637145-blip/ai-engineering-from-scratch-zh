@@ -1,6 +1,6 @@
 {
   "lesson": "17-disaggregated-prefill-decode",
-  "title": "Disaggregated Prefill/Decode — NVIDIA Dynamo and llm-d",
+  "title": "Prefill 与 Decode 分离架构（Disaggregated Serving）",
   "questions": [
     {
       "stage": "pre",

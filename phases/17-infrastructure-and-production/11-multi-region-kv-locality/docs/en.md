@@ -1,20 +1,20 @@
-# Multi-Region LLM Serving and KV Cache Locality
+# 多地域部署与 KV Cache 局部性路由
 
-> Round-robin load balancing is actively harmful for cached LLM inference. A request that does not land on the node holding its prefix pays full prefill cost — roughly 800 ms at P50 on a long prompt versus ~80 ms with a cache hit. In 2026 the production pattern is a cache-aware router (vLLM Router in Rust, llm-d router) that consumes KV-cache events and routes on prefix-hash match. Recent research (GORGO) makes cross-region network latency an explicit term in the routing objective. Commercial "cross-region inference" offerings (Bedrock cross-region inference, GKE multi-cluster gateways) treat inference as opaque — they handle availability, not TTFT. JPMorgan and Mayo Clinic ran us-east-1 failover in Nov 2024 at ~22 minutes. The DR reality: 32% of LLM DR failures are because teams backed up weights but forgot tokenizer files or quantization configs.
+> 在全球多数据中心部署 LLM 推理服务：结合地理位置与 KV 缓存局部性实现智能请求路由。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy prefix-cache-aware router simulator)
-**Prerequisites:** Phase 17 · 04 (vLLM Serving), Phase 17 · 06 (SGLang RadixAttention)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 06
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Explain why round-robin load balancing breaks cached inference and quantify the TTFT penalty.
 - Diagram a cache-aware router: inputs (KV-cache events), algorithm (prefix-hash match), tie-breaker (GPU utilization).
 - Name the 32% DR failure driver for LLMs (missing tokenizer files / quantization configs) and state a three-file DR checklist.
 - Distinguish commercial cross-region offerings (Bedrock CRI, GKE Multi-Cluster Gateway) from KV-aware routing.
 
-## The Problem
+## 问题切入
 
 Your service runs in us-east-1, us-west-2, and eu-west-1. You put an ALB in front with round-robin. Prefix cache hit rate in production drops to 8%. TTFT P50 triples. Your vLLM logs show every request is paying full prefill cost.
 
@@ -24,7 +24,7 @@ Separately, your team has a DR plan. You back up model weights to S3 cross-regio
 
 Multi-region LLM serving is a cache problem, a routing problem, and a DR-hygiene problem — not a load-balancer problem.
 
-## The Concept
+## 核心概念
 
 ### Cache-aware routing
 
@@ -87,15 +87,15 @@ EU customer PHI cannot leave EU. If your cache-aware router sends a Paris-origin
 - DR failure: 32% miss tokenizer/quant configs.
 - JPMorgan us-east-1 failover Nov 2024: 22 minutes (30-min SLA).
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates three routing strategies (round-robin, cache-aware regional, cache-aware global) on a multi-region workload. Reports cache hit rate, TTFT P50/P99, and cross-region bill.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-multi-region-router.md`. Given regions, residency constraints, and SLA, designs a routing plan.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. At what prompt length does cross-region routing beat local-only routing, given 75 ms RTT?
 2. Your cache hit rate drops from 70% to 12%. Diagnose three possible causes and the observables that would confirm each.
@@ -103,7 +103,7 @@ This lesson produces `outputs/skill-multi-region-router.md`. Given regions, resi
 4. Argue whether Bedrock cross-region inference is "enough" for a fintech with strict TTFT SLOs. Cite specific behaviors.
 5. A Paris-origin request matches a prefix in us-east-1. Do you route it? Write the policy.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -117,7 +117,7 @@ This lesson produces `outputs/skill-multi-region-router.md`. Given regions, resi
 | RTT | "round-trip time" | Network latency; 75 ms US-EU, 220 ms US-APAC |
 | LLM-aware LB | "cache-hit LB" | Cache-aware router as a product category |
 
-## Further Reading
+## 深入阅读
 
 - [BentoML — Multi-cloud and cross-region inference](https://bentoml.com/llm/infrastructure-and-operations/multi-cloud-and-cross-region-inference)
 - [arXiv — GORGO (2602.11688)](https://arxiv.org/html/2602.11688v1) — cross-region KV-cache reuse with network latency term.

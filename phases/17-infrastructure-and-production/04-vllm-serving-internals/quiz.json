@@ -1,6 +1,6 @@
 {
   "lesson": "04-vllm-serving-internals",
-  "title": "Serving Engine Internals — PagedAttention, Continuous Batching, Chunked Prefill",
+  "title": "vLLM 服务端内部原理解析：PagedAttention 与 Continuous Batching",
   "questions": [
     {
       "stage": "pre",

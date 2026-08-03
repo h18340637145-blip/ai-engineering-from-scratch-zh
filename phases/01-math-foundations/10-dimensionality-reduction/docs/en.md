@@ -1,11 +1,11 @@
-# Dimensionality Reduction
+# 降维技术
 
-> High-dimensional data has structure. You find it by looking from the right angle.
+> 战胜维数灾难。掌握主成分分析（PCA）与 t-SNE 嵌入可视化。
 
-**Type:** Build
+**Type:** 构建
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01 (Linear Algebra Intuition), 02 (Vectors, Matrices & Operations), 03 (Eigenvalues & Eigenvectors), 06 (Probability & Distributions)
-**Time:** ~90 minutes
+**Prerequisites:** Phase 1, Lesson 01 (线性代数直觉)
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

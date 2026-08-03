@@ -1,11 +1,11 @@
-# Failure Modes — MAST, Groupthink, Monoculture, Cascading Errors
+# 多 Agent 失效模式：群思偏见、死锁与级联崩溃
 
-> The reference taxonomy for 2026 is **MAST** (Cemri et al., NeurIPS 2025, arXiv:2503.13657), derived from 1642 execution traces across 7 state-of-the-art open-source MAS showing **41–86.7% failure rate**. Three root categories: **Specification Problems** (41.77%) — role ambiguity, unclear task definitions; **Coordination Failures** (36.94%) — communication breakdowns, state desync; **Verification Gaps** (21.30%) — missing validation, absent quality checks. The **Groupthink** family (arXiv:2508.05687) adds: monoculture collapse (same base model → correlated failures), conformity bias (agents reinforce each other's errors), deficient theory of mind, mixed-motive dynamics, cascading reliability failures. Cascading example: retry storms where a payment failure triggers order retries, which trigger inventory retries, which overwhelm inventory service (10x load in seconds — needs circuit breakers). Memory poisoning: one agent's hallucination enters shared memory, downstream agents treat it as fact; accuracy decays gradually, making root-cause diagnosis painful. **STRATUS** (NeurIPS 2025) reports 1.5x mitigation-success improvement via specialized detection / diagnosis / validation agents. This lesson treats failure modes as first-class engineering targets.
+> 分析多 Agent 系统的独特故障模式：群体思维陷阱（Groupthink）、循环信息放大与死锁规避。
 
 **Type:** Learn
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 13 (Shared Memory), Phase 16 · 14 (Consensus and BFT), Phase 16 · 15 (Voting and Debate Topology)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 16 Lesson 01, Lesson 07
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -137,7 +137,7 @@ Some failures are immediate; some are slow. Immediate failures (timeout, schema 
 
 The 2026 engineering move: instrument slow-failure proxies so you can catch drift before it becomes a visible error. Agreement rate, retry rate, output-length distribution, and edit-distance between consecutive agent versions are all useful proxies.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -157,11 +157,11 @@ Expected output:
 - with circuit breaker: cap at threshold; degraded-mode responses served.
 - detection agent flags the pattern and names the MAST category.
 
-## Use It
+## 应用场景
 
 `outputs/skill-mast-auditor.md` runs a MAST-style failure-mode audit on a multi-agent system. Traces → categorization → mitigation ranking.
 
-## Ship It
+## 产出成果
 
 Failure-mode discipline in production:
 
@@ -171,7 +171,7 @@ Failure-mode discipline in production:
 - **STRATUS trio.** Detection + Diagnosis + Validation agents monitoring production. Start with the detection agent only; add diagnosis when symptoms are noisy.
 - **Failure budget.** Explicit SLO for failure rate by category. Exceeding budget triggers a stop-shipping conversation.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Confirm the circuit breaker caps the retry storm. Vary the failure threshold and observe the tradeoff.
 2. Implement a **slow-failure proxy**: agreement rate across 3 parallel agents. When it drops sharply, trigger an alert. Simulate a monoculture drift by gradually correlating agent outputs.
@@ -179,7 +179,7 @@ Failure-mode discipline in production:
 4. Read the Groupthink paper (arXiv:2508.05687). Identify which of the five patterns is hardest to detect in production. Propose a proxy metric.
 5. Design a STRATUS-style detection-diagnosis-validation trio for a specific multi-agent system you know. Which symptoms does detection watch for? What mitigations does diagnosis recommend? How does validation confirm they work?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -194,7 +194,7 @@ Failure-mode discipline in production:
 | STRATUS | "Incident response trio" | Detection + diagnosis + validation agents. 1.5x mitigation success. |
 | Memory poisoning | "Hallucinations propagate" | Shared-memory fact tainted; downstream agents reason on poison. |
 
-## Further Reading
+## 深入阅读
 
 - [Cemri et al. — Why Do Multi-Agent LLM Systems Fail?](https://arxiv.org/abs/2503.13657) — MAST taxonomy, NeurIPS 2025
 - [Groupthink failures in multi-agent LLMs](https://arxiv.org/abs/2508.05687) — monoculture, conformity, and the five-family taxonomy

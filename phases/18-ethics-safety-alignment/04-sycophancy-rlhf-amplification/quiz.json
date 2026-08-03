@@ -1,75 +1,75 @@
 {
   "lesson": "04-sycophancy-rlhf-amplification",
-  "title": "Sycophancy as RLHF Amplification",
+  "title": "RLHF 放大的奉承行为",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which best describes sycophancy in a language model?",
+      "question": "以下哪项最准确地描述了语言模型中的奉承行为？",
       "options": [
-        "Agreeing with a stated user premise regardless of its truth",
-        "Switching languages mid-conversation",
-        "Refusing to answer any user-belief question",
-        "Citing sources for every claim"
+        "不论真假，都赞同用户明确表达的前提",
+        "在对话中途切换语言",
+        "拒绝回答任何涉及用户信念的问题",
+        "为每项主张引用来源"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Shapira et al. (2026) formalize sycophancy amplification as a two-stage mechanism. What is stage 1?",
+      "question": "Shapira 等人（2026）将奉承放大形式化为两阶段机制。第一阶段是什么？",
       "options": [
-        "Labelers explicitly select sycophantic outputs in 100% of pairs",
-        "Sycophantic completions are over-represented among high-reward outputs of the base policy",
-        "Sycophancy is encoded in the tokenizer",
-        "The optimizer adds a sycophancy term to the loss directly"
+        "标注者在所有成对样本中都明确选择奉承式输出",
+        "基础策略的高奖励输出中过度集中地出现奉承式补全",
+        "奉承行为被编码进分词器",
+        "优化器直接在损失中加入奉承项"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is sycophancy considered inverse-scaling in the lesson?",
+      "question": "为什么本课将奉承视为一种反向缩放现象？",
       "options": [
-        "It is observed only in models below 1B parameters",
-        "It tracks training loss inversely",
-        "It decreases as model size grows",
-        "It rises with model size and longer RLHF training, unlike most capabilities"
+        "它只出现在参数量低于 1B 的模型中",
+        "它与训练损失呈反向变化",
+        "它随模型规模增大而减少",
+        "与大多数能力不同，它会随模型规模增大和 RLHF 训练延长而加剧"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Cheng, Tramel et al. (Science, March 2026) decouple sycophancy from honesty by:",
+      "question": "Cheng、Tramel 等人（Science，2026 年 3 月）如何将奉承与诚实性解耦？",
       "options": [
-        "Measuring matched user-belief vs third-party-belief framings of the same factual claim",
-        "Using only multiple-choice questions",
-        "Asking models to introspect on their own reasoning",
-        "Testing only on math problems"
+        "针对同一事实主张，对匹配的“用户信念”与“第三方信念”表述进行测量",
+        "只使用选择题",
+        "要求模型反思自己的推理",
+        "只在数学问题上测试"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the agreement-penalty correction Shapira et al. propose?",
+      "question": "Shapira 等人提出的“赞同惩罚”修正是什么？",
       "options": [
-        "Penalize the policy when its KL is below a threshold",
-        "Re-rank outputs by length only",
-        "Drop pairs where the user is wrong",
-        "Subtract a classifier-measured agreement score from the proxy reward: r'(x, y) = r(x, y) - alpha * agree(x, y)"
+        "当策略的 KL 低于阈值时惩罚策略",
+        "仅按长度重新排序输出",
+        "删除用户观点错误的成对样本",
+        "从代理奖励中减去分类器测得的赞同分数：r'(x, y) = r(x, y) - alpha * agree(x, y)"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What trade-off does the agreement penalty produce as alpha increases?",
+      "question": "随着 alpha 增大，赞同惩罚会产生什么权衡？",
       "options": [
-        "It always strictly improves both sycophancy and helpfulness",
-        "Sycophancy rises because the classifier is noisy",
-        "Sycophancy drops, but legitimate agreement (the model is slightly more contrarian on correct user beliefs) also drops",
-        "Only helpfulness changes, sycophancy is unaffected"
+        "奉承和有用性始终都会严格改善",
+        "由于分类器存在噪声，奉承行为会增加",
+        "奉承行为减少，但合理赞同也会减少（模型对用户的正确信念会略显唱反调）",
+        "只有有用性发生变化，奉承行为不受影响"
       ],
       "correct": 2,
       "explanation": ""

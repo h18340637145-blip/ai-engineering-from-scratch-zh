@@ -1,6 +1,6 @@
 {
   "lesson": "28-orchestration-patterns",
-  "title": "Orchestration Patterns: Supervisor, Swarm, Hierarchical",
+  "title": " Agent 编排范式全景：从单 Agent 循环到复杂 DAG 网状图",
   "questions": [
     {
       "stage": "pre",

@@ -2,63 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does a p-value of 0.03 mean in a hypothesis test?",
+      "question": "假设检验中的 P 值（P-value）代表什么含义？",
       "options": [
-        "There is a 3% probability the null hypothesis is true",
-        "There is a 3% probability of seeing data this extreme if the null hypothesis were true",
-        "The model improved by 3%",
-        "97% of the data supports the alternative hypothesis"
+        "在零假设（Null Hypothesis）成立的前提下，观察到当前数据或更极端情况的概率",
+        "零假设正确的概率",
+        "备择假设正确的概率",
+        "实验发生错误的概率"
       ],
-      "correct": 1,
-      "explanation": "The p-value is the probability of observing data as extreme as what you got, assuming the null hypothesis is true. It is NOT the probability that H0 is true — this is the single most common misunderstanding in statistics."
+      "correct": 0,
+      "explanation": "P 值不是假设本身成立的概率，而是在零假设前提下出现当前样本分布的概率；当 P 值小于显著性水平 $\u0007lpha$（如 0.05）时拒绝零假设。"
     },
     {
       "stage": "pre",
-      "question": "Why do you divide by (n-1) instead of n when computing sample variance?",
+      "question": "第一类错误（Type I Error, 弃真）与第二类错误（Type II Error, 取伪）的区别是？",
       "options": [
-        "It makes the computation faster",
-        "It accounts for the fact that the sample mean is not the true population mean (Bessel's correction)",
-        "It converts the variance to standard deviation",
-        "It only applies when the sample size is odd"
+        "第一类错误是零假设为真时错误地拒绝了它（假阳性）；第二类错误是零假设为假时未能拒绝它（假阴性）",
+        "第一类错误永远不会发生",
+        "第二类错误是指计算结果为 0",
+        "它们完全相同"
       ],
-      "correct": 1,
-      "explanation": "Bessel's correction (dividing by n-1) compensates for the bias introduced by using the sample mean instead of the true population mean. Without it, sample variance systematically underestimates the true population variance."
+      "correct": 0,
+      "explanation": "假阳性（Type I）与假阴性（Type II）反映了决策阈值选择上的权衡取舍。"
     },
     {
       "stage": "post",
-      "question": "You test 20 different model configurations at alpha = 0.05. What is the approximate probability of at least one false positive?",
+      "question": "置信区间（Confidence Interval, 如 95% 置信区间）的准确解释是？",
       "options": [
-        "5%",
-        "25%",
-        "64%",
-        "95%"
+        "如果反复进行 100 次独立抽样与区间估计，约有 95 个区间会包含真实总体参数",
+        "真实参数有 95% 的概率落在该特定固定区间内",
+        "数据集里 95% 的数据在这个区间里",
+        "模型准确率是 95%"
       ],
-      "correct": 2,
-      "explanation": "P(at least one false positive) = 1 - (1 - 0.05)^20 = 1 - 0.95^20 ≈ 0.64 (64%). This is the multiple comparison problem. Bonferroni correction addresses it by testing each at alpha/20 = 0.0025."
+      "correct": 0,
+      "explanation": "总体真实参数是固定常数，变化的是根据不同抽样样本计算得出的区间。"
     },
     {
       "stage": "post",
-      "question": "Model A scores 0.9234 and Model B scores 0.9237 on 1 million test samples with p-value = 0.001. What should you conclude?",
+      "question": "在模型评估中，偏差（Bias）与方差（Variance）权衡代表什么？",
       "options": [
-        "Model B is significantly better and should be deployed immediately",
-        "The difference is statistically significant but a 0.03% improvement may not be practically significant",
-        "The test is invalid because the sample size is too large",
-        "Model A is better because it was tested first"
+        "高偏差代表模型欠拟合（未能捕获数据真实模式）；高方差代表模型过拟合（对训练数据的随机噪声极度敏感）",
+        "高偏差代表 GPU 显存过高",
+        "高方差代表数据集样本过少",
+        "偏差与方差可以同时降为 0"
       ],
-      "correct": 1,
-      "explanation": "With 1 million samples, even trivially small differences become statistically significant. The p-value confirms the difference is real, but the effect size (0.03% accuracy gain) may not justify the engineering cost of deployment. Always report both p-value and effect size."
+      "correct": 0,
+      "explanation": "总泛化误差可以分解为 $\text{Bias}^2 + \text{Variance} + \text{Irreducible Error}$ 的二者权衡平衡。"
     },
     {
       "stage": "post",
-      "question": "What advantage does bootstrap have over the paired t-test for comparing two ML models?",
+      "question": "卡方检验（Chi-Square Test）常用于检验什么？",
       "options": [
-        "Bootstrap always produces smaller p-values",
-        "Bootstrap requires no distributional assumptions and works for any metric (AUC, F1, median)",
-        "Bootstrap needs fewer samples to reach significance",
-        "Bootstrap can only be used with neural networks"
+        "分类变量/分类特征之间的独立性或拟合优度",
+        "两个连续变量的均值差异",
+        "矩阵的特征值",
+        "高斯分布的方差"
       ],
-      "correct": 1,
-      "explanation": "Bootstrap resampling estimates the sampling distribution of any statistic by resampling with replacement. Unlike the t-test, it does not assume normality. It works for any metric — AUC, F1, precision@k, median — without needing a closed-form formula."
+      "correct": 0,
+      "explanation": "卡方检验通过对比频次观测值与理论期望值，判断分类变量之间是否独立。"
     }
   ]
 }

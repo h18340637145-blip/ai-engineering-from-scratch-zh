@@ -1,13 +1,13 @@
-# Docker for AI
+# 面向 AI 的 Docker 容器化
 
-> Containers make "works on my machine" a thing of the past.
+> 打包包括 C++ 驱动、CUDA 运行时与 PyTorch 在内的完整 AI 系统。构建高效的 GPU 容器镜像。
 
-**Type:** Build
-**Languages:** Docker
-**Prerequisites:** Phase 0, Lessons 01 and 03
-**Time:** ~60 minutes
+**Type:** 构建
+**Languages:** Docker, Bash
+**Prerequisites:** 开发环境搭建
+**Time:** ~45 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Build a GPU-enabled Docker image with CUDA, PyTorch, and AI libraries from a Dockerfile
 - Mount host directories as volumes to persist models, datasets, and code across container rebuilds

@@ -1,6 +1,6 @@
 {
   "lesson": "22-voice-agents-pipecat-livekit",
-  "title": "Voice Agents: Pipecat and LiveKit",
+  "title": "实时语音 Agent：基于 Pipecat 与 LiveKit 的超低延迟打断流",
   "questions": [
     {
       "stage": "pre",

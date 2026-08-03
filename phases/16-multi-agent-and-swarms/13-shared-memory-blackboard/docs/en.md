@@ -1,11 +1,11 @@
-# Shared Memory and Blackboard Patterns
+# 共享内存与黑板模式（Blackboard Pattern）
 
-> Two approaches coexist in 2026 multi-agent systems: the **message pool** (everyone sees everyone's messages, as in AutoGen GroupChat or MetaGPT) and the **blackboard with subscription** (agents subscribe to relevant events, as in Context-Aware MCP or the Matrix framework). Both are the only stateful part of a multi-agent system — which means both are where the interesting bugs live. The reference failure mode is **memory poisoning**: one agent hallucinates a "fact," other agents treat it as verified, and accuracy decays gradually in a way that is much harder to debug than an immediate crash. This lesson builds both structures from stdlib, injects a poisoning attack, and shows the three mitigations that actually work in production.
+> 实现经典黑板架构（Blackboard）：多 Agent 共同读写全局共享上下文，实现异步协作解题。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib, `threading`)
-**Prerequisites:** Phase 16 · 04 (Primitive Model), Phase 16 · 09 (Parallel Swarm Networks)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 16 Lesson 01
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -101,7 +101,7 @@ The most load-bearing mitigation is the read-only verifier. Implementation rules
 
 Without this separation, the verifier's outputs become new entries in the pool, which means a poisoned pool poisons the verifier, which poisons its verifications.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements both topologies in stdlib Python plus a toy poisoning attack and the three mitigations.
 
@@ -121,11 +121,11 @@ Expected output:
 - Run 1 (no verifier): the hallucinated 42% propagates to the final report.
 - Run 2 (with verifier): the verifier flags the inconsistency, the pool is labeled "flagged", the final report includes a retraction.
 
-## Use It
+## 应用场景
 
 `outputs/skill-memory-auditor.md` is a skill that audits any multi-agent system's shared-memory design for provenance, versioning, and verifier separation. Run it on new multi-agent architectures before production.
 
-## Ship It
+## 产出成果
 
 For any shared-memory design:
 
@@ -135,7 +135,7 @@ For any shared-memory design:
 - Route verifier output to a separate channel, not back into the shared pool.
 - Log the ratio of writes that are supersessions — a rising ratio is early evidence of hallucination patterns.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Confirm run 1 propagates the hallucination and run 2 catches it.
 2. Add a second hallucination: agent B invents a dataset size. The verifier should catch both without being hand-tuned for either.
@@ -143,7 +143,7 @@ For any shared-memory design:
 4. Read Hayes-Roth (1985, "A Blackboard Architecture for Control"). Identify two control patterns from the paper not discussed in this lesson that 2026 systems would benefit from.
 5. Read CA-MCP (arXiv:2601.11595). Map its Shared Context Store to either the MessagePool or Blackboard class in `code/main.py`. Which primitives does CA-MCP add on top?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -156,7 +156,7 @@ For any shared-memory design:
 | Projection | "Scoped view" | Per-agent view computed from global state. LangGraph reducers are the canonical case. |
 | Knowledge Source | "Specialist agent" | Hayes-Roth's 1985 term for a blackboard participant. |
 
-## Further Reading
+## 深入阅读
 
 - [Cemri et al. — Why Do Multi-Agent LLM Systems Fail?](https://arxiv.org/abs/2503.13657) — MAST taxonomy; memory poisoning is a coordination-failure sub-family
 - [CA-MCP — Context-Aware Multi-Server MCP](https://arxiv.org/abs/2601.11595) — Shared Context Store for coordinated MCP servers

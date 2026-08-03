@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is an API key used for when calling an LLM service?",
-      "options": ["Encrypting the data sent to the server", "Authenticating your identity and authorizing requests", "Compressing requests to reduce bandwidth", "Selecting which programming language the server uses"],
+      "question": "为什么绝不能将 API 密钥（API Keys）直接硬编码写在源代码或提交到 GitHub 仓库中？",
+      "options": [
+        "硬编码 API 密钥会导致代码编译失败",
+        "泄露的密钥会被他人恶意盗用，产生巨额账单或导致数据泄露",
+        "API 密钥在代码中无法正常传递",
+        "GitHub 会自动锁定包含 API 密钥的项目"
+      ],
       "correct": 1,
-      "explanation": "An API key is a unique string that identifies your account, authorizes your requests, and allows the provider to track usage and billing."
+      "explanation": "公开仓库中的 API 密钥会在数秒内被自动爬虫捕获。一旦泄露，攻击者可以调用配额或窃取敏感数据。"
     },
     {
       "stage": "pre",
-      "question": "Why should API keys never be hardcoded directly in source code?",
-      "options": ["Hardcoded keys make the code run slower", "They can be accidentally committed to git and exposed publicly", "Python cannot read string literals longer than 50 characters", "API providers block keys that appear in source files"],
+      "question": "在本地开发中，安全加载 API 密钥的标准做法是什么？",
+      "options": [
+        "在文件开头以明文形式定义字符串变量",
+        "使用 `.env` 文件存储密钥，并将其加入 `.gitignore` 中，运行时通过环境变量读取",
+        "把 API 密钥上传到公共 HTTP 服务器",
+        "将 API 密钥拼接到文件名中"
+      ],
       "correct": 1,
-      "explanation": "Hardcoded keys in source code risk being committed to version control and pushed to public repositories, where they can be scraped and abused by others."
+      "explanation": "通过 `.env` 文件配合环境变量（如 Python 的 `python-dotenv`）加载密钥，并确保 `.env` 不提交到 Git，是最安全通用的规范做法。"
     },
     {
       "stage": "post",
-      "question": "What is the recommended way to store API keys for local development?",
-      "options": ["In a Python variable at the top of your script", "In a .env file that is listed in .gitignore", "In the README.md for easy access", "In the requirements.txt alongside package versions"],
+      "question": "当 API 调用触发 HTTP 429 状态码（Too Many Requests）时，最好的退避重试策略是什么？",
+      "options": [
+        "立刻无间隔地发起无数次连续重试",
+        "使用带有随机抖动（Jitter）的指数退避（Exponential Backoff）算法进行重试",
+        "直接终止程序并打印错误日志",
+        "忽略错误并继续发送下一条请求"
+      ],
       "correct": 1,
-      "explanation": "A .env file stores keys as environment variables and should be added to .gitignore so it is never committed to version control. SDKs read keys from environment variables automatically."
+      "explanation": "带有抖动的指数退避重试能够避免在服务过载或达到限流阈值时造成惊群效应（Thundering Herd），大幅提高恢复调用的成功率。"
     },
     {
       "stage": "post",
-      "question": "In the raw HTTP API call to Anthropic, which header carries the API key?",
-      "options": ["Authorization: Bearer sk-ant-...", "x-api-key: sk-ant-...", "Content-Type: application/json", "anthropic-version: 2023-06-01"],
+      "question": "在客户端/前端直接调用大模型 API 时，最大的安全隐患是什么？",
+      "options": [
+        "前端无法接收 JSON 数据格式",
+        "API 密钥在浏览器网络请求中暴露，任何用户都可以复制使用",
+        "JavaScript 无法解析 API 的响应数据",
+        "前端 API 调用速度比后端快 10 倍"
+      ],
       "correct": 1,
-      "explanation": "Anthropic's API uses the 'x-api-key' header for authentication, not the more common 'Authorization: Bearer' pattern. This is specific to their API design."
+      "explanation": "前端发起的请求所有 Header 和密钥都是对用户完全可见的。生产环境中，必须通过后端 API Gateway 或 BFF 代理调用大模型。"
     },
     {
       "stage": "post",
-      "question": "What happens when you exceed an API's rate limit?",
-      "options": ["Your API key is permanently revoked", "The server returns an error (typically HTTP 429) and you must wait before retrying", "Your request is queued and processed later automatically", "The API silently drops your request with no response"],
+      "question": "在 OpenAI 或 Anthropic API 响应中，Token 是指什么？",
+      "options": [
+        "访问 API 的安全验证令牌",
+        "文本被拆分后的基础计量单位（约 0.75 个英文单词或约 0.5-1 个汉字）",
+        "数据库的主键 ID",
+        "网络数据包的最大传输单元"
+      ],
       "correct": 1,
-      "explanation": "Rate limiting returns HTTP 429 (Too Many Requests). You need to wait and retry, typically with exponential backoff. Rate limits prevent abuse and ensure fair usage."
+      "explanation": "Token 是大模型处理文本的基本片段。模型的输入输出长度限制与计费均以 Token 数量为单位。"
     }
   ]
 }

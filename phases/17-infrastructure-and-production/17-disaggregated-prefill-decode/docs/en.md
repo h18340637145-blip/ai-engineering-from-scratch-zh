@@ -1,20 +1,20 @@
-# Disaggregated Prefill/Decode — NVIDIA Dynamo and llm-d
+# Prefill 与 Decode 分离架构（Disaggregated Serving）
 
-> Prefill is compute-bound; decode is memory-bound. Running both on the same GPU wastes one resource. Disaggregation splits them onto separate pools and transfers KV cache between them over NIXL (RDMA/InfiniBand or TCP fallback). NVIDIA Dynamo (GTC 2025 announce, 1.0 GA) sits above vLLM/SGLang/TRT-LLM — its Planner Profiler + SLA Planner auto-rate-match prefill:decode ratios to meet SLOs. NVIDIA publishes throughput gains in this ballpark — developer.nvidia.com (2025-06) shows a ~6x improvement for DeepSeek-R1 MoE on GB200 NVL72 + Dynamo in the medium-latency regime, and the Dynamo product page (developer.nvidia.com, undated) advertises up to 50x MoE throughput on GB300 NVL72 + Dynamo vs Hopper. The "30x" figure is a community aggregate across full-stack Blackwell + Dynamo + DeepSeek-R1 reports; we have not found a single primary source stating exactly 30x, so treat it as a directional claim. llm-d (Red Hat + AWS) is Kubernetes-native: prefill / decode / router as independent Services with per-role HPA. llm-d 0.5 adds hierarchical KV offloading, cache-aware LoRA routing, UCCL networking, scale-to-zero. Economics: internal rollup of multiple customer disclosures suggests 30–40% savings on $2M-class inference spend (i.e., $600-800K/year) when switching from colocated serving to disaggregated with Dynamo at constant SLA; the specific $2M→$600-800K figure is an internal composite, not a single published case study — use it as an order-of-magnitude anchor, not a reference citation. Short prompts (<512 tokens, short output) don't justify the transfer cost.
+> 剖析最新的解耦服务架构：将 Compute-bound 的 Prefill 阶段与 Memory-bound 的 Decode 阶段分配给专有 GPU 节点。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy disaggregated-vs-colocated simulator)
-**Prerequisites:** Phase 17 · 04 (Serving Engine Internals), Phase 17 · 08 (Inference Metrics)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 17 Lesson 04
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Explain why prefill and decode have different optimal GPU allocations and quantify the waste under colocation.
 - Diagram the disaggregated architecture: prefill pool, decode pool, KV transfer via NIXL, router.
 - Name the condition when disaggregation does NOT pay off (short prompts, short outputs).
 - Distinguish NVIDIA Dynamo (stack-above) from llm-d (Kubernetes-native) and match each to an operational context.
 
-## The Problem
+## 问题切入
 
 You run Llama 3.3 70B on 8 H100s. Under mixed workload (long prompts + short outputs), GPUs idle during decode because most of the compute was spent on prefill. Under different workload (short prompts + long outputs), the opposite happens. Colocated prefill + decode means you over-provision both.
 
@@ -22,7 +22,7 @@ Budget impact: 20-40% of GPU time is wasted on the wrong resource. You are buyin
 
 Disaggregation splits prefill and decode onto separate pools sized for each's bottleneck. KV cache transfers from prefill pool to decode pool via high-bandwidth interconnect.
 
-## The Concept
+## 核心概念
 
 ### Why the bottlenecks differ
 
@@ -105,15 +105,15 @@ Benchmark numbers drift — NVIDIA and the inference stack post updated results 
 - Disaggregation threshold: prompts >512 tokens + outputs >200 tokens.
 - KV transfer via NIXL: 20-80 ms for 4K-prompt KV on 70B FP8.
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates colocated vs disaggregated serving. Reports throughput, cost per request, and the prompt-length crossover.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-disaggregation-decider.md`. Given workload and cluster, decides whether to disaggregate.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. At what prompt length does disaggregation beat colocation?
 2. Design the prefill pool and decode pool for a RAG service with P99 prefix length 8K, output 300.
@@ -121,7 +121,7 @@ This lesson produces `outputs/skill-disaggregation-decider.md`. Given workload a
 4. Compute KV transfer cost: 4K prefill on 70B FP8 = ~500 MB KV. At RDMA 100 GB/s, transfer = 5 ms. At TCP 10 GB/s = 50 ms. Which matters for your SLA?
 5. MoE expert routing changes KV access patterns. How does disaggregation behave with MoE that activates different experts per token?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -135,7 +135,7 @@ This lesson produces `outputs/skill-disaggregation-decider.md`. Given workload a
 | UCCL | "unified collective" | llm-d 0.5 networking layer for scale-to-zero |
 | MoE expert routing | "expert per token" | DeepSeek-V3 pattern; disaggregation helps |
 
-## Further Reading
+## 深入阅读
 
 - [NVIDIA — Introducing Dynamo](https://developer.nvidia.com/blog/introducing-nvidia-dynamo-a-low-latency-distributed-inference-framework-for-scaling-reasoning-ai-models/)
 - [NVIDIA — Disaggregated LLM Inference on Kubernetes](https://developer.nvidia.com/blog/deploying-disaggregated-llm-inference-workloads-on-kubernetes/)

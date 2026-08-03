@@ -1,6 +1,6 @@
 {
   "lesson": "27-prompt-injection-defense",
-  "title": "Prompt Injection and the PVE Defense",
+  "title": "Prompt 注入防御：间接注入、信任边界与系统隔离",
   "questions": [
     {
       "stage": "pre",

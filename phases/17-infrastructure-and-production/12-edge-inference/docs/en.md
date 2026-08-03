@@ -1,26 +1,26 @@
-# Edge Inference — Apple Neural Engine, Qualcomm Hexagon, WebGPU/WebLLM, Jetson
+# 端侧与边缘推理：WebGPU, ONNX Runtime 与 ExecuTorch
 
-> The core edge constraint is memory bandwidth, not compute. Mobile DRAM sits at 50-90 GB/s; datacenter HBM3 clears 2-3 TB/s — a 30-50x gap. Decode is memory-bound so the gap is decisive. In 2026 the landscape splits four ways. Apple M4/A18 Neural Engine peaks at 38 TOPS with unified memory (no CPU↔NPU copy). Qualcomm Snapdragon X Elite / 8 Gen 4 Hexagon hits 45 TOPS. WebGPU + WebLLM runs Llama 3.1 8B (Q4) at ~41 tok/s on M3 Max (roughly 70-80% of native); 17.6k GitHub stars, OpenAI-compatible API, ~70-75% mobile coverage. NVIDIA Jetson Orin Nano Super (8GB) fits Llama 3.2 3B / Phi-3; AGX Orin runs gpt-oss-20b via vLLM at ~40 tok/s; Jetson T4000 (JetPack 7.1) is 2x AGX Orin. TensorRT Edge-LLM supports EAGLE-3, NVFP4, chunked prefill — shown at CES 2026 by Bosch, ThunderSoft, MediaTek.
+> 在浏览器与移动设备端部署轻量级 LLM：掌握 WebGPU、ONNX Runtime 和 ExecuTorch 端侧推理技术。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy bandwidth-bound decode simulator)
-**Prerequisites:** Phase 17 · 04 (Serving Engine Internals), Phase 17 · 09 (Production Quantization)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 09
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Explain why mobile LLM inference is memory-bandwidth-bound and compute is secondary.
 - Enumerate the four edge targets (Apple ANE, Qualcomm Hexagon, WebGPU/WebLLM, NVIDIA Jetson) and match each to a use case.
 - Name the 2026 WebGPU coverage gap (Firefox Android catching up) and the Safari iOS 26 landing.
 - Pick a quantization format per target (Core ML INT4 + FP16 for ANE, QNN INT8/INT4 for Hexagon, WebGPU Q4 for browser, NVFP4 for Jetson Thor).
 
-## The Problem
+## 问题切入
 
 A customer wants an on-device chatbot: voice-first, private-by-default, works offline. On a MacBook Pro M3 Max, Llama 3.1 8B Q4 runs at ~55 tok/s — fine. On an iPhone 16 Pro, the same model runs at 3 tok/s — not fine. On a mid-range Android with Snapdragon 8 Gen 3, 7 tok/s. In the browser via WebGPU on Chrome Android v121+, 4-8 tok/s depending on the device.
 
 The throughput variance is not a porting issue. It is the bandwidth gap times the quantization format times whether the NPU is accessible from user-space. Edge inference in 2026 is four different problems with four different solutions.
 
-## The Concept
+## 核心概念
 
 ### Bandwidth is the real ceiling
 
@@ -87,15 +87,15 @@ Voice agents are latency-sensitive (first token < 500 ms). Local inference elimi
 - Datacenter-edge bandwidth gap: 30-50x.
 - WebGPU mobile coverage: ~70-75% (Firefox Android lagging).
 
-## Use It
+## 应用场景
 
 `code/main.py` computes theoretical decode throughput ceilings from bandwidth-bound math across edge targets. Compares to observed benchmarks and highlights where bandwidth, not compute, is the bottleneck.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-edge-target-picker.md`. Given platform (iOS/Android/browser/Jetson), model, and latency/memory budget, picks a quantization format and conversion pipeline.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. For a 7B model in Q4 on a Snapdragon 8 Gen 3 (~77 GB/s bandwidth), compute the decode ceiling. Compare to observed 6-8 tok/s — is the runtime efficient?
 2. WebGPU on Android requires Chrome v121+. Design a fallback for older browsers — server-side via the same OpenAI-compatible API.
@@ -103,7 +103,7 @@ This lesson produces `outputs/skill-edge-target-picker.md`. Given platform (iOS/
 4. Jetson AGX Orin runs gpt-oss-20b at 40 tok/s. Jetson Nano fits only a 3B. If your product targets both, how do you unify the inference stack?
 5. Argue whether "WebLLM is production-ready in 2026." Cite the coverage, performance, and the Firefox Android gap.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -118,7 +118,7 @@ This lesson produces `outputs/skill-edge-target-picker.md`. Given platform (iOS/
 | Core ML | "Apple conversion" | Apple framework for ANE-native models |
 | QNN | "Qualcomm stack" | Qualcomm Neural Network SDK |
 
-## Further Reading
+## 深入阅读
 
 - [On-Device LLMs State of the Union 2026](https://v-chandra.github.io/on-device-llms/) — landscape and benchmarks.
 - [NVIDIA Jetson Edge AI](https://developer.nvidia.com/blog/getting-started-with-edge-ai-on-nvidia-jetson-llms-vlms-and-foundation-models-for-robotics/) — Orin / AGX / Thor.

@@ -1,6 +1,6 @@
 {
   "lesson": "35-initialization-scripts",
-  "title": "Initialization Scripts for Agents",
+  "title": "Agent 初始化脚本与环境准备自动化",
   "questions": [
     {
       "stage": "pre",

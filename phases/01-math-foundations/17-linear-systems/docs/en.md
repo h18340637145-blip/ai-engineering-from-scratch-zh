@@ -1,11 +1,11 @@
-# Linear Systems
+# 线性方程组系统与矩阵分解
 
-> Solving Ax = b is the oldest problem in mathematics that still runs your neural network.
+> 求解 A x = b。掌握高斯消元、LU 分解、Cholesky 分解与正规方程。
 
-**Type:** Build
+**Type:** 构建
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01 (Linear Algebra Intuition), 02 (Vectors & Matrices), 03 (Matrix Transformations)
-**Time:** ~120 minutes
+**Prerequisites:** Phase 1, Lesson 02 (向量与矩阵运算)
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

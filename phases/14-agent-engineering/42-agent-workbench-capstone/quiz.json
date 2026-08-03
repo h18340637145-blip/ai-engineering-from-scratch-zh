@@ -1,6 +1,6 @@
 {
   "lesson": "42-agent-workbench-capstone",
-  "title": "Capstone: Ship a Reusable Agent Workbench Pack",
+  "title": "Agent 工作台终极实战：构建完整的大型代码重构 Agent",
   "questions": [
     {
       "stage": "pre",

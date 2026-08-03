@@ -1,6 +1,6 @@
 {
   "lesson": "09-hybrid-memory-mem0",
-  "title": "Hybrid Memory: Vector + Graph + KV",
+  "title": "混合记忆与 Mem0：结合向量索引与图数据库的持久化记忆",
   "questions": [
     {
       "stage": "pre",

@@ -1,6 +1,6 @@
 {
   "lesson": "20-shadow-canary-progressive",
-  "title": "Shadow Traffic, Canary Rollout, and Progressive Deployment for LLMs",
+  "title": "渐进式部署：Shadow 流量复制与 Canary 金丝雀发布",
   "questions": [
     {
       "stage": "pre",

@@ -1,11 +1,11 @@
-# Information Theory
+# 信息论基础
 
-> Information theory measures surprise. Loss functions are built on it.
+> 度量信息、不确定性与分布差异。掌握香农熵、KL 散度与交叉熵损失。
 
-**Type:** Learn
+**Type:** 学习
 **Language:** Python
-**Prerequisites:** Phase 1, Lesson 06 (Probability)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 1, Lesson 06 (概率论与概率分布)
+**Time:** ~40 分钟
 
 ## Learning Objectives
 
@@ -94,7 +94,7 @@ Cross-entropy is entropy plus KL divergence. Since entropy of the true distribut
 
 KL divergence is not symmetric: D_KL(P || Q) != D_KL(Q || P). It is not a true distance metric.
 
-### Mutual Information
+### 互信息量度
 
 Mutual information measures how much knowing one variable tells you about another.
 
@@ -171,7 +171,7 @@ The relationships:
 - I(X;Y) = H(X) - H(X|Y) = H(Y) - H(Y|X)
 - H(X,Y) = H(X) + H(Y) - I(X;Y)
 
-### Mutual Information (Deep Dive)
+### 互信息量度 (Deep Dive)
 
 Mutual information I(X;Y) quantifies how much knowing one variable reduces uncertainty about the other.
 

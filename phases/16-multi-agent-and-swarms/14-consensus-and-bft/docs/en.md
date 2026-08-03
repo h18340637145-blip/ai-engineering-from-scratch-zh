@@ -1,11 +1,11 @@
-# Consensus and Byzantine Fault Tolerance for Agents
+# 多 Agent 共识机制与拜占庭容错（BFT）
 
-> Classical distributed-systems BFT meets stochastic LLMs. In 2025-2026 three research directions emerged: **CP-WBFT** (arXiv:2511.10400) weighs each vote by a confidence probe; **DecentLLMs** (arXiv:2507.14928) goes leaderless with parallel worker proposals and geometric-median aggregation; **WBFT** (arXiv:2505.05103) combines weighted voting with Hierarchical Structure Clustering to split Core and Edge nodes. The honest empirical result from "Can AI Agents Agree?" (arXiv:2603.01213) is that even scalar agreement is fragile today — a single deceptive agent can compromise a Mixture-of-Agents. BFT is necessary but not sufficient. This lesson builds a minimal BFT protocol, injects three agent-specific attacks (byzantine lie, sycophantic conformity, correlated-error monoculture), and measures how each consensus variant copes.
+> 在不可靠或存在潜在对抗 Agent 的网络中，引入共识算法与拜占庭容错机制保证系统安全性。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 07 (Society of Mind and Debate), Phase 16 · 13 (Shared Memory)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 16 Lesson 01
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -83,7 +83,7 @@ The `threshold` parameter decides when to accept and when to retry. Too low: you
 - **Compound questions.** "Write code and explain it" — two answers. Vote on each independently.
 - **Adversarial multi-round.** If agents can observe prior rounds and mimic (Du 2023 debate), they start agreeing with each other regardless of truth. Bound the rounds (2-3 typically).
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -107,11 +107,11 @@ python3 code/main.py
 
 Expected output: a table of (attack, aggregator) -> final answer, with the correct answer highlighted. Plurality fails the monoculture case. CPWBFT's confidence weighting mitigates sycophancy. DecentLLMs' geometric-median pulls toward the honest cluster when monoculture is less than half the population.
 
-## Use It
+## 应用场景
 
 `outputs/skill-consensus-designer.md` designs a consensus protocol for a multi-agent ensemble: clustering method, weighting, threshold, and the escalation policy for sub-threshold rounds.
 
-## Ship It
+## 产出成果
 
 Before shipping any consensus mechanism:
 
@@ -121,7 +121,7 @@ Before shipping any consensus mechanism:
 - **Separate agreement from correctness.** Consensus output goes to a verifier; verifier is independent of the ensemble.
 - **Monitor the agreement rate.** A sharp rise means conformity bias; a sharp fall means model drift.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Confirm plurality fails the monoculture attack but CPWBFT partially mitigates it when the monoculture confidence is below 0.7.
 2. Add a fourth attack pattern: **silent abstention** — one agent refuses to answer ("I don't know"). How should each aggregator treat abstentions? Implement your choice.
@@ -129,7 +129,7 @@ Before shipping any consensus mechanism:
 4. Read CP-WBFT (arXiv:2511.10400). Implement the confidence-probe calibration step (a separate calibration model checks each agent's self-reported confidence). Measure the accuracy gain on the monoculture scenario.
 5. Read "Can AI Agents Agree?" (arXiv:2603.01213). Reproduce a simplified scalar-agreement experiment: three agents, one scalar question, the deceptive-persona prompt. Does CPWBFT or DecentLLMs catch it?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -142,7 +142,7 @@ Before shipping any consensus mechanism:
 | Sycophantic conformity | "Agreeing with the loud voice" | An agent's vote biases toward whoever spoke first/loudest. |
 | Core/Edge | "Hierarchical BFT" | WBFT split: small Core consensus first, Edge nodes follow. Bounds latency. |
 
-## Further Reading
+## 深入阅读
 
 - [Castro & Liskov — Practical Byzantine Fault Tolerance (OSDI 1999)](https://pmg.csail.mit.edu/papers/osdi99.pdf) — the foundation
 - [CP-WBFT — Confidence-Probe Weighted BFT](https://arxiv.org/abs/2511.10400) — vote weighting by confidence

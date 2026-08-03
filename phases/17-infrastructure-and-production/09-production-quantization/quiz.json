@@ -1,6 +1,6 @@
 {
   "lesson": "09-production-quantization",
-  "title": "Production Quantization — AWQ, GPTQ, GGUF K-quants, FP8, MXFP4/NVFP4",
+  "title": "生产级模型量化：GPTQ, AWQ, FP8 与 GGUF 选型",
   "questions": [
     {
       "stage": "pre",

@@ -1,13 +1,13 @@
-# GPU Setup & Cloud
+# GPU 配置与云端环境
 
-> Training on CPU is fine for learning. Training for real needs a GPU.
+> 从驱动安装到云端实例配额。配置 NVIDIA CUDA、显存分析以及高效的云端计算环境。
 
-**Type:** Build
-**Languages:** Python
-**Prerequisites:** Phase 0, Lesson 01
-**Time:** ~45 minutes
+**Type:** 学习
+**Languages:** Bash, Python
+**Prerequisites:** 开发环境搭建
+**Time:** ~45 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Verify local GPU availability using `nvidia-smi` and PyTorch's CUDA API
 - Configure Google Colab with a T4 GPU for free cloud-based experiments

@@ -1,26 +1,26 @@
-# Inference Metrics — TTFT, TPOT, ITL, Goodput, P99
+# 推理指标与 Goodput：衡量真实系统有效吞吐率
 
-> Four metrics decide whether an inference deployment is working. TTFT is prefill plus queue plus network. TPOT (equivalently ITL) is the memory-bound decode cost per token. End-to-end latency is TTFT plus TPOT times output length. Throughput is tokens per second aggregated across the fleet. But the one that matters for product is goodput — the fraction of requests that met every SLO simultaneously. High throughput at low goodput means you are processing tokens that never reach users on time. Reference numbers for Llama-3.1-8B-Instruct on TRT-LLM in 2026: mean TTFT 162 ms, mean TPOT 7.33 ms, mean E2E 1,093 ms. Always report P50, P90, P99 — never just mean. And watch the measurement trap: GenAI-Perf excludes TTFT from ITL calculation, LLMPerf includes it; two tools disagree on TPOT for the same run.
+> 超越原始 TPS：定义并监测满足 SLA 延迟约束下的有效吞吐率（Goodput）。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy percentile calculator and goodput reporter)
-**Prerequisites:** Phase 17 · 04 (Serving Engine Internals)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 02
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Define TTFT, TPOT, ITL, E2E, throughput, and goodput precisely and name the component each one measures.
 - Explain why mean is the wrong statistic for LLM serving and how to read P50/P90/P99.
 - Construct an SLO multi-constraint (e.g. TTFT<500 ms AND TPOT<15 ms AND E2E<2 s) and compute goodput against it.
 - Name two benchmark tools that disagree on TPOT for the same run and explain why.
 
-## The Problem
+## 问题切入
 
 "Our throughput is 15,000 tokens per second." So what? If 40% of requests blew past 2 seconds end-to-end, users abandoned the session. Throughput alone does not tell you whether the product works.
 
 Inference has multiple axes of latency and each one fails differently. Prefill is compute-bound and scales with prompt length. Decode is memory-bound and scales with batch size. Queuing delay is an operational problem. Network is a physical-distance problem. You need distinct metrics for each, and you need percentiles, and you need a single composite that says "did the user get what they expected" — that is goodput.
 
-## The Concept
+## 核心概念
 
 ### TTFT — time to first token
 
@@ -104,15 +104,15 @@ Enterprise SLOs tighten TTFT (200-400 ms) and loosen E2E. The point is to write 
 throughput-latency
 ```
 
-## Use It
+## 应用场景
 
 `code/main.py` is a toy goodput calculator. Generate a synthetic latency distribution, apply an SLO, and compute goodput. Also shows the GenAI-Perf vs LLMPerf TPOT difference on the same trace.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-slo-goodput-gate.md`. Given a workload and SLO, it produces a CI/CD-ready benchmark recipe that gates deploys on goodput rather than throughput.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Generate a distribution with 1% tail spike. How does goodput change when you tighten P99 TPOT from 30 ms to 15 ms?
 2. A vendor quotes "15,000 tok/s on Llama 3.3 70B H100". Name three questions to ask before trusting it.
@@ -120,7 +120,7 @@ This lesson produces `outputs/skill-slo-goodput-gate.md`. Given a workload and S
 4. Construct a consumer SLO for a voice assistant (first token is heard, not read). Which metric is most user-visible?
 5. Read the LLMPerf README and the GenAI-Perf docs. Identify three other metrics where the tools disagree.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -134,7 +134,7 @@ This lesson produces `outputs/skill-slo-goodput-gate.md`. Given a workload and S
 | SLO multi-constraint | "the joint" | AND of all three latency bounds; a request fails if any one is violated |
 | GenAI-Perf vs LLMPerf | "the tool trap" | Tools disagree on whether ITL includes TTFT |
 
-## Further Reading
+## 深入阅读
 
 - [NVIDIA NIM — LLM Benchmarking Metrics](https://docs.nvidia.com/nim/benchmarking/llm/latest/metrics.html) — canonical definition of TTFT, ITL, TPOT.
 - [Anyscale — LLM Serving Benchmarking Metrics](https://docs.anyscale.com/llm/serving/benchmarking/metrics) — alternative definitions and measurement recipe.

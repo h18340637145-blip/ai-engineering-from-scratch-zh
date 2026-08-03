@@ -1,6 +1,6 @@
 {
   "lesson": "19-ai-gateways",
-  "title": "AI Gateways — LiteLLM, Portkey, Kong AI Gateway, Bifrost",
+  "title": "AI 网关（AI Gateways）：限流、降级与统一 API 抽象",
   "questions": [
     {
       "stage": "pre",

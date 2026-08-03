@@ -1,13 +1,13 @@
-# Benchmarks: SWE-bench, GAIA, AgentBench
+# Agent 评估基准：SWE-bench 与 GAIA 严苛测试集
 
-> Three benchmarks anchor agent evaluation in 2026. SWE-bench tests code patching. GAIA tests generalist tool use. AgentBench tests multi-environment reasoning. Know their composition, their contamination story, and what they do not measure.
+> 剖析 Agent 领域权威基准：面向真实 Git Issue 修复的 SWE-bench 与测试通用多模态推理能力的 GAIA 基准。
 
 **Type:** Learn
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 06 (Tool Use)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 14 Lesson 01
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name SWE-bench's test harness (FAIL_TO_PASS) and explain why it gates on unit tests.
 - Explain why SWE-bench Verified (OpenAI, 500 tasks) exists and what it removes.
@@ -15,7 +15,7 @@
 - Name AgentBench's eight environments and its primary blocker for open-source LLMs.
 - Summarize the SWE-bench+ contamination finding and its implications.
 
-## The Problem
+## 问题切入
 
 Leaderboards tell you which model wins on one benchmark. They do not tell you:
 
@@ -25,7 +25,7 @@ Leaderboards tell you which model wins on one benchmark. They do not tell you:
 
 Know the three anchoring benchmarks and their failure modes before you quote a number.
 
-## The Concept
+## 核心概念
 
 ### SWE-bench (Jimenez et al., ICLR 2024 oral)
 
@@ -76,7 +76,7 @@ GAIA is what you run to measure "generalist capability." Do not confuse with cod
 - **Contaminated claims.** Reporting SWE-bench without mentioning Verified or SWE-bench+ is misleading.
 - **Benchmark-as-development-target.** Optimizing for the benchmark diverges from production usefulness.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements a toy SWE-bench-like harness:
 
@@ -93,18 +93,18 @@ python3 code/main.py
 
 The output shows resolution rate per task + per difficulty and makes the evaluator rules concrete.
 
-## Use It
+## 应用场景
 
 - **SWE-bench Verified** for code agents. Always report Verified scores.
 - **GAIA** for generalist agents. Use the private leaderboard split.
 - **AgentBench** for multi-environment comparison.
 - **Custom evals** (Lesson 30) for your product's actual shape.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-benchmark-harness.md` builds a SWE-bench-style harness for any codebase-task pair with FAIL_TO_PASS / PASS_TO_PASS gating.
 
-## Exercises
+## 练习题
 
 1. Port the toy harness to run on a real repo (pick one of yours). Write 3 FAIL_TO_PASS tests for known bugs.
 2. Add a step-count metric. On your 3 tasks, how many agent steps per resolution?
@@ -112,7 +112,7 @@ The output shows resolution rate per task + per difficulty and makes the evaluat
 4. Download a GAIA question from the public split. Trace what a GPT-4-class agent would do. What tools does it need?
 5. Read AgentBench's per-environment breakdown. Which environment mirrors your product surface? What does "SOTA" look like there?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -125,7 +125,7 @@ The output shows resolution rate per task + per difficulty and makes the evaluat
 | Contamination | "Training-set leak" | Benchmark tasks present in model training |
 | SWE-bench+ | "Contamination audit" | 32.67% solution leakage found in successful SWE-bench patches |
 
-## Further Reading
+## 深入阅读
 
 - [Jimenez et al., SWE-bench (arXiv:2310.06770)](https://arxiv.org/abs/2310.06770) — the original benchmark
 - [OpenAI, SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/) — the curated subset

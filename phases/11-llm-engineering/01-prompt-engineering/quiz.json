@@ -1,37 +1,62 @@
 [
   {
-    "question": "What is the most common mistake people make when writing prompts for LLMs?",
-    "options": ["Using too many tokens", "Writing vague, underspecified instructions that leave the model guessing about format, scope, and constraints", "Using the wrong API", "Not using enough examples"],
+    "stage": "pre",
+    "question": "人们在为 LLM 编写 Prompt 时最常犯的错误是什么？",
+    "options": [
+      "使用了过多的 Token",
+      "编写模糊、未明确说明的指令，让模型对格式、范围和约束产生猜测",
+      "使用了错误的 API",
+      "没有包含足够的示例"
+    ],
     "correct": 1,
-    "explanation": "LLMs follow instructions literally. 'Write me a marketing email' gives the model no constraints. Specifying tone, audience, length, format, and constraints produces dramatically better results.",
-    "stage": "pre"
+    "explanation": "LLM 会字面执行指令。'帮我写一封营销邮件' 没有给模型任何约束。明确指定语气、受众、长度、格式和约束可以大幅提升输出效果。"
   },
   {
-    "question": "What are the four core components of an effective prompt?",
-    "options": ["Input, output, model, temperature", "Role, context, constraints, and output format", "System, user, assistant, function", "Query, document, answer, score"],
+    "stage": "pre",
+    "question": "有效 Prompt 的四个核心组成部分是什么？",
+    "options": [
+      "输入、输出、模型、Temperature",
+      "角色（Role）、上下文（Context）、约束（Constraints）和输出格式（Output Format）",
+      "System、User、Assistant、Function",
+      "查询、文档、答案、得分"
+    ],
     "correct": 1,
-    "explanation": "Effective prompts specify: who the model should be (role), what it should know (context), what it should and shouldn't do (constraints), and how to structure the response (output format).",
-    "stage": "pre"
+    "explanation": "高效的 Prompt 应当明确指定：模型充当什么身份（角色）、需要了解什么背景（上下文）、应该和不应该做什么（约束），以及如何组织响应（输出格式）。"
   },
   {
-    "question": "Why should you include output format instructions in your prompts?",
-    "options": ["It makes the prompt shorter", "Without format instructions, the model chooses its own structure, which varies between calls and is hard to parse programmatically", "It reduces API costs", "It prevents hallucination"],
+    "stage": "post",
+    "question": "为什么应该在 Prompt 中包含输出格式指令？",
+    "options": [
+      "这会使 Prompt 更加简短",
+      "没有格式指令，模型会自行选择结构，这在多次调用间会有所不同，且难以通过程序进行解析",
+      "这会降低 API 成本",
+      "这能防止幻觉"
+    ],
     "correct": 1,
-    "explanation": "LLMs are non-deterministic. Without explicit format instructions, one call might return bullet points, the next prose, the next markdown. Specifying format ensures consistent, parseable outputs.",
-    "stage": "post"
+    "explanation": "LLM 是非确定性的。如果没有明确的格式指令，一次调用可能返回 Markdown 列表，下一次返回段落文本。指定格式可以确保输出的一致性与可解析性。"
   },
   {
-    "question": "What is the purpose of a system prompt?",
-    "options": ["To authenticate the API call", "To set persistent behavioral rules, role, and constraints that apply to the entire conversation", "To define the model's architecture", "To compress the conversation history"],
+    "stage": "post",
+    "question": "System Prompt 的主要作用是什么？",
+    "options": [
+      "对 API 调用进行身份验证",
+      "设定适用于整个对话过程的持久行为规则、角色和约束",
+      "定义模型的神经网络架构",
+      "压缩对话历史记录"
+    ],
     "correct": 1,
-    "explanation": "The system prompt establishes the model's persona, rules, and constraints for the entire session. It runs before every user turn and is the primary mechanism for controlling model behavior in production.",
-    "stage": "post"
+    "explanation": "System Prompt 为整个会话确立模型的角色人设、规则和约束。它在每个用户轮次前生效，是在生产环境中控制模型行为的核心机制。"
   },
   {
-    "question": "How should you test whether a prompt change actually improved output quality?",
-    "options": ["Read a few outputs and make a judgment call", "Run the prompt on a diverse test set and measure changes in defined metrics (accuracy, format compliance, relevance)", "Ask the model if it's doing better", "Check the API response time"],
+    "stage": "post",
+    "question": "应该如何测试 Prompt 的修改是否真正提升了输出质量？",
+    "options": [
+      "阅读少数几个输出并凭感觉做决定",
+      "在多元化的测试集上运行该 Prompt，并测量在预定义指标（准确率、格式符合度、相关性）上的变化",
+      "询问模型它是否表现得更好",
+      "检查 API 的响应耗时"
+    ],
     "correct": 1,
-    "explanation": "Evaluating prompt changes on a handful of examples is unreliable. A systematic evaluation harness with diverse test cases and defined metrics shows whether changes help across the distribution, not just cherry-picked examples.",
-    "stage": "post"
+    "explanation": "仅在少量示例上评估 Prompt 修改是不靠谱的。构建带有丰富测试用例和明确指标的系统化 Eval 测试套件，才能展现修改在整体分布上的实际效果。"
   }
 ]

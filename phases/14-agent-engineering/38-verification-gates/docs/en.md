@@ -1,20 +1,20 @@
-# Verification Gates
+# 验证门禁（Verification Gates）：交付前的质量防线
 
-> The agent does not get to mark its own work as done. A verification gate reads the scope contract, the feedback log, the rule report, and the diff, and answers a single question: is this task actually complete? If the gate says no, the task is not done, no matter what the chat says.
+> 在 Agent 输出交付用户之前设立多重强制验证门禁，确保所有自动生成的代码与修改 100% 满足质量标准。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 33 (Rules), Phase 14 · 36 (Scope), Phase 14 · 37 (Feedback)
-**Time:** ~55 minutes
+**Prerequisites:** Phase 14 Lesson 37
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Define a verification gate as a deterministic function over workbench artifacts.
 - Combine rule report, scope report, feedback records, and diff into a single verdict.
 - Emit a `verification_report.json` the reviewer agent and CI can both read.
 - Refuse to advance a task on any block-severity failure, without exception.
 
-## The Problem
+## 问题切入
 
 Agents declare success too easily. Three failure shapes dominate:
 
@@ -24,7 +24,7 @@ Agents declare success too easily. Three failure shapes dominate:
 
 The workbench fix is a single verification gate that reads the artifacts the agent has already produced and makes the call. The gate is deterministic. The gate is in version control. The gate is wired into CI. The agent cannot bribe it.
 
-## The Concept
+## 核心概念
 
 ```mermaid
 flowchart TD
@@ -64,7 +64,7 @@ The gate emits one `verification_report.json` per task close-out, written under 
 
 Block-severity findings cannot be overridden by the agent. They can only be overridden by a human, with a recorded `override_reason` and an `overridden_by` user id. The override is a signed change, not an agent decision.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -95,7 +95,7 @@ Four patterns elevate the gate from "another lint job" to "the deciding edge."
 
 **`--strict` mode promotes warns to blocks.** For release branches, ship-blocking PRs, or post-incident triage, `--strict` makes every warning a hard fail. The flag is opt-in by branch; not the global default, because strict-on-everything corrodes day-to-day flow.
 
-## Use It
+## 应用场景
 
 Production patterns:
 
@@ -105,11 +105,11 @@ Production patterns:
 
 The gate is the deciding edge in the workbench flow. Every other surface is upstream of it.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-verification-gate.md` wires the gate into a specific project: which acceptance commands feed it, which rules are block-severity, which off-scope writes are tolerated, how the override audit log is stored.
 
-## Exercises
+## 练习题
 
 1. Add a `coverage_floor` check: the test command must produce a coverage report with at least 80%. Decide which artifact carries the floor.
 2. Support a `--strict` mode that promotes every `warn` to `block`. Document the cases where strict mode is the right default.
@@ -117,7 +117,7 @@ The gate is the deciding edge in the workbench flow. Every other surface is upst
 4. Add a `time_since_last_human_touch` check: any file edited within 60 seconds of a human keystroke is exempt from off-scope flags.
 5. Run the gate on a real agent diff from your product. How many findings are real and how many are noise? Where does the gate need to grow?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -127,7 +127,7 @@ The gate is the deciding edge in the workbench flow. Every other surface is upst
 | Acceptance command | "The proof" | A shell command whose zero exit is what `done` means |
 | One report path | "Source of truth" | `outputs/verification/<task_id>.json`, consumed by CI and humans alike |
 
-## Further Reading
+## 深入阅读
 
 - [Anthropic, Harness design for long-running application development](https://www.anthropic.com/engineering/harness-design-long-running-apps)
 - [OpenAI Agents SDK guardrails](https://openai.github.io/openai-agents-python/guardrails/)

@@ -1,20 +1,20 @@
-# Load Testing LLM APIs — Why k6 and Locust Lie
+# LLM 服务压力测试与容量规划
 
-> Traditional load testers were not designed for streaming responses, variable output lengths, token-level metrics, or GPU saturation. Two traps bite most teams. The GIL trap: Locust's token-level measurement runs tokenization under the Python GIL, which competes with request generation under heavy concurrency; tokenization backlog then inflates reported inter-token latency — your client is the bottleneck, not the server. The prompt-uniformity trap: identical prompts in a loop test one point on the token distribution; real traffic has variable length and diverse prefix matches. LLMPerf fixes this with `--mean-input-tokens` + `--stddev-input-tokens`. Tool mapping in 2026: LLM-specialized (GenAI-Perf, LLMPerf, LLM-Locust, guidellm) for token-level accuracy; **k6 v2026.1.0** + **k6 Operator 1.0 GA (Sept 2025)** — streaming-aware, Kubernetes-native distributed via TestRun/PrivateLoadZone CRDs, best for CI/CD gates; Vegeta for Go constant-rate saturation; Locust 2.43.3 only with LLM-Locust extension for streaming. Load patterns: steady-state, ramp, spike (autoscaling test), soak (memory leaks).
+> 针对生成式 API 进行高压测试：模拟真实分布的输入输出 Token 长度，推算系统最大承载能力。
 
 **Type:** Build
 **Languages:** Python (stdlib, toy realistic-prompt generator + latency collector)
-**Prerequisites:** Phase 17 · 08 (Inference Metrics), Phase 17 · 03 (GPU Autoscaling)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 17 Lesson 08
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Explain the two anti-patterns (GIL trap, prompt-uniformity trap) that make generic load testers lie for LLM APIs.
 - Pick a tool for a given purpose: LLMPerf (benchmark run), k6 + streaming extension (CI gate), guidellm (large-scale synthetic), GenAI-Perf (NVIDIA reference).
 - Design four load patterns (steady, ramp, spike, soak) and name the failure mode each catches.
 - Build a realistic prompt distribution using mean + stddev of input tokens rather than fixed length.
 
-## The Problem
+## 问题切入
 
 You k6-tested your LLM endpoint at 500 concurrent users. It held. You shipped. In production at 200 actual users the service fell over — P99 TTFT exploded, GPUs pinned.
 
@@ -22,7 +22,7 @@ Two things happened. First, k6 sent 500 identical prompts — your request-coale
 
 Load testing for LLMs is its own discipline.
 
-## The Concept
+## 核心概念
 
 ### The GIL trap (Locust)
 
@@ -82,15 +82,15 @@ Build from real traffic samples (if you have them) or from published distributio
 - Typical CI gate: 30-50 iterations per PR.
 - Four patterns: steady, ramp, spike, soak.
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates a load test with realistic prompt distribution, measures effective TPOT, and demonstrates the uniform-prompt trap.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-load-test-plan.md`. Given workload and SLA, picks tool and designs the four load patterns.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Compare uniform vs realistic distribution — where is the gap?
 2. Write the k6 script for a CI gate: TTFT P95 < 800 ms at 100 concurrent, runtime 5 minutes.
@@ -98,7 +98,7 @@ This lesson produces `outputs/skill-load-test-plan.md`. Given workload and SLA, 
 4. Spike test from 10 RPS to 100 RPS. What's the expected recovery time if Karpenter + vLLM production-stack are in place (Phase 17 · 03 + 18)?
 5. GenAI-Perf reports TPOT=6ms; LLMPerf reports TPOT=11ms on the same server. Explain.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -114,7 +114,7 @@ This lesson produces `outputs/skill-load-test-plan.md`. Given workload and SLA, 
 | Spike | "burst test" | Sudden multiplier then revert |
 | Soak | "long test" | Hours for leak detection |
 
-## Further Reading
+## 深入阅读
 
 - [TianPan — Load Testing LLM Applications](https://tianpan.co/blog/2026-03-19-load-testing-llm-applications)
 - [PremAI — Load Testing LLMs 2026](https://blog.premai.io/load-testing-llms-tools-metrics-realistic-traffic-simulation-2026/)

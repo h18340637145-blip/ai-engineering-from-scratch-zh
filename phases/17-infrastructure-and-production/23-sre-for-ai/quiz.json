@@ -1,6 +1,6 @@
 {
   "lesson": "23-sre-for-ai",
-  "title": "SRE for AI — Multi-Agent Incident Response, Runbooks, Predictive Detection",
+  "title": "AI 系统 SRE 运维实践：SLO, SLI 与故障处理响应",
   "questions": [
     {
       "stage": "pre",

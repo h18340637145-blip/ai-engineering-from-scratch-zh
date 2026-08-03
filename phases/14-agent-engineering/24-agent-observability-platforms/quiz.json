@@ -1,6 +1,6 @@
 {
   "lesson": "24-agent-observability-platforms",
-  "title": "Agent Observability: Langfuse, Phoenix, Opik",
+  "title": "Agent 可观测性平台：LangSmith, Phoenix 与 Arize",
   "questions": [
     {
       "stage": "pre",

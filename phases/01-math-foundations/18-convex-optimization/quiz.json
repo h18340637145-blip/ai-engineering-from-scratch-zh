@@ -2,63 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the defining property of a convex function?",
+      "question": "凸集（Convex Set）与凸函数（Convex Function）的核心性质是什么？",
       "options": [
-        "It has exactly one critical point",
-        "The line segment between any two points on its graph lies above or on the graph",
-        "Its derivative is always positive",
-        "It can only be defined on positive real numbers"
+        "凸集中任意两点连线上的所有点仍在该集合内；凸函数上任意两点间的割线恒位于函数图像上方（任何局部极小值即为全局最小值）",
+        "凸函数一定只有唯一一个变量",
+        "凸集不能有边界",
+        "凸函数的导数恒为常数"
       ],
-      "correct": 1,
-      "explanation": "A function is convex if for any two points x, y and any t in [0,1]: f(tx + (1-t)y) <= t*f(x) + (1-t)*f(y). Geometrically, the chord between any two points on the graph never dips below the graph itself."
+      "correct": 0,
+      "explanation": "凸优化的最大优越性在于不存在非全局的陷阱局部极小值，优化算法保证能收敛到全局最优解。"
     },
     {
       "stage": "pre",
-      "question": "Which of these ML problems has a convex loss landscape?",
+      "question": "KKT 条件（Karush-Kuhn-Tucker Conditions）在带约束的优化问题中有什么作用？",
       "options": [
-        "Training a 3-layer neural network with ReLU activations",
-        "Logistic regression with cross-entropy loss",
-        "k-means clustering",
-        "Matrix factorization for recommendation"
-      ],
-      "correct": 1,
-      "explanation": "Logistic regression has a convex loss (log-loss is convex in the weights). Neural networks, k-means, and matrix factorization are all non-convex. For convex problems, any local minimum is the global minimum."
-    },
-    {
-      "stage": "post",
-      "question": "Newton's method converges to the minimum of f(x) = 5x^2 + 3x + 1 in how many steps?",
-      "options": [
-        "1 step (it is exact for quadratic functions)",
-        "About 10 steps",
-        "About 100 steps",
-        "It depends on the learning rate"
+        "将带不等式与等式约束的优化问题转化为非约束问题，给出极值点必须满足的必要条件（互补松弛性等）",
+        "自动选择学习率",
+        "把凸优化变成非凸优化",
+        "仅能求解线性规划"
       ],
       "correct": 0,
-      "explanation": "Newton's method fits a local quadratic approximation and jumps to its minimum. For an actual quadratic function, the approximation is exact, so Newton's method converges in a single step regardless of the starting point."
+      "explanation": "KKT 条件是拉格朗日乘子法处理不等式约束（$g_i(x) \\le 0$）的理论基石。"
     },
     {
       "stage": "post",
-      "question": "In the KKT conditions, what does 'complementary slackness' (lambda_i * g_i(x) = 0) mean?",
+      "question": "拉格朗日对偶性（Lagrangian Duality）中，对偶问题（Dual Problem）的解与原问题（Primal Problem）的关系是？",
       "options": [
-        "All constraints must be active at the optimum",
-        "Either a constraint is active (g_i = 0) or its multiplier is zero (lambda_i = 0) — an inactive constraint has no effect",
-        "The gradients of all constraints must be orthogonal",
-        "The Lagrangian is always zero at the optimum"
+        "对偶问题的解始终给出了原问题最优解的下界（弱对偶性）；当满足 Slater 条件时主对偶间无隐患隙（强对偶性，二者完全相等）",
+        "对偶问题必然比原问题更难求解",
+        "对偶问题的目标函数必定是非凸的",
+        "它们毫无关联"
       ],
-      "correct": 1,
-      "explanation": "Complementary slackness means each constraint is either binding (g_i = 0, sitting on the boundary) or irrelevant (lambda_i = 0, not affecting the solution). In SVMs, this is why only support vectors (active constraints with lambda_i > 0) determine the decision boundary."
+      "correct": 0,
+      "explanation": "强对偶性允许我们在对偶空间求解更为简单的问题（如 SVM 的对偶展开形式）。"
     },
     {
       "stage": "post",
-      "question": "Why does SGD find good solutions in non-convex neural network landscapes despite the lack of convexity guarantees?",
+      "question": "在支持向量机（SVM）中，凸二次规划（Quadratic Programming, QP）保证了什么？",
       "options": [
-        "Neural networks are secretly convex in high dimensions",
-        "SGD always finds the global minimum",
-        "In high dimensions, most critical points are saddle points (not bad local minima), and SGD noise helps escape them",
-        "The loss function is irrelevant to model performance"
+        "保证找到全局最大间隔超平面，绝对不会陷入局部极小值",
+        "保证训练时间在 1 秒以内",
+        "保证数据集百分百线性可分",
+        "保证不需要核函数"
       ],
-      "correct": 2,
-      "explanation": "In high-dimensional parameter spaces, random critical points are overwhelmingly saddle points. The few local minima that exist tend to have loss values close to the global minimum. SGD's stochastic noise helps escape saddle points, and overparameterization smooths the landscape."
+      "correct": 0,
+      "explanation": "SVM 形式化为带有线性约束的二次凸规划问题，因而具备全局唯一极小值解。"
+    },
+    {
+      "stage": "post",
+      "question": "次梯度（Subgradient）用于处理什么类型的凸优化函数？",
+      "options": [
+        "不可微的凸函数（如包含 $|x|$ 或 $\text{ReLU}(x) = \\max(0, x)$ 在折点 0 处的导数拓展）",
+        "必须处处光滑可微的函数",
+        "只能处理正弦函数",
+        "复数域上的解析函数"
+      ],
+      "correct": 0,
+      "explanation": "次梯度集合包含了所有位于切线下方支撑凹面的斜率值，扩展了传统梯度的适用范围。"
     }
   ]
 }

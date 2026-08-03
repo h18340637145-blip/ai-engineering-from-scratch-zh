@@ -1,6 +1,6 @@
 {
   "lesson": "33-instructions-as-executable-constraints",
-  "title": "Agent Instructions as Executable Constraints",
+  "title": "指令即可执行约束：将自然语言转化为确定性验证器",
   "questions": [
     {
       "stage": "pre",

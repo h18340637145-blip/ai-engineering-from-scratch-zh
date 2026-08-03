@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "For matrix multiplication (m x n) @ (n x p), what must be true about the dimensions?",
-      "options": ["m must equal p", "The inner dimensions n must match", "All dimensions must be equal", "m must be greater than p"],
+      "question": "矩阵乘法 $A B$ 能够成立的前提条件是什么？",
+      "options": [
+        "A 和 B 必须是形状完全相同的方阵",
+        "矩阵 A 的列数必须等于矩阵 B 的行数",
+        "矩阵 A 的行数必须等于矩阵 B 的列数",
+        "A 和 B 的行列式都不为 0"
+      ],
       "correct": 1,
-      "explanation": "Matrix multiplication requires the number of columns in the first matrix (n) to equal the number of rows in the second matrix (n). The result has shape (m x p)."
+      "explanation": "对于 $A_{m \times n} B_{n \times p}$，内部维度 $n$ 必须匹配，乘积结果矩阵的形状为 $m \times p$。"
     },
     {
       "stage": "pre",
-      "question": "What is the identity matrix?",
-      "options": ["A matrix of all ones", "A square matrix with ones on the diagonal and zeros elsewhere that acts as the multiplicative identity", "A matrix where every element is unique", "The transpose of any given matrix"],
+      "question": "关于矩阵乘法的交换律，以下描述正确的是？",
+      "options": [
+        "对任意矩阵都满足 $AB = BA$",
+        "矩阵乘法通常不满足交换律（$AB \neq BA$）",
+        "只有当 A 和 B 均为对角阵时才成立",
+        "矩阵乘法只满足加法交换律"
+      ],
       "correct": 1,
-      "explanation": "The identity matrix I has ones on the diagonal and zeros everywhere else. Multiplying any matrix by I returns the original matrix unchanged, like multiplying a number by 1."
+      "explanation": "顺序在矩阵乘法中至关重要，变换施加的先后顺序不同通常会导致完全不同的结果。"
     },
     {
       "stage": "post",
-      "question": "What is the key difference between element-wise multiplication and matrix multiplication?",
-      "options": ["Element-wise is faster while matrix multiplication is more accurate", "Element-wise multiplies matching positions (same shape required), matrix multiplication takes dot products of rows and columns (inner dimensions must match)", "They produce the same result but use different notation", "Element-wise only works on vectors while matrix multiplication works on matrices"],
+      "question": "在 NumPy/PyTorch 中，广播机制（Broadcasting）的作用是什么？",
+      "options": [
+        "把张量自动发送到不同 GPU",
+        "自动对形状不一致但符合规则的张量扩展维度，无需显式复制数据即可按元素运算",
+        "把多维张量展平为一维向量",
+        "计算张量的矩阵乘积"
+      ],
       "correct": 1,
-      "explanation": "Element-wise (Hadamard) product multiplies corresponding elements and requires identical shapes. Matrix multiplication computes dot products between rows and columns with the rule (m,n)@(n,p)=(m,p)."
+      "explanation": "广播机制沿维度匹配规则智能对齐张量形状，从而极大地节省显存并简化按元素计算。"
     },
     {
       "stage": "post",
-      "question": "In the expression 'output = relu(W @ x + b)', what role does broadcasting play?",
-      "options": ["It broadcasts the computation across multiple GPUs", "It automatically stretches the bias vector b to match the shape of W @ x so they can be added", "It converts the data types of W and x to match", "It repeats the relu activation across all elements"],
+      "question": "矩阵转置与求逆运算组合 $(AB)^T$ 和 $(AB)^{-1}$ 的展开展开公式分别是？",
+      "options": [
+        "$(AB)^T = A^T B^T$, $(AB)^{-1} = A^{-1} B^{-1}$",
+        "$(AB)^T = B^T A^T$, $(AB)^{-1} = B^{-1} A^{-1}$",
+        "$(AB)^T = B^T A^T$, $(AB)^{-1} = A^{-1} B^{-1}$",
+        "$(AB)^T = A^T B^T$, $(AB)^{-1} = B^{-1} A^{-1}$"
+      ],
       "correct": 1,
-      "explanation": "W @ x produces a column vector, and b is also a vector. Broadcasting stretches b across the batch dimension if needed, allowing element-wise addition without explicit shape matching."
+      "explanation": "无论是转置还是求逆，复合矩阵乘积展开时都必须颠倒乘法顺序。"
     },
     {
       "stage": "post",
-      "question": "What does a determinant of zero for a matrix indicate?",
-      "options": ["The matrix has all zero entries", "The matrix is singular: it crushes at least one dimension, cannot be inverted, and has no unique solution", "The matrix is the identity matrix", "The matrix performs a rotation"],
+      "question": "哈达玛积（Hadamard Product, $A \\odot B$）是指什么运算？",
+      "options": [
+        "矩阵乘法",
+        "两个同形状矩阵对应元素的按项相乘（Element-wise multiplication）",
+        "向量外积",
+        "矩阵求迹"
+      ],
       "correct": 1,
-      "explanation": "A zero determinant means the transformation collapses space by at least one dimension (e.g., mapping 2D to a line). The matrix has no inverse, and linear systems using it have either no solution or infinitely many."
+      "explanation": "Hadamard 积是对应坐标点直接逐项相乘，常用在注意力掩码或门控机制中。"
     }
   ]
 }

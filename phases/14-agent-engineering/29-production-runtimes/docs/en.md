@@ -1,24 +1,24 @@
-# Production Runtimes: Queue, Event, Cron
+# 生产级 Agent 运行时：容器化、持久化与弹性格
 
-> Production agents run on six runtime shapes: request-response, streaming, durable execution, queue-based background, event-driven, and scheduled. Pick the shape before you pick the framework. Observability is load-bearing at every shape.
+> 将实验室 Agent 转化为 7x24 小时高可用服务：容器沙箱隔离、水平扩缩容、事件队列与断点恢复。
 
 **Type:** Learn
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 13 (LangGraph), Phase 14 · 22 (Voice)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 14 Lesson 01, Lesson 16
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name the six production runtime shapes and match each to a framework / product pattern.
 - Explain why durable execution (LangGraph) matters for long-horizon tasks.
 - Describe the event-driven runtime and when Claude Managed Agents fits.
 - Explain the observability-as-load-bearing claim for multi-step agents.
 
-## The Problem
+## 问题切入
 
 Production agents fail in ways a Jupyter notebook doesn't surface: network timeouts at step 37, user hangs up mid-voice call, cron job dies on machine reboot, background worker runs out of memory. The runtime shape determines which failures are survivable.
 
-## The Concept
+## 核心概念
 
 ### Request-response
 
@@ -80,7 +80,7 @@ Without OpenTelemetry GenAI spans (Lesson 23) plus a Langfuse/Phoenix/Opik backe
 - **Opaque background work.** Background agent runs without trace export. Failures are invisible until the user reports them.
 - **Skipping durable state.** Any run > 30 seconds where you can't afford to restart needs durable execution.
 
-## Build It
+## 动手实现
 
 `code/main.py` is a stdlib multi-shape demo:
 
@@ -98,7 +98,7 @@ python3 code/main.py
 
 Output: five traces showing each shape's behavior on the same task. Same agent logic, different outer shells. Durable execution (the sixth shape) is intentionally covered in Lesson 13 with LangGraph checkpointing.
 
-## Use It
+## 应用场景
 
 - **Request-response** for chat-style UX.
 - **Streaming** for progressive responses.
@@ -107,11 +107,11 @@ Output: five traces showing each shape's behavior on the same task. Same agent l
 - **Event** for agent reactivity.
 - **Cron** for housekeeping (memory consolidation, evals, cost reports).
 
-## Ship It
+## 产出成果
 
 `outputs/skill-runtime-shape.md` picks a runtime shape for a task and wires the observability requirements.
 
-## Exercises
+## 练习题
 
 1. Port your Lesson 01 ReAct loop to all six shapes in your stack. Which shape fits which product surface?
 2. Add a DLQ to the queue-based demo. Simulate 10% job failure; surface DLQ size.
@@ -119,7 +119,7 @@ Output: five traces showing each shape's behavior on the same task. Same agent l
 4. Implement streaming with backpressure: if the client is slow, pause the agent. How does this interact with a turn budget?
 5. Read Claude Managed Agents docs. When would you move a self-hosted long-horizon agent to managed?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -131,7 +131,7 @@ Output: five traces showing each shape's behavior on the same task. Same agent l
 | DLQ | "Dead-letter queue" | Parking lot for failed jobs |
 | Claude Managed Agents | "Hosted harness" | Anthropic-hosted long-running async with caching + compaction |
 
-## Further Reading
+## 深入阅读
 
 - [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview) — durable execution details
 - [Claude Managed Agents overview](https://platform.claude.com/docs/en/managed-agents/overview) — hosted long-running async

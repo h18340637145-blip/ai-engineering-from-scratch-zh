@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the derivative of a function at a point tell you?",
-      "options": ["The value of the function at that point", "The rate of change (slope) of the function at that point", "The area under the function up to that point", "The maximum value the function can reach"],
+      "question": "在多元函数中，梯度向量 $\nabla f$ 的几何方向表示什么？",
+      "options": [
+        "函数值减小最快的方向",
+        "函数值增长最快的方向（方向导数最大）",
+        "函数的等高线切线方向",
+        "始终指向原点的向量"
+      ],
       "correct": 1,
-      "explanation": "The derivative f'(x) measures how much the output changes per unit change in input. Geometrically, it is the slope of the tangent line at that point."
+      "explanation": "梯度向量指向函数在当前点上升最快的方向，其模长代表最大变化率。梯度下降即沿着梯度的反方向 $-\nabla f$ 更新。"
     },
     {
       "stage": "pre",
-      "question": "What is a gradient in the context of machine learning?",
-      "options": ["A measure of model accuracy", "A vector of all partial derivatives that points in the direction of steepest ascent", "The learning rate used during training", "The difference between predicted and actual values"],
-      "correct": 1,
-      "explanation": "The gradient collects every partial derivative into one vector. It points in the direction that increases the function fastest. To minimize loss, you move opposite the gradient."
+      "question": "一元函数 $f(x)$ 取得局部极小值的极值条件是什么？",
+      "options": [
+        "一阶导数 $f'(x) = 0$ 且二阶导数 $f''(x) > 0$",
+        "一阶导数 $f'(x) > 0$ 且二阶导数 $f''(x) = 0$",
+        "一阶导数 $f'(x) = 0$ 且二阶导数 $f''(x) < 0$",
+        "一阶导数和二阶导数均小于 0"
+      ],
+      "correct": 0,
+      "explanation": "一阶导数为 0 找到驻点，二阶导数大于 0 说明曲率为向上凹陷（即谷底），对应局部极小值。"
     },
     {
       "stage": "post",
-      "question": "In gradient descent, what does the update rule 'w = w - lr * dL/dw' accomplish?",
-      "options": ["It increases the loss to test model robustness", "It adjusts each weight in the direction that reduces the loss, scaled by the learning rate", "It resets the weight to its initial value minus the gradient", "It normalizes the weight to have magnitude 1"],
+      "question": "黑塞矩阵（Hessian Matrix）在多元函数优化中提供什么信息？",
+      "options": [
+        "函数的平均值",
+        "包含函数所有二阶偏导数的对称矩阵，描述了曲面在各个方向的曲率",
+        "函数的极值点总数",
+        "优化算法的运行耗时"
+      ],
       "correct": 1,
-      "explanation": "dL/dw tells you which direction increases the loss. Subtracting it (times the learning rate) moves the weight in the direction that decreases the loss. This is repeated for every weight in the model."
+      "explanation": "Hessian 矩阵的特征值决定了极值点的类型：若全正则为极小值点，若有正有负则为鞍点（Saddle point）。"
     },
     {
       "stage": "post",
-      "question": "Why can't Newton's method (which uses the Hessian matrix) be directly applied to neural networks with millions of parameters?",
-      "options": ["Newton's method only works for convex functions", "The Hessian is an N x N matrix, requiring O(N^2) storage and O(N^3) computation per step, which is intractable for millions of parameters", "Newton's method requires analytical derivatives which cannot be computed for neural networks", "Newton's method converges too slowly for deep networks"],
+      "question": "为什么在深度学习大模型中很少使用基于 Hessian 的牛顿法（Newton's Method）优化器？",
+      "options": [
+        "牛顿法无法求解一元函数",
+        "计算与存储 $N \times N$ 维度的 Hessian 矩阵极其昂贵（复杂度达 $O(N^2)$ 存储与 $O(N^3)$ 求逆）",
+        "牛顿法不支持 GPU",
+        "牛顿法会导致梯度消失"
+      ],
       "correct": 1,
-      "explanation": "For N=1 million parameters, the Hessian has 1 trillion entries. Computing and inverting it is impossible. This is why we use first-order methods (SGD, Adam) that approximate second-order information cheaply."
+      "explanation": "在现代具有数千亿参数（$N \\ge 10^{11}$）的大模型中，显存无法承受构造与求解二次 Hessian 的巨额开销。"
     },
     {
       "stage": "post",
-      "question": "What is the numerical (central difference) approximation for f'(x)?",
-      "options": ["f(x+h) / h", "(f(x+h) - f(x)) / h", "(f(x+h) - f(x-h)) / (2*h)", "f(x) * h"],
-      "correct": 2,
-      "explanation": "The central difference (f(x+h) - f(x-h)) / (2h) is more accurate than the forward difference because it averages the slope on both sides of x, canceling out the leading error term."
+      "question": "偏导数 $\frac{\\partial f}{\\partial x_i}$ 与全导数/梯度有什么区别？",
+      "options": [
+        "偏导数只计算单一变量 $x_i$ 变化时的变化率，保持其他变量为常数",
+        "偏导数只适用于一元函数",
+        "偏导数不能在 PyTorch 中自动求导",
+        "偏导数必定大于全导数"
+      ],
+      "correct": 0,
+      "explanation": "偏导数孤立衡量单个坐标方向的边际变化，梯度则是汇总了所有偏导数的向量。"
     }
   ]
 }

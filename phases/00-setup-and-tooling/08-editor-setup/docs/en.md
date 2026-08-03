@@ -1,13 +1,13 @@
-# Editor Setup
+# 编辑器配置与 AI 开发工具
 
-> Your editor is your co-pilot. Configure it once so it stays out of your way and starts pulling its weight.
+> 把你的编辑器打造为 AI 开发利器。配置 IDE 解释器、Ruff 格式化、类型检查与 AI 编码助手。
 
-**Type:** Build
-**Languages:** --
-**Prerequisites:** Phase 0, Lesson 01
-**Time:** ~20 minutes
+**Type:** 构建
+**Languages:** JSON, Python
+**Prerequisites:** 无
+**Time:** ~30 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Install VS Code with essential extensions for Python, Jupyter, linting, and remote SSH
 - Configure format-on-save, type checking, and notebook output scrolling for AI workflows

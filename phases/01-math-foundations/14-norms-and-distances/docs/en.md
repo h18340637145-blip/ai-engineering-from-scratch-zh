@@ -1,11 +1,11 @@
-# Norms and Distances
+# 范数与距离度量
 
-> Your distance function defines what "similar" means. Choose wrong and everything downstream breaks.
+> 从几何空间到特征度量。掌握 L1/L2 范数、曼哈顿/欧氏距离、余弦相似度与马氏距离。
 
-**Type:** Build
+**Type:** 学习
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01 (Linear Algebra Intuition), 02 (Vectors, Matrices & Operations)
-**Time:** ~90 minutes
+**Prerequisites:** Phase 1, Lesson 02 (向量与矩阵运算)
+**Time:** ~35 分钟
 
 ## Learning Objectives
 

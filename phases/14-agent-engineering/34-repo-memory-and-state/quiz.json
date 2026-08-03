@@ -1,6 +1,6 @@
 {
   "lesson": "34-repo-memory-and-state",
-  "title": "Repo Memory and Durable State",
+  "title": "代码仓库级别的记忆与状态维护",
   "questions": [
     {
       "stage": "pre",

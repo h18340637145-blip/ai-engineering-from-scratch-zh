@@ -1,6 +1,6 @@
 {
   "lesson": "08-inference-metrics-goodput",
-  "title": "Inference Metrics — TTFT, TPOT, ITL, Goodput, P99",
+  "title": "推理指标与 Goodput：衡量真实系统有效吞吐率",
   "questions": [
     {
       "stage": "pre",

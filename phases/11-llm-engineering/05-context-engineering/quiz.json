@@ -1,37 +1,62 @@
 [
   {
-    "question": "What is the difference between prompt engineering and context engineering?",
-    "options": ["They are the same thing", "A prompt is the user's query; context is everything in the model's window: system prompt, tools, retrieved docs, history, and the prompt itself", "Context engineering is about database design", "Prompt engineering is more advanced"],
+    "stage": "pre",
+    "question": "什么是上下文工程（Context Engineering）？",
+    "options": [
+      "手动修改大模型的权重参数",
+      "系统化地管理、精简、格式化和动态组装送入大模型上下文窗口的信息",
+      "增加大模型的显存大小",
+      "编写网页前端组件"
+    ],
     "correct": 1,
-    "explanation": "Prompt engineering focuses on crafting the user instruction. Context engineering manages the entire input to the model: what goes in, what stays out, in what order, and how to allocate the limited context window.",
-    "stage": "pre"
+    "explanation": "上下文工程致力于在有限且昂贵的上下文窗口中，最高效地组织背景资料、系统指令、对话历史与工具结果。"
   },
   {
-    "question": "Why does context window order matter for LLM performance?",
-    "options": ["It doesn't -- LLMs process all tokens equally", "LLMs have recency and primacy biases, paying more attention to the beginning and end of the context window", "Alphabetical order helps the model search faster", "Order only matters for code"],
-    "correct": 1,
-    "explanation": "Research shows LLMs attend more to the start and end of the context window ('lost in the middle' phenomenon). Placing the most important information at the beginning or end of context improves utilization.",
-    "stage": "pre"
+    "stage": "pre",
+    "question": "“大海捞针”（Needle In A Haystack）测试揭示了大模型上下文窗口的什么现象？",
+    "options": [
+      "大模型在长文本中央位置的信息提取与注意力召回率往往明显低于头部和尾部（Lost in the Middle）",
+      "大模型无法读取超过 1000 个 Token 的文本",
+      "大模型的计算速度在长文本下保持完全不变",
+      "大模型只看懂英文"
+    ],
+    "correct": 0,
+    "explanation": "研究表明，许多模型在长文本中间放置的关键信息（Needle）容易因注意力稀释而被忽视（中间丢失现象）。"
   },
   {
-    "question": "A coding assistant uses 22,700 tokens of a 128K context window. Why is budget management still important?",
-    "options": ["128K should be enough for any use case", "Long conversations, large code files, and retrieved documentation can quickly fill the window; without budget management, critical context gets truncated", "Token counting is inaccurate", "Only the prompt matters"],
+    "stage": "post",
+    "question": "在长对话管理中，为了防止超出上下文窗口，最常见的策略是什么？",
+    "options": [
+      "直接拒绝回答后续问题",
+      "滑动窗口截断、对话摘要压缩以及基于相关性的上下文检索",
+      "提高模型的 Temperature",
+      "关闭模型的日志记录"
+    ],
     "correct": 1,
-    "explanation": "22,700 tokens is the baseline. A 50-turn conversation adds 30K+ tokens. Retrieving a large codebase adds 50K+. Tool call results add more. Without active management, the window fills and oldest context is lost.",
-    "stage": "post"
+    "explanation": "通过结合滑动窗口保留最近轮次、定期生成历史摘要以及仅在需要时检索相关记忆，可以无限延伸长会话能力。"
   },
   {
-    "question": "What is the sliding window strategy for conversation history?",
-    "options": ["Moving the model to a different server", "Keeping only the N most recent turns in context and dropping older turns, optionally summarizing them first", "Processing the conversation in fixed-size chunks", "Expanding the context window dynamically"],
+    "stage": "post",
+    "question": "在上下文窗口中加入尽可能多的无关背景信息会导致什么后果？",
+    "options": [
+      "显著提高模型的推理准确率",
+      "增加 Token 费用、拉长首 Token 延迟（TTFT），并增加模型注意力分散和幻觉的风险",
+      "没有任何影响",
+      "降低 API 响应延迟"
+    ],
     "correct": 1,
-    "explanation": "Sliding window keeps the K most recent conversation turns in full context. Older turns are either dropped or replaced with a summary. This bounds memory usage while preserving the most relevant recent context.",
-    "stage": "post"
+    "explanation": "垃圾进，垃圾出（Garbage in, garbage out）。充斥不相关信息的 Prompt 不仅浪费显存和计费，还会降低模型的推理专注度。"
   },
   {
-    "question": "How should a context assembler allocate tokens across components?",
-    "options": ["Equal allocation to each component", "Dynamically based on query type: a simple question needs less retrieval context; a complex question needs more, with generation headroom always reserved", "Maximize retrieval context always", "Minimize system prompt tokens"],
+    "stage": "post",
+    "question": "结构化上下文标记（如使用 `<context>`、`<rules>` 等 XML 标签）有什么作用？",
+    "options": [
+      "提高 API 的网络传输速度",
+      "为模型提供明确的语义边界区分，帮助模型准确分离指令、输入文本和系统约束",
+      "使文本在终端中显示彩色的输出",
+      "自动对输入文本进行加密"
+    ],
     "correct": 1,
-    "explanation": "A simple factual question might need 500 tokens of retrieved context. A complex analysis might need 10,000. A good context assembler adjusts allocation dynamically while always reserving headroom for the model's response.",
-    "stage": "post"
+    "explanation": "现代 LLM（如 Claude / GPT）在预训练中广泛学习了 XML 标签分隔符。使用清晰的结构标签能极大减少指令注入风险和角色混淆。"
   }
 ]

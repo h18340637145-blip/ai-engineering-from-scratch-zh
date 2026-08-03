@@ -1,6 +1,6 @@
 {
   "lesson": "12-edge-inference",
-  "title": "Edge Inference — Apple Neural Engine, Qualcomm Hexagon, WebGPU/WebLLM, Jetson",
+  "title": "端侧与边缘推理：WebGPU, ONNX Runtime 与 ExecuTorch",
   "questions": [
     {
       "stage": "pre",

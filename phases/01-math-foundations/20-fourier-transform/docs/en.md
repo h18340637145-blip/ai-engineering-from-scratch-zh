@@ -1,11 +1,11 @@
-# The Fourier Transform
+# 傅里叶变换与频域分析
 
-> Every signal is a sum of sine waves. The Fourier transform tells you which ones.
+> 从时域信号到频域谱图。掌握离散傅里叶变换（DFT）、FFT、卷积定理与梅尔频谱。
 
-**Type:** Build
+**Type:** 构建
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01-04, 19 (complex numbers)
-**Time:** ~90 minutes
+**Prerequisites:** Phase 1, Lesson 19 (复数与旋转位置编码)
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

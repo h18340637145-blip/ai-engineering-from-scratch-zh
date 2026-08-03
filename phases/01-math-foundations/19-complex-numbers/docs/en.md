@@ -1,11 +1,11 @@
-# Complex Numbers for AI
+# 复数与旋转位置编码
 
-> The square root of -1 is not imaginary. It is the key to rotations, frequencies, and half of signal processing.
+> 欧拉公式与虚数维度。掌握复平面几何、共轭转置与 RoPE 旋转位置编码应用。
 
-**Type:** Learn
+**Type:** 学习
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01-04 (linear algebra, calculus)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 1, Lesson 02 (向量与矩阵运算)
+**Time:** ~40 分钟
 
 ## Learning Objectives
 

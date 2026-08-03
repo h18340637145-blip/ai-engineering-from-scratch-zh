@@ -1,6 +1,6 @@
 {
   "lesson": "02-inference-platform-economics",
-  "title": "Inference Platform Economics — Fireworks, Together, Baseten, Modal, Replicate, Anyscale",
+  "title": "推理平台经济学：TTFT, TPOT, 吞吐量与成本模型",
   "questions": [
     {
       "stage": "pre",

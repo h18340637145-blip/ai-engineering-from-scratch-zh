@@ -1,26 +1,26 @@
-# A/B Testing LLM Features — GrowthBook, Statsig, and the Vibes Problem
+# LLM 功能的 A/B 测试与在线效果评估
 
-> Traditional A/B testing was not built for non-deterministic LLMs. The critical distinction: evals answer "can the model do the job?" A/B tests answer "do users care?" Both are required; shipping on vibe checks is over. What to test in 2026: prompt engineering (wording), model selection (GPT-4 vs GPT-3.5 vs OSS; accuracy vs cost vs latency), generation parameters (temperature, top-p). Real cases: a chatbot reward-model variant delivered +70% conversation length and +30% retention; Nextdoor AI subject-line experiments delivered +1% CTR after reward-function refinement; Khan Academy Khanmigo iterated on a latency-vs-math-accuracy axis. Platform split: **Statsig** (acquired by OpenAI for $1.1B in September 2025) — sequential testing, CUPED, all-in-one. **GrowthBook** — open-source, warehouse-native, Bayesian + Frequentist + Sequential engines, CUPED, SRM checks, Benjamini-Hochberg + Bonferroni corrections. You pick based on warehouse-SQL preference and whether "acquired by OpenAI" matters to your organization.
+> 设计科学的在线 A/B 测试框架：评估不同 Prompt、模型或 RAG 参数对用户转化率与满意度的真实影响。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy sequential test simulator)
-**Prerequisites:** Phase 17 · 13 (Observability), Phase 17 · 20 (Progressive Deployment)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 20
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Distinguish evals ("can the model do the job") from A/B tests ("do users care").
 - Enumerate three testable axes (prompt, model, parameters) and pick the metric for each.
 - Explain CUPED, sequential testing, and Benjamini-Hochberg multiple-comparison corrections.
 - Pick Statsig or GrowthBook based on warehouse-SQL posture and corporate acquisition stance.
 
-## The Problem
+## 问题切入
 
 You hand-tuned a system prompt. It feels better. You ship it. Conversion changes by noise. You blame the metric. Or you shipped a new model and conversion didn't move — did the model degrade or was the change too small to detect? You don't know, because you shipped without an A/B.
 
 Evals answer whether the model can do a task on a labeled set. They do not answer whether users prefer the output. Only a controlled online experiment answers that, and only if the experiment has enough power, controls for non-determinism, and corrects for multiple comparisons.
 
-## The Concept
+## 核心概念
 
 ### Evals vs A/B tests
 
@@ -90,15 +90,15 @@ Every senior engineer can name a feature that was shipped because "it feels bett
 - CUPED variance reduction: 30-70%.
 - LLM non-determinism → +30-50% sample-size buffer.
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates a sequential A/B test with fixed and sequential boundaries. Shows how sequential lets you stop early.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-ab-plan.md`. Given feature change, workload, baseline, picks platform, gates, sample size.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. For an expected 5% lift with baseline 3% conversion, what sample size to 80% power?
 2. Pick Statsig or GrowthBook for a healthcare-regulated on-prem customer.
@@ -106,7 +106,7 @@ This lesson produces `outputs/skill-ab-plan.md`. Given feature change, workload,
 4. Your canary passes but A/B shows -1.2% conversion. Do you ship? Write the escalation criteria.
 5. Apply CUPED to a pre-period with 60% of the variance of post. Compute the effective-sample-size boost.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -122,7 +122,7 @@ This lesson produces `outputs/skill-ab-plan.md`. Given feature change, workload,
 | GrowthBook | "the OSS one" | MIT warehouse-native platform |
 | mSPRT | "sequential probability ratio test" | Classical sequential procedure |
 
-## Further Reading
+## 深入阅读
 
 - [GrowthBook — How to A/B Test AI](https://blog.growthbook.io/how-to-a-b-test-ai-a-practical-guide/)
 - [Statsig — Beyond Prompts: Data-Driven LLM Optimization](https://www.statsig.com/blog/llm-optimization-online-experimentation)

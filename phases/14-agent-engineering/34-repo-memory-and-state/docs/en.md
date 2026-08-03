@@ -1,26 +1,26 @@
-# Repo Memory and Durable State
+# 代码仓库级别的记忆与状态维护
 
-> Chat history is volatile. The repo is durable. The workbench stores agent state in versioned files so the next session, the next agent, and the next reviewer all read from the same source of truth.
+> 针对大型 Repo 构建专属 Agent 状态图：缓存 AST 依赖图、Git 变更记录与全局符号索引。
 
 **Type:** Build
 **Languages:** Python (stdlib + `jsonschema` optional)
-**Prerequisites:** Phase 14 · 32 (Minimal Workbench)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 14 Lesson 07
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Define what belongs in repo memory and what belongs in chat history.
 - Author JSON Schemas for `agent_state.json` and `task_board.json`.
 - Build a state manager that loads, validates, mutates, and persists state atomically.
 - Use the schema to refuse bad writes before they corrupt the workbench.
 
-## The Problem
+## 问题切入
 
 The agent finishes a session. The chat closes. The next session opens and asks where to start. The model says "let me check the files," reads stale notes, and re-does work that was already complete. Or worse, it rewrites a finished file because no one told it the file was finished.
 
 The workbench fix is repo memory: state lives in JSON files in the repo, written under a schema, persisted atomically, diff-friendly in code review. Chat is a transient feed; the repo is the system of record.
 
-## The Concept
+## 核心概念
 
 ```mermaid
 flowchart LR
@@ -64,7 +64,7 @@ State writes need to survive partial failures: write to a tempfile, fsync, renam
 
 When the schema changes, ship a migration script next to the schema bump. The state file carries a `schema_version` field; the manager refuses to load a file from a version it cannot migrate.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -95,7 +95,7 @@ Four patterns turn the lesson's minimum into something a multi-agent monorepo ca
 
 **Schema migrations or refuse to load.** The `schema_version` integer is the contract. When the manager loads a file at an unknown version, it refuses to read. Ship a migration script next to the schema bump; `tools/migrate_state.py` runs idempotently on every startup.
 
-## Use It
+## 应用场景
 
 In production:
 
@@ -103,11 +103,11 @@ In production:
 - **Letta memory blocks.** Persistent blocks with structured schemas (Phase 14 · 08). Same discipline scoped to long-running personas.
 - **OpenAI Agents SDK session store.** Pluggable backends, schema-aware. The state file in this lesson is the local-file backend.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-state-schema.md` generates a project-specific JSON Schema pair (state + board), a Python `StateManager` wired to atomic writes, and a migration scaffold so the next schema bump does not break the workbench.
 
-## Exercises
+## 练习题
 
 1. Add a `last_human_touch` timestamp. Refuse any agent write within five seconds of a human edit.
 2. Extend the validator to support `oneOf` so a task can be either a build task or a review task with different required fields.
@@ -115,7 +115,7 @@ In production:
 4. Move the storage backend from a local file to SQLite. Keep the `StateManager` API identical.
 5. Run two agents against the same state file with a 50 ms write race. What goes wrong and how does the atomic rename save you?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -125,7 +125,7 @@ In production:
 | Migration | "Schema bump" | A script that turns vN state into v(N+1) state |
 | System of record | "Source of truth" | The artifact the workbench treats as authoritative |
 
-## Further Reading
+## 深入阅读
 
 - [JSON Schema specification](https://json-schema.org/specification.html)
 - [LangGraph checkpointers](https://langchain-ai.github.io/langgraph/concepts/persistence/)

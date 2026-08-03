@@ -1,20 +1,20 @@
-# LLM Observability Stack Selection
+# LLM 生产可观测性：Tracing, Token 开销与异常监控
 
-> The 2026 observability market splits into two categories. Development platforms (LangSmith, Langfuse, Comet Opik) bundle monitoring with evals, prompt management, session replays. Gateway/instrumentation tools (Helicone, SigNoz, OpenLLMetry, Phoenix) focus on telemetry. Langfuse is MIT-licensed core with strong OSS balance (50K events/month free cloud). Phoenix is OpenTelemetry-native under Elastic License 2.0 — excellent for drift/RAG visualization, not a persistent production backend. Arize AX uses zero-copy Iceberg/Parquet integration claiming 100x cheaper than monolithic observability. LangSmith leads for LangChain/LangGraph, $39/user/mo, self-host in Enterprise only. Helicone is proxy-based with 15-30 min setup, 100K req/mo free, but less depth on agent traces. Common production pattern: Gateway (Helicone/Portkey) + eval platform (Phoenix/TruLens) glued by OpenTelemetry.
+> 搭建端到端 LLM 监控体系：追踪请求链路、捕获模型异常输出与分析 Token 成本分布。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy trace-sampling simulator)
-**Prerequisites:** Phase 17 · 08 (Inference Metrics), Phase 14 (Agent Engineering)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 01
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Distinguish development platforms (bundled: evals + prompts + sessions) from gateway/telemetry tools (traces + metrics only).
 - Map six major tools (Langfuse, LangSmith, Phoenix, Arize AX, Helicone, Opik) to their licensing, pricing, and sweet-spot use cases.
 - Explain the OpenTelemetry-glue pattern that lets you combine a gateway tool with a separate eval platform.
 - Name the 2026 cost differentiator (Arize AX's zero-copy approach vs monolithic ingest) and state the rough 100x multiplier.
 
-## The Problem
+## 问题切入
 
 You shipped an LLM feature. It works. You have no visibility into prompt failures, tool loops, latency regressions, cost spikes, or prompt-cache hit rate. You Google "LLM observability" and get eight tools all claiming they solve the same problem at three different price points.
 
@@ -22,7 +22,7 @@ They don't solve the same problem. LangSmith answers "why did this LangGraph run
 
 Picking involves four axes: stack (LangChain? raw SDK? multi-vendor?), license tolerance (MIT only? Elastic OK? commercial fine?), budget (free tier? $100/mo? $1000/mo?), and self-host (must? nice-to-have? never?).
 
-## The Concept
+## 核心概念
 
 ### Two categories
 
@@ -100,15 +100,15 @@ At >1M requests/day, full-trace retention costs more than the LLM calls. Sample 
 - Arize AX claim: ~100x cheaper than monolithic at scale.
 - OpenTelemetry GenAI conventions: 2025 shipping, 2026 widely adopted.
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates a 1M-trace day across retention strategies (100% ingest, sampling, sampling + errors). Reports storage cost and what's lost under each.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-observability-stack.md`. Given stack, scale, budget, license posture, picks the tool(s).
 
-## Exercises
+## 练习题
 
 1. Your team on LangChain wants OSS self-hosted observability. Pick Langfuse or Opik and justify.
 2. At 5M traces/day with Datadog quotes $150K/month, compute break-even for Arize AX.
@@ -116,7 +116,7 @@ This lesson produces `outputs/skill-observability-stack.md`. Given stack, scale,
 4. Argue whether Phoenix alone is sufficient for production. When does it not suffice?
 5. Helicone is 20ms proxy overhead. At P99 TTFT 300 ms, is that acceptable? What if SLA is 100 ms?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -131,7 +131,7 @@ This lesson produces `outputs/skill-observability-stack.md`. Given stack, scale,
 | Session replay | "trace rerun" | Replay a full agent session with tool calls |
 | Eval | "offline test" | Running candidate model/prompt over labeled dataset |
 
-## Further Reading
+## 深入阅读
 
 - [SigNoz — Top LLM Observability Tools 2026](https://signoz.io/comparisons/llm-observability-tools/)
 - [Langfuse — Arize AX Alternative analysis](https://langfuse.com/faq/all/best-phoenix-arize-alternatives)

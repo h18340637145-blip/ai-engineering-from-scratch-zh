@@ -1,20 +1,20 @@
-# Hybrid Memory: Vector + Graph + KV
+# 混合记忆与 Mem0：结合向量索引与图数据库的持久化记忆
 
-> Hybrid memory runs three stores in parallel — vector for semantic similarity, KV for fast fact lookup, graph for entity-relationship reasoning — with a scoring layer that fuses them on retrieval. This is a widely used production pattern for external memory; Mem0 (Chhikara et al., 2025) is one reference implementation.
+> Mem0 将基于向量的语义检索与基于属性图的关系推导相结合，构建可扩展、低延迟且具备动态提取能力的 Agent 记忆栈。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 07 (MemGPT), Phase 14 · 08 (Letta Blocks)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 14 Lesson 07 (MemGPT), Lesson 08 (Memory Blocks)
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Explain why a single store (vector only, graph only, KV only) is insufficient for agent memory.
 - Name Mem0's three parallel stores and what each one optimizes for.
 - Describe Mem0's fusion scoring — relevance, importance, recency — and why it is a weighted sum, not a hierarchy.
 - Implement a toy three-store memory in stdlib with an `add()` that writes to all three and a `search()` that fuses results.
 
-## The Problem
+## 问题切入
 
 One store is wrong for one of three query classes:
 
@@ -24,7 +24,7 @@ One store is wrong for one of three query classes:
 
 Production agents issue all three in one session. A single-store memory is always wrong for two of them. Mem0's contribution is wiring all three behind a single `add`/`search` surface with a scoring function that fuses them.
 
-## The Concept
+## 核心概念
 
 ### Three stores in parallel
 
@@ -88,7 +88,7 @@ Every write picks one scope. Retrieval can query across scopes with per-scope we
 - **KV schema creep.** `(user_id, type, entity)` looks simple until every team adds their own `type`. Audit the type set quarterly.
 - **Graph explosion.** One noisy extractor adds 50 edges per message. Cap graph writes per `add` call; drop low-confidence edges.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements the three-store pattern in stdlib:
 
@@ -106,18 +106,18 @@ python3 code/main.py
 
 The output shows three separate recall paths plus the fused top-k. Flip the scoring weights at the top of `main()` and watch the ranking change.
 
-## Use It
+## 应用场景
 
 - **Mem0 (Apache 2.0)** — production-ready. Self-host with Postgres + Qdrant + Neo4j, or use the managed cloud.
 - **Letta** — three-tier core/recall/archival; bring your own vector and graph backends.
 - **Zep** — commercial alternative with temporal KG and fact extraction.
 - **Custom builds** — when you need exact control over the extractor (compliance) or fusion weights (voice agents where recency dominates).
 
-## Ship It
+## 产出成果
 
 `outputs/skill-hybrid-memory.md` generates a three-store memory scaffold with a fusion scorer, scope taxonomy, and temporal invalidation wired in.
 
-## Exercises
+## 练习题
 
 1. Replace the toy vector similarity with a real embedding model (sentence-transformers, Ollama, OpenAI embeddings). Measure recall@10 on a synthetic long conversation. Does the ranking drift over 1000 writes?
 2. Add a temporal query: `search(query, as_of=timestamp)`. Return only records valid at or before that time. Which store needs the most work?
@@ -125,7 +125,7 @@ The output shows three separate recall paths plus the fused top-k. Flip the scor
 4. Port the fusion scorer to include a `user_feedback` dimension (thumbs-up on retrieved records). How do you prevent gaming (the agent only returns records it already liked)?
 5. Read the Mem0 docs (`docs.mem0.ai`). Port the toy to `mem0` client calls. Compare retrieval quality on the same 20 test queries.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -137,7 +137,7 @@ The output shows three separate recall paths plus the fused top-k. Flip the scor
 | Temporal invalidation | "Soft delete" | Mark contradicted edges invalid; never delete |
 | Embedding drift | "Retrieval rot" | Vector quality degrades as corpus grows; re-embed periodically |
 
-## Further Reading
+## 深入阅读
 
 - [Chhikara et al., Mem0 (arXiv:2504.19413)](https://arxiv.org/abs/2504.19413) — the original paper
 - [Mem0 docs](https://docs.mem0.ai/platform/overview) — production API, SDKs, managed cloud

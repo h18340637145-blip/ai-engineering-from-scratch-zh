@@ -1,24 +1,24 @@
-# OpenTelemetry GenAI Semantic Conventions
+# OpenTelemetry GenAI 规范：Agent 可观测性与 Trace 监控
 
-> OpenTelemetry's GenAI SIG (launched April 2024) defines the standard schema for agent telemetry. Span names, attributes, and content-capture rules converge across vendors so agent traces mean the same thing in Datadog, Grafana, Jaeger, and Honeycomb.
+> 使用 OpenTelemetry GenAI 统一标准追踪 Agent 轨迹：记录 LLM Span、Tool Span、Token 开销与耗时瓶颈。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 13 (LangGraph), Phase 14 · 24 (Observability Platforms)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 14 Lesson 01, Lesson 16
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name the GenAI span categories: model/client, agent, tool.
 - Distinguish `invoke_agent` CLIENT vs INTERNAL spans and when each applies.
 - List the top-level GenAI attributes: provider name, request model, data-source ID.
 - Explain the content-capture contract: opt-in, `OTEL_SEMCONV_STABILITY_OPT_IN`, external-reference recommendation.
 
-## The Problem
+## 问题切入
 
 Every vendor invents their own span names. Ops teams end up building per-framework dashboards. OpenTelemetry's GenAI SIG fixes this by defining one standard the whole ecosystem targets.
 
-## The Concept
+## 核心概念
 
 ### Span categories
 
@@ -71,7 +71,7 @@ Datadog v1.37+ maps GenAI attributes natively into its LLM Observability schema.
 - **Spans without parent links.** Orphaned tool spans. Always propagate context.
 - **Not setting stability opt-in.** Your attributes may get renamed on backend upgrade.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements a stdlib span emitter matching GenAI conventions:
 
@@ -88,18 +88,18 @@ python3 code/main.py
 
 Output: a span tree with all required GenAI attributes, and an "external store" showing the opt-in content references.
 
-## Use It
+## 应用场景
 
 - **Datadog LLM Observability** (v1.37+) maps attributes natively.
 - **Langfuse / Phoenix / Opik** (Lesson 24) — auto-instrument the ecosystem.
 - **Jaeger / Honeycomb / Grafana Tempo** — raw OTel traces; build dashboards from GenAI attributes.
 - **Self-hosted** — run the OTel Collector with a GenAI processor.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-otel-genai.md` wires OTel GenAI spans into an existing agent with content-capture defaults and external-reference storage.
 
-## Exercises
+## 练习题
 
 1. Instrument your Lesson 01 ReAct loop with `invoke_agent` (INTERNAL) + per-tool spans. Send to a Jaeger instance.
 2. Add content capture in "references only" mode: prompts to SQLite, span attributes carry only row IDs.
@@ -107,7 +107,7 @@ Output: a span tree with all required GenAI attributes, and an "external store" 
 4. Set `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental` and verify your attributes don't get renamed by the collector.
 5. Build a dashboard: "which tool errors correlate with which models" from GenAI attributes alone.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -120,7 +120,7 @@ Output: a span tree with all required GenAI attributes, and an "external store" 
 | Content capture | "Prompt logging" | Opt-in capture of messages; store externally in prod |
 | Stability opt-in | "Preview mode" | Env var to pin experimental conventions |
 
-## Further Reading
+## 深入阅读
 
 - [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) — the spec
 - [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/) — GenAI spans by default

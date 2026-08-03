@@ -1,26 +1,26 @@
-# Initialization Scripts for Agents
+# Agent 初始化脚本与环境准备自动化
 
-> Every session that starts cold pays a tax. The agent reads the same files, retries the same probes, and rediscovers the same paths. An init script pays the tax once and writes the answers into state.
+> 自动化准备 Agent 的工作空间：配置隔离依赖、静态检测校验与系统启动上下文初始化。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 32 (Minimal Workbench), Phase 14 · 34 (Repo Memory)
-**Time:** ~45 minutes
+**Prerequisites:** Phase 14 Lesson 01
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Identify the work an agent should never have to redo per session.
 - Build a deterministic init script that probes runtime, dependencies, and repo health.
 - Persist the probe result so the agent reads it instead of re-running checks.
 - Fail loud, fast, and with one place to look when initialization fails.
 
-## The Problem
+## 问题切入
 
 Open a session. The agent guesses the Python version. Guesses the test command. Lists the repo root five times to find the entry point. Tries to import a package that is not installed. Asks the user where the config file lives. By the time it makes a real edit, ten thousand tokens have gone to setup work that should have been a single script.
 
 The fix is one initialization script that runs before the agent does anything else and writes a `init_report.json` the agent reads at startup.
 
-## The Concept
+## 核心概念
 
 ```mermaid
 flowchart TD
@@ -56,7 +56,7 @@ Run it twice in a row. The second run should be a no-op except for a fresh times
 
 Rules (Phase 14 · 33) describe what must be true to act. Init is the script that establishes that those rules can be checked. Rules without init become "be careful." Init without rules becomes a polished failure.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements `init_agent.py`:
 
@@ -82,7 +82,7 @@ Three patterns separate a useful init script from a ceremony.
 
 **No network, no LLM, no surprises in the hot path.** Init probes are deterministic plumbing. A probe that calls an LLM to classify a failure or that hits an external service to check a license is not a probe; it is a workflow. If a probe takes longer than three seconds in a dry run, treat that as a workbench smell and either move it out of init or cache its result.
 
-## Use It
+## 应用场景
 
 In production:
 
@@ -92,11 +92,11 @@ In production:
 
 The init script is portable because it makes no calls to a specific framework. Bash, Make, or a tasks file can all wrap it.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-init-script.md` interviews the project, classifies its setup work into probes, and emits a project-specific `init_agent.py` plus a CI workflow that runs it before any agent step.
 
-## Exercises
+## 练习题
 
 1. Add a probe that diffs the current commit against the last-known-good commit and refuses to start if more than 50 files changed.
 2. Wire the script to write a `prereqs.lock` file and refuse to start if the lock is older than seven days.
@@ -104,7 +104,7 @@ The init script is portable because it makes no calls to a specific framework. B
 4. Move probes from hardcoded functions to a YAML registry. Defend the trade-off.
 5. Add a timing budget per probe. A probe that runs longer than three seconds is a workbench smell.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -114,7 +114,7 @@ The init script is portable because it makes no calls to a specific framework. B
 | Fail loud | "Don't swallow" | Halt and surface to the human; no silent fallback |
 | Setup tax | "Bootstrap cost" | The tokens the agent spends per session rediscovering the obvious |
 
-## Further Reading
+## 深入阅读
 
 - [Anthropic, Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [GitHub Actions, composite actions for setup](https://docs.github.com/en/actions/sharing-automations/creating-actions/creating-a-composite-action)

@@ -1,11 +1,11 @@
-# Negotiation and Bargaining
+# Agent 协商与讨价还价机制
 
-> Agents negotiate resources, prices, task allocations, and terms. The 2026 benchmark set is clear: NegotiationArena (arXiv:2402.05863) shows LLMs can improve payoffs ~20% via persona manipulation ("desperation"); "Measuring Bargaining Abilities" (arXiv:2402.15813) shows buyer is harder than seller and scale does not help — their **OG-Narrator** (deterministic offer generator + LLM narrator) pushed deal rate from 26.67% to 88.88%; the Large-Scale Autonomous Negotiation Competition (arXiv:2503.06416) ran ~180k negotiations and found that **chain-of-thought-concealing** agents win by hiding reasoning from counterparts; Bhattacharya et al. 2025 on Harvard Negotiation Project metrics ranked Llama-3 most-effective, Claude-3 aggressive, GPT-4 fairest. This lesson implements Contract Net Protocol (the FIPA ancestor, Lesson 02), wires an LLM-style buyer/seller, runs an OG-Narrator-style decomposition, and measures how deal rate changes with each structural choice.
+> 构建具备利益博弈、出价与讨价还价能力的 Agent 系统，寻找多方 Pareto 最优解。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 02 (FIPA-ACL Heritage), Phase 16 · 09 (Parallel Swarm Networks)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 16 Lesson 01
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -102,7 +102,7 @@ Across all 2024-2026 negotiation benchmarks, the consistent engineering rule is:
 
 If the offer needs to be a number (price, ETA, quantity), generate it deterministically from the negotiation state and have the LLM produce the framing. If the offer needs to be a proposal structure (task decomposition, role assignment), let the LLM draft it, but validate it against a schema and constraint-check before sending.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -120,11 +120,11 @@ python3 code/main.py
 
 Expected output: naive-LLM deal rate ~65-75%; OG-Narrator deal rate ~85-95%; the 15-25 point gap is the structural advantage of decomposing offer-generation from narration. Plus a Contract Net task-market allocation example with three bidders and one task.
 
-## Use It
+## 应用场景
 
 `outputs/skill-bargainer-designer.md` designs a bargaining protocol: who generates offers (deterministic or LLM), who narrates, how private scratchpads separate from public messages, and how deal rate is monitored.
 
-## Ship It
+## 产出成果
 
 Production bargaining checklist:
 
@@ -135,7 +135,7 @@ Production bargaining checklist:
 - **Measure deal rate and payoff variance** continuously. A falling deal rate is a symptom — often a prompt drift or a counterpart-side attack.
 - **Log all rejected proposals** with the deterministic rationale. For Contract Net managers, losing bidders need to understand why.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Confirm OG-Narrator beats naive-LLM on deal rate. By how much?
 2. Implement **persona-based payoff improvement** (arXiv:2402.05863) — the buyer adopts a "desperate to buy this week" persona in the narration only, offer generator unchanged. Does the deal rate or payoff change?
@@ -143,7 +143,7 @@ Production bargaining checklist:
 4. Extend Contract Net to N-bidder auction with reserve price. When bids all exceed reserve, how does the manager decide between lowest-price and highest-quality? Which award rule do you pick and why?
 5. Read Bhattacharya et al. 2025 on Harvard Negotiation Project metrics. Implement two bargainers with different styles (aggressive vs fair). Measure payoff variance under symmetric and asymmetric pairings.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -156,7 +156,7 @@ Production bargaining checklist:
 | CoT concealment | "Hide your reasoning" | Winners in arXiv:2503.06416 kept private scratchpads; public channel shows offer only. |
 | Persona manipulation | "Emotional posturing" | arXiv:2402.05863: ~20% payoff gain from desperation/urgency personas. |
 
-## Further Reading
+## 深入阅读
 
 - [NegotiationArena](https://arxiv.org/abs/2402.05863) — the benchmark; persona manipulation and exploitation findings
 - [Measuring Bargaining Abilities of Language Models](https://arxiv.org/abs/2402.15813) — OG-Narrator and the buyer-harder-than-seller result

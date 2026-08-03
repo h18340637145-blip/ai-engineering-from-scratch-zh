@@ -1,20 +1,20 @@
-# SRE for AI — Multi-Agent Incident Response, Runbooks, Predictive Detection
+# AI 系统 SRE 运维实践：SLO, SLI 与故障处理响应
 
-> AI SRE uses LLMs grounded in infrastructure data (logs, runbooks, service topology) via RAG to automate investigation, documentation, and coordination phases. The 2026 architecture pattern is multi-agent orchestration — specialized agents (logs, metrics, runbooks) coordinated by a supervisor; AI proposes hypotheses and queries, humans approve judgment calls. Datadog Bits AI and Azure SRE Agent ship this as managed products. Runbooks are evolving: NeuBird Hawkeye uses adversarial evaluation (two models analyze the same incident; agreement = confidence, disagreement = uncertainty); operational memory persists across team changes. Auto-remediation stays cautious: AI suggests, humans approve. Fully autonomous action is narrow (restart pod, rollback specific deploy) with tight guardrails — anyone selling "set it and forget it" is overselling. Emerging frontier: pre-incident prediction. MIT research reports an LLM trained on historical logs + GPU temps + API error patterns predicted 89% of outages 10-15 min early. Projection: 95% of enterprise LLMs have automated failover by end-2026.
+> 建立针对 AI 服务的 SRE 标准：定义 TTFT / TPOT / 可用性 SLO，制定模型死锁与服务降级的应急预案。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy multi-agent incident triage simulator)
-**Prerequisites:** Phase 17 · 13 (Observability), Phase 17 · 24 (Chaos Engineering)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 08, Lesson 13
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Diagram the multi-agent AI SRE architecture: supervisor + specialized agents (logs, metrics, runbooks) + human approval gate.
 - Explain why auto-remediation is narrow (restart pod, revert deploy) rather than broad (re-architect service).
 - Name the adversarial evaluation pattern (NeuBird Hawkeye): two models agree = confidence; disagree = escalate.
 - Cite the MIT 89% early-detection result and the operational constraint: predictions without actuation are just dashboards.
 
-## The Problem
+## 问题切入
 
 An on-call engineer gets paged at 3 a.m. "High error rate in checkout." They check Datadog, Loki, three runbooks, the deploy log. 30 minutes later they realize the root cause is a vLLM OOM from a KV cache spike. They restart the pod; error clears.
 
@@ -22,7 +22,7 @@ In 2026 the first 20 minutes of that investigation are automatable. Grouping log
 
 Fully autonomous remediation is a different problem. Restart pod: safe. Scale GPU pool: safe if policy allows. Re-architect the service: absolutely not. The discipline is drawing the narrow line.
 
-## The Concept
+## 核心概念
 
 ### Multi-agent architecture
 
@@ -90,15 +90,15 @@ Runbooks evolve from Confluence pages to versioned markdown with structured sect
 - Safe auto-remediation set: restart pod, revert deploy, scale within bounds.
 - Adversarial eval: two models independent; agreement = confidence.
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates a multi-agent triage: log agent finds error, metric agent finds CPU spike, runbook agent matches to known issue. Supervisor ranks hypotheses.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-ai-sre-plan.md`. Given current on-call, incident volume, team maturity, designs an AI SRE rollout.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. What if the log and metric agents disagree? How does the supervisor resolve?
 2. Define three "safe" auto-remediation actions for your service. Justify each.
@@ -106,7 +106,7 @@ This lesson produces `outputs/skill-ai-sre-plan.md`. Given current on-call, inci
 4. Predictive detection fires at 12 min lead. What's your policy — pager, pre-drain, or both?
 5. Argue whether a 3-person team should adopt AI SRE in 2026 or wait. Consider maturity, volume, risk.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -120,7 +120,7 @@ This lesson produces `outputs/skill-ai-sre-plan.md`. Given current on-call, inci
 | Bits AI | "Datadog's SRE agent" | Datadog-managed AI SRE |
 | Pre-incident prediction | "early detection" | 10-15 min lead time on outage prediction |
 
-## Further Reading
+## 深入阅读
 
 - [incident.io — AI SRE Complete Guide 2026](https://incident.io/blog/what-is-ai-sre-complete-guide-2026)
 - [InfoQ — Human-Centred AI for SRE](https://www.infoq.com/news/2026/01/opsworker-ai-sre/)

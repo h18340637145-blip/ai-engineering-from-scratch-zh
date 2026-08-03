@@ -1,11 +1,11 @@
-# Handoffs and Routines — Stateless Orchestration
+# Handoffs 与例程（Routines）：平滑控制权移交与流程流转
 
-> OpenAI's Swarm (October 2024) distilled multi-agent orchestration to two primitives: **routines** (instructions + tools as a system prompt) and **handoffs** (a tool that returns another Agent). No state machine, no branching DSL — the LLM routes by calling the right handoff tool. The OpenAI Agents SDK (March 2025) is the production successor. Swarm itself remains the cleanest conceptual reference — its entire source fits in a few hundred lines. The pattern is viral because the API surface is roughly "agent = prompt + tools; handoff = function returning agent." Limitation: stateless, so memory is the caller's problem.
+> 实现 Agent 间的控制权无缝转交（Handoffs）与模块化例程调用，构建优雅的对话流转。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 04 (Primitive Model)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 16 Lesson 05
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -80,7 +80,7 @@ Both use LLM-driven routing, but they differ on **who picks next**:
 
 Swarm is "agent decides what's next"; GroupChat is "manager decides what's next." Swarm's decision lives in the active agent's tool call; GroupChat's lives in the `GroupChatManager`.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements Swarm from scratch: an Agent dataclass, a handoff mechanism (tool returns Agent), and a run loop that detects agent switches.
 
@@ -92,11 +92,11 @@ Run:
 python3 code/main.py
 ```
 
-## Use It
+## 应用场景
 
 `outputs/skill-handoff-designer.md` designs a handoff topology for a given task: which agents exist, which handoffs they can call, what context transfers.
 
-## Ship It
+## 产出成果
 
 Checklist:
 
@@ -106,7 +106,7 @@ Checklist:
 - **Loop detection.** Two agents handing back and forth is a common failure; detect with a simple last-K ring check.
 - **Fallback agent.** If a handoff target does not exist, fall back to a safe default.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`, triage to the refund agent. Confirm the second turn's active agent is refund.
 2. Add a loop-detection rule: if the same two agents have handed off 3 times in a row, force an exit. Design the fallback.
@@ -114,7 +114,7 @@ Checklist:
 4. Compare the Swarm handoff to a GroupChatManager selector. Which pattern makes prompt injection worse, and why?
 5. Read the Swarm cookbook (https://developers.openai.com/cookbook/examples/orchestrating_agents). Identify one explicit design decision Swarm makes that OpenAI Agents SDK changed or kept.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -127,7 +127,7 @@ Checklist:
 | OpenAI Agents SDK | "Production Swarm" | March 2025 successor; adds sessions, guardrails, tracing on top of the handoff primitive. |
 | Handoff filter | "Gate on transfer" | SDK feature to inspect and modify context at the handoff boundary. |
 
-## Further Reading
+## 深入阅读
 
 - [OpenAI cookbook — Orchestrating Agents: Routines and Handoffs](https://developers.openai.com/cookbook/examples/orchestrating_agents) — the reference articulation
 - [OpenAI Swarm repo](https://github.com/openai/swarm) — original implementation, kept as conceptual reference

@@ -1,26 +1,26 @@
-# Compliance — SOC 2, HIPAA, GDPR, PCI-DSS, EU AI Act, ISO 42001
+# AI 合规框架：EU AI Act, SOC2 与数据隐私可追溯性
 
-> Multi-framework coverage is table stakes for 2026 enterprise deals. **EU AI Act**: in force since August 1, 2024. Most high-risk requirements enforce August 2, 2026. Fines up to €15M or 3% global annual turnover for high-risk-system obligations (Art. 99(4)); up to €35M or 7% for prohibited AI practices (Art. 99(3)). Applies globally if serving EU users. **Colorado AI Act**: effective June 30, 2026 (delayed from February 2026 by SB25B-004) — impact assessments for high-risk systems, right to appeal AI decisions. Virginia similar for credit/employment/housing/education. **SOC 2 Type II**: de facto B2B AI requirement (Type II, not Type I, for fintech). **GDPR**: largest documented AI-specific fine is €30.5M against Clearview AI (Dutch DPA, Sept 2024); Italy's Garante issued €15M against OpenAI in Dec 2024 (later overturned on appeal in March 2026). Real-time PII redaction at inference is the defensible standard; post-processing cleanup is not enough. **HIPAA**: healthcare bound — cannot send PHI to external AI services without BAA. **PCI-DSS**: AI-interaction-layer coverage requires configuration + contractual agreements, not automatic. **ISO 42001**: emerging AI governance standard, growing procurement requirement alongside ISO 27001. Reference profile: OpenAI maintains SOC 2 Type 2, ISO/IEC 27001:2022, ISO/IEC 27701:2019, GDPR/CCPA/HIPAA (BAA)/FERPA, PCI-DSS for ChatGPT payment components. Cross-framework mapping reduces audit fatigue: access controls map across ISO 27001 A.5.15-5.18, GDPR Art. 32, HIPAA §164.312(a).
+> 适配全球 AI 法规：构建符合 EU AI Act、SOC2 和 GDPR 标准的数据流水线与审核审计轨迹。
 
 **Type:** Learn
 **Languages:** (Python optional — compliance is policy + process, not code)
-**Prerequisites:** Phase 17 · 25 (Security), Phase 17 · 13 (Observability)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 25
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Enumerate the seven 2026 frameworks relevant to LLM products and match each to a customer segment.
 - Cite the EU AI Act enforcement timeline (in force August 2024; high-risk enforcement August 2026) and the two-tier fine ceiling (€15M / 3% for high-risk obligations, €35M / 7% for prohibited practices).
 - Explain why post-processing PII cleanup is not enough for GDPR and name real-time inference-layer redaction as the defensible standard.
 - Describe cross-framework control mapping (e.g., access control maps to ISO 27001 A.5.15-5.18 + GDPR Art. 32 + HIPAA §164.312(a)).
 
-## The Problem
+## 问题切入
 
 An enterprise customer's procurement asks for SOC 2 Type II, GDPR, HIPAA BAA, ISO 27001, and "EU AI Act compliance statement." Your team has SOC 2 Type I. You're six months from Type II and haven't started GDPR Article 30 records.
 
 Multi-framework coverage is not an LLM problem — it's an enterprise-SaaS problem, with LLM-specific overlays. Procurement teams in 2026 want a matrix with a row per framework and a column per control, not a PDF.
 
-## The Concept
+## 核心概念
 
 ### The seven frameworks
 
@@ -98,15 +98,15 @@ OpenAI maintains SOC 2 Type 2, ISO/IEC 27001:2022, ISO/IEC 27701:2019, GDPR/CCPA
 - SOC 2 Type II window: 6-12 months of operated controls.
 - Colorado AI Act effective date: June 30, 2026 (delayed from February 2026 by SB25B-004).
 
-## Use It
+## 应用场景
 
 `code/main.py` is a compliance-mapping spreadsheet in Python — given a control, lists frameworks it satisfies.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-compliance-matrix.md`. Given customer segment and geography, specifies required frameworks and controls.
 
-## Exercises
+## 练习题
 
 1. Your first enterprise customer requires SOC 2 Type II, HIPAA BAA, EU AI Act statement. What is the minimum viable compliance posture to win the deal?
 2. Classify three hypothetical LLM products under EU AI Act risk tiers. What changes at high-risk?
@@ -114,7 +114,7 @@ This lesson produces `outputs/skill-compliance-matrix.md`. Given customer segmen
 4. Argue whether ISO 42001 is "necessary in 2026" for a mid-market AI vendor.
 5. Map your LLM audit log fields (Phase 17 · 25) to at least three framework controls.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -128,7 +128,7 @@ This lesson produces `outputs/skill-compliance-matrix.md`. Given customer segmen
 | Conformity assessment | "EU AI doc package" | High-risk requirement: docs, testing, logging |
 | Cross-framework mapping | "one control, many frames" | Single policy satisfies multiple framework controls |
 
-## Further Reading
+## 深入阅读
 
 - [OpenAI Security and Privacy](https://openai.com/security-and-privacy/) — reference compliance profile.
 - [GuardionAI — LLM Compliance 2026: ISO 42001, EU AI Act, SOC 2, GDPR](https://guardion.ai/blog/llm-compliance-guide-iso-42001-eu-ai-act-soc2-gdpr-2026)

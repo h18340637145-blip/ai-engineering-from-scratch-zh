@@ -1,6 +1,6 @@
 {
   "lesson": "10-cold-start-mitigation",
-  "title": "Cold Start Mitigation for Serverless LLMs",
+  "title": "推理服务冷启动优化与显存快速加载",
   "questions": [
     {
       "stage": "pre",

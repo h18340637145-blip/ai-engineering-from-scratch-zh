@@ -1,6 +1,6 @@
 {
   "lesson": "25-security-secrets-audit",
-  "title": "Security — Secrets, API Key Rotation, Audit Logs, Guardrails",
+  "title": "AI 生产安全：密钥审计、数据防泄漏与合规隔离",
   "questions": [
     {
       "stage": "pre",

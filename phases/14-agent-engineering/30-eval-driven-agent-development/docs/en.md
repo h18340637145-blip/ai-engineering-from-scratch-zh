@@ -1,24 +1,24 @@
-# Eval-Driven Agent Development
+# 评估驱动的 Agent 开发（EDAD）：数据集构建与离线 Benchmark
 
-> Anthropic's guidance: "start with simple prompts, optimize them with comprehensive evaluation, and add multi-step agentic systems only when needed." Evaluation is not the last step. It's the outer loop that drives every other choice in Phase 14.
+> 借鉴 TDD 思想建立 Agent 评估驱动开发模式：构建定制化的轨迹评估数据集，量化每次 Prompt 或工具微调的效果。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** All of Phase 14.
-**Time:** ~60 minutes
+**Prerequisites:** Phase 14 Lesson 19
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name the three evaluation layers — static benchmarks, custom offline, online production — and what each is for.
 - Explain the evaluator-optimizer tight loop.
 - Describe the 2026 best practice: evals live next to code, run in CI, gate PRs.
 - Connect every Phase 14 lesson to the eval case it generates.
 
-## The Problem
+## 问题切入
 
 Agents pass demos. They fail in production in ways demos cannot predict. Benchmarks answer "is this model broadly capable?" not "is this agent shipping the right patches for my product?" The answer: evaluation at three layers, running continuously, with every guardrail and learned rule mapped to an eval case.
 
-## The Concept
+## 核心概念
 
 ### Three evaluation layers
 
@@ -86,7 +86,7 @@ If your eval suite has cases for each, you have covered Phase 14.
 - **Over-fitting to evals.** Optimizing for the eval diverges from production usefulness. Rotate cases.
 - **Flaky evals.** Non-deterministic cases cause false alarms. Pin seeds, snapshot state.
 
-## Build It
+## 动手实现
 
 `code/main.py` is a stdlib eval harness:
 
@@ -103,7 +103,7 @@ python3 code/main.py
 
 Output: per-case pass/fail, regression flag, CI gate verdict.
 
-## Use It
+## 应用场景
 
 - Write eval cases in the same repo as your agent code.
 - Run them on every PR via CI.
@@ -111,11 +111,11 @@ Output: per-case pass/fail, regression flag, CI gate verdict.
 - Track pass rate over time.
 - Tie every production failure to a new case.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-eval-suite.md` builds a three-layer eval suite for an agent product with CI gates and regression tracking.
 
-## Exercises
+## 练习题
 
 1. Take one of your production failures. Write an eval case that reproduces it. Does your agent pass it now?
 2. Build an LLM-judge rubric for your domain with three dimensions (factual, tone, scope). Score 50 sessions.
@@ -123,7 +123,7 @@ Output: per-case pass/fail, regression flag, CI gate verdict.
 4. Add a trajectory-efficiency metric: how many steps did the agent take vs a gold trajectory?
 5. Map every Phase 14 lesson to an eval case in your suite. Any missing? That's a gap to close.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -135,7 +135,7 @@ Output: per-case pass/fail, regression flag, CI gate verdict.
 | Baseline | "Last-known-good" | Reference score to detect regression |
 | Trajectory efficiency | "Steps over gold" | Agent step count divided by human expert minimum |
 
-## Further Reading
+## 深入阅读
 
 - [Anthropic, Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) — "start simple, optimize with evals"
 - [OpenAI, SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/) — the curated benchmark

@@ -1,11 +1,11 @@
-# Statistics for Machine Learning
+# 机器学习中的统计学
 
-> Statistics is how you know if your model actually works or just got lucky.
+> 假设检验、置信区间与偏差-方差权衡。用严格的统计推断评估模型与特征。
 
-**Type:** Build
+**Type:** 学习
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 06 (Probability and Distributions), 07 (Bayes' Theorem)
-**Time:** ~120 minutes
+**Prerequisites:** Phase 1, Lesson 06 (概率论与概率分布)
+**Time:** ~45 分钟
 
 ## Learning Objectives
 

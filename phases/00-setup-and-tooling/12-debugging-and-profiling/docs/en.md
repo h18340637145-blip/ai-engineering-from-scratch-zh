@@ -1,13 +1,13 @@
-# Debugging and Profiling
+# AI 代码调试与性能分析
 
-> The worst AI bugs don't crash. They train silently on garbage and report a beautiful loss curve.
+> 别再只靠 `print()` 了。掌握张量维度调试、NaN 数值异常定位、PyTorch Profiler 与 CUDA 阻塞分析。
 
-**Type:** Build
+**Type:** 构建
 **Language:** Python
-**Prerequisites:** Lesson 1 (Dev Environment), basic PyTorch familiarity
-**Time:** ~60 minutes
+**Prerequisites:** 开发环境搭建
+**Time:** ~45 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Use conditional `breakpoint()` and `debug_print` to inspect tensor shapes, dtypes, and NaN values mid-training
 - Profile training loops with `cProfile`, `line_profiler`, and `tracemalloc` to find bottlenecks

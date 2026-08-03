@@ -1,6 +1,6 @@
 {
   "lesson": "39-reviewer-agent",
-  "title": "Reviewer Agent: Separate Builder from Marker",
+  "title": "审查员 Agent：独立的 Code Review 与安全审计 Agent",
   "questions": [
     {
       "stage": "pre",

@@ -1,26 +1,26 @@
-# Production Quantization — AWQ, GPTQ, GGUF K-quants, FP8, MXFP4/NVFP4
+# 生产级模型量化：GPTQ, AWQ, FP8 与 GGUF 选型
 
-> Quantization format is not a universal choice — it is a function of hardware, serving engine, and workload. GGUF Q4_K_M or Q5_K_M owns CPU and edge, delivered through llama.cpp and Ollama. GPTQ wins inside vLLM when you need multi-LoRA on the same base. AWQ with Marlin-AWQ kernels delivers ~741 tok/s on a 7B class model with the best Pass@1 at INT4 — the 2026 default for datacenter production. FP8 stays the middle ground on Hopper, Ada, and Blackwell — near-lossless and widely supported. NVFP4 and MXFP4 (Blackwell microscaling) are aggressive and require per-block validation. Two traps bite teams: calibration dataset must match deployment domain, and KV cache is separate from weight quantization — the AWQ lesson "my model is 4 GB now" forgets the 10-30 GB KV cache at production batch sizes.
+> 掌握 FP8、AWQ、GPTQ 与 GGUF 量化方案在吞吐量、显存占用与精度损失之间的权衡与部署。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy memory and throughput comparison across formats)
-**Prerequisites:** Phase 10 · 13 (Quantization foundations), Phase 17 · 04 (Serving Engine Internals)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 17 Lesson 04
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name the six production quantization formats and their sweet spots in 2026.
 - Pick a format given hardware (CPU vs GPU, Hopper vs Blackwell), engine (vLLM, TRT-LLM, llama.cpp), and workload (routine chat, reasoning, multi-LoRA).
 - Compute the weight memory saved and the KV cache left untouched for a chosen format.
 - Name the calibration-dataset pitfall that degrades quantized models on domain traffic.
 
-## The Problem
+## 问题切入
 
 Quantization reduces memory and HBM bandwidth, which is exactly what decode needs. An FP16 70B model is 140 GB of weights. Quantize weights to INT4 (AWQ or GPTQ) and the model is 35 GB — fits in one H100 with room for KV cache, which matters because at 128 concurrent sequences with 2k context, KV cache alone is 20-30 GB.
 
 But quantization is not free. Aggressive quantization degrades quality, especially on reasoning-heavy tasks. Different formats work with different engines. Different hardware supports different precisions natively. The 2026 format zoo is real and you cannot copy someone else's choice — you have to pick based on your stack.
 
-## The Concept
+## 核心概念
 
 ### The six formats
 
@@ -100,15 +100,15 @@ Chain-of-thought, math, code-gen with long context — these suffer visibly from
 gpu-memory-breakdown
 ```
 
-## Use It
+## 应用场景
 
 `code/main.py` computes memory footprint (weights + KV + activations) and relative throughput across the six formats for a range of model sizes. Shows where KV cache dominates, where weight compression pays, and where FP8 is the safe pick.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-quantization-picker.md`. Given hardware, model size, workload type, and quality tolerance, picks a format and produces a calibration/validation plan.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. For a 70B model at 128 concurrent with 2k context, compute the total HBM for each format. Which format lets you fit on one H100 80GB?
 2. You have a 7B coding model. Pick a format and justify. If you were wrong about quality tolerance, what is the recovery path?
@@ -116,7 +116,7 @@ This lesson produces `outputs/skill-quantization-picker.md`. Given hardware, mod
 4. Read the Marlin-AWQ kernel paper or release notes. Explain in three sentences why AWQ hits 741 tok/s on 7B while raw GPTQ hits ~712.
 5. When does it make sense to combine AWQ weights with FP8 KV cache vs keeping KV at BF16?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -130,7 +130,7 @@ This lesson produces `outputs/skill-quantization-picker.md`. Given hardware, mod
 | Calibration dataset | "cal data" | Input text used to pick quantization parameters; must match domain |
 | KV cache quantization | "KV INT8" | Separate choice from weights; affects attention accuracy |
 
-## Further Reading
+## 深入阅读
 
 - [VRLA Tech — LLM Quantization 2026](https://vrlatech.com/llm-quantization-explained-int4-int8-fp8-awq-and-gptq-in-2026/) — comparative benchmarks.
 - [Jarvis Labs — vLLM Quantization Complete Guide](https://jarvislabs.ai/blog/vllm-quantization-complete-guide-benchmarks) — throughput numbers by format.

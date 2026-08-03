@@ -1,13 +1,13 @@
-# Linux for AI
+# 面向 AI 的 Linux 系统指南
 
-> Most AI runs on Linux. You need to know enough to not be stuck.
+> 深度学习运行在 Linux 之上。掌握系统文件权限、内存管理（OOM 机制）、进程调度与磁盘分析。
 
-**Type:** Learn
-**Languages:** --
-**Prerequisites:** Phase 0, Lesson 01
-**Time:** ~30 minutes
+**Type:** 学习
+**Languages:** Bash
+**Prerequisites:** 无
+**Time:** ~40 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Navigate the Linux file system and perform essential file operations from the command line
 - Manage file permissions with `chmod` and `chown` to resolve "Permission denied" errors

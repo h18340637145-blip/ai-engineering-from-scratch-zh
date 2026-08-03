@@ -1,26 +1,26 @@
-# Multi-Session Handoff
+# 多会话交接（Multi-Session Handoff）：跨会话持久化上下文转交
 
-> The session is going to end. The work is not. The handoff packet is the artifact that turns "the agent worked for an hour" into "the next session is productive in the first minute." Build it on purpose, not as an afterthought.
+> 实现 Agent 跨越会话与重启的平滑交接：生成精炼的 Handoff 状态摘要，确保新 Agent 接手时零信息丢失。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 34 (Repo Memory), Phase 14 · 38 (Verification), Phase 14 · 39 (Reviewer)
-**Time:** ~50 minutes
+**Prerequisites:** Phase 14 Lesson 07, Lesson 16
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Identify the seven fields every handoff packet needs.
 - Generate a handoff from the workbench artifacts without hand-writing prose.
 - Trim large feedback logs into a handoff-sized summary.
 - Make the next session's first action deterministic.
 
-## The Problem
+## 问题切入
 
 The session ends. The agent says "great, we made progress." The next session opens. The next agent asks "where did we leave off?" The first agent's answer is gone. The next agent rediscovers, re-runs the same commands, re-asks the human the same questions, and burns thirty minutes recovering the last thirty seconds of the previous session.
 
 The cost of a bad handoff is paid every session for the life of the task. The fix is a packet generated automatically at session end: what changed, why, what was tried, what failed, what is left, what to do first next time.
 
-## The Concept
+## 核心概念
 
 ```mermaid
 flowchart LR
@@ -74,7 +74,7 @@ So the session does not end when the feature works. It ends when the workbench i
 
 The cleanup phase emits a `clean_state.json` of blocking issues; an empty list is the precondition the handoff generator asserts before it writes a packet. A handoff built on a dirty tree is not a handoff, it is a forwarded mess. The two artifacts pair: cleanup proves the workbench is safe to leave, the handoff proves the next session knows where to start.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -103,7 +103,7 @@ Codex CLI, Claude Code, and OpenCode each ship a different compaction story; the
 
 **Wrap up before 50-75% context, not at the wall.** The hand-written-pattern playbook (CLAUDE.md + HANDOVER.md) reports best results when the session ends at 50-75% context budget instead of 95%. The packet generator runs cleanly before compression artifacts pollute the source state. Cheap to write while context is intact; expensive when the model is already losing its place.
 
-## Use It
+## 应用场景
 
 Production patterns:
 
@@ -113,11 +113,11 @@ Production patterns:
 
 The packet is small, regular, and cheap to produce. The cost saving compounds with every session.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-handoff-generator.md` produces a generator tuned to a project's artifact paths, an end-of-session hook that runs it, and a `handoff.json` schema the next agent reads on startup.
 
-## Exercises
+## 练习题
 
 1. Add an `assumptions_to_validate` field that surfaces every assumption the builder logged but the reviewer did not score above 1.
 2. Trim the feedback summary differently for failing runs versus passing ones. Defend the asymmetry.
@@ -125,7 +125,7 @@ The packet is small, regular, and cheap to produce. The cost saving compounds wi
 4. Make the generator idempotent: running it twice produces the same packet. What needs to be stable for that to hold?
 5. Add a "next session prereqs" section listing exactly the artifacts the next session must load before acting.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -135,7 +135,7 @@ The packet is small, regular, and cheap to produce. The cost saving compounds wi
 | Status report | "What we did" | A document missing `next_action`; useful, but not a handoff |
 | Verdict pointer | "Receipt" | Path to the verification + review reports for traceability |
 
-## Further Reading
+## 深入阅读
 
 - [Anthropic, Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 - [OpenAI Agents SDK handoffs](https://openai.github.io/openai-agents-python/handoffs/)

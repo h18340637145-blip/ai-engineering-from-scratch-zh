@@ -1,13 +1,13 @@
-# Terminal & Shell
+# 终端与 Shell 高效技巧
 
-> The terminal is where AI engineers live. Get comfortable here.
+> 命令行是 AI 工程师的终极武器。掌握 tmux 会话管理、管道组合、rg 极速检索与自动化处理。
 
-**Type:** Learn
-**Languages:** --
-**Prerequisites:** Phase 0, Lesson 01
-**Time:** ~35 minutes
+**Type:** 构建
+**Languages:** Bash
+**Prerequisites:** 无
+**Time:** ~35 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Use piping, redirects, and `grep` to filter and process training logs from the command line
 - Create persistent tmux sessions with multiple panes for concurrent training and GPU monitoring

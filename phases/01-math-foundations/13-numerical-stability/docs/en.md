@@ -1,11 +1,11 @@
-# Numerical Stability
+# 数值稳定性与浮点精度
 
-> Floating point is a leaky abstraction. It will bite you during training, and you will not see it coming.
+> 防止 NaN 崩溃与精度损失。掌握 Log-Sum-Exp 稳定技巧、灾难性抵消与 Loss Scaling。
 
-**Type:** Build
+**Type:** 学习
 **Language:** Python
-**Prerequisites:** Phase 1, Lessons 01-04
-**Time:** ~120 minutes
+**Prerequisites:** Phase 1, Lesson 04 (机器学习中的微积分)
+**Time:** ~40 分钟
 
 ## Learning Objectives
 
@@ -80,7 +80,7 @@ This matters for ML because:
 
 The fix: never compare floats with `==`. Use `abs(a - b) < epsilon` or `math.isclose()`.
 
-### Catastrophic Cancellation
+### 灾难性抵消及其规避
 
 When you subtract two nearly equal floating point numbers, the significant digits cancel and you are left with rounding noise promoted to leading digits.
 
@@ -135,7 +135,7 @@ log(1e-46) = -inf        (input underflowed to 0, then log(0) = -inf)
 
 In ML, `exp()` appears in softmax, sigmoid, and probability computations. `log()` appears in cross-entropy, log-likelihoods, and KL divergence. The combination `log(exp(x))` is a minefield without the right tricks.
 
-### The Log-Sum-Exp Trick
+### Log-Sum-Exp 极值稳定算法
 
 Computing `log(sum(exp(x_i)))` directly is numerically dangerous. If any `x_i` is large, `exp(x_i)` overflows. If all `x_i` are very negative, every `exp(x_i)` underflows to zero and `log(0)` is `-inf`.
 

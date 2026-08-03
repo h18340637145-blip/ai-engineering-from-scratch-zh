@@ -1,26 +1,26 @@
-# Stateful Graph Orchestration — Durable Execution and Checkpoints
+# LangGraph：基于状态图与检查点机制的 Agent 编排
 
-> Agent is a state machine; nodes are functions; edges are transitions; state is checkpointed after each node. Resume from any failure at the last successful checkpoint. LangGraph is the 2026 reference for this model of low-level stateful orchestration.
+>  LangGraph 将 Agent 系统构建为显式状态机（StateGraph），引入持久化检查点（Checkpoints）以支持人机回退与时间旅行调试。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 01 (Agent Loop), Phase 14 · 12 (Workflow Patterns)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 14 Lesson 01, Lesson 12
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Describe LangGraph's core model: state machine with typed state, function nodes, conditional edges, and post-node checkpoints.
 - Name the four capabilities the docs highlight: durable execution, streaming, human-in-the-loop, comprehensive memory.
 - Explain the three orchestration topologies LangGraph supports: supervisor, peer-to-peer (swarm), hierarchical (nested subgraphs).
 - Implement a stdlib state graph with typed state, conditional edges, and a checkpoint/resume cycle.
 
-## The Problem
+## 问题切入
 
 Agents and workflows share a problem: when a 40-step run fails at step 38, you want to resume from step 38, not start over. Second-class state models leave operators hacking retries around a library that assumes fresh runs.
 
 LangGraph's design answer: state is a first-class typed object, mutations are explicit, and checkpoints persist after every node. Resume is a `load_state(session_id)` call.
 
-## The Concept
+## 核心概念
 
 ### The graph
 
@@ -63,7 +63,7 @@ Short-term (within a run — conversation history in state) and long-term (acros
 - **Non-deterministic nodes.** Resume assumes node inputs produce the same state update. Random seeds, wall-clock, external APIs must be captured.
 - **Over-use of conditional edges.** A graph with every edge conditional is a state machine that cannot be reasoned about. Prefer linear chains with occasional branches.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements a stdlib stateful graph:
 
@@ -81,18 +81,18 @@ python3 code/main.py
 
 The trace shows the first run failing at the human gate, persistence, then resume producing the final output.
 
-## Use It
+## 应用场景
 
 - **LangGraph** — the reference, production-ready. Use `create_react_agent`, `create_supervisor`, or build your own graph.
 - **AutoGen v0.4** (Lesson 14) — actor model alternative for high-concurrency scenarios.
 - **Claude Agent SDK** (Lesson 17) — managed harness with built-in session store.
 - **Custom** — when you need exact control over state shape or checkpointer backend.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-state-graph.md` generates a LangGraph-shaped state graph in any target runtime with checkpointing and resume wired in.
 
-## Exercises
+## 练习题
 
 1. Add a conditional edge from `classify` to `end` when classification confidence is below a threshold. Resume the run after a human sets `route` manually.
 2. Swap the SQLite-like fake for a real SQLite checkpointer. Measure per-step serialization overhead.
@@ -100,7 +100,7 @@ The trace shows the first run failing at the human gate, persistence, then resum
 4. Read `langgraph-supervisor` reference. Port the toy to `create_supervisor`. Compare the trace shapes.
 5. Add streaming: each node yields partial state while it runs. Print the deltas as they arrive.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -113,7 +113,7 @@ The trace shows the first run failing at the human gate, persistence, then resum
 | Supervisor | "Router LLM" | Central dispatcher for specialist subagents |
 | Swarm | "P2P agents" | Agents hand off via shared tools; no central router |
 
-## Further Reading
+## 深入阅读
 
 - [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview) — the reference docs
 - [langgraph-supervisor reference](https://reference.langchain.com/python/langgraph/supervisor/) — supervisor pattern API

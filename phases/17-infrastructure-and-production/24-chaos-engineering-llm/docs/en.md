@@ -1,26 +1,26 @@
-# Chaos Engineering for LLM Production
+# LLM 混沌工程：故障注入与高可用演练
 
-> Chaos engineering for LLMs is its own discipline in 2026. Prerequisites before running experiments in production: defined SLI/SLO, trace+metric+log observability, automated rollback, runbooks, on-call. Architecture has four planes: control (experiment scheduler), target (services, infra, data stores), safety (guards + abort + traffic filters), observability (metrics + traces + logs), feedback (into SLO adjustments). Guardrails are mandatory: burn-rate alerts pause experiments if daily error-budget burn > 2x expected; suppression windows + trace-ID correlation dedupe alert noise. Cadence: weekly small canary + SLO review; monthly game day + postmortem; quarterly cross-team resilience audit + dependency mapping. LLM-specific experiments: memory overload, network failures, provider outages, malformed prompts, KV cache eviction storms. Tooling: Harness Chaos Engineering (LLM-derived recommendations, blast-radius downscaling, MCP tool integration); LitmusChaos (CNCF); Chaos Mesh (CNCF Kubernetes-native).
+> 主动注入 API 超时、显存溢出（OOM）、格式破裂与高延迟故障，检验系统的自愈与降级恢复能力。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy chaos experiment runner)
-**Prerequisites:** Phase 17 · 23 (SRE for AI), Phase 17 · 13 (Observability)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 17 Lesson 23
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Name the five chaos engineering prerequisites (SLI/SLO, observability, rollback, runbooks, on-call) and explain why skipping any breaks the practice.
 - Diagram the four planes (control, target, safety, observability) and the feedback loop into SLO.
 - Enumerate five LLM-specific experiments (memory overload, network fail, provider outage, malformed prompt, KV eviction storm).
 - Pick a tool — Harness, LitmusChaos, Chaos Mesh — given stack.
 
-## The Problem
+## 问题切入
 
 Chaos testing in traditional stacks is established. LLM stacks add new failure modes. A 4K-token prompt with a poison character stalls the tokenizer for 12 seconds. An upstream provider 429s; your gateway retries; your service OOMs on retry-amplified concurrency. A KV cache eviction storm under burst load causes re-prefill cascades that saturate compute.
 
 None of these show up in unit tests. Chaos engineering is how you discover them before users do.
 
-## The Concept
+## 核心概念
 
 ### Prerequisites
 
@@ -91,15 +91,15 @@ First LLM-specific experiment: inject one provider 429 for 5 minutes. Observe fa
 - Cadence: weekly canary, monthly game day, quarterly audit.
 - Five LLM experiments: memory, network, provider, malformed prompt, KV storm.
 
-## Use It
+## 应用场景
 
 `code/main.py` simulates three chaos experiments with safety plane gates. Reports which experiments would trip the burn-rate abort.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-chaos-plan.md`. Given stack and maturity, picks first three experiments and the tooling.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Which experiment trips the burn-rate gate and why?
 2. Design the first five chaos experiments for a vLLM-based RAG service. Include success criteria.
@@ -107,7 +107,7 @@ This lesson produces `outputs/skill-chaos-plan.md`. Given stack and maturity, pi
 4. Argue whether chaos should run in production or only staging. When is production the right answer?
 5. Name three LLM-specific failure modes that generic network-chaos cannot reproduce.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -121,7 +121,7 @@ This lesson produces `outputs/skill-chaos-plan.md`. Given stack and maturity, pi
 | Malformed prompt | "tokenizer bomb" | Input that stalls tokenization |
 | KV eviction storm | "preemption cascade" | Mass eviction triggering re-prefills |
 
-## Further Reading
+## 深入阅读
 
 - [DevSecOps School — Chaos Engineering 2026 Guide](https://devsecopsschool.com/blog/chaos-engineering/)
 - [Ankush Sharma — Observability for LLMs (book)](https://www.amazon.com/Observability-Large-Language-Models-Engineering-ebook/dp/B0DJSR65TR)

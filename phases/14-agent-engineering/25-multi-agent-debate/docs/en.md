@@ -1,24 +1,24 @@
-# Multi-Agent Debate and Collaboration
+# 多 Agent 辩论：消除幻觉与自我一致性检验
 
-> Du et al. (ICML 2024, "Society of Minds") run N model instances that independently propose answers, then iteratively critique each other over R rounds to converge. Improves factuality, rule-following, reasoning. Sparse topology beats full mesh on token cost.
+> 通过让多个具备不同 Prompt 或专长的 Agent 针对同一问题展开多轮辩论，显著降低幻觉并提高决策准确率。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 12 (Workflow Patterns), Phase 14 · 05 (Self-Refine and CRITIC)
-**Time:** ~60 minutes
+**Prerequisites:** Phase 14 Lesson 01, Lesson 05
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Explain the debate protocol: N proposers, R rounds, converge on a shared answer.
 - Describe why debate improves factuality, rule-following, and reasoning.
 - Explain sparse topology: not every debater needs to see every other.
 - Implement a stdlib debate over a scripted LLM with full-mesh and sparse variants; measure token cost vs accuracy.
 
-## The Problem
+## 问题切入
 
 Self-Refine (Lesson 05) is one model critiquing itself — risks groupthink. CRITIC (Lesson 05) grounds critique in external tools — not always available. Debate introduces a third mode: multiple instances, cross-critique, convergence by disagreement.
 
-## The Concept
+## 核心概念
 
 ### Society of Minds (Du et al., ICML 2024)
 
@@ -65,7 +65,7 @@ Implications:
 - **Hub failure.** In a star topology, a bad hub corrupts everyone. Rotate or use multiple hubs.
 - **Prompt homogenization.** All agents use the same prompt; they produce the same answers. Use diverse prompts and/or models.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements stdlib debate:
 
@@ -82,17 +82,17 @@ python3 code/main.py
 
 Output: per-protocol accuracy and cost; sparse matches full mesh on 2/3 questions at lower cost.
 
-## Use It
+## 应用场景
 
 - **Anthropic orchestrator-workers** for simple 2-3-worker debates.
 - **LangGraph** for stateful multi-round debate with checkpointing.
 - **Custom** for research or specialized correctness guarantees.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-debate.md` scaffolds a multi-agent debate with configurable topology, N, R, and a convergence rule.
 
-## Exercises
+## 练习题
 
 1. Implement a "forced disagreement" rule: in round 1, every debater must produce a distinct proposal. Measure effect on convergence speed.
 2. Add a confidence-weighted aggregation: debaters return (answer, confidence); aggregator weights by confidence. Does it help?
@@ -100,7 +100,7 @@ Output: per-protocol accuracy and cost; sparse matches full mesh on 2/3 question
 4. Measure token cost for full mesh vs sparse on your 3 questions. Plot cost vs accuracy.
 5. Read the Society of Minds paper. Port your toy to N=5, R=3. What breaks? What gets better?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -111,7 +111,7 @@ Output: per-protocol accuracy and cost; sparse matches full mesh on 2/3 question
 | Convergence | "Agreement" | Debaters converge on a shared answer |
 | Society of Minds | "Du et al. debate paper" | ICML 2024 multi-agent debate method |
 
-## Further Reading
+## 深入阅读
 
 - [Du et al., Society of Minds (arXiv:2305.14325)](https://arxiv.org/abs/2305.14325) — canonical multi-agent debate
 - [Sparse Communication Topology (arXiv:2406.11776)](https://arxiv.org/abs/2406.11776) — sparse topology results

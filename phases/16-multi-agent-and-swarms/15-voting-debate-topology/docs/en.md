@@ -1,11 +1,11 @@
-# Voting, Self-Consistency, and Debate Topology
+# 投票与辩论拓扑结构：加权表决与共识合成
 
-> The cheapest aggregation: sample N independent agents, majority-vote. Wang et al. 2022 self-consistency did this with one model sampled N times. Multi-agent extends it with **heterogeneous** agents to escape monoculture — different models, different prompts, different temperatures, different contexts. Beyond majority vote, debate topology matters: MultiAgentBench (arXiv:2503.01935, ACL 2025) evaluated star / chain / tree / graph coordination and found **graph best for research**, with a "coordination tax" past ~4 agents. AgentVerse (ICLR 2024) documents two emergent patterns — volunteer behaviors and conformity behaviors — and conformity is both a feature (finding consensus) and a risk (groupthink, Lesson 24). This lesson maps the topology space, builds each variant, and measures the coordination tax.
+> 探讨星形、环形、全连接等不同拓扑结构下的多 Agent 投票表决与结果合成策略。
 
 **Type:** Learn + Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 16 · 07 (Society of Mind and Debate), Phase 16 · 14 (Consensus and BFT)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 16 Lesson 07
+**Time:** ~60 分钟
 
 ## Problem
 
@@ -97,7 +97,7 @@ The Sibyl framework (cited in Minsky-LLM literature) formalizes a "jury" — a s
 - Rounds are unbounded. Conformity wins every time.
 - The task is simple. A single agent with self-consistency at N=5 is cheaper and as accurate.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -116,11 +116,11 @@ python3 code/main.py
 
 Expected output: a table of topology × N → (accuracy, tokens, latency). Graph wins at N=3-5 on the research-style tasks; star wins on the fast-factual tasks; graph at N=7 shows the coordination tax (latency inflates faster than accuracy).
 
-## Use It
+## 应用场景
 
 `outputs/skill-topology-picker.md` is a skill that reads a task description and recommends a topology (star / chain / tree / graph), an N (number of agents), a heterogeneity profile (base models to use), and a round bound.
 
-## Ship It
+## 产出成果
 
 For any ensemble:
 
@@ -130,7 +130,7 @@ For any ensemble:
 - Always log the minority cluster. When a minority is persistently right, you have a diversity signal.
 - Benchmark wall-clock and tokens alongside accuracy. "Better accuracy at 10x cost" is a business decision.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. Plot the coordination-tax curve for graph topology: accuracy vs N, tokens vs N. At what N does the curve inflect?
 2. Implement A-HMAD: three agents with deliberately different biases. How does the all-same-bias baseline compare to A-HMAD on the monoculture attack from Lesson 14?
@@ -138,7 +138,7 @@ For any ensemble:
 4. Read the AgentVerse paper (ICLR 2024). Identify which emergent behavior your implementation exhibits most strongly. Can you elicit the opposite behavior by a prompt change?
 5. Read MultiAgentBench (arXiv:2503.01935) Section 4 (topology experiments). Reproduce the "graph-wins-research" result on one task from the paper using your harness.
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -152,7 +152,7 @@ For any ensemble:
 | Conformity behavior | "Agreement under pressure" | AgentVerse emergent pattern: an agent aligns with a critic. |
 | Jury | "Small specialized panel" | Sibyl-style ensemble with roles (examiner, context, scorer). |
 
-## Further Reading
+## 深入阅读
 
 - [Wang et al. — Self-Consistency Improves Chain of Thought Reasoning](https://arxiv.org/abs/2203.11171) — single-model baseline
 - [Du et al. — Improving Factuality and Reasoning via Multiagent Debate](https://arxiv.org/abs/2305.14325) — both agents AND rounds matter independently

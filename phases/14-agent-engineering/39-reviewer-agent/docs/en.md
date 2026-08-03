@@ -1,26 +1,26 @@
-# Reviewer Agent: Separate Builder from Marker
+# 审查员 Agent：独立的 Code Review 与安全审计 Agent
 
-> The agent that wrote the code cannot grade it. A reviewer is a second loop with a different system prompt, a different goal, and read-only access to everything the builder produced. The gap between builder and reviewer is where most reliability lives.
+> 设计专职的 Reviewer Agent，对主 Agent 生成的 Pull Request 进行代码规范、逻辑安全与性能损耗审查。
 
 **Type:** Build
 **Languages:** Python (stdlib)
-**Prerequisites:** Phase 14 · 38 (Verification Gate)
-**Time:** ~55 minutes
+**Prerequisites:** Phase 14 Lesson 05, Lesson 25
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - State why the same agent cannot reliably review its own work.
 - Build a reviewer agent loop that consumes builder artifacts and emits a structured review report.
 - Author a reviewer rubric that grades specific dimensions, not vibes.
 - Wire the reviewer into the workbench so the human review step starts from a real artifact.
 
-## The Problem
+## 问题切入
 
 You ask the agent to fix a bug. It edits four files, runs the tests, and reports done. The verification gate (Phase 14 · 38) confirms acceptance ran and scope held. The gate says `passed: true`. You merge. Two days later you find that the fix solved the wrong half of the bug.
 
 Acceptance is necessary, not sufficient. The reviewer asks the questions acceptance cannot ask: did this solve the right problem? Did it expand scope without flagging it? Did it document assumptions that should have been questioned? Did it leave the workbench in a state the next session can pick up?
 
-## The Concept
+## 核心概念
 
 ```mermaid
 flowchart LR
@@ -57,7 +57,7 @@ The reviewer reads the diff, the state, the feedback, the verdict. It writes a r
 
 The gate (Phase 14 · 38) checks deterministic facts: did acceptance run, did rules pass, did scope hold. The reviewer makes qualitative judgments: was this the right work, is it documented, is the handoff usable. Both are required.
 
-## Build It
+## 动手实现
 
 `code/main.py` implements:
 
@@ -88,7 +88,7 @@ Four patterns make this work at scale.
 
 **Hybrid norm with the gate.** Verification gate (Phase 14 · 38) handles the deterministic checks (did acceptance run, did tests pass, did scope hold). Reviewer handles the semantic checks (was this the right work, are assumptions documented, is the handoff usable). Anthropic's 2026 guidance is explicit on this split: don't ask the reviewer to redo what the gate already proves.
 
-## Use It
+## 应用场景
 
 Production patterns:
 
@@ -98,11 +98,11 @@ Production patterns:
 
 The reviewer is the second pair of eyes the workbench grows when humans cannot do every review themselves.
 
-## Ship It
+## 产出成果
 
 `outputs/skill-reviewer-agent.md` generates a project-specific reviewer rubric, a reviewer agent stub wired to the builder's artifacts, and an integration with the verification gate so human review starts from a written report instead of a blank page.
 
-## Exercises
+## 练习题
 
 1. Add a sixth dimension specific to your product domain. Defend why it is not absorbed by the existing five.
 2. Run the reviewer with two different system prompts (terse, verbose). Which produces a report a human is more likely to read?
@@ -110,7 +110,7 @@ The reviewer is the second pair of eyes the workbench grows when humans cannot d
 4. Build a calibration set: 10 historical task close-outs with known correct verdicts. Run the reviewer over them. Where does it disagree with the historical record?
 5. Add a "request more evidence" affordance: the reviewer can ask the builder for a specific test run before scoring. What is the right back-off so this does not loop?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -120,7 +120,7 @@ The reviewer is the second pair of eyes the workbench grows when humans cannot d
 | Role separation | "Different prompt" | Same model can be both roles; the discipline is inputs and posture |
 | Confidence floor | "Don't ship low-signal reports" | Refuse to emit a verdict when the rubric is uncertain |
 
-## Further Reading
+## 深入阅读
 
 - [OpenAI Agents SDK handoffs](https://openai.github.io/openai-agents-python/handoffs/)
 - [Anthropic Claude Code subagents](https://code.claude.com/docs/en/sub-agents)

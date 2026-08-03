@@ -1,6 +1,6 @@
 {
   "lesson": "11-multi-region-kv-locality",
-  "title": "Multi-Region LLM Serving and KV Cache Locality",
+  "title": "多地域部署与 KV Cache 局部性路由",
   "questions": [
     {
       "stage": "pre",

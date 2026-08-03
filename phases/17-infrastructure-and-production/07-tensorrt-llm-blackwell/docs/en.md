@@ -1,20 +1,20 @@
-# Hardware-Specialized Inference Compilation — FP8 and NVFP4 on Blackwell
+# TensorRT-LLM 与 NVIDIA Blackwell 架构优化
 
-> Hardware-specialized inference compilation trades portability for throughput, and TensorRT-LLM — NVIDIA-only, tuned for Blackwell — is the clearest example of the trade paying off. On GB200 NVL72 with Dynamo orchestration, SemiAnalysis InferenceX measured $0.012 per million tokens on a 120B model in Q1-Q2 2026, against $0.09/M on H100 + vLLM — a 7x economic gap. The stack is three floating-point regimes compounded: FP8 stays critical for KV cache and attention kernels because it has the dynamic range they need; NVFP4 (4-bit microscaling) handles weights and activations; multi-token prediction (MTP) and disaggregated prefill/decode add another 2-3x on top. Day-0 model support loads FP4 weights directly without post-training conversion. The catch for 2026 engineering teams: TRT-LLM is open-source but NVIDIA-specific — CUDA- and Blackwell-specialized — so adopting it trades portability for throughput. Run the math on your mix of models and hardware before committing.
+> 利用 TensorRT-LLM 在 NVIDIA Blackwell 及 Hopper 显卡上实现极致的 FP4/FP8 推理加速。
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy FP8/NVFP4 memory and cost calculator)
-**Prerequisites:** Phase 17 · 04 (Serving Engine Internals), Phase 10 · 13 (Quantization)
-**Time:** ~75 minutes
+**Prerequisites:** Phase 17 Lesson 04
+**Time:** ~60 分钟
 
-## Learning Objectives
+## 学习目标
 
 - Explain why FP8 stays critical for KV cache and attention even when weights are in NVFP4.
 - Compute the HBM footprint of a frontier model under BF16, FP8, and NVFP4 and reason about where the savings come from.
 - Name the Blackwell-specific features TRT-LLM exploits (day-0 FP4, MTP, disaggregated serving, all-to-all primitives).
 - Decide when TRT-LLM's NVIDIA-lock is worth the 7x cost gap vs vLLM on Hopper.
 
-## The Problem
+## 问题切入
 
 The frontier of inference economics in 2026 is "how many tokens per dollar". The answer depends on four stacked choices: hardware generation (Hopper H100/H200 vs Blackwell B200/GB200), precision (BF16 → FP8 → NVFP4), serving engine (vLLM vs SGLang vs TRT-LLM), and orchestration (plain vs disaggregated vs Dynamo).
 
@@ -22,7 +22,7 @@ On Hopper with vLLM, a 120B MoE runs at ~$0.09 per million tokens. On Blackwell 
 
 You cannot replicate this outside NVIDIA's stack. That is the tradeoff — portability for economics. Understanding which stack choices give which share of the gap is the point of this lesson.
 
-## The Concept
+## 核心概念
 
 ### Why FP8 is still the floor for KV cache
 
@@ -76,15 +76,15 @@ TRT-LLM's disaggregated serving (separate prefill and decode pools) is covered i
 pipeline-parallel
 ```
 
-## Use It
+## 应用场景
 
 `code/main.py` computes HBM footprint, decode throughput (memory-bound regime), and $/M-tokens for a model across three stacks: H100 + BF16 + vLLM, H100 + FP8 + vLLM, B200 + NVFP4/FP8 + TRT-LLM. Run it to see the compounding effect and the share of the gap each change contributes.
 
-## Ship It
+## 产出成果
 
 This lesson produces `outputs/skill-trtllm-blackwell-advisor.md`. Given a workload, model size, and annual token volume, it decides whether the Blackwell + TRT-LLM stack is worth the NVIDIA-lock.
 
-## Exercises
+## 练习题
 
 1. Run `code/main.py`. On a 120B MoE with 30% active parameters, compute the memory-bandwidth-limited decode throughput on H100 BF16, H100 FP8, and B200 NVFP4/FP8. Where does the biggest jump come from?
 2. A customer spends $2M/year on H100 + vLLM. What is the break-even number of Blackwell GPUs they need to buy to amortize a migration to TRT-LLM in 12 months, given the 7x economic gap?
@@ -92,7 +92,7 @@ This lesson produces `outputs/skill-trtllm-blackwell-advisor.md`. Given a worklo
 4. Read the MLPerf v6.0 inference results. Which task has the smallest Blackwell-over-Hopper gap, and why?
 5. Compute the HBM needed for a 405B model at NVFP4 weights + FP8 KV cache at 128k context. Does it fit on a single GB200 NVL72 node?
 
-## Key Terms
+## 核心术语
 
 | Term | What people say | What it actually means |
 |------|----------------|------------------------|
@@ -105,7 +105,7 @@ This lesson produces `outputs/skill-trtllm-blackwell-advisor.md`. Given a worklo
 | All-to-all | "MoE expert comm" | Communication pattern routing tokens to expert GPUs; NVLink 5 cuts 3x |
 | InferenceX | "SemiAnalysis inference bench" | The 2026 industry-accepted cost-per-token benchmark |
 
-## Further Reading
+## 深入阅读
 
 - [NVIDIA — Blackwell Ultra MLPerf Inference v6.0](https://developer.nvidia.com/blog/nvidia-blackwell-ultra-sets-new-inference-records-in-mlperf-debut/) — April 2026 MLPerf results.
 - [NVIDIA — MoE Inference on Blackwell](https://developer.nvidia.com/blog/delivering-massive-performance-leaps-for-mixture-of-experts-inference-on-nvidia-blackwell/) — NVLink 5 all-to-all and MoE kernels.

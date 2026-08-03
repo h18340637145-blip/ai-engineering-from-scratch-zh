@@ -1,6 +1,6 @@
 {
   "lesson": "30-eval-driven-agent-development",
-  "title": "Eval-Driven Agent Development",
+  "title": "评估驱动的 Agent 开发（EDAD）：数据集构建与离线 Benchmark",
   "questions": [
     {
       "stage": "pre",
