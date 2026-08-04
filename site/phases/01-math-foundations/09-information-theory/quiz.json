@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "香农熵（Shannon Entropy, $H(X)$）在信息论中度量什么？",
+      "options": [
+        "数据的传输速度",
+        "随机变量的不确定性或平均所包含的信息量（以 bit 或 nat 为单位）",
+        "矩阵的行列式大小",
+        "神经网络的层数"
+      ],
+      "correct": 1,
+      "explanation": "熵反映系统乱序与不确定程度。分布越均匀（如均匀分布），不确定性越大，熵越高；确定性事件熵为 0。"
+    },
+    {
+      "stage": "pre",
+      "question": "KL 散度（Kullback-Leibler Divergence, $D_{KL}(P || Q)$）有什么重要不对称性质？",
+      "options": [
+        "$D_{KL}(P || Q) \neq D_{KL}(Q || P)$，它衡量用概率分布 Q 来近似真实分布 P 时的相对熵/信息损失",
+        "KL 散度的值可以是负数",
+        "$D_{KL}(P || Q) = D_{KL}(Q || P)$ 恒成立",
+        "当 P 和 Q 不同时，KL 散度等于 0"
+      ],
+      "correct": 0,
+      "explanation": "KL 散度是非对称的距离度量（非严谨距离），常用于变分自编码器（VAE）与模型蒸馏。"
+    },
+    {
+      "stage": "post",
+      "question": "交叉熵损失（Cross-Entropy Loss）与 KL 散度的关系是？",
+      "options": [
+        "交叉熵等于真实分布的熵加上 KL 散度（$H(P, Q) = H(P) + D_{KL}(P || Q)$）",
+        "交叉熵与 KL 散度毫无关系",
+        "交叉熵必定小于 0",
+        "交叉熵是 KL 散度的倒数"
+      ],
+      "correct": 0,
+      "explanation": "当真实分布 P 固定（如 One-hot 标签，$H(P)=0$）时，最小化交叉熵与最小化 KL 散度完全等价。"
+    },
+    {
+      "stage": "post",
+      "question": "互信息（Mutual Information, $I(X; Y)$）量化了什么？",
+      "options": [
+        "两个随机变量共享的信息量（知道变量 Y 后，变量 X 的不确定性减少了多少）",
+        "两个变量的线性相关系数",
+        "数据集中样本的总个数",
+        "神经网络参数的压缩率"
+      ],
+      "correct": 0,
+      "explanation": "互信息 $I(X;Y) = H(X) - H(X|Y)$，衡量两变量间任意依赖关系（包括非线性依赖）。"
+    },
+    {
+      "stage": "post",
+      "question": "自信息量（Self-Information, $I(x) = -\\log P(x)$）说明了概率与信息量怎样的关系？",
+      "options": [
+        "高概率事件包含极高信息量",
+        "小概率事件（小概率小概率发生）发生时包含极大的信息量（惊奇度）",
+        "概率大小与信息量成正比",
+        "所有事件的信息量恒定为 1"
+      ],
+      "correct": 1,
+      "explanation": "越罕见的事件发生，带来的新信息量越大；必然事件（$P=1$）发生带来的自信息量为 0。"
+    }
+  ]
+}

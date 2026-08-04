@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "在调试 PyTorch 张量运算时，最常见引发运行时崩溃的原因是什么？",
+      "options": [
+        "Python 版本太新",
+        "张量维度/形状（Shape）不匹配，或者在不支持的 Device（如 CPU 与 GPU）间混合计算",
+        "代码行数过多",
+        "注释使用了中文"
+      ],
+      "correct": 1,
+      "explanation": "矩阵乘法维度不匹配或试图对分布在 CPU 和 GPU 上的两个张量直接相加是深度学习最频繁引发 TypeError/RuntimeError 的原因。"
+    },
+    {
+      "stage": "pre",
+      "question": "Python 内置的调试器 `pdb` 中，`n`（next）和 `s`（step）的区别是什么？",
+      "options": [
+        "n 执行当前行并停在下一行；s 会单步进入当前行调用的函数内部",
+        "n 重新运行程序；s 退出调试",
+        "s 仅在 GPU 上有效",
+        "两者完全相同"
+      ],
+      "correct": 0,
+      "explanation": "`next` 不会进入函数体内部，而 `step` 会深入追踪到调用的自定义函数内部第一行。"
+    },
+    {
+      "stage": "post",
+      "question": "在 PyTorch 中使用 `torch.profiler` 的核心目的是什么？",
+      "options": [
+        "自动优化模型准确率",
+        "分析 CPU/GPU 的时间开销与显存分配，精确定位计算瓶颈（如 DataLoader 阻塞或 Kernel 瓶颈）",
+        "自动修正语法错误",
+        "生成 PPT 汇报图表"
+      ],
+      "correct": 1,
+      "explanation": "Profiler 揭示了各个算子在 CPU 与 GPU 上的实际耗时及内存轨迹，为优化性能提供客观依据。"
+    },
+    {
+      "stage": "post",
+      "question": "如果在模型训练中出现损失值突然变成 `NaN`（Not a Number），最可能的根本原因是什么？",
+      "options": [
+        "学习率过高、梯度爆炸、除以零或者在 log 运算中传入了非正数",
+        "GPU 显存空间过大",
+        "磁盘空间不足",
+        "Python 解释器异常"
+      ],
+      "correct": 0,
+      "explanation": "数值溢出或不合法的数学运算（如 log(0) 或 sqrt(negative)）会导致 NaN 污染整个计算图。"
+    },
+    {
+      "stage": "post",
+      "question": "在 CUDA 开发中，`CUDA_LAUNCH_BLOCKING=1` 环境变量的作用是什么？",
+      "options": [
+        "关闭所有 GPU 加速",
+        "强制 CUDA 核心同步（Synchronous）执行，以便准确追踪引发崩溃的实际代码行号",
+        "把模型转换为 CPU 模式",
+        "提升训练速度 10 倍"
+      ],
+      "correct": 1,
+      "explanation": "默认情况下 CUDA Kernel 是异步调用的，错误可能会在很久之后的代码中抛出；开启阻塞模式可以让错误精确贴合引发崩溃的那行代码。"
+    }
+  ]
+}

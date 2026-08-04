@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "在 Jupyter Notebook 中，前缀 `!` 的魔法指令（如 `!pip install`）有什么作用？",
+      "options": [
+        "在独立的 Shell 子进程中执行系统终端命令",
+        "定义 Python 函数",
+        "高亮 Markdown 文本",
+        "重启 Python kernel"
+      ],
+      "correct": 0,
+      "explanation": "`!` 前缀在底层系统 shell 中运行命令。要直接在当前 kernel 交互体验中安装包，建议使用 `%pip install`。"
+    },
+    {
+      "stage": "pre",
+      "question": "为什么 Notebook 中的乱序执行（out-of-order execution）会导致不可复现的 Bug？",
+      "options": [
+        "Notebook 会自动随机删除变量",
+        "内存中的变量状态取决于单元格的运行顺序，而不是它们在页面中的上下物理位置",
+        "Python 不支持交互式执行",
+        "重启 kernel 后所有单元格会自动同步"
+      ],
+      "correct": 1,
+      "explanation": "如果先运行了靠下的单元格修改了变量，再重新运行靠上的单元格，代码的实际结果将依赖于特定操作历史，无法线性复现。"
+    },
+    {
+      "stage": "post",
+      "question": "为了确保实验可以从头线性复现，提交或分享 Notebook 前的推荐操作是什么？",
+      "options": [
+        "清空所有单元格的文本",
+        "执行 'Restart Kernel and Run All Cells' 并确认从上到下全通",
+        "将 `.ipynb` 批量改名为 `.py`",
+        "删除所有 Markdown 单元格"
+      ],
+      "correct": 1,
+      "explanation": "重启内核并按顺序从头运行所有 Cell 可以保证 Notebook 的执行路径是完全确定且线性可复现的。"
+    },
+    {
+      "stage": "post",
+      "question": "Jupyter %timeit 魔法指令有什么独特优势？",
+      "options": [
+        "自动修正代码中的语法错误",
+        "多次运行代码块并计算平均执行时间与标准差，消除临时波动",
+        "将代码部署到云端服务器",
+        "自动导出代码为 PDF"
+      ],
+      "correct": 1,
+      "explanation": "`%timeit` 会智能调整迭代循环次数，给出统计上更精确可靠的代码执行时间基准。"
+    },
+    {
+      "stage": "post",
+      "question": "在生产 AI 管道中，把原型 Notebook 重构为模块化 `.py` 脚本的主要好处是什么？",
+      "options": [
+        "脚本不再依赖 Python 解释器",
+        "提升代码可测试性、版本控制友好度、CI/CD 自动化集成与重用性",
+        "使得 PyTorch 速度提升 100 倍",
+        "自动配置云端 GPU"
+      ],
+      "correct": 1,
+      "explanation": "纯 `.py` 模块更容易编写单元测试、在 Git 中进行行级 diff 对比以及集成到自动化 CI/CD pipeline 中。"
+    }
+  ]
+}

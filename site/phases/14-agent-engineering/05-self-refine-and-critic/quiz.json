@@ -1,0 +1,90 @@
+{
+  "lesson": "05-self-refine-and-critic",
+  "title": "Self-Refine 与 Critic 机制：通过自我批评与反馈迭代改进",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Self-Refine 机制的核心循环是什么？",
+      "options": [
+        "Generate -> Feedback -> Refine",
+        "Prompt -> Embed -> Retrieve",
+        "Plan -> Execute -> Solve",
+        "Select -> Expand -> Backpropagate"
+      ],
+      "correct": 0,
+      "explanation": "Self-Refine 通过自我生成初始输出、自我评估反馈以及根据反馈迭代微调输出构成了核心循环。"
+    },
+    {
+      "stage": "pre",
+      "question": "Critic 角色在 Agent 模式中主要提供什么？",
+      "options": [
+        "额外的 GPU 计算资源",
+        "针对初始生成的输出给出结构化、多尺度的反馈与修改建议",
+        "自动化二进制测试工具",
+        "数据库链接"
+      ],
+      "correct": 1,
+      "explanation": "Critic 角色专门负责审查和评价生成内容，指出不足之处并提供具体的改进方向。"
+    },
+    {
+      "stage": "check",
+      "question": "在 Self-Refine 中使用独立 Critic 提示词（或模型）相比让 Generator 自自我评估有什么优势？",
+      "options": [
+        "减少 API 费用",
+        "打破生成器的自满偏见（Sycophancy/Confirmation Bias），提供更客观的校验",
+        "完全不需要提示词工程",
+        "能够直接在本地运行"
+      ],
+      "correct": 1,
+      "explanation": "独立提示词或角色能够帮助隔离生成偏见，提供更严格客观的审视。"
+    },
+    {
+      "stage": "check",
+      "question": "什么时候应当终止 Self-Refine 迭代？",
+      "options": [
+        "只要生成了任何输出就立即终止",
+        "当满足预设的质量判定标准、Critic 认为没有进一步改进空间或达到最大迭代上限时",
+        "永远不终止，无限运行",
+        "在工具报错时直接终止"
+      ],
+      "correct": 1,
+      "explanation": "质量达标、Critic 满意或达到迭代阈值是合理的停止条件。"
+    },
+    {
+      "stage": "check",
+      "question": "以下哪种反馈形态最有助于 Generator 进行下一轮 Refine？",
+      "options": [
+        "二元评分（如“差劲”）",
+        "具体的、可操作的操作说明与缺陷位置标注（Actionable Feedback）",
+        "随机字符",
+        "完整的历史训练集"
+      ],
+      "correct": 1,
+      "explanation": "可操作的具体反馈能直接指导 Generator 在下一轮中针对性地修正问题。"
+    },
+    {
+      "stage": "post",
+      "question": "Self-Refine 在遭遇盲点或知识缺口时可能出现什么风险？",
+      "options": [
+        "生成效率过快",
+        " Generator 与 Critic 产生幻觉自我强化，在错误方向上进行迭代（Over-refinement）",
+        "导致终端崩溃",
+        "失去对上下文的记忆"
+      ],
+      "correct": 1,
+      "explanation": "缺乏外部接地信号时，自我批评可能陷入自圆其说的逻辑死循环或过度修改。"
+    },
+    {
+      "stage": "post",
+      "question": "如何防止 Self-Refine 出现过度修改（Over-refinement）？",
+      "options": [
+        "引入外部验证（如规则校验、代码解释器或检索）以接地 Critic 的反馈",
+        "禁用所有提示词",
+        "每次生成都使用温度 2.0",
+        "将上限设为 1000 次"
+      ],
+      "correct": 0,
+      "explanation": "通过外部环境反馈接地（Grounding）可以有效避免闭门造车式产生的伪反馈。"
+    }
+  ]
+}

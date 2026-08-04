@@ -1,0 +1,90 @@
+{
+  "lesson": "04-tree-of-thoughts-lats",
+  "title": "思维树与 LATS：基于蒙特卡洛树搜索的 Agent 搜索",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "思维树（Tree of Thoughts, ToT）扩展了传统的思维链（CoT），增加了什么能力？",
+      "options": [
+        "单线线性自回归输出",
+        "对多个思维分支进行探索、评价与回溯的树状搜索能力",
+        "直接更新 Transformer 权重",
+        "使用多模态语音输入"
+      ],
+      "correct": 1,
+      "explanation": "ToT 将问题求解建模为在树状结构上的搜索，允许评估多个分支并进行回溯。"
+    },
+    {
+      "stage": "pre",
+      "question": "LATS（Language Agent Tree Search）在 ToT 的基础上结合了哪种算法？",
+      "options": [
+        "蒙特卡洛树搜索（MCTS）与环境反馈/自我反思",
+        "遗传算法",
+        "模拟退火算法",
+        "Dijkstra 最短路径算法"
+      ],
+      "correct": 0,
+      "explanation": "LATS 将 LLM 的决策过程与 MCTS 的选择、扩展、模拟（或评估）和反向传播相结合。"
+    },
+    {
+      "stage": "check",
+      "question": "MCTS 算法中的 UCB1 公式在 LATS 中用于平衡什么？",
+      "options": [
+        "代码注释与文档长度",
+        "探索（Exploration）与利用（Exploitation）",
+        "内存分配与 CPU 占用",
+        "Prompt 长度与输出速率"
+      ],
+      "correct": 1,
+      "explanation": "UCB1 值用来在优先探索选择高收益分支（利用）与选择尝试较少的分支（探索）之间取得平衡。"
+    },
+    {
+      "stage": "check",
+      "question": "在 LATS 树中，一个“节点”（Node）通常代表什么？",
+      "options": [
+        "一个包含特定状态、行动路径、轨迹得分和反思记录的思维/行动步骤",
+        "一个全局变量",
+        "一次独立的 HTTP 请求",
+        "一整套训练数据集"
+      ],
+      "correct": 0,
+      "explanation": "树中的每个节点保存当前的状态轨迹、价值评估、访问次数及子节点引用。"
+    },
+    {
+      "stage": "check",
+      "question": "LATS 如何在反向传播阶段更新树节点信息？",
+      "options": [
+        "更新底层模型权重的梯度",
+        "沿祖先节点向上更新访问次数、累积价值得分并传播反思教训",
+        "直接删除整棵树重新生成",
+        "向用户发送电子邮件通知"
+      ],
+      "correct": 1,
+      "explanation": "LATS 将评估节点得到的分数与反思教训沿父路径反向传播，更新相关节点的探索价值。"
+    },
+    {
+      "stage": "post",
+      "question": "相比单线 ReAct 循环，使用 LATS 的主要代价是什么？",
+      "options": [
+        "代码无法跨平台运行",
+        "API 调用次数与 Token 成本显著增加",
+        "完全失去了对工具的使用能力",
+        "无法处理多语言文本"
+      ],
+      "correct": 1,
+      "explanation": "由于需要维护树状分支并评估多个候选路径，LATS 会消耗显著更多的 LLM 调用与 Token。"
+    },
+    {
+      "stage": "post",
+      "question": "在什么场景下最值得部署 LATS 或 ToT 搜索架构？",
+      "options": [
+        "简单的问答和拼写检查",
+        "求解空间巨大、路径复杂且允许通过回溯寻找最优解的高难度任务（如复杂代码重构或博弈策划）",
+        "实时流式语音对话",
+        "低延迟静态路由"
+      ],
+      "correct": 1,
+      "explanation": "对于搜索空间大、步骤依赖深且容错率低的高价值任务，树搜索能带来显著的突破。"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "stage": "pre",
+    "question": "什么是思维链（Chain-of-Thought, CoT）提示？",
+    "options": [
+      "将多个 Prompt 连接在一个 API 调用中",
+      "引导模型在给出最终答案之前显式生成中间推理步骤的技术",
+      "训练模型使用外部搜索工具",
+      "将输入切分为多个 Chunk 的方法"
+    ],
+    "correct": 1,
+    "explanation": "CoT 引导模型将复杂问题拆解为中间步骤。这显著提升了模型在算术、逻辑推理和多步决策任务上的准确率。"
+  },
+  {
+    "stage": "pre",
+    "question": "Few-Shot 提示相比 Zero-Shot 提示的主要优势是什么？",
+    "options": [
+      "Few-Shot 提示消耗更少的 Token",
+      "Few-Shot 提示通过在 Prompt 中提供若干输入输出示范，清晰展示预期的输出格式与推理风格",
+      "Few-Shot 提示能完全消除幻觉",
+      "Few-Shot 提示使 API 调用速度翻倍"
+    ],
+    "correct": 1,
+    "explanation": "Few-Shot 提示通过提供具体示例，让模型在上下文学习（In-Context Learning）中快速匹配所需的输出模式、风格与推理步骤。"
+  },
+  {
+    "stage": "post",
+    "question": "在 Few-Shot 提示中选择示范示例（Examples）的最佳实践是什么？",
+    "options": [
+      "随机选择任何示例",
+      "选择涵盖典型情况、边缘情况且与当前输入在语义上相关的多样化示例",
+      "只提供最简单的示例",
+      "总是使用相同的一组 10 个示例"
+    ],
+    "correct": 1,
+    "explanation": "高质量且语义相关的示例能够更好地引导模型的上下文注意力，从而提升复杂任务上的表现。"
+  },
+  {
+    "stage": "post",
+    "question": "为什么在推理任务中显式要求模型“一步步思考”（Let's think step by step）能提升效果？",
+    "options": [
+      "这会更改模型底层的权重",
+      "这迫使模型分配额外的生成 Token 来展开中间逻辑计算，而不是尝试在一个 Token 中直接预测复杂结论",
+      "它向 Transformer 添加了额外的注意力头",
+      "它降低了 Sampling Temperature"
+    ],
+    "correct": 1,
+    "explanation": "Transformer 在生成每个 Token 时能进行的计算量是固定的。通过生成中间推理 Token，模型在预测最终结论前积累了丰富的上下文计算。"
+  },
+  {
+    "stage": "post",
+    "question": "Few-Shot CoT 的主要权衡（Trade-off）是什么？",
+    "options": [
+      "模型会丢失长文本理解能力",
+      "增加输入与输出 Token 数量，从而增加延迟与 API 费用",
+      "它只适用于数学问题",
+      "它使得输出无法被解析"
+    ],
+    "correct": 1,
+    "explanation": "在 Prompt 中加入示例和推理步骤会增加 Input/Output Token 数，从而带来更高的成本与推理耗时。"
+  }
+]

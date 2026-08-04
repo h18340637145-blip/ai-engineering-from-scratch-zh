@@ -1,0 +1,62 @@
+[
+  {
+    "stage": "pre",
+    "question": "在生产环境中使用 LLM 时，为什么结构化输出（Structured Outputs，如 JSON）比自由格式文本更受青睐？",
+    "options": [
+      "结构化输出能完全防止大模型产生幻觉",
+      "结构化输出可以直接被下游代码安全解析和处理，无需编写脆弱的文本正则匹配",
+      "结构化输出能减少 50% 的 API 传输费用",
+      "结构化输出能大幅提高模型的推理生成速度"
+    ],
+    "correct": 1,
+    "explanation": "在软件系统集成中，下游系统需要确定性的数据结构（JSON/Pydantic）。结构化输出确保模型的响应能够直接映射到 API 接口或数据库中。"
+  },
+  {
+    "stage": "pre",
+    "question": "约束解码（Constrained Decoding / JSON Schema Enforcement）的底层原理是什么？",
+    "options": [
+      "在模型生成不符合规范的 Token 时强制进行重新训练",
+      "在采样前掩蔽（Mask）不符合 JSON 语法或 Schema 正则表达式的非法 Token logit",
+      "仅在生成完成后通过正则表达式检查输出文本",
+      "在 Prompt 中添加重复的格式警告文本"
+    ],
+    "correct": 1,
+    "explanation": "约束解码在每个生成步骤通过状态机计算合法的 Token 集合，将非法 Token 的概率设为 0，从而在语法层面 100% 保证输出格式正确。"
+  },
+  {
+    "stage": "post",
+    "question": "使用 Pydantic 或 Zod 定义结构化输出模式时的最佳实践是什么？",
+    "options": [
+      "保持字段名尽可能简短（如 a, b, c）以节省 Token",
+      "为每个字段添加清晰的 description 说明，并在必要时提供 enum 约束或校验函数",
+      "永远不要使用嵌套数据结构",
+      "禁用所有可选字段"
+    ],
+    "correct": 1,
+    "explanation": "LLM 会读取 Schema 中的字段说明（Field descriptions）。清晰的描述能够指导模型正确理解每个字段的含义与取值约束。"
+  },
+  {
+    "stage": "post",
+    "question": "如果模型生成的 JSON 字符串由于 Token 被截断而解析失败，最稳妥的处理策略是什么？",
+    "options": [
+      "直接抛出异常并向用户报错",
+      "增加 `max_tokens` 设置，或使用带有自动修复逻辑的 JSON 解析器 / 重新发起重试",
+      "直接将不完整的文本返回给数据库",
+      "降低模型 Sampling Temperature 参数"
+    ],
+    "correct": 1,
+    "explanation": "Token 截断是导致 JSON 结构破坏的常见原因。通过增加最大 Token 限制并结合异常重试/语法修复器能有效保障系统鲁棒性。"
+  },
+  {
+    "stage": "post",
+    "question": "针对 Function Calling 和 JSON Schema 约束解码，以下说法正确的是？",
+    "options": [
+      "两者完全独立且无法结合使用",
+      "现代 API 通常将 Function Calling 作为结构化输出的一种底层实现机制",
+      "JSON Schema 约束解码会显著增加模型幻觉概率",
+      "使用约束解码后就不再需要定义 Prompt"
+    ],
+    "correct": 1,
+    "explanation": "许多大模型服务商将函数调用（Function Calling）与 JSON 模式在底层统一为基于 Schema 的采样约束机制。"
+  }
+]

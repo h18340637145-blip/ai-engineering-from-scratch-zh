@@ -1,0 +1,62 @@
+[
+  {
+    "stage": "pre",
+    "question": "从零实现 BPE Tokenizer 时，训练的第一步是什么？",
+    "options": [
+      "随机初始化词表",
+      "将文本拆分为基础字符（或字节），并建立初始统计词频",
+      "直接下载 HuggingFace 的词表",
+      "使用正则表达式过滤标点符号"
+    ],
+    "correct": 1,
+    "explanation": "BPE 训练始于基础字符/字节级别，通过统计相邻对的频次逐步合并最常见的配对。"
+  },
+  {
+    "stage": "pre",
+    "question": "在训练 BPE 词表时，计算高频 Token 对的常用数据结构是什么？",
+    "options": [
+      "哈希表 / Counter 词频字典",
+      "二叉查找树",
+      "图结构",
+      "跳表"
+    ],
+    "correct": 0,
+    "explanation": "通过滑动窗口统计相邻 Token 对的频率，哈希表/字典能够在每轮迭代中快速找出频次最高的 Token 对。"
+  },
+  {
+    "stage": "post",
+    "question": "为什么 tiktoken（OpenAI 分词器）比传统的 Python BPE 实现快得多？",
+    "options": [
+      "它跳过了字符编码步骤",
+      "它基于 Rust 构建，使用了高效的基数树（Radix Tree）与正则预切分策略",
+      "它不处理标点符号",
+      "它使用了更小的词表"
+    ],
+    "correct": 1,
+    "explanation": "tiktoken 采用 Rust 编写，通过针对正则表达式预分词和底层底层内存优化，实现了极高的分词吞吐量。"
+  },
+  {
+    "stage": "post",
+    "question": "Special Tokens（如 `<|endoftext|>`）在 Tokenizer 中是如何被处理的？",
+    "options": [
+      "参与普通的 BPE 合并过程",
+      "被赋予固定的专用 ID，且在正则表达式切分阶段被优先匹配隔离",
+      "直接被忽略掉",
+      "作为普通的英文单词处理"
+    ],
+    "correct": 1,
+    "explanation": "特殊标记（Special Tokens）具有特定的控制语义，必须避开普通的 BPE 拆分，由 Tokenizer 优先识别并映射到固定 ID。"
+  },
+  {
+    "stage": "post",
+    "question": "将二进制字节流作为根词表（Byte-level BPE）的核心优势是什么？",
+    "options": [
+      "不再需要处理 UTF-8 解码错误，且能无缝编码任意数据格式",
+      "彻底不需要计算词频",
+      "词表大小可以固定为 100",
+      "模型训练速度提升 10 倍"
+    ],
+    "correct": 0,
+    "explanation": "以 256 个基础字节为起点，无需假设特定语言的字符集，可自然支持全语种及二进制数据。"
+  }
+]

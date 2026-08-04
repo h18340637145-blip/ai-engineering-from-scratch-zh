@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "为什么在部署 AI 模型时，使用 Docker 容器比仅使用 Python 虚拟环境更能保证一致性？",
+      "options": [
+        "Docker 能让 CPU 运行速度快 2 倍",
+        "Docker 封装了完整的操作系统文件系统、C++ 动态链接库、CUDA 运行时以及 Python 环境",
+        "Docker 不需要占用磁盘空间",
+        "Python 虚拟环境无法在 Linux 上运行"
+      ],
+      "correct": 1,
+      "explanation": "虚拟环境只隔离 Python 包；Docker 容器则封包了系统 libc、CUDA runtime 和所有系统依赖，消除了“在我的机器上能跑”的环境差异。"
+    },
+    {
+      "stage": "pre",
+      "question": "为了在 Docker 容器内部访问宿主机的 NVIDIA GPU，需要哪项技术支持？",
+      "options": [
+        "NVIDIA Container Toolkit (nvidia-docker)",
+        "VirtualBox 扩展包",
+        "Python `torch.cuda` 模块",
+        "WebSockets"
+      ],
+      "correct": 0,
+      "explanation": "NVIDIA Container Toolkit 允许 Docker 容器安全地挂载宿主机的 NVIDIA 驱动和 GPU 设备节点。"
+    },
+    {
+      "stage": "post",
+      "question": "在编写 AI 镜像的 Dockerfile 时，把 `COPY . /app` 放在 `RUN pip install` 之后的主要优点是什么？",
+      "options": [
+        "使容器占用显存变小",
+        "充分利用 Docker 缓存：修改代码时无需重新执行耗时的依赖安装步骤",
+        "防止代码被别人读取",
+        "自动开启 GPU 混合精度训练"
+      ],
+      "correct": 1,
+      "explanation": "Docker 按层缓存。只要依赖文件未变，依赖安装层就会被复用。把经常变动的应用代码放在后面可以极大地加快镜像构建速度。"
+    },
+    {
+      "stage": "post",
+      "question": "Docker Compose 在 AI 多服务架构（如 API 网关 + 向量数据库 + 模型服务）中的作用是什么？",
+      "options": [
+        "自动微调大语言模型",
+        "通过单一 YAML 配置文件定义和管理多容器应用及其网络与存储卷",
+        "替代 NVIDIA GPU 驱动",
+        "自动生成 Web 前端界面"
+      ],
+      "correct": 1,
+      "explanation": "Docker Compose 允许你一键启动、连接和管理相互依赖的多个容器服务环境。"
+    },
+    {
+      "stage": "post",
+      "question": "多阶段构建（Multi-stage builds）在 Docker 中有什么好处？",
+      "options": [
+        "让模型推理耗时减少一半",
+        "在构建阶段使用完整编译器，最终镜像仅保留运行时必需文件，极大减小镜像体积",
+        "允许在一个容器中同时运行 Linux 和 Windows",
+        "自动生成 Dockerfile"
+      ],
+      "correct": 1,
+      "explanation": "多阶段构建可以将构建工具和头文件留在临时镜像中，最终交付镜像仅几百兆，显著降低传输成本和安全风险。"
+    }
+  ]
+}

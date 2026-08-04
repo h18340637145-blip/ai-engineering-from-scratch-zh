@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "对于线性方程组 $A \\mathbf{x} = \\mathbf{b}$，什么情况下方程组有唯一解？",
+      "options": [
+        "矩阵 A 是可逆的非奇异方阵（$\\det(A) \neq 0$ 且满秩）",
+        "矩阵 A 元素全是 0",
+        "方程个数远少于变量个数",
+        "矩阵 A 的行列式为 0"
+      ],
+      "correct": 0,
+      "explanation": "只有满秩方阵存在唯一的逆矩阵，解为 $\\mathbf{x} = A^{-1} \\mathbf{b}$。"
+    },
+    {
+      "stage": "pre",
+      "question": "高斯消元法（Gaussian Elimination）的核心步骤是？",
+      "options": [
+        "通过行初等变换将增广矩阵化为上三角矩阵（Row Echelon Form），再通过回代求解变量",
+        "把矩阵拆分为正交阵",
+        "直接计算矩阵的特征值",
+        "对所有变量进行随机猜想"
+      ],
+      "correct": 0,
+      "explanation": "高斯消元是求解中小型线性方程组的经典直接法。"
+    },
+    {
+      "stage": "post",
+      "question": "在最小二乘法（Least Squares）中，当 $A \\mathbf{x} = \\mathbf{b}$ 超定（方程数多于未知数，无精确解）时，闭式解（正规方程 Normal Equations）公式是？",
+      "options": [
+        "$\\mathbf{x} = (A^T A)^{-1} A^T \\mathbf{b}$",
+        "$\\mathbf{x} = A^{-1} \\mathbf{b}$",
+        "$\\mathbf{x} = A^T \\mathbf{b}$",
+        "$\\mathbf{x} = (A A^T)^{-1} \\mathbf{b}$"
+      ],
+      "correct": 0,
+      "explanation": "正规方程找到了投影残差正交于列空间时，最小化 $|A\\mathbf{x} - \\mathbf{b}\\|^2$ 欧氏残差的唯一解。"
+    },
+    {
+      "stage": "post",
+      "question": "LU 分解与 Cholesky 分解的区别是？",
+      "options": [
+        "LU 将矩阵分解为下三角 L 和上三角 U；Cholesky 专门针对对称正定矩阵，分解为 $L L^T$，速度快一倍且极其稳定",
+        "LU 只能处理方阵",
+        "Cholesky 分解仅适用于复数",
+        "它们完全相同"
+      ],
+      "correct": 0,
+      "explanation": "Cholesky 利用了对称正定性质，是数值代数中最优质的高效分解算法之一。"
+    },
+    {
+      "stage": "post",
+      "question": "对于大型稀疏线性方程组，为什么首选迭代法（如 Conjugate Gradient 伪共轭梯度法）而非直接求逆？",
+      "options": [
+        "直接求逆复杂度高（$O(N^3)$）且会破坏矩阵的稀疏结构；共轭梯度法在 $O(N)$ 矩阵向量乘积中快速收敛",
+        "直接求逆只能计算实数",
+        "共轭梯度法不需要显存",
+        "迭代法保证 1 步算出解"
+      ],
+      "correct": 0,
+      "explanation": "稀疏矩阵如果显式求逆会导致元素大量“填充（Fill-in）”，变密集且爆显存；迭代法只依赖矩阵-向量乘积。"
+    }
+  ]
+}

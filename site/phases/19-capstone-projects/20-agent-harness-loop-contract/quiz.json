@@ -1,0 +1,90 @@
+{
+  "lesson": "20-agent-harness-loop-contract",
+  "title": "代理框架循环契约",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "为什么将框架循环建模为显式的状态机，而不是使用带有标志的 while 循环？",
+      "options": [
+        "它允许框架在一个地方拒绝非法转换，并从事件日志中重放会话",
+        "它在 CPython 上运行更快",
+        "它避免了测试的需要",
+        "这是模型唯一可以调用的形状"
+      ],
+      "correct": 0,
+      "explanation": "状态机将合法性规则放在一个转换函数中。相同的输入序列会生成相同的状态，这使得会话重放成为可能。"
+    },
+    {
+      "stage": "pre",
+      "question": "循环中的拉取点代表什么？",
+      "options": [
+        "一个循环让出控制权并等待调用者提供输入的点",
+        "一个返回工具名称的模型调用",
+        "一个每隔 N 秒触发的计时器",
+        "一个修改负载的钩子订阅者"
+      ],
+      "correct": 0,
+      "explanation": "拉取点是返回，而不是异常。调用者获取框架请求的内容并调用 resume()。"
+    },
+    {
+      "stage": "check",
+      "question": "哪个状态是工具调用的唯一合法拉取点？",
+      "options": [
+        "EXECUTING",
+        "AWAITING_TOOL",
+        "REFLECTING",
+        "PLANNING"
+      ],
+      "correct": 1,
+      "explanation": "只有 AWAITING_TOOL 会返回工具拉取点。当一个步骤需要工具时，EXECUTING 会转换到它。"
+    },
+    {
+      "stage": "check",
+      "question": "当 before_tool_call 中的钩子引发 HookAbort 时会发生什么？",
+      "options": [
+        "会话立即转换到 DONE",
+        "跳过工具调用，触发 on_error，并将循环移动到 REFLECTING",
+        "钩子被注销",
+        "预算被重置"
+      ],
+      "correct": 1,
+      "explanation": "HookAbort 会取消正在进行的工具分发，用中止原因触发 on_error，并继续执行。"
+    },
+    {
+      "stage": "check",
+      "question": "为什么钩子和事件被作为独立的关注点来保持？",
+      "options": [
+        "因为事件类型是字节，钩子是字符串",
+        "钩子是命令式的，可以修改或中止。事件是观察性的，仅追加。",
+        "因为审计脚本禁止订阅者",
+        "因为事件日志无法存储字典"
+      ],
+      "correct": 1,
+      "explanation": "钩子改变行为。事件描述行为。将它们混合在一起会耦合策略和遥测，这是我们试图避免的错误。"
+    },
+    {
+      "stage": "post",
+      "question": "当墙钟预算被超出时，下一个状态是什么？",
+      "options": [
+        "DONE — 会话被终止",
+        "EXECUTING — 循环重试",
+        "IDLE — 返回一个预算超出原因的拉取点",
+        "PLANNING — 起草一个新的计划"
+      ],
+      "correct": 2,
+      "explanation": "预算耗尽是一个让出操作。框架转换到 IDLE，触发 on_budget_exceeded，并返回一个 PullRequest，让调用者决定是否延长或关闭。"
+    },
+    {
+      "stage": "post",
+      "question": "为什么本课用存根替代了调用模型的规划器？",
+      "options": [
+        "因为本地调用模型较慢",
+        "为了在任何模型绑定之前保持循环契约的可测试性和确定性",
+        "因为模型无法返回工具调用",
+        "为了节省令牌"
+      ],
+      "correct": 1,
+      "explanation": "首先固定循环契约，使后续课程可以插入真实的规划器、注册表和分发器，而无需重新协商状态机。"
+    }
+  ]
+}

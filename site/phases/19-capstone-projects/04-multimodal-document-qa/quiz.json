@@ -1,0 +1,90 @@
+{
+  "lesson": "04-multimodal-document-qa",
+  "title": "综合项目 04——多模态文档问答（视觉优先的 PDF、表格与图表）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "对于财务 PDF 和科学论文，为什么 2026 年前沿方案更偏好视觉优先的后期交互，而不是先 OCR 再处理文本？",
+      "options": [
+        "视觉模型的单页成本更低",
+        "OCR 流水线会破坏旋转表格、密集公式和图表图像，损失一半信号",
+        "OCR 比渲染更慢",
+        "OCR 无法在 GPU 上运行"
+      ],
+      "correct": 1,
+      "explanation": ""
+    },
+    {
+      "stage": "pre",
+      "question": "ColPali 风格检索中的后期交互是什么意思？",
+      "options": [
+        "每个查询 Token 与所有图像块 Token 评分，再通过 MaxSim 汇总逐 Token 最大值",
+        "将嵌入推迟到评估时计算",
+        "用户点击结果后才计算嵌入",
+        "重排器只处理最终候选项"
+      ],
+      "correct": 0,
+      "explanation": ""
+    },
+    {
+      "stage": "check",
+      "question": "ColQwen 每页大约生成多少个图像块向量，这会带来什么存储问题？",
+      "options": [
+        "每页约 2048 个图像块向量，与单向量索引相比会显著膨胀原始存储",
+        "恰好 128 个向量，可轻松放入任何向量数据库",
+        "每页 1 个向量，不存在存储问题",
+        "16 个向量，存储开销可忽略"
+      ],
+      "correct": 0,
+      "explanation": ""
+    },
+    {
+      "stage": "check",
+      "question": "DocPruner 在该流水线中做什么？",
+      "options": [
+        "摄取前删除重复的 PDF 页面",
+        "保留约 50% 的高信号图像块来压缩多向量索引，且准确率损失可忽略",
+        "重写查询嵌入以获得更短向量",
+        "裁剪证据区域周围的边界框"
+      ],
+      "correct": 1,
+      "explanation": ""
+    },
+    {
+      "stage": "check",
+      "question": "为什么有些页面仍要接入 OCR 文本通道？",
+      "options": [
+        "它能提升 PDF 渲染质量",
+        "VLM 无法读取 180 DPI 图像",
+        "OCR 是主要检索模态",
+        "公式密集和表格较多的页面可从图像旁路的文本回退中受益"
+      ],
+      "correct": 3,
+      "explanation": ""
+    },
+    {
+      "stage": "post",
+      "question": "本综合项目使用哪个基准评估视觉优先检索？",
+      "options": [
+        "RewardBench-2",
+        "SWE-bench Pro",
+        "ViDoRe v3",
+        "MMLU-Pro"
+      ],
+      "correct": 2,
+      "explanation": ""
+    },
+    {
+      "stage": "post",
+      "question": "评分标准中的证据区域定位是什么意思？",
+      "options": [
+        "DocPruner 达到的压缩率",
+        "重排器的 p99 尾延迟",
+        "每个查询检索的总页数",
+        "引用的边界框中实际包含答案范围的比例"
+      ],
+      "correct": 3,
+      "explanation": ""
+    }
+  ]
+}

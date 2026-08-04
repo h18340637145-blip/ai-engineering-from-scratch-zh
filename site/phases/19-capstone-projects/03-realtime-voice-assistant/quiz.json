@@ -1,0 +1,90 @@
+{
+  "lesson": "03-realtime-voice-assistant",
+  "title": "综合项目 03——实时语音助手（ASR 到 LLM 再到 TTS）",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "为什么不能通过串联 3 个阻塞式 REST 调用来构建语音智能体？",
+      "options": [
+        "REST 端点有 30 秒硬超时",
+        "REST 与 WebRTC 不兼容",
+        "JSON 序列化音频数据太慢",
+        "低于 800 ms 的端到端延迟要求每个阶段都采用流水线式流处理"
+      ],
+      "correct": 3,
+      "explanation": ""
+    },
+    {
+      "stage": "pre",
+      "question": "与 VAD 配合的轮次检测器有什么作用？",
+      "options": [
+        "为智能体训练自定义声音克隆",
+        "读取部分转写并判断用户是否真正说完",
+        "检测多人通话中正在发言的说话人",
+        "将背景音乐混入输出流"
+      ],
+      "correct": 1,
+      "explanation": ""
+    },
+    {
+      "stage": "check",
+      "question": "当智能体尚在回应时用户开始说话，必须如何处理才能让打断体验自然？",
+      "options": [
+        "TTS 说完当前句子后再让出话轮",
+        "流水线缓存用户音频，直到 TTS 完成",
+        "立即取消 TTS、丢弃剩余 LLM 输出并重新启用 ASR",
+        "智能体提高 TTS 音量以抢占优先级"
+      ],
+      "correct": 2,
+      "explanation": ""
+    },
+    {
+      "stage": "check",
+      "question": "当工具耗时超过约 300 ms 时，为什么要播放“稍等，我查一下”之类的简短填充语？",
+      "options": [
+        "避免静默，使旁路工具运行时对话不会停滞",
+        "触发备用 ASR 模型",
+        "重置 WebRTC 抖动缓冲区",
+        "改善下一句话的 WER"
+      ],
+      "correct": 0,
+      "explanation": ""
+    },
+    {
+      "stage": "check",
+      "question": "第一个 LLM Token 产生后，首个音频块应在大约多久内离开服务器？",
+      "options": [
+        "20 ms",
+        "800 ms",
+        "2 秒",
+        "200 ms"
+      ],
+      "correct": 3,
+      "explanation": ""
+    },
+    {
+      "stage": "post",
+      "question": "哪个指标直接衡量不当打断或过早结束话轮？",
+      "options": [
+        "WER",
+        "MOS",
+        "接受率",
+        "误截断率"
+      ],
+      "correct": 3,
+      "explanation": ""
+    },
+    {
+      "stage": "post",
+      "question": "在 3% 丢包率下，流水线依赖哪两种自适应行为？",
+      "options": [
+        "切换到更大的 LLM 并禁用 TTS",
+        "回退到 PSTN 音频编解码器",
+        "保留部分转写并提高 VAD 语音门限",
+        "重启 LiveKit 房间"
+      ],
+      "correct": 2,
+      "explanation": ""
+    }
+  ]
+}

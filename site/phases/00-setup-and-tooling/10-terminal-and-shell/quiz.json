@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "在终端中运行耗时长达数小时的训练任务时，使用 `tmux` 或 `screen` 的最大好处是什么？",
+      "options": [
+        "让 GPU 算力提升 50%",
+        "即便本地 SSH 终端连接断开，远程服务器上的会话仍将在后台持续运行",
+        "自动将训练日志发送到手机",
+        "防止系统产生垃圾文件"
+      ],
+      "correct": 1,
+      "explanation": "终端复用器（tmux）保持会话在后台常驻，使得网络中断或关闭电脑不会打断远程云服务器上正在执行的耗时任务。"
+    },
+    {
+      "stage": "pre",
+      "question": "在 Linux Shell 中，符号 `|`（管道）的含义是什么？",
+      "options": [
+        "将前一个命令的标准输出（stdout）作为后一个命令的标准输入（stdin）",
+        "同时并行运行两个命令",
+        "把输出保存到文件中",
+        "忽略前面命令的所有错误"
+      ],
+      "correct": 0,
+      "explanation": "管道符允许你将多个小型 CLI 工具组合起来，形成功能强大的自动化数据处理流。"
+    },
+    {
+      "stage": "post",
+      "question": "在文件查找和文本搜索中，`ripgrep` (`rg`) 相比传统 `grep` 的显著优势是什么？",
+      "options": [
+        "支持图形化界面显示",
+        "利用 Rust 并行多线程与智能 `.gitignore` 过滤，搜索性能极其迅速",
+        "可以搜索图像内部的文字",
+        "不需要在命令行中运行"
+      ],
+      "correct": 1,
+      "explanation": "`rg` 是现代 AI 工程师首选的代码/文本搜索工具，能在数秒内检索大规模代码库。"
+    },
+    {
+      "stage": "post",
+      "question": "如何在 Shell 中安全地临时设置仅对当前命令生效的环境变量？",
+      "options": [
+        "直接在命令前加上 `ENV_VAR=value command`",
+        "修改系统的 `/etc/profile` 文件",
+        "把变量写进 `.bashrc` 并重启电脑",
+        "使用 `sudo` 运行命令"
+      ],
+      "correct": 0,
+      "explanation": "在命令前内联指定变量（如 `CUDA_VISIBLE_DEVICES=0 python main.py`）只影响该特定子进程，不会污染当前全局 Shell。"
+    },
+    {
+      "stage": "post",
+      "question": "命令 `tail -f training.log` 的作用是什么？",
+      "options": [
+        "删除 `training.log` 文件的末尾内容",
+        "实时监听并打印 `training.log` 文件新追加的日志行",
+        "将日志文件压缩发送",
+        "统计日志文件中的单词总数"
+      ],
+      "correct": 1,
+      "explanation": "`tail -f` 能够持续追踪追加更新的日志，是监控后台训练任务状态的常用命令。"
+    }
+  ]
+}

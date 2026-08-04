@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "欧拉公式 $e^{i \theta} = \\cos\theta + i \\sin\theta$ 在复数几何中表示什么？",
+      "options": [
+        "复平面单位圆上的一个点（模长为 1，辐角为 $\theta$ 的旋转）",
+        "一条抛物线",
+        "纯实数乘法",
+        "矩阵的转置"
+      ],
+      "correct": 0,
+      "explanation": "欧拉公式是复数极坐标表达的基础，将复数乘法优雅地转化为模长相乘与辐角相加（旋转）。"
+    },
+    {
+      "stage": "pre",
+      "question": "复数的模长 $|z|$ 和共轭复数 $\bar{z}$ 满足什么代数关系（设 $z = a + bi$）？",
+      "options": [
+        "$z \bar{z} = a^2 + b^2 = |z|^2$",
+        "$z \bar{z} = a^2 - b^2$",
+        "$z \bar{z} = 0$",
+        "$z + \bar{z} = 2bi$"
+      ],
+      "correct": 0,
+      "explanation": "复数与其共轭相乘抹去了虚部，得到该复数在复平面上到原点几何欧氏距离的平方。"
+    },
+    {
+      "stage": "post",
+      "question": "在信号处理与现代 RoPE（旋转位置编码）中，为什么复数旋转极其高效？",
+      "options": [
+        "将二维平面上的向量旋转转换为一次复数乘法（$z \\cdot e^{i\theta}$），运算优雅且数值稳定性高",
+        "复数可以消除所有的矩阵运算",
+        "复数不需要占用内存",
+        "复数旋转会减少参数的维度"
+      ],
+      "correct": 0,
+      "explanation": "RoPE 利用二维平面复数旋转直接在 Token Query/Key 特征上注入相对位置信息。"
+    },
+    {
+      "stage": "post",
+      "question": "复平面（Complex Plane / Argand Diagram）的横轴与纵轴分别代表什么？",
+      "options": [
+        "横轴为实轴（Real Axis），纵轴为虚轴（Imaginary Axis）",
+        "横轴为时间，纵轴为频率",
+        "横轴为样本量，纵轴为损失值",
+        "横轴与纵轴都是实数"
+      ],
+      "correct": 0,
+      "explanation": "复平面将复数 $a+bi$ 映射为二维空间坐标 $(a, b)$。"
+    },
+    {
+      "stage": "post",
+      "question": "复矩阵中的共轭转置（Hermitian Transpose, $A^H$ 或 $A^\\dagger$）等价于实数矩阵的什么操作？",
+      "options": [
+        "实数矩阵的转置操作 $A^T$",
+        "矩阵求逆",
+        "矩阵求迹",
+        "行列式计算"
+      ],
+      "correct": 0,
+      "explanation": "对复矩阵取共轭并转置，是定义复向量内积与埃尔米特（Hermitian）正交矩阵的标准运算。"
+    }
+  ]
+}

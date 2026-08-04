@@ -1,0 +1,78 @@
+{
+  "lesson": "05-constitutional-ai-rlaif",
+  "title": "宪法 AI 与 RLAIF",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "与标准 RLHF 相比，宪法 AI 的核心替换是什么？",
+      "options": [
+        "用读取原则列表的 AI 标注者替代人类偏好标注者",
+        "用 DPO 替代 PPO",
+        "用合成提示替代真实提示",
+        "完全移除奖励模型"
+      ],
+      "correct": 0,
+      "explanation": ""
+    },
+    {
+      "stage": "check",
+      "question": "宪法 AI 的第一阶段（SFT）做什么？",
+      "options": [
+        "只根据 AI 生成的偏好训练奖励模型",
+        "生成初始回答，依据抽样得到的宪法原则批评该回答，再修订并将修订结果用作 SFT 目标",
+        "通过聚类标注者评论生成合成原则",
+        "使用由宪法推导的奖励执行 PPO"
+      ],
+      "correct": 1,
+      "explanation": ""
+    },
+    {
+      "stage": "check",
+      "question": "第二阶段（RLAIF）做什么？",
+      "options": [
+        "跳过 PPO，只应用一次监督损失",
+        "让人类重新标注 SFT 输出",
+        "将宪法蒸馏进分词器",
+        "根据反馈模型生成的 AI 偏好训练奖励模型，再针对该模型运行 PPO"
+      ],
+      "correct": 3,
+      "explanation": ""
+    },
+    {
+      "stage": "check",
+      "question": "Anthropic 于 2026 年 1 月发布的四层 Claude 宪法按什么顺序排列？",
+      "options": [
+        "平台规则 > 避免灾难 > 有用 > 广义道德",
+        "广义道德 > 有用 > 平台规则 > 避免灾难",
+        "避免灾难性结果 > 遵循 Anthropic 指南 > 广义道德 > 有用且坦诚",
+        "有用 > 广义道德 > 平台规则 > 避免灾难"
+      ],
+      "correct": 2,
+      "explanation": ""
+    },
+    {
+      "stage": "post",
+      "question": "从 RLHF 切换到 RLAIF 不一定能修复哪种失效模式？",
+      "options": [
+        "标注者的心理不一致",
+        "奖励黑客／古德哈特定律",
+        "标注成本",
+        "标注者稀缺"
+      ],
+      "correct": 1,
+      "explanation": ""
+    },
+    {
+      "stage": "post",
+      "question": "宪法分类器 v1 与 v2（2026）之间最显著的变化是什么？",
+      "options": [
+        "v2 将计算开销从 1% 提高到 23.7%",
+        "v2 移除了分类器，只依赖宪法",
+        "v2 只在输入端运行，不处理输出",
+        "v2 将计算开销从 23.7% 降至约 1%，同时保持较低的攻击成功率"
+      ],
+      "correct": 3,
+      "explanation": ""
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "lesson": "02-rewoo-plan-and-execute",
+  "title": "ReWOO 与计划-执行模式：在无工具阻塞情况下生成依赖 DAG",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "ReWOO 解决的主要局限性是什么？",
+      "options": [
+        "LLM 无法并行调用多个工具",
+        "ReAct 在每个行动-观察步骤中重复传入完整 prompt 导致 Token 开销暴涨",
+        "计划-执行模式无法使用 Python 标准库实现",
+        "依赖图无法使用 Mermaid 渲染"
+      ],
+      "correct": 1,
+      "explanation": "ReAct 需要对每个观察步骤重新发起 LLM 调用，导致冗余 Token 开销，而 ReWOO 通过提前生成完整计划图（Plan Graph）将规划与工具执行解耦。"
+    },
+    {
+      "stage": "pre",
+      "question": "在 ReWOO 架构中，Planner 阶段输出什么内容？",
+      "options": [
+        "最终的面向用户的文本回答",
+        "包含占位符变量（如 #E1, #E2）的明确步骤计划图",
+        "已经由 Worker 节点执行完毕的结果列表",
+        "一段用于在终端直接运行的 Python 自动化脚本"
+      ],
+      "correct": 1,
+      "explanation": "Planner 输出结构化的逻辑计划与工具指令，并使用变量占位符标记步骤间的数据依赖关系。"
+    },
+    {
+      "stage": "check",
+      "question": "ReWOO 流程中的 Worker 组件负责什么任务？",
+      "options": [
+        "重新对用户 prompt 进行分类",
+        "解析计划图，使用解析好的实参替换占位符，并仅执行工具调用",
+        "将最终响应总结并呈现给用户",
+        "在工具执行失败时微调模型权重"
+      ],
+      "correct": 1,
+      "explanation": "Worker 节点是纯工具执行器，它根据依赖关系填充占位符变量并执行工具，不进行额外的 LLM 思考。"
+    },
+    {
+      "stage": "check",
+      "question": "ReWOO 中的 Solver 组件扮演什么角色？",
+      "options": [
+        "生成无占位符的初始分析图",
+        "仅在终端打印出 Worker 的执行轨迹日志",
+        "结合原始用户目标、生成的计划和 Worker 的工具执行结果，合成最终回答",
+        "决定何时终止整体系统运行"
+      ],
+      "correct": 2,
+      "explanation": "Solver 接收初始计划和包含变量解析值的工具执行结果，合成出最终呈现给用户的响应。"
+    },
+    {
+      "stage": "check",
+      "question": "ReWOO 相比常规 ReAct 模式的主要优势是什么？",
+      "options": [
+        "完全避免使用外部 API 工具",
+        "工具执行阶段不需要复杂的错误捕获机制",
+        "大幅减少 LLM 调用次数与 Token 消耗，且能够实现工具的并行执行",
+        "保证模型输出绝对准确且无幻觉"
+      ],
+      "correct": 2,
+      "explanation": "解耦规划与执行不仅显著降低了 Token 成本，还使得无依赖关联的步骤能够进行并行工具调用。"
+    },
+    {
+      "stage": "post",
+      "question": "在动态变化的外部环境中，纯 ReWOO 计划-执行模式存在什么隐患？",
+      "options": [
+        "占位符变量解析速度太慢",
+        "一旦前期步骤的观察结果打破假设，后续预先计划的步骤可能失效",
+        "Solver 阶段无法解析字符串格式的输出",
+        "Worker 无法并行处理非阻塞调用"
+      ],
+      "correct": 1,
+      "explanation": "一次性规划假设环境相对稳定；如果早期工具调用的输出发生重大变化，预先设定的后续依赖计划可能不再适用。"
+    },
+    {
+      "stage": "post",
+      "question": "生产级 Agent 系统通常如何结合 ReAct 和 ReWOO 的长处？",
+      "options": [
+        "仅在测试环境中使用 ReAct，生产环境完全替换为 ReWOO",
+        "采用 ReWOO 进行粗粒度 DAG 依赖分解，并在特定复杂节点内部使用 ReAct 进行局部动态纠错",
+        "放弃所有计划生成，完全依赖用户手动指定步骤",
+        "使用 Worker 节点代替 Planner 生成最初的分析步骤"
+      ],
+      "correct": 1,
+      "explanation": "混合架构结合了 ReWOO 的高效并行规划与 ReAct 节点局部的动态探索和容错调整能力。"
+    }
+  ]
+}

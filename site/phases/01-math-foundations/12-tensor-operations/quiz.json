@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "在深度学习框架中，张量（Tensor）与阶数（Rank/Order）的关系是？",
+      "options": [
+        "0 阶张量是标量，1 阶张量是向量，2 阶张量是矩阵，N 阶张量是 N 维数组",
+        "张量阶数必定等于 2",
+        "张量阶数是指张量占用的内存 Gigabytes 数量",
+        "张量只能在 CPU 上计算"
+      ],
+      "correct": 0,
+      "explanation": "张量是多维数值数组的通用数学统称，阶数对应其维度的数量（如 RGB 图像张量阶数为 3，形状如 `[C, H, W]`）。"
+    },
+    {
+      "stage": "pre",
+      "question": "爱因斯坦求和约定（Einsum, 如 `torch.einsum('ij,jk->ik', A, B)`）有什么优点？",
+      "options": [
+        "用简洁、直观的索引符号表达复杂的多维张量乘法、转置、求迹与缩约操作",
+        "自动对张量进行压缩保存",
+        "防止张量发生类型转换",
+        "仅能用于一维向量相加"
+      ],
+      "correct": 0,
+      "explanation": "Einsum 规范了索引重复即求和的表达逻辑，避免了显式 reshape/permute/transpose 操作带来的冗余代码。"
+    },
+    {
+      "stage": "post",
+      "question": "在内存物理底层，张量连续性（Contiguity）对 `view()` 操作有什么限制？",
+      "options": [
+        "经过 `transpose()` 等变维操作后的张量步长（Strides）发生改变，必须先调用 `.contiguous()` 重新在内存连续排布才能调用 `.view()`",
+        "不连续的张量不能参与加法",
+        "`view()` 操作会改变张量中的数值数据",
+        "连续性只对 CUDA 张量生效"
+      ],
+      "correct": 0,
+      "explanation": "`view()` 要求物理内存按行优先连续存放；若不连续，可使用 `.reshape()`（自动在必要时拷贝内存）或显式 `.contiguous().view()`。"
+    },
+    {
+      "stage": "post",
+      "question": "在多头自注意力机制中，将形状 `[B, S, H, D]` 维度置换为 `[B, H, S, D]` 的关键目的？",
+      "options": [
+        "将 Head 维度移动到前面，以便并行计算每个 Head 内部的 `[S, D] @ [D, S]` 矩阵乘法注意力权重",
+        "减少张量元素的总数量",
+        "将三维张量降为二维",
+        "消除 NaN 元素"
+      ],
+      "correct": 0,
+      "explanation": "维度置换（Permute/Transpose）使得多头矩阵乘法能够在 Batch 与 Head 两个维度上进行并行 Batch 特征计算。"
+    },
+    {
+      "stage": "post",
+      "question": "张量切片操作 `tensor[:, None, :]` 或 `unsqueeze(1)` 的作用是什么？",
+      "options": [
+        "在指定索引位置插入一个大小为 1 的新维度（即扩张维度）",
+        "删除指定位置的维度",
+        "翻转张量中的数值顺序",
+        "计算张量的范数"
+      ],
+      "correct": 0,
+      "explanation": "插入单维度（Size-1 dimension）常用于满足广播机制（Broadcasting）的维度匹配要求。"
+    }
+  ]
+}

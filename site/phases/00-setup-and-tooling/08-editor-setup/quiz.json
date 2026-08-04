@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "在 VS Code 中配置 Python 解释器路径的核心目的是什么？",
+      "options": [
+        "更换编辑器的界面主题",
+        "指定 IntelliSense 代码补全、类型检查和调试器所使用的具体 Python/虚拟环境",
+        "自动下载最新版 Python",
+        "在云端配置 GPU"
+      ],
+      "correct": 1,
+      "explanation": "正确的解释器设置可确保编辑器使用特定虚拟环境中安装的依赖包来提供代码补全、错误提示与诊断。"
+    },
+    {
+      "stage": "pre",
+      "question": "在现代化 Python AI 项目中，Ruff 工具相比传统 flake8/black 的突出优势是什么？",
+      "options": [
+        "Ruff 可以自动重写神经网络算法",
+        "Ruff 用 Rust 编写，速度比传统 Python Linter 快 10-100 倍，且集成了代码检查与格式化",
+        "Ruff 专门用来部署模型",
+        "Ruff 不需要配置文件"
+      ],
+      "correct": 1,
+      "explanation": "Ruff 用 Rust 重写了静态分析逻辑，能够以极高的速度完成代码检查（Linting）和格式化（Formatting）。"
+    },
+    {
+      "stage": "post",
+      "question": "Python 的静态类型检查工具（如 Pyright / Mpy）能带来什么收益？",
+      "options": [
+        "在代码运行前提前捕获张量维度不匹配或类型错误，提供更好的补全提示",
+        "自动将 Python 编译为 C++",
+        "消除所有的运行时内存占用",
+        "不需要编写代码注释"
+      ],
+      "correct": 0,
+      "explanation": "类型检查能在开发阶段捕获传入错误的参数类型或 None 值缺陷，极大减少运行时崩溃概率。"
+    },
+    {
+      "stage": "post",
+      "question": "VS Code 中的 `.vscode/settings.json` 应该如何管理？",
+      "options": [
+        "绝对不能提交到 Git",
+        "提交到 Git 以便为团队成员统一配置格式化规则、Lint 检查和解释器设置",
+        "直接放在操作系统的根目录",
+        "重命名为 `.env`"
+      ],
+      "correct": 1,
+      "explanation": "共享 `.vscode/settings.json` 可以确保团队所有开发者获得完全一致的格式化规范和开发体验。"
+    },
+    {
+      "stage": "post",
+      "question": "AI 代码辅助工具（如 GitHub Copilot / Cursor）在开发中的核心角色定位是什么？",
+      "options": [
+        "完全替代程序员，不需要人类审查代码",
+        "加速模板代码编写与 API 查阅的协同伙伴，但必须经由人类进行架构设计与结果验证",
+        "自动解决所有的生产故障",
+        "替代所有的单元测试"
+      ],
+      "correct": 1,
+      "explanation": "AI 助手能大幅提升编码效率，但人类工程师依然负责架构设计、正确性把关和安全性审查。"
+    }
+  ]
+}

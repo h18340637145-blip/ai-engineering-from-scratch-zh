@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "傅里叶变换（Fourier Transform）的核心物理意义是什么？",
+      "options": [
+        "将时域/空域信号分解为不同频率的正弦与余弦正交波形成分的叠加（从时域映射到频域）",
+        "把彩色图像转换为黑白图像",
+        "压缩文本文件体积",
+        "计算矩阵的逆"
+      ],
+      "correct": 0,
+      "explanation": "傅里叶变换揭示了复杂复杂信号底层由哪些不同频率成分所构成。"
+    },
+    {
+      "stage": "pre",
+      "question": "快速傅里叶变换（FFT）算法的计算复杂度是多少？",
+      "options": [
+        "$O(N \\log N)$（直接离散傅里叶变换 DFT 为 $O(N^2)$）",
+        "$O(N^3)$",
+        "$O(N)$",
+        "$O(1)$"
+      ],
+      "correct": 0,
+      "explanation": "Cooley-Tukey FFT 算法利用分治递归与旋转因子的对称性，将复杂度从二次降至 $O(N\\log N)$。"
+    },
+    {
+      "stage": "post",
+      "question": "卷积定理（Convolution Theorem）指出，时域中的卷积运算在频域中对应什么操作？",
+      "options": [
+        "时域的卷积相当于频域的逐项按元素点乘（$f * g \\iff \\mathcal{F}(f) \\cdot \\mathcal{F}(g)$）",
+        "频域的除法",
+        "频域的矩阵求逆",
+        "频域的求导"
+      ],
+      "correct": 0,
+      "explanation": "通过 FFT 将输入与核函数转到频域点乘再用 IFFT 转回，是大尺度卷积算法加速的理论基础。"
+    },
+    {
+      "stage": "post",
+      "question": "奈奎斯特-香农采样定理（Nyquist-Shannon Sampling Theorem）规定采样频率必须满足什么要求才能无失真还原信号？",
+      "options": [
+        "采样频率必须至少是信号中最高频率成分的 2 倍（$f_s \\ge 2 f_{max}$）",
+        "采样频率等于最高频率的 1/2",
+        "采样频率必须恒为 44.1 kHz",
+        "采样频率与信号频率无关"
+      ],
+      "correct": 0,
+      "explanation": "如果采样率不足，高频成分会折叠混叠（Aliasing）为虚假的低频信号造成数据失真。"
+    },
+    {
+      "stage": "post",
+      "question": "在现代语音 AI 模型（如 Whisper, Tacotron）中，梅尔频谱图（Mel-Spectrogram）的作用是？",
+      "options": [
+        "通过短时傅里叶变换（STFT）并经过非线性梅尔刻度滤波，将一维音频波形转换为贴合人类听觉感知的二维频图输入",
+        "自动对声音进行降噪",
+        "把音频翻译为中文字幕",
+        "直接播放音频"
+      ],
+      "correct": 0,
+      "explanation": "梅尔刻度模拟了人耳对低频高敏感、对高频低敏感的对数听觉机制。"
+    }
+  ]
+}

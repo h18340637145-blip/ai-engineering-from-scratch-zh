@@ -1,0 +1,90 @@
+{
+  "lesson": "03-reflexion-verbal-rl",
+  "title": "Reflexion：语言强化学习与自我反思内存",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Reflexion 框架如何定义语言强化学习（Verbal RL）？",
+      "options": [
+        "通过调整神经网络的标量权重梯度的过程",
+        "使用自然语言反馈更新长期记忆缓冲区以指导未来行动的过程",
+        "仅在单轮对话中使用零样本 Prompt 修正机制",
+        "在没有环境反馈的情况下随机重试"
+      ],
+      "correct": 1,
+      "explanation": "Reflexion 将标量奖励替换为语言自我反思，保存在记忆缓冲区中以在后续尝试中避开同样的错误。"
+    },
+    {
+      "stage": "pre",
+      "question": "Reflexion 架构的三大核心组件是什么？",
+      "options": [
+        "Actor, Evaluator, Self-Reflection",
+        "Encoder, Decoder, Attention",
+        "Planner, Worker, Solver",
+        "Prompt, Memory, VectorStore"
+      ],
+      "correct": 0,
+      "explanation": "Reflexion 包含生成行动的 Actor、评估尝试结果的 Evaluator，以及生成诊断反思文本的 Self-Reflection 组件。"
+    },
+    {
+      "stage": "check",
+      "question": "Evaluator 组件在 Reflexion 中扮演什么角色？",
+      "options": [
+        "生成详细的改进提示词",
+        "对 Actor 的轨迹进行标量评分或二元正确性检查",
+        "在测试集上重新训练模型",
+        "向用户展示中间日志"
+      ],
+      "correct": 1,
+      "explanation": "Evaluator 衡量当前尝试是否成功（如单元测试通过/失败，或标量分数），以决定是否需要自我反思。"
+    },
+    {
+      "stage": "check",
+      "question": "Self-Reflection 文本存储在哪里以供后续尝试使用？",
+      "options": [
+        "嵌入到模型的权重硬编码中",
+        "写入短期的经验反思记忆缓冲区，并在下一次尝试的 Context 中加载",
+        "直接删除，只保留分数",
+        "发送给外部人工审核员"
+      ],
+      "correct": 1,
+      "explanation": "反思文本被追加到上下文记忆中，在下一次试错时作为前车之鉴提供指导。"
+    },
+    {
+      "stage": "check",
+      "question": "Reflexion 在哪类任务上展现出了最显著的提升？",
+      "options": [
+        "单轮常见问题解答",
+        "带有明确验证信号的多步骤代码编写和推理任务",
+        "图像风格转换",
+        "无约束的创意写作"
+      ],
+      "correct": 1,
+      "explanation": "代码生成（单元测试）和多步逻辑推理具有明确的反馈机制，极为适合试错与反思迭代。"
+    },
+    {
+      "stage": "post",
+      "question": "防止 Reflexion 进入死循环的必要机制是什么？",
+      "options": [
+        "限制反思缓冲区的最大尝试次数与最大 Token 预算",
+        "关闭 Evaluator 的验证逻辑",
+        "要求用户每次反思都手动输入",
+        "使用静态 Prompt 禁止修改"
+      ],
+      "correct": 0,
+      "explanation": "如果 Agent 陷入重复错误的泥潭，设置最大尝试预算能确保其及时止损。"
+    },
+    {
+      "stage": "post",
+      "question": "Reflexion 与传统 RL (如 PPO) 在反馈更新机制上的根本区别是什么？",
+      "options": [
+        "PPO 使用语言，而 Reflexion 使用标量",
+        "PPO 通过梯度更新反向传播调整参数，而 Reflexion 通过上下文中的自然语言文本更新记忆",
+        "Reflexion 无法在推理阶段使用",
+        "PPO 不需要 Evaluator"
+      ],
+      "correct": 1,
+      "explanation": "Reflexion 是一种推理期的语言 RL（Verbal RL），不需要更新模型的底层参数。"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "lesson": "01-instruction-following-alignment-signal",
+  "title": "指令遵循作为对齐信号",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "为什么未经微调的预训练语言模型在面对“编写一个翻转列表的 Python 函数”提示词时，往往会输出另一个提示词而非代码？",
+      "options": [
+        "其词表缺乏 Python 词元",
+        "在没有微调的情况下无法表示函数签名",
+        "其 Sampling Temperature 默认降为 0",
+        "其训练目标是补全网页风格文本，在网页中提示词后常跟着更多提示词"
+      ],
+      "correct": 3,
+      "explanation": "预训练语言模型的目标是预测下一个词元。网页数据中包含大量提示词列表、FAQ 和讨论区，导致模型延续提示词模式而非直接答题。"
+    },
+    {
+      "stage": "check",
+      "question": "InstructGPT 奖励模型在成对偏好标签上使用以下哪种损失函数？",
+      "options": [
+        "标注员评分的均方误差",
+        "Bradley-Terry：-log sigmoid(r(x, y_w) - r(x, y_l))",
+        "具有固定 Margin 的 Hinge 损失",
+        "预测奖励与真实奖励之间的交叉熵"
+      ],
+      "correct": 1,
+      "explanation": "InstructGPT 采用 Bradley-Terry 偏好模型，将两项回答概率差的 Sigmoid 的负对数似然作为损失函数。"
+    },
+    {
+      "stage": "check",
+      "question": "InstructGPT 阶段 3 中的 KL 散度惩罚主要用于防御什么问题？",
+      "options": [
+        "词元生成器统计特征的灾难性遗忘",
+        "PPO 梯度更新中的数值不稳定",
+        "采样期间上下文窗口溢出",
+        "优化器寻找攻击性高奖励字符串以利用/欺骗奖励模型"
+      ],
+      "correct": 3,
+      "explanation": "如果没有 KL 惩罚，PPO 优化器会利用奖励模型的漏洞偏离初始 SFT 策略，生成高奖励但毫无意义或对抗性的文本。"
+    },
+    {
+      "stage": "check",
+      "question": "PPO-ptx 将什么混合到 RL 目标中以缓解什么问题？",
+      "options": [
+        "PPO 期间奖励模型漂移",
+        "KL 项变为负值",
+        "对齐税（Alignment Tax）：在 RLHF 未明确针对的基准测试上性能下降",
+        "SFT 和 RM 之间的词元生成器不匹配"
+      ],
+      "correct": 2,
+      "explanation": "PPO-ptx 在 PPO 目标中添加了预训练数据梯度更新，防止模型在通用 NLP 任务上发生性能退化（即对齐税）。"
+    },
+    {
+      "stage": "post",
+      "question": "1.3B 参数的 InstructGPT 在约 70% 的情况下胜过 175B 的基础 GPT-3。这说明了对齐与能力之间的什么关系？",
+      "options": [
+        "对齐与能力是不同的维度，基础模型决定了能力下限",
+        "偏好率超过 50% 证明代理奖励完全等同于人类价值观",
+        "在规模化下，能力与对齐是同一个维度",
+        "较大规模的基础模型总是输给经过对齐的小模型"
+      ],
+      "correct": 0,
+      "explanation": "能力决定模型能表达什么，而对齐决定模型如何表达。1.3B 的 InstructGPT 释放了基础模型中已有的知识以符合人类意图。"
+    },
+    {
+      "stage": "post",
+      "question": "InstructGPT 中的奖励模型是用以下哪项初始化的？",
+      "options": [
+        "未经过预训练的随机标量回归器",
+        "单独的纯 Encoder Transformer",
+        "保留 LM Head 的基础预训练模型",
+        "将 LM Head 替换为标量 Head 的 SFT 模型"
+      ],
+      "correct": 3,
+      "explanation": "奖励模型由 SFT 模型初始化，将最后的线性分类层替换为输出单一标量奖励值的线性层。"
+    }
+  ]
+}

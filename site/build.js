@@ -488,6 +488,7 @@ const ARTIFACTS = ${JSON.stringify(artifacts, null, 2)};
   syncReadme(totalLessons);
   writeSitemap(phases, glossaryTerms.length);
   writeLlms(phases, glossaryTerms.length, artifacts.length);
+  copyPhasesToSite();
 }
 
 // ─── sitemap.xml from the same PHASES the site renders ───────────────────
@@ -606,3 +607,12 @@ function syncCounts(lessons, phaseCount, outputs) {
 }
 
 build();
+
+function copyPhasesToSite() {
+  const phasesSrc = path.join(REPO_ROOT, "phases");
+  const phasesDst = path.join(__dirname, "phases");
+  if (fs.existsSync(phasesSrc)) {
+    fs.cpSync(phasesSrc, phasesDst, { recursive: true });
+    console.log("   copied phases to site/phases");
+  }
+}

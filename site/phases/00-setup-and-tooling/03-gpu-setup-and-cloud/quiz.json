@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "在深度学习中，与 CPU 相比，GPU 为什么能够显著加速矩阵运算？",
+      "options": [
+        "GPU 单核主频比 CPU 高得多",
+        "GPU 拥有数千个小算术核心，可并行执行成千上万次相同的乘加运算",
+        "GPU 拥有更大的 L3 缓存空间",
+        "GPU 不需要内存传送即可直接读取硬盘"
+      ],
+      "correct": 1,
+      "explanation": "GPU 专为单指令多数据（SIMD/SIMT）大规模并行计算而设计。在张量乘法中，成千上万个线程可以同时计算独立元素。"
+    },
+    {
+      "stage": "pre",
+      "question": "NVIDIA driver 与 CUDA Toolkit 之间是什么关系？",
+      "options": [
+        "NVIDIA driver 是 Python 包，CUDA Toolkit 是 C++ 库",
+        "NVIDIA driver 提供底层硬件接口，CUDA Toolkit 提供开发编译环境与运行库",
+        "CUDA Toolkit 包含 driver，两者没有任何区别",
+        "CUDA Toolkit 仅用于 CPU 并行计算"
+      ],
+      "correct": 1,
+      "explanation": "系统驱动与硬件直接通信，CUDA Toolkit 则包含 nvcc 编译器、CUDA Runtime 和针对深度学习的优化加速库（如 cuDNN、cuBLAS）。"
+    },
+    {
+      "stage": "post",
+      "question": "使用混合精度训练（Automatic Mixed Precision, AMP）的主要优势是什么？",
+      "options": [
+        "彻底消除梯度爆炸",
+        "减少显存占用并显著加速张量乘法（FP16/BF16）",
+        "避免使用 GPU 驱动",
+        "自动将代码转换为 C++"
+      ],
+      "correct": 1,
+      "explanation": "AMP 结合了 16 位浮点数（FP16 或 BF16）的速度与显存优势以及 32 位浮点数（FP32）的数值稳定性，大幅提升训练性能并节省显存。"
+    },
+    {
+      "stage": "post",
+      "question": "在云端 GPU 实例上，哪个命令可以实时查看 GPU 利用率与显存使用情况？",
+      "options": [
+        "top",
+        "df -h",
+        "nvidia-smi",
+        "htop"
+      ],
+      "correct": 2,
+      "explanation": "`nvidia-smi`（或 `watch nvidia-smi`）是查看 NVIDIA GPU 状态、显存占用、温度和正在运行的进程的标准命令行工具。"
+    },
+    {
+      "stage": "post",
+      "question": "针对大语言模型训练，BF16 相比 FP16 格式的主要优点是什么？",
+      "options": [
+        "BF16 的动态范围与 FP32 相同，因此在训练中更不容易发生数值下溢",
+        "BF16 占用显存比 FP16 少一半",
+        "BF16 不需要 GPU 硬件支持",
+        "BF16 精度比 FP32 更高"
+      ],
+      "correct": 0,
+      "explanation": "Bfloat16 (BF16) 保留了与 FP32 相同的指数位数（8 位），因而具有广阔的动态范围，避免了 FP16 中常见的梯度下溢问题，且无需复杂的 Loss Scaling。"
+    }
+  ]
+}
