@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the Hungarian algorithm do in tracking-by-detection?",
-      "options": ["It filters out low-confidence detections", "It solves the minimum-cost one-to-one assignment between tracks and detections — typically using 1 - IoU as cost — to match each track to at most one detection and vice versa", "It trains the detector", "It predicts future trajectories"],
+      "question": "匈牙利算法在检测跟踪方面有何作用？",
+      "options": [
+        "它过滤掉低置信度检测",
+        "它解决了轨迹和检测之间的最小成本一对一分配（通常使用 1 - IoU 作为成本），以将每个轨迹与最多一个检测相匹配，反之亦然",
+        "它训练探测器",
+        "它预测未来的轨迹"
+      ],
       "correct": 1,
-      "explanation": "Every tracking-by-detection frame does an assignment problem: M tracks, N detections, find the best one-to-one match. Hungarian is the optimal polynomial algorithm for this. Cost is usually 1 - IoU (higher overlap = lower cost). scipy.optimize.linear_sum_assignment is the standard implementation. SORT, DeepSORT, ByteTrack, BoT-SORT all use it."
+      "explanation": "每个检测跟踪帧都会执行一个分配问题：M 个跟踪，N 个检测，找到最佳的一对一匹配。匈牙利算法是对此的最佳多项式算法。成本通常为 1 - IoU（较高的重叠 = 较低的成本）。 scipy.optimize.linear_sum_assignment 是标准实现。 SORT、DeepSORT、ByteTrack、BoT-SORT 都使用它。"
     },
     {
       "stage": "pre",
-      "question": "ByteTrack's distinguishing contribution is what?",
-      "options": ["A new backbone", "A second-stage association that tries to match leftover tracks to low-confidence detections, recovering short occlusions and IDs that standard trackers would lose by dropping those detections", "A new Kalman filter", "An appearance embedding"],
+      "question": "ByteTrack的杰出贡献是什么？",
+      "options": [
+        "新的骨干",
+        "第二阶段关联，尝试将剩余轨迹与低置信度检测相匹配，恢复标准跟踪器因丢弃这些检测而丢失的短遮挡和 ID",
+        "新的卡尔曼滤波器",
+        "外观嵌入"
+      ],
       "correct": 1,
-      "explanation": "Most trackers discard detections below a confidence threshold (~0.5). ByteTrack keeps them and runs a second Hungarian pass to try to match them to tracks that did not match any high-confidence detection. This recovers brief occlusions and crossings, lifting IDF1 significantly on MOT17 without any learned appearance features. Its simplicity makes it the default in Ultralytics and Roboflow Supervision."
+      "explanation": "大多数跟踪器会丢弃低于置信阈值（~0.5）的检测结果。 ByteTrack 保留它们并运行第二次匈牙利通行证，尝试将它们与与任何高置信度检测不匹配的轨道进行匹配。这可以恢复短暂的遮挡和交叉，在 MOT17 上显着提升 IDF1，而无需任何学习的外观特征。它的简单性使其成为 Ultralytics 和 Roboflow Supervision 中的默认设置。"
     },
     {
       "stage": "post",
-      "question": "How does SAM 2's memory-based tracker avoid explicit Hungarian-style association?",
-      "options": ["It runs SORT internally", "It stores per-instance spatio-temporal features in a memory bank; on each new frame, cross-attention between memory and current features directly produces the mask of the same instance, with association implicit in the attention operation", "It uses a Kalman filter", "It requires hand-labelled IDs per frame"],
+      "question": "SAM 2 基于记忆的跟踪器如何避免显式的匈牙利式关联？",
+      "options": [
+        "它在内部运行 SORT",
+        "它将每个实例的时空特征存储在内存库中；在每个新帧上，记忆和当前特征之间的交叉注意力直接产生同一实例的掩码，并且注意力操作中隐含着关联",
+        "它使用卡尔曼滤波器",
+        "每帧都需要手工标记 ID"
+      ],
       "correct": 1,
-      "explanation": "SAM 2 replaces the detect-then-associate loop with a memory-conditional segmenter. The memory bank holds the instance's features from previous frames. At each new frame, the decoder cross-attends the new frame's features against the memory, and the resulting mask is the same instance — no external assignment step. This handles long occlusions gracefully because the memory stays even when the instance disappears for many frames."
+      "explanation": "SAM 2 用内存条件分段器取代了检测然后关联循环。内存库保存先前帧的实例特征。在每个新帧中，解码器将新帧的特征与内存进行交叉处理，并且生成的掩码是相同的实例 - 无需外部分配步骤。这可以优雅地处理长遮挡，因为即使实例消失很多帧，内存也会保留。"
     },
     {
       "stage": "post",
-      "question": "For surveillance video where keeping each person's ID consistent is the primary requirement, which metric should you report?",
-      "options": ["MOTA", "IDF1 — the harmonic mean of ID precision and recall; measures identity preservation over time rather than per-frame detection accuracy", "Top-1 accuracy", "FID"],
+      "question": "对于监控视频来说，保持每个人的 ID 一致是首要要求，您应该报告哪个指标？",
+      "options": [
+        "莫塔",
+        "IDF1 — ID 精度和召回率的调和平均值；衡量随着时间的推移身份保存而不是每帧检测的准确性",
+        "Top-1 准确率",
+        "FID"
+      ],
       "correct": 1,
-      "explanation": "MOTA conflates detection and association errors, so a tracker with many false positives can hide its ID failures. IDF1 is designed for the 'who is who over time' question: it matches predicted tracks to ground-truth tracks globally across the whole video and computes F1 on the identity labels. For surveillance and crowd analytics, IDF1 is the metric to report; HOTA is the broader academic standard."
+      "explanation": "MOTA 将检测错误和关联错误合并在一起，因此具有许多误报的跟踪器可以隐藏其 ID 失败。 IDF1 专为“随着时间的推移谁是谁”问题而设计：它将整个视频中的预测轨迹与全局真实轨迹进行匹配，并计算身份标签上的 F1。对于监控和人群分析，IDF1 是要报告的指标； HOTA 是更广泛的学术标准。"
     },
     {
       "stage": "post",
-      "question": "SAM 3.1 Object Multiplex (March 2026) introduces shared memory across many tracked instances. What does that enable?",
-      "options": ["Lower accuracy", "Efficient multi-object tracking — one shared memory bank with per-instance query tokens replaces N separate memory banks, so cost scales sub-linearly in number of instances and concert-crowd-sized scenes become tractable", "Cloud-only inference", "A new training objective"],
+      "question": "SAM 3.1 对象多路复用（2026 年 3 月）在许多跟踪实例之间引入了共享内存。这能带来什么？",
+      "options": [
+        "精度较低",
+        "高效的多对象跟踪——一个具有每个实例查询令牌的共享内存库取代了 N 个独立的内存库，因此成本随实例数量呈次线性扩展，并且音乐会人群规模的场景变得易于处理",
+        "仅云推理",
+        "新的培训目标"
+      ],
       "correct": 1,
-      "explanation": "Pre-Multiplex SAM 2 / SAM 3 tracked each object with its own memory bank; cost scaled linearly with the number of instances. Multiplex (March 2026) introduces one shared memory with per-instance query tokens that fetch instance-specific features. Many-object tracking — crowds, traffic, warehouse workers — becomes efficient for the first time with a memory-based tracker."
+      "explanation": "Pre-Multiplex SAM 2 / SAM 3 使用自己的存储体跟踪每个对象；成本与实例数量成线性比例。 Multiplex（2026 年 3 月）引入了一种共享内存，其中每个实例的查询令牌可获取特定于实例的功能。借助基于内存的跟踪器，多对象跟踪（人群、交通、仓库工人）首次变得高效。"
     }
   ]
 }

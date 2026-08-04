@@ -1,78 +1,78 @@
 {
   "lesson": "53-result-evaluator",
-  "title": "Result Evaluator",
+  "title": "结果评估者",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the evaluator use a paired t test instead of comparing two single numbers?",
+      "question": "为什么评估者使用配对 t 检验而不是比较两个单个数字？",
       "options": [
-        "Because numpy requires paired arrays",
-        "Because pairing the same seed across candidate and baseline isolates the configuration change from random initialisation noise",
-        "Because the runner cannot emit a single number",
-        "Because t tests are always required by IRB"
+        "因为 numpy 需要成对数组",
+        "因为在候选和基线之间配对相同的种子可以将配置变化与随机初始化噪声隔离开来",
+        "因为跑步者不能发出单个数字",
+        "因为 IRB 总是要求 t 检验"
       ],
       "correct": 1,
-      "explanation": "Pairing by seed cancels out random initialisation effects. The remaining difference is attributable to the configuration change, which is what the test measures."
+      "explanation": "通过种子配对可以消除随机初始化效应。剩余的差异可归因于配置更改，这是测试测量的内容。"
     },
     {
       "stage": "pre",
-      "question": "Why does the evaluator carry a direction field on every metric?",
+      "question": "为什么评估器在每个指标上都带有方向字段？",
       "options": [
-        "Because accuracy and loss point in opposite ways; the sign of the improvement depends on which direction is better for the metric being compared",
-        "Because the runner requires it",
-        "Because numpy needs the direction for variance",
-        "Because the parser expects it"
+        "因为准确率和损失的指向相反；改进的迹象取决于哪个方向对于所比较的指标更好",
+        "因为跑步者需要它",
+        "因为 numpy 需要方差的方向",
+        "因为解析器期望它"
       ],
       "correct": 0,
-      "explanation": "Higher is better metrics improve when they go up; lower is better metrics improve when they go down. The direction field tells the improvement function which sign convention to apply."
+      "explanation": "指标越高越好，当指标上升时，指标就会改善；越低越好，指标下降时会有所改善。方向字段告诉改进函数要应用哪个符号约定。"
     },
     {
       "stage": "check",
-      "question": "What does the verdict path return when |improvement| is below the threshold even if the p value is significant?",
+      "question": "当 |improvement| 时，判决路径返回什么即使 p 值显着，仍低于阈值？",
       "options": [
-        "improved",
-        "regressed",
-        "noise",
-        "failed"
+        "改进的",
+        "退行的",
+        "噪音",
+        "失败的"
       ],
       "correct": 2,
-      "explanation": "A statistically significant change that is too small to act on is still noise from the loop's point of view. The threshold gate runs before the significance gate."
+      "explanation": "从循环的角度来看，统计上显着的变化太小而无法采取行动仍然是噪音。阈值门在重要性门之前运行。"
     },
     {
       "stage": "check",
-      "question": "Why does the evaluator transform log scaled metrics before computing improvement?",
+      "question": "为什么评估器在计算改进之前要转换对数缩放指标？",
       "options": [
-        "Because numpy logs are faster",
-        "Because perplexity and similar metrics grow exponentially with loss; transforming to log space makes a threshold like two percent meaningful across linear and log metrics",
-        "Because the p value depends on it",
-        "Because the runner only emits log scaled metrics"
+        "因为 numpy 日志更快",
+        "因为困惑度和类似的指标会随着损失呈指数增长；转换为对数空间使得像 2% 这样的阈值在线性和对数指标中都有意义",
+        "因为 p 值取决于它",
+        "因为运行器仅发出对数缩放的指标"
       ],
       "correct": 1,
-      "explanation": "Perplexity is exp(loss). A small loss change is a large perplexity change. Taking the log keeps relative improvements comparable to linear metrics under one threshold."
+      "explanation": "困惑度是exp(loss)。一个小的损失变化就是一个大的困惑度变化。获取日志可以使相对改进与某一阈值下的线性指标相当。"
     },
     {
       "stage": "check",
-      "question": "When does the paired t test helper return p_value = None?",
+      "question": "配对 t 检验助手何时返回 p_value = None？",
       "options": [
-        "When the means are equal",
-        "When fewer than two paired samples are available",
-        "When the variance is zero",
-        "When the metric scale is log"
+        "当均值相等时",
+        "当可用的配对样本少于两个时",
+        "当方差为零时",
+        "当公制尺度为对数时"
       ],
       "correct": 1,
-      "explanation": "The t distribution needs at least one degree of freedom. With n less than two there is no variance estimate and the helper returns None so the verdict path can mark the run as noise."
+      "explanation": "t 分布至少需要一个自由度。当 n 小于 2 时，没有方差估计，并且助手返回 None，因此判决路径可以将运行标记为噪声。"
     },
     {
       "stage": "check",
-      "question": "What happens if even one candidate result has a terminal label other than ok?",
+      "question": "如果一个候选结果的终端标签不是“ok”，会发生什么情况？",
       "options": [
-        "The evaluator drops that seed and proceeds",
-        "The evaluator returns a failed verdict and records the bad terminals in the rationale",
-        "The evaluator retries the run",
-        "The evaluator falls back to a one sided test"
+        "评估者丢弃该种子并继续",
+        "评估器返回失败的判决，并将不良终端记录在理由中",
+        "评估器重试运行",
+        "评估者退回到单方面测试"
       ],
       "correct": 1,
-      "explanation": "A failed run invalidates the candidate set. The evaluator short circuits the verdict path and returns failed with the offending terminals listed, so the orchestrator does not draw a conclusion from a crashed run."
+      "explanation": "失败的运行会使候选集失效。评估器短路判决路径并返回失败并列出有问题的终端，因此编排器不会从崩溃的运行中得出结论。"
     }
   ]
 }

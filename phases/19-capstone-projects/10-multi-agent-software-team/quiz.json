@@ -1,87 +1,87 @@
 {
   "lesson": "10-multi-agent-software-team",
-  "title": "Capstone 10 — Multi-Agent Software Engineering Team",
+  "title": "Capstone 10 — 多代理软件工程团队",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does a single-agent harness hit a ceiling on large tasks even with a 200k-token context?",
+      "question": "为什么即使在 20 万个令牌的上下文中，单代理工具在处理大型任务时也会遇到上限？",
       "options": [
-        "Single agents cannot make tool calls",
-        "Sandboxes refuse to host more than one process",
-        "Context cannot hold the architecture plan, four parallel codebase slices, reviewer commentary, and test output at once",
-        "Models lack support for git"
+        "单个代理无法进行工具调用",
+        "沙箱拒绝托管多个进程",
+        "上下文无法同时容纳架构计划、四个并行代码库切片、审阅者评论和测试输出",
+        "模型缺乏对 git 的支持"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "What does the architect role own in this factory shape?",
+      "question": "建筑师在这个工厂造型中扮演什么角色？",
       "options": [
-        "Reviewing the merged diff for hallucinations",
-        "Reading the issue and emitting a plan with subtasks that have explicit interfaces",
-        "Running the test suite in a clean sandbox",
-        "Force-merging branches when coders disagree"
+        "检查合并后的差异是否存在幻觉",
+        "阅读问题并发布包含具有显式接口的子任务的计划",
+        "在干净的沙箱中运行测试套件",
+        "当编码人员意见不一致时强制合并分支"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why does each coder work in its own git worktree plus a Daytona sandbox?",
+      "question": "为什么每个编码员都在自己的 git 工作树和 Daytona 沙箱中工作？",
       "options": [
-        "Worktrees are faster to clone than branches",
-        "Daytona is the only sandbox that supports SSH",
-        "Isolated working trees let N coders implement subtasks in parallel without stepping on shared files",
-        "The architect requires worktree IDs"
+        "工作树的克隆速度比分支更快",
+        "Daytona 是唯一支持 SSH 的沙盒",
+        "独立的工作树让 N 个编码员可以并行实现子任务，而无需踩踏共享文件",
+        "架构师需要工作树 ID"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What constraint is placed on the reviewer to keep it honest?",
+      "question": "为了保持诚实，对审稿人施加了什么限制？",
       "options": [
-        "It can only run after the tester signs off",
-        "It cannot approve diffs it authored or proposed",
-        "It must approve every diff it reads",
-        "It must be the same model as the architect"
+        "测试人员下线后才能运行",
+        "它无法批准其编写或提议的差异",
+        "它必须批准它读取的每个差异",
+        "必须和建筑师是同一个模型"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why does the rubric weigh token efficiency against a single-agent baseline?",
+      "question": "为什么该标题要根据单代理基线来权衡代币效率？",
       "options": [
-        "Multi-agent is always cheaper",
-        "Role boundaries add summary and handoff context, so the real question is whether the factory wins per dollar",
-        "Single-agent has no observability story",
-        "Token cost is unrelated to performance"
+        "多代理总是更便宜",
+        "角色边界添加了摘要和交接上下文，因此真正的问题是工厂是否每美元都能获胜",
+        "单代理没有可观察性故事",
+        "代币成本与性能无关"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which artifact is produced from each failed issue during the post-mortem?",
+      "question": "在事后分析过程中，每个失败的问题都会产生哪些工件？",
       "options": [
-        "A new architect plan template",
-        "An updated A2A protocol spec",
-        "A force-push log",
-        "A handoff-failure histogram identifying which role boundary broke (plan, merge, review, test)"
+        "新的建筑师计划模板",
+        "更新的 A2A 协议规范",
+        "强制推送日志",
+        "切换失败直方图，确定哪个角色边界被打破（计划、合并、审查、测试）"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which evaluation set does the capstone use to score pass@1 across roles?",
+      "question": "顶点使用哪个评估集来跨角色获得 pass@1 分数？",
       "options": [
-        "SWE-bench Pro 50-issue subset",
+        "SWE-bench Pro 50 个问题子集",
         "HumanEval-Java",
         "MT-Bench-v2",
-        "MigrationBench"
+        "迁移台"
       ],
       "correct": 0,
       "explanation": ""

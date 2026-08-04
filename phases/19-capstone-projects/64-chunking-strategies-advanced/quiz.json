@@ -1,78 +1,78 @@
 {
   "lesson": "64-chunking-strategies-advanced",
-  "title": "Chunking Strategies, Compared",
+  "title": "分块策略比较",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why is the chunking choice an upper bound on retrieval quality and not just a hyperparameter?",
+      "question": "为什么分块选择是检索质量的上限而不仅仅是一个超参数？",
       "options": [
-        "Because the LLM never reads chunks",
-        "Because the embedding model is fixed at training time",
-        "Because no embedding, reranker, or LLM downstream can recover an answer span that was cut into incoherent pieces",
-        "Because BM25 has no role in modern RAG"
+        "因为LLM从不读取块",
+        "因为嵌入模型在训练时是固定的",
+        "因为没有任何嵌入、重新排序或 LLM 下游可以恢复被切成不连贯片段的答案范围",
+        "因为BM25在现代RAG中没有作用"
       ],
       "correct": 2,
-      "explanation": "If the chunk that holds the answer span is incoherent the embedding moves to the wrong cluster and downstream components cannot repair the damage."
+      "explanation": "如果保存答案范围的块不连贯，则嵌入会移动到错误的集群，并且下游组件无法修复损坏。"
     },
     {
       "stage": "pre",
-      "question": "Which strategy is the strongest single-strategy default when you have no prior knowledge of the corpus?",
+      "question": "当您事先不了解语料库时，哪种策略是最强的单一策略默认值？",
       "options": [
-        "Fixed-window",
-        "Sentence packer",
-        "Recursive split",
-        "Structural markdown"
+        "固定窗口",
+        "句子包装器",
+        "递归分割",
+        "结构性降价"
       ],
       "correct": 2,
-      "explanation": "Recursive split adapts per region by trying the strongest separator first and falling back, so it survives inconsistent structure."
+      "explanation": "递归分割通过首先尝试最强的分隔符并回退来适应每个区域，因此它可以承受不一致的结构。"
     },
     {
       "stage": "check",
-      "question": "What does recall@k measure in this lesson?",
+      "question": "在本课中，recall@k 衡量什么？",
       "options": [
-        "Whether the top-k chunks contain the literal query string",
-        "Whether any of the top-k chunks overlaps the gold answer span",
-        "The cosine similarity between the query and the top-k chunks",
-        "The number of unique documents in the top-k"
+        "top-k 块是否包含文字查询字符串",
+        "前 k 个块是否与黄金答案范围重叠",
+        "查询与前 k 个块之间的余弦相似度",
+        "top-k 中唯一文档的数量"
       ],
       "correct": 1,
-      "explanation": "Each query carries gold offsets; recall@k is 1 if any top-k chunk overlaps the gold span, else 0; averaged across queries."
+      "explanation": "每个查询都带有黄金偏移量；如果任何 top-k 块与黄金跨度重叠，recall@k 为 1，否则为 0；跨查询的平均值。"
     },
     {
       "stage": "check",
-      "question": "Why does fixed-window chunking fail badly on code or YAML corpora?",
+      "question": "为什么固定窗口分块在代码或 YAML 语料库上严重失败？",
       "options": [
-        "It loses Unicode characters",
-        "It cuts identifiers and key-value pairs in half, producing chunks that embed to noise",
-        "It produces chunks larger than the embedding model's context window",
-        "It cannot be parallelized"
+        "它会丢失 Unicode 字符",
+        "它将标识符和键值对切成两半，生成嵌入噪声的块",
+        "它生成的块大于嵌入模型的上下文窗口",
+        "无法并行化"
       ],
       "correct": 1,
-      "explanation": "Character-level cuts inside a symbol destroy the meaning the embedding model is supposed to capture."
+      "explanation": "符号内部的字符级剪切破坏了嵌入模型应该捕获的含义。"
     },
     {
       "stage": "check",
-      "question": "What is the centroid drift termination criterion in semantic chunking?",
+      "question": "语义分块中的质心漂移终止标准是什么？",
       "options": [
-        "Cosine similarity between the running mean vector and the next sentence drops below a threshold",
-        "Character count exceeds the max",
-        "Sentence count exceeds a hardcoded limit",
-        "The chunker has consumed the entire embedding budget"
+        "运行均值向量与下一个句子之间的余弦相似度降至阈值以下",
+        "字符数超过最大值",
+        "句子计数超出硬编码限制",
+        "分块器消耗了整个嵌入预算"
       ],
       "correct": 0,
-      "explanation": "Semantic chunking cuts when the running centroid no longer matches the next sentence by a configured similarity threshold."
+      "explanation": "当运行质心不再通过配置的相似性阈值匹配下一个句子时，语义分块就会被切断。"
     },
     {
       "stage": "post",
-      "question": "What stale-embedding failure mode does semantic chunking introduce that the other four strategies do not?",
+      "question": "语义分块引入了哪些陈旧嵌入故障模式，而其他四种策略则没有？",
       "options": [
-        "Chunks too small for the embedding context",
-        "Chunk boundaries change whenever you change the chunk-model, requiring a coordinated rebuild",
-        "Chunks are no longer indexable by BM25",
-        "Chunks lose their start and end offsets"
+        "对于嵌入上下文来说块太小",
+        "每当您更改块模型时，块边界就会发生变化，需要协调重建",
+        "BM25 不再可对块进行索引",
+        "块失去其开始和结束偏移量"
       ],
       "correct": 1,
-      "explanation": "Semantic clustering depends on an embedding model; swapping the model changes the boundaries, so the chunk-model must be pinned separately or rebuilt together with the retrieval model."
+      "explanation": "语义聚类依赖于嵌入模型；交换模型会改变边界，因此块模型必须单独固定或与检索模型一起重建。"
     }
   ]
 }

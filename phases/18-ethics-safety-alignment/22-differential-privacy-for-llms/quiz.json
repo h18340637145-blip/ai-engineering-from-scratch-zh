@@ -1,75 +1,75 @@
 {
   "lesson": "22-differential-privacy-for-llms",
-  "title": "Differential Privacy for LLMs",
+  "title": "LLM 的差异化隐私",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does (epsilon, delta)-differential privacy guarantee for a randomized algorithm M?",
+      "question": "对于随机算法 M，(epsilon, delta) 差分隐私保证什么？",
       "options": [
-        "M does not memorize any training data ever",
-        "M is deterministic up to noise",
-        "For any two datasets differing in one example and any event S, P(M(D) in S) <= e^epsilon * P(M(D') in S) + delta, so any single individual's contribution cannot be reliably inferred",
-        "M is provably equivalent to a non-private algorithm"
+        "M 从未记住过任何训练数据",
+        "M 对噪声具有确定性",
+        "对于在一个示例和任何事件 S 中不同的任何两个数据集，P(M(D) in S) <= e^epsilon * P(M(D') in S) + delta，因此无法可靠地推断任何单个个体的贡献",
+        "M 可证明等价于非私有算法"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which is NOT a step of DP-SGD as described by Abadi et al. 2016?",
+      "question": "这不是 Abadi 等人所描述的 DP-SGD 的步骤。 2016年？",
       "options": [
-        "Sample a mini-batch and compute per-example gradients",
-        "Clip each per-example gradient to a threshold C",
-        "Re-randomize the model's tokenizer between steps",
-        "Sum clipped gradients and add Gaussian noise scaled by sigma * C"
+        "对小批量进行采样并计算每个示例的梯度",
+        "将每个示例梯度剪辑到阈值 C",
+        "在步骤之间重新随机化模型的标记器",
+        "对截断的梯度求和并添加按 sigma * C 缩放的高斯噪声"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is LoRA + DP-SGD the common 2025 configuration?",
+      "question": "为什么 LoRA + DP-SGD 是 2025 年常见配置？",
       "options": [
-        "Full DP-SGD on a frontier model is prohibitive; LoRA limits gradient updates to a small adapter, reducing per-example gradient storage while still providing DP guarantees on the adapter",
-        "It uses LoRA as a tokenizer",
-        "LoRA increases epsilon by design",
-        "LoRA removes the need for an accountant"
+        "前沿模型上的完整 DP-SGD 是令人望而却步的； LoRA 将梯度更新限制在小型适配器上，减少了每个示例的梯度存储，同时仍然在适配器上提供 DP 保证",
+        "它使用 LoRA 作为标记器",
+        "LoRA 通过设计增加了 epsilon",
+        "LoRA 消除了对会计师的需求"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How did the March 2025 audit (arXiv:2503.06808) resolve the canary-MIA vs training-data-extraction tension?",
+      "question": "2025 年 3 月的审计 (arXiv:2503.06808) 如何解决金丝雀 MIA 与训练数据提取之间的紧张关系？",
       "options": [
-        "It eliminated the need for canaries entirely",
-        "It proved DP-SGD is unnecessary",
-        "It showed both measure the same property",
-        "It showed they measure different things: MIA on inserted canaries under-reports memorization because canaries are not optimized to be the 'most extractable' examples that actually matter for privacy"
+        "它完全消除了对金丝雀的需求",
+        "事实证明DP-SGD是不必要的",
+        "它表明两者测量相同的属性",
+        "它表明他们衡量的是不同的东西：插入金丝雀的 MIA 低估了记忆力，因为金丝雀没有优化为实际上对隐私很重要的“最可提取”的示例"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does PMixED (arXiv:2403.15638) provide as an alternative to DP training?",
+      "question": "PMixED (arXiv:2403.15638) 提供什么作为 DP 培训的替代方案？",
       "options": [
-        "A faster DP-SGD variant",
-        "A new accountant for Renyi DP",
-        "Inference-time differential privacy via a mixture of experts on next-token distributions, with aggregation noise; avoids DP training entirely",
-        "A way to compute epsilon from epsilon-delta accounting alone"
+        "更快的 DP-SGD 变体",
+        "Renyi DP 的新会计师",
+        "通过专家对下一个令牌分布的混合进行推理时差分隐私，并具有聚合噪声；完全避免 DP 训练",
+        "一种仅根据 epsilon-delta 计算来计算 epsilon 的方法"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the Differential Privacy Reversal via LLM Feedback attack?",
+      "question": "什么是通过 LLM 反馈攻击实现差异隐私逆转？",
       "options": [
-        "Using a DP-trained model's confidence scores as an oracle to re-identify individuals, even when outputs do not leak directly",
-        "An attack on tokenizer entropy",
-        "A method to reset epsilon to zero",
-        "A countermeasure to canary insertion"
+        "使用 DP 训练模型的置信度分数作为重新识别个体的预言机，即使输出不直接泄漏",
+        "对分词器熵的攻击",
+        "将 epsilon 重置为零的方法",
+        "金丝雀插入的对策"
       ],
       "correct": 0,
       "explanation": ""

@@ -1,75 +1,75 @@
 {
   "lesson": "15-batch-apis",
-  "title": "离线 Batch API 批处理：降低 50% 成本的非实时推理",
+  "title": "离线 Batch API 批量处理：降低 50% 的非实时推理成本",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the common batch-API offer across OpenAI, Anthropic, and Google in 2026?",
+      "question": "2026 年 OpenAI、Anthropic 和 Google 提供的常见批处理 API 是什么？",
       "options": [
-        "10% discount with 1-hour turnaround",
-        "90% discount with 7-day turnaround",
-        "Free if under 1k tokens",
-        "50% discount with 24-hour turnaround"
+        "1 小时周转可享受 10% 折扣",
+        "90% 折扣，7 天周转",
+        "1k 代币以下免费",
+        "50% 折扣，24 小时周转"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does \"24-hour turnaround\" actually guarantee in the lesson's framing?",
+      "question": "课程框架中的“24小时周转”实际上保证了什么？",
       "options": [
-        "24h is the cache TTL",
-        "The batch always takes 24 hours",
-        "The provider promises to return within 24 hours, with typical P50 around 2-6 hours",
-        "Only batches under 1k requests qualify"
+        "24h是缓存TTL",
+        "批次总是需要 24 小时",
+        "提供商承诺 24 小时内返回，一般 P50 约为 2-6 小时",
+        "只有请求数低于 1k 的批次才有资格"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does stacking batch with cached input change the bill versus synchronous uncached on a shared-system-prompt workload?",
+      "question": "与共享系统提示工作负载上的同步未缓存输入相比，使用缓存输入堆叠批处理如何改变账单？",
       "options": [
-        "It has no effect because caching is automatic",
-        "It only helps if the model is on Vertex",
-        "It can drop to roughly 10% of the synchronous-uncached baseline",
-        "It increases cost by 50%"
+        "它没有任何效果，因为缓存是自动的",
+        "仅当模型位于 Vertex 上时才有帮助",
+        "它可以下降到同步未缓存基线的大约 10%",
+        "成本增加50%"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which workload-triage lane is wrong to default to in 2026 for content pipelines and offline labeling?",
+      "question": "2026 年，对于内容管道和离线标签，默认的哪条工作负载分类通道是错误的？",
       "options": [
-        "Interactive, because it sounds urgent",
-        "Batch, because the user does not see a 24h delay",
-        "Hybrid batch-and-cache",
-        "Semi-interactive with async queue"
+        "互动，因为听起来很紧急",
+        "批量，因为用户看不到24小时延迟",
+        "混合批处理和缓存",
+        "与异步队列半交互"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the output-schema trap across providers?",
+      "question": "跨提供商的输出模式陷阱是什么？",
       "options": [
-        "JSONL is unsupported by Anthropic",
-        "All providers use the same OpenAI JSONL format",
-        "Vertex requires Parquet only",
-        "Batch file formats differ per provider (OpenAI JSONL, Anthropic JSONL, Vertex BigQuery/GCS), so a portable client needs per-provider adapters"
+        "Anthropic 不支持 JSONL",
+        "所有提供商都使用相同的 OpenAI JSONL 格式",
+        "Vertex 仅需要 Parquet",
+        "每个提供商的批处理文件格式不同（OpenAI JSONL、Anthropic JSONL、Vertex BigQuery/GCS），因此便携式客户端需要每个提供商的适配器"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Per the lesson, what is the simplest decision rule for triaging a workload to batch?",
+      "question": "根据本课，将工作负载分类为批处理的最简单的决策规则是什么？",
       "options": [
-        "If the prompt is under 1k tokens, batch it",
-        "If it uses tools, batch it",
-        "Batch only when the gateway requires it",
-        "If the user wouldn't notice a 24-hour delivery, always batch (and stack caching)"
+        "如果提示低于 1k token，则批量处理",
+        "如果使用工具，则批处理",
+        "仅在网关需要时批处理",
+        "如果用户没有注意到 24 小时交付，请始终批量（和堆栈缓存）"
       ],
       "correct": 3,
       "explanation": ""

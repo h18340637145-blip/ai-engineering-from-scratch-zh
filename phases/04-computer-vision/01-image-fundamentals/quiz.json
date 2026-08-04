@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "A file on disk is decoded into a NumPy array with shape (224, 224, 3) and dtype uint8. What does each number represent?",
-      "options": ["The probability that a pixel is that colour, between 0 and 1", "One photon count per detector, normalized to the full dynamic range of the sensor", "A sample of light intensity at one grid position, quantized to one of 256 levels per channel", "A floating-point brightness value ready to feed to a convolutional network"],
+      "question": "磁盘上的文件被解码为形状为 (224, 224, 3) 和 dtype uint8 的 NumPy 数组。每个数字代表什么？",
+      "options": [
+        "像素属于该颜色的概率，介于 0 和 1 之间",
+        "每个探测器一个光子计数，标准化为传感器的整个动态范围",
+        "一个网格位置处的光强度样本，量化为每通道 256 个级别之一",
+        "准备输入卷积网络的浮点亮度值"
+      ],
       "correct": 2,
-      "explanation": "A uint8 image stores 8-bit integers in [0, 255]. Each integer is one quantized sample of light intensity at one (row, column, channel) position. It is neither a probability nor a float; you must divide by 255 and standardize before feeding it to a pretrained model."
+      "explanation": "uint8 图像在 [0, 255] 中存储 8 位整数。每个整数是一个（行、列、通道）位置处光强度的一个量化样本。它既不是概率，也不是浮点数；在将其输入预训练模型之前，您必须除以 255 并标准化。"
     },
     {
       "stage": "pre",
-      "question": "You load an image with Pillow and get an array of shape (480, 640, 3). You pass it as a batched tensor (1, 480, 640, 3) to a PyTorch Conv2d with in_channels=3. What happens?",
-      "options": ["Nothing — PyTorch auto-detects the layout", "The first conv layer treats height as the channel axis, producing meaningless feature maps", "PyTorch raises a RuntimeError: Conv2d expects NCHW, sees 480 channels where the weight expects 3, and refuses to run", "Accuracy drops by a few percent but inference still works"],
+      "question": "您使用 Pillow 加载图像并获得形状数组 (480, 640, 3)。您将其作为批处理张量 (1, 480, 640, 3) 传递给 in_channels=3 的 PyTorch Conv2d。会发生什么？",
+      "options": [
+        "没什么——PyTorch 自动检测布局",
+        "第一个卷积层将高度视为通道轴，产生无意义的特征图",
+        "PyTorch 引发运行时错误：Conv2d 期望 NCHW，看到 480 个通道，其中权重期望为 3，并拒绝运行",
+        "准确率下降了几个百分点，但推理仍然有效"
+      ],
       "correct": 2,
-      "explanation": "PyTorch Conv2d enforces strict channel-count checking against the weight tensor. A batched HWC input (1, 480, 640, 3) is interpreted as NCHW with C=480, which does not match the weight's expected 3 channels, and PyTorch raises RuntimeError before any computation. The loud failure is a feature — it forces you to fix the layout. You must permute to NCHW (`.permute(0, 3, 1, 2)`) before feeding PyTorch."
+      "explanation": "PyTorch Conv2d 对权重张量强制执行严格的通道计数检查。批量 HWC 输入 (1, 480, 640, 3) 被解释为 C=480 的 NCHW，这与权重的预期 3 个通道不匹配，并且 PyTorch 在任何计算之前都会引发 RuntimeError。大声的失败是一个特征——它迫使你修复布局。在输入 PyTorch 之前，您必须排列为 NCHW (`.permute(0, 3, 1, 2)`)。"
     },
     {
       "stage": "post",
-      "question": "Why do ImageNet pretrained models expect inputs standardized with mean=[0.485, 0.456, 0.406] and std=[0.229, 0.224, 0.225]?",
-      "options": ["Those are the RGB values of an average natural scene", "Those are the per-channel mean and standard deviation of the ImageNet training set in [0, 1] space, so subtracting them centers the distribution the model was trained on", "They make the input strictly zero-mean unit-variance for any image", "They are required by the ReLU activation function"],
+      "question": "为什么 ImageNet 预训练模型期望输入标准化为mean=[0.485,0.456,0.406]和std=[0.229,0.224,0.225]？",
+      "options": [
+        "这些是平均自然场景的 RGB 值",
+        "这些是 [0, 1] 空间中 ImageNet 训练集的每通道均值和标准差，因此减去它们可以使模型训练的分布居中",
+        "他们使任何图像的输入严格为零均值单位方差",
+        "ReLU 激活函数需要它们"
+      ],
       "correct": 1,
-      "explanation": "The numbers are statistics of the ImageNet training corpus computed after dividing pixels by 255. Using them aligns your input distribution with the one the network saw during training. For a model trained on a different dataset you would recompute the stats on that dataset."
+      "explanation": "这些数字是将像素除以 255 后计算出的 ImageNet 训练语料库的统计数据。使用它们可以将您的输入分布与网络在训练期间看到的分布对齐。对于在不同数据集上训练的模型，您将重新计算该数据集上的统计数据。"
     },
     {
       "stage": "post",
-      "question": "You resize a segmentation mask (integer class IDs 0..20) from 500x500 to 224x224. Which interpolation method is correct?",
-      "options": ["Bilinear — it smooths the class boundaries", "Bicubic — it preserves sharpness", "Lanczos — highest quality", "Nearest neighbour — it preserves valid integer class IDs instead of inventing fractional ones"],
+      "question": "您将分段掩码（整数类 ID 0..20）的大小从 500x500 调整为 224x224。哪种插值方法是正确的？",
+      "options": [
+        "双线性——它平滑了类边界",
+        "双三次 — 保持清晰度",
+        "Lanczos——最高品质",
+        "最近邻居——它保留有效的整数类 ID，而不是发明小数类 ID"
+      ],
       "correct": 3,
-      "explanation": "Bilinear, bicubic, and lanczos average neighbouring values. On a class-ID mask that produces non-integer values like 4.7 between class 4 and class 5, which are not real classes. Nearest neighbour picks the closest original pixel and keeps the label space intact. This rule also applies to any channel that encodes IDs or indices."
+      "explanation": "双线性、双三次和 lanczos 平均相邻值。在类 ID 掩码上，在类 4 和类 5 之间生成非整数值（例如 4.7），这些值不是真正的类。最近邻选择最接近的原始像素并保持标签空间完整。此规则也适用于对 ID 或索引进行编码的任何通道。"
     },
     {
       "stage": "post",
-      "question": "RGB grayscale conversion uses weights 0.299 R + 0.587 G + 0.114 B rather than 0.333 R + 0.333 G + 0.333 B. Why?",
-      "options": ["To compensate for JPEG compression artifacts in each channel", "Because green photons carry more energy than red or blue photons", "Because human vision is most sensitive to green and least sensitive to blue, so the weighted sum matches perceived luminance", "To match the behaviour of the Bayer filter on camera sensors"],
+      "question": "RGB 灰度转换使用权重 0.299 R + 0.587 G + 0.114 B，而不是 0.333 R + 0.333 G + 0.333 B。为什么？",
+      "options": [
+        "补偿每个通道中的 JPEG 压缩伪影",
+        "因为绿色光子比红色或蓝色光子携带更多的能量",
+        "由于人类视觉对绿色最敏感，对蓝色最不敏感，因此加权和与感知亮度相匹配",
+        "匹配相机传感器上拜耳滤光片的行为"
+      ],
       "correct": 2,
-      "explanation": "The ITU-R BT.601 weights 0.299/0.587/0.114 come from the luminous efficiency of the human eye. An equal-weight average would make green-tinted images look too dark and red ones too bright to a human observer. Most classical computer-vision grayscale code uses these weights; BT.709 (0.2126/0.7152/0.0722) is the modern HDTV variant for linear-light inputs."
+      "explanation": "ITU-R BT.601权重0.299/0.587/0.114来自人眼的发光效率。对于人类观察者来说，等权重平均值会使绿色图像看起来太暗，而红色图像看起来太亮。大多数经典计算机视觉灰度代码都使用这些权重； BT.709 (0.2126/0.7152/0.0722) 是用于线性光输入的现代 HDTV 变体。"
     }
   ]
 }

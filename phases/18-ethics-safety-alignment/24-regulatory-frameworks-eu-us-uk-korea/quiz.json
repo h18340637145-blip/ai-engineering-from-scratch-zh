@@ -1,75 +1,75 @@
 {
   "lesson": "24-regulatory-frameworks-eu-us-uk-korea",
-  "title": "Regulatory Frameworks - EU, US, UK, Korea",
+  "title": "监管框架 - 欧盟、美国、英国、韩国",
   "questions": [
     {
       "stage": "pre",
-      "question": "When did the EU AI Act enter into force, and what category applied first?",
+      "question": "欧盟人工智能法案何时生效？首先适用哪一类？",
       "options": [
-        "August 2024; prohibited practices and AI literacy applied 2 February 2025",
-        "August 2026; only GPAI applied at force-date",
-        "August 2025; all categories applied at once",
-        "January 2024; high-risk systems applied that day"
+        "2024 年 8 月； 2025 年 2 月 2 日实施的禁止做法和人工智能素养",
+        "2026 年 8 月；仅在生效日期应用 GPAI",
+        "2025 年 8 月；一次应用所有类别",
+        "2024 年 1 月；当天应用的高风险系统"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the maximum monetary penalty under the EU AI Act applicable from 2 August 2026?",
+      "question": "自 2026 年 8 月 2 日起适用的欧盟人工智能法案规定的最高罚款是多少？",
       "options": [
-        "Unlimited",
-        "Up to 1M EUR or 0.1% of global turnover",
-        "Up to 15M EUR or 3% of global turnover",
-        "Up to 5M EUR or 1% of global turnover"
+        "无限",
+        "高达 100 万欧元或全球营业额的 0.1%",
+        "高达 1500 万欧元或全球营业额的 3%",
+        "高达 500 万欧元或全球营业额的 1%"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which three chapters make up the GPAI Code of Practice (10 July 2025)?",
+      "question": "GPAI 实践守则（2025 年 7 月 10 日）由哪三章组成？",
       "options": [
-        "Training, Inference, Deployment",
-        "Capability, Control, Compliance",
-        "Privacy, Bias, Watermarking",
-        "Transparency, Copyright, Safety and Security"
+        "训练、推理、部署",
+        "能力、控制、合规性",
+        "隐私、偏见、水印",
+        "透明度、版权、安全和安保"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the February 2025 UK AISI rebrand to 'AI Security Institute' signal?",
+      "question": "2025 年 2 月，英国 AISI 更名为“AI 安全研究所”，这意味着什么？",
       "options": [
-        "A narrower scope focused on frontier-capability security, dropping algorithmic bias and free-speech framings",
-        "Merger with the EU AI Office",
-        "Closure of UK frontier evaluation",
-        "Expansion into algorithmic bias"
+        "范围更窄，专注于前沿能力安全，消除算法偏见和言论自由框架",
+        "与欧盟人工智能办公室合并",
+        "英国边境评估结束",
+        "扩展到算法偏差"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does the US CAISI rebrand (June 2025) signal in policy direction?",
+      "question": "美国CAISI品牌重塑（2025年6月）在政策方向上释放出什么信号？",
       "options": [
-        "Merger with FDA",
-        "Stricter pre-deployment safety evaluation",
-        "A shift toward 'pro-growth AI policies,' with emphasis on standards and innovation support and reduced emphasis on pre-deployment evaluation",
-        "Mandatory open-source release of frontier models"
+        "与 FDA 合并",
+        "更严格的部署前安全评估",
+        "转向“促进人工智能增长的政策”，重点是标准和创新支持，减少对部署前评估的重视",
+        "前沿模型强制开源发布"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the headline obligation in Korea's AI Framework Act (effective January 2026)?",
+      "question": "韩国《人工智能框架法案》（2026 年 1 月生效）的主要义务是什么？",
       "options": [
-        "Identical adoption of the EU AI Act",
-        "Mandatory open-weights for all generative models",
-        "Total prohibition of foreign AI providers",
-        "Article 12 establishes an AISI under MSIT and mandates local representatives, risk assessment, and safety measures for high-impact and generative AI"
+        "同等采用欧盟人工智能法案",
+        "所有生成模型的强制开放权重",
+        "全面禁止外国人工智能提供商",
+        "第 12 条在 MSIT 下建立 AISI，并授权当地代表、风险评估和高影响力和生成性 AI 的安全措施"
       ],
       "correct": 3,
       "explanation": ""

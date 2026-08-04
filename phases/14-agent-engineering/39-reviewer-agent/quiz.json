@@ -1,90 +1,90 @@
 {
   "lesson": "39-reviewer-agent",
-  "title": "审查员 Agent：独立的 Code Review 与安全审计 Agent",
+  "title": "审查员Agent：独立的Code Review与安全审计Agent",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why cannot the builder reliably grade its own work?",
+      "question": "为什么建筑商不能可靠地对自己的作品进行评级？",
       "options": [
-        "It runs out of tokens",
-        "Acceptance is necessary but not sufficient; problem-fit, scope discipline, documented assumptions, and handoff readiness need a different role with different inputs",
-        "It loses authentication",
-        "The model rejects self-grading"
+        "代币用完",
+        "接受是必要的，但还不够；问题匹配、范围规则、记录的假设和移交准备需要不同的角色和不同的输入",
+        "它失去了身份验证",
+        "该模型拒绝自我评分"
       ],
       "correct": 1,
-      "explanation": "The gap between builder and reviewer is where reliability lives; acceptance only proves a weaker version."
+      "explanation": "建造者和审查者之间的差距就是可靠性所在；接受仅证明较弱的版本。"
     },
     {
       "stage": "pre",
-      "question": "Which is NOT one of the five rubric dimensions?",
+      "question": "哪一个不是五个标题维度之一？",
       "options": [
-        "Problem fit",
-        "Scope discipline",
-        "Verification quality",
-        "Inference latency"
+        "问题适配",
+        "范围纪律",
+        "验证质量",
+        "推理延迟"
       ],
       "correct": 3,
-      "explanation": "The five are problem fit, scope discipline, assumptions, verification quality, handoff readiness."
+      "explanation": "这五个是问题契合度、范围规则、假设、验证质量、交接准备。"
     },
     {
       "stage": "check",
-      "question": "What does role separation require?",
+      "question": "角色分离需要什么？",
       "options": [
-        "A different model",
-        "A different system prompt and different inputs; the same model can play both roles if posture changes and the reviewer has no write access to the diff",
-        "Different physical hardware",
-        "A new account"
+        "不同的模型",
+        "不同的系统提示和不同的输入；如果姿势发生变化并且审阅者没有对差异的写入权限，则同一模型可以扮演这两个角色",
+        "不同的物理硬件",
+        "一个新帐户"
       ],
       "correct": 1,
-      "explanation": "Discipline is in posture and inputs, not in the model identity."
+      "explanation": "纪律在于姿势和输入，而不在于模型身份。"
     },
     {
       "stage": "check",
-      "question": "What does Cloudflare's 2026 review architecture look like?",
+      "question": "Cloudflare 的 2026 年审核架构是什么样的？",
       "options": [
-        "One big reviewer",
-        "Up to seven specialist reviewers in parallel under a Review Coordinator that deduplicates findings; top-tier model only for the coordinator, cheaper tiers for specialists",
-        "Round-robin two reviewers",
-        "Single sequential LLM"
+        "一位大审稿人",
+        "最多七名专家评审员在一名评审协调员的领导下并行进行，以消除重复的调查结果；顶级模型仅适用于协调员，较便宜的模型适用于专家",
+        "两位审稿人轮询",
+        "单顺序法学硕士"
       ],
       "correct": 1,
-      "explanation": "Cloudflare ran 131,246 review runs in 30 days using specialist + coordinator architecture."
+      "explanation": "Cloudflare 使用专家 + 协调员架构在 30 天内运行了 131,246 次审核。"
     },
     {
       "stage": "check",
-      "question": "Which of these is NOT one of the four LLM-judge biases the lesson lists?",
+      "question": "以下哪一项不是课程列出的四种法学硕士法官偏见之一？",
       "options": [
-        "Position bias (A,B vs B,A ordering inconsistency)",
-        "Verbosity bias (longer outputs score higher)",
-        "Self-preference (same model family)",
-        "Vector locality"
+        "位置偏差（A、B 与 B、A 顺序不一致）",
+        "冗长偏差（输出越长得分越高）",
+        "自我喜好（同型号家族）",
+        "向量局部性"
       ],
       "correct": 3,
-      "explanation": "The four are position, verbosity, self-preference, authority; vector locality is not one of them."
+      "explanation": "四是地位、冗长、自私、权威；矢量局部性不是其中之一。"
     },
     {
       "stage": "post",
-      "question": "What is a calibration set?",
+      "question": "什么是校准套件？",
       "options": [
-        "A new training corpus",
-        "10-20 historical task close-outs with known correct verdicts; rerun on every prompt change; if reviewer agreement falls below 80%, fix the rubric before shipping",
-        "An A/B test fixture",
-        "A vector index"
+        "新的训练语料库",
+        "10-20 个已知正确判决的历史任务收尾；每次提示更改时重新运行；如果审稿人同意率低于 80%，请在发货前修复标题",
+        "A/B 测试夹具",
+        "向量索引"
       ],
       "correct": 1,
-      "explanation": "Calibration sets keep the reviewer honest; if agreement drifts you fix the rubric, not the data."
+      "explanation": "校准集使审阅者保持诚实；如果共识发生变化，你就修改标题，而不是数据。"
     },
     {
       "stage": "post",
-      "question": "Where does the reviewer's report integrate with the rest of the workbench?",
+      "question": "审阅者的报告在哪里与工作台的其余部分集成？",
       "options": [
-        "It replaces verification",
-        "It bundles into the handoff packet (Lesson 40); human review starts from the report, not from a blank page",
-        "It overrides the gate",
-        "It only goes to the manager"
+        "它取代了验证",
+        "它捆绑到切换数据包中（第 40 课）；人工审核从报告开始，而不是从空白页开始",
+        "它覆盖了门",
+        "它只发送给经理"
       ],
       "correct": 1,
-      "explanation": "The review report feeds the handoff so the next session and the human reviewer start from a written verdict."
+      "explanation": "审核报告为交接提供依据，以便下一次会议和人工审核员从书面裁决开始。"
     }
   ]
 }

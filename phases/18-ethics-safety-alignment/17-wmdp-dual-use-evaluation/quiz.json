@@ -1,75 +1,75 @@
 {
   "lesson": "17-wmdp-dual-use-evaluation",
-  "title": "WMDP and Dual-Use Capability Evaluation",
+  "title": "WMDP 和军民两用能力评估",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the 'yellow zone' criterion that WMDP uses for question selection?",
+      "question": "WMDP 用于选择问题的“黄色区域”标准是什么？",
       "options": [
-        "Open internet content with no expert review",
-        "Synthesis recipes for dangerous compounds",
-        "Proximate, enabling knowledge of a harmful process without being a direct synthesis recipe",
-        "Multilingual math reasoning"
+        "开放互联网内容，无需专家审核",
+        "危险化合物的合成配方",
+        "近似地，无需直接合成配方即可了解有害过程",
+        "多语言数学推理"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which three domains does WMDP cover?",
+      "question": "WMDP 涵盖哪三个领域？",
       "options": [
-        "Privacy, bias, watermarking",
-        "Vision, audio, text",
-        "Math, code, language",
-        "Biosecurity, cybersecurity, chemistry"
+        "隐私、偏见、水印",
+        "视觉、音频、文字",
+        "数学、代码、语言",
+        "生物安全、网络安全、化学"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does RMU (the WMDP companion method) do?",
+      "question": "RMU（WMDP 配套方法）有什么作用？",
       "options": [
-        "Replaces PPO with DPO during alignment",
-        "Generates harmful images",
-        "Trains a new tokenizer for dual-use content",
-        "Representation Misdirection for Unlearning: reduces WMDP scores to near-random while preserving general capability (e.g., MMLU) within a few points"
+        "对齐期间用 DPO 替换 PPO",
+        "生成有害图像",
+        "为双重用途内容训练新的分词器",
+        "遗忘的表示误导：将 WMDP 分数降低到接近随机，同时将一般能力（例如 MMLU）保留在几个点内"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What number did Anthropic's 2025 bioweapon-acquisition trial report as 'uplift,' and what did it imply for ASL-3?",
+      "question": "Anthropic 的 2025 年生物武器获取试验报告的“提升”数字是多少？这对 ASL-3 意味着什么？",
       "options": [
-        "100x; ASL-5 reached",
-        "2.53x; insufficient to rule out ASL-3",
-        "10x; below ASL-2",
-        "0.5x; ASL-3 ruled out"
+        "100 倍；达到 ASL-5",
+        "2.53倍；不足以排除 ASL-3",
+        "10 倍；低于 ASL-2",
+        "0.5倍； ASL-3 被排除"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the distinction between novice-relative uplift and expert-absolute capability?",
+      "question": "新手相对提升能力和专家绝对能力之间有什么区别？",
       "options": [
-        "Novice-relative is the multiplicative help over status-quo (e.g., internet search) for non-experts; expert-absolute is the maximum information a motivated expert can extract from the model",
-        "Novice-relative is a benchmark; expert-absolute is a license",
-        "They are synonyms",
-        "Both are measured only via MCQ"
+        "新手相对是对非专家来说相对于现状（例如互联网搜索）的倍增帮助；专家绝对是有动力的专家可以从模型中提取的最大信息",
+        "新手相对是一个标杆；专家绝对是一个许可证",
+        "它们是同义词",
+        "两者均仅通过 MCQ 进行测量"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which is NOT a measurement pitfall when interpreting WMDP scores as deployment risk?",
+      "question": "将 WMDP 分数解释为部署风险时，哪项不是测量陷阱？",
       "options": [
-        "Procurement and equipment barriers",
-        "Elicitation resistance (whether safety filters block extraction)",
-        "Tacit knowledge needed for execution that is not captured by MCQ",
-        "The model's open-source license"
+        "采购及设备壁垒",
+        "引出阻力（安全过滤器是否阻止引出）",
+        "MCQ 未捕获的执行所需的隐性知识",
+        "该模型的开源许可证"
       ],
       "correct": 3,
       "explanation": ""

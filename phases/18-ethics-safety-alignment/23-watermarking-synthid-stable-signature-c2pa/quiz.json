@@ -1,75 +1,75 @@
 {
   "lesson": "23-watermarking-synthid-stable-signature-c2pa",
-  "title": "Watermarking - SynthID, Stable Signature, C2PA",
+  "title": "水印 - SynthID、稳定签名、C2PA",
   "questions": [
     {
       "stage": "pre",
-      "question": "How does Kirchenbauer-style (SynthID-text) token watermarking embed a signal?",
+      "question": "Kirchenbauer 式（SynthID 文本）令牌水印如何嵌入信号？",
       "options": [
-        "By modifying the prompt template",
-        "By encrypting the output with a public key",
-        "At each decoding step, hash the previous K tokens to partition the vocabulary into green/red sets and bias sampling toward green; detection counts green tokens via a z-score",
-        "By inserting a hidden HTML comment"
+        "通过修改提示模板",
+        "通过使用公钥加密输出",
+        "在每个解码步骤中，对之前的 K 个标记进行哈希处理，将词汇表划分为绿色/红色集合，并对绿色进行偏置采样；检测通过 z 分数计算绿色标记",
+        "通过插入隐藏的 HTML 注释"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the primary limitation of text watermarks against paraphrase?",
+      "question": "文本水印对释义的主要限制是什么？",
       "options": [
-        "Rewording or paraphrasing the text destroys the green-token statistical signal",
-        "Paraphrase only affects image watermarks",
-        "Paraphrase strengthens the watermark",
-        "They actually survive paraphrase"
+        "改写或解释文本会破坏绿色标记的统计信号",
+        "释义仅影响图像水印",
+        "释义加强水印",
+        "他们实际上幸存下来释义"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does Stable Signature (Fernandez et al., ICCV 2023) do?",
+      "question": "稳定签名（Fernandez 等人，ICCV 2023）有什么作用？",
       "options": [
-        "Uses C2PA to sign the image at upload",
-        "Adds a visible watermark in the corner of the image",
-        "Fine-tunes the latent diffusion decoder so every generated image carries a fixed embedded message detectable from the latent",
-        "Signs the metadata with a private key"
+        "使用 C2PA 在上传时对图像进行签名",
+        "在图像的一角添加可见的水印",
+        "微调潜在扩散解码器，使每个生成的图像都携带可从潜在扩散中检测到的固定嵌入消息",
+        "使用私钥对元数据进行签名"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the May 2024 'Stable Signature is Unstable' result demonstrate?",
+      "question": "2024 年 5 月的“稳定签名不稳定”结果说明了什么？",
       "options": [
-        "The watermark is provably unforgeable",
-        "The watermark requires C2PA to function",
-        "The watermark fails only on JPEG compression",
-        "Post-generation fine-tuning of the decoder can remove the watermark while preserving image quality, undermining adversarial robustness"
+        "水印被证明是不可伪造的",
+        "水印需要C2PA才能发挥作用",
+        "水印仅在 JPEG 压缩时失败",
+        "解码器的后生成微调可以在保持图像质量的同时去除水印，从而破坏对抗鲁棒性"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "How are C2PA metadata and watermarking complementary?",
+      "question": "C2PA 元数据和水印如何互补？",
       "options": [
-        "They are interchangeable",
-        "Watermarks are signed by the same keys as C2PA",
-        "Metadata can be stripped but carries rich provenance chain; watermarks persist through transcoding but carry few bits; layered, they provide a usable provenance story",
-        "C2PA replaces watermarks entirely"
+        "它们是可以互换的",
+        "水印由与 C2PA 相同的密钥签名",
+        "元数据可剥离但承载丰富的来源链；水印通过转码持续存在，但携带很少的位；分层，它们提供了可用的出处故事",
+        "C2PA完全取代水印"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why is 'no SynthID signal' NOT proof of authenticity (human origin)?",
+      "question": "为什么“无 SynthID 信号”不能证明真实性（人类起源）？",
       "options": [
-        "Because SynthID only watermarks generations from SynthID-enabled models; content from any model without SynthID is unwatermarked by default",
-        "Because SynthID is closed-source",
-        "Because SynthID always produces false positives on human text",
-        "Because SynthID only works on Gemini outputs"
+        "因为 SynthID 仅对支持 SynthID 的模型的各代进行水印；默认情况下，任何没有 SynthID 的模型的内容都没有水印",
+        "因为 SynthID 是闭源的",
+        "因为 SynthID 总是会对人类文本产生误报",
+        "因为 SynthID 仅适用于 Gemini 输出"
       ],
       "correct": 0,
       "explanation": ""

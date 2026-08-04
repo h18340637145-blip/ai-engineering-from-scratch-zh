@@ -1,10 +1,10 @@
 {
   "lesson": "15-prompt-caching",
-  "title": "Prompt Caching and Context Caching",
+  "title": "提示缓存和上下文缓存",
   "questions": [
     {
       "stage": "post",
-      "question": "What discount does Anthropic apply to cache reads versus the base input rate?",
+      "question": "与基本输入速率相比，Anthropic 对缓存读取应用的折扣是多少？",
       "options": [
         "25% off",
         "50% off",
@@ -16,43 +16,43 @@
     },
     {
       "stage": "post",
-      "question": "Why must dynamic timestamps go below the cache breakpoint, not above it?",
+      "question": "为什么动态时间戳必须低于缓存断点，而不是高于它？",
       "options": [
-        "Caches only hit when the prefix is byte-identical; a changing timestamp breaks the match for everything after it",
-        "Timestamps confuse the tokenizer",
-        "They cost more tokens than static text",
-        "Anthropic explicitly rejects timestamps in cached blocks"
+        "仅当前缀字节相同时缓存才会命中；更改时间戳会破坏其后所有内容的匹配",
+        "时间戳混淆了分词器",
+        "它们比静态文本花费更多的令牌",
+        "Anthropic 明确拒绝缓存块中的时间戳"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "OpenAI's prompt caching is configured how?",
+      "question": "OpenAI的提示缓存是如何配置的？",
       "options": [
-        "Explicit cache_control markers",
-        "A CachedContent API you create and reference",
-        "Automatic prefix matching with no configuration",
-        "A system-level flag you toggle per project"
+        "显式的cache_control标记",
+        "您创建并引用的 CachedContent API",
+        "自动前缀匹配，无需配置",
+        "每个项目切换的系统级标志"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "For Anthropic, what write premium does the 1-hour extended TTL cost vs the 5-minute default?",
+      "question": "对于 Anthropic，1 小时延长 TTL 的写入费用与 5 分钟默认值相比是多少？",
       "options": [
-        "Same",
-        "2x the write premium (50% over baseline)",
-        "4x the write premium",
-        "No write premium"
+        "相同的",
+        "2 倍写入溢价（比基线高 50%）",
+        "4 倍写入溢价",
+        "无写溢价"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "How many reuses are needed to break even on Anthropic's 25% write premium?",
+      "question": "需要多少次重用才能实现 Anthropic 25% 写入溢价的收支平衡？",
       "options": [
         "1",
         "2",

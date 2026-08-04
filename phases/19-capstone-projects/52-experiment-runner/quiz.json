@@ -1,78 +1,78 @@
 {
   "lesson": "52-experiment-runner",
-  "title": "Experiment Runner",
+  "title": "实验运行者",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the runner spawn a subprocess instead of importing the experiment script in process?",
+      "question": "为什么运行程序会生成一个子进程而不是在进程中导入实验脚本？",
       "options": [
-        "Because Python disallows nested imports",
-        "Because a separate process gives the runner a kill handle on timeout or memory limits and isolates crashes from the orchestrator",
-        "Because the metrics format requires it",
-        "Because subprocess is faster than import"
+        "因为Python不允许嵌套导入",
+        "因为单独的进程为运行程序提供了有关超时或内存限制的终止句柄，并将崩溃与协调器隔离开来",
+        "因为指标格式需要它",
+        "因为子进程比导入快"
       ],
       "correct": 1,
-      "explanation": "A separate process is the simplest isolation the language ships. The parent retains a kill handle and an independent address space, so a crashing experiment cannot take the orchestrator with it."
+      "explanation": "单独的进程是语言提供的最简单的隔离。父进程保留一个终止句柄和一个独立的地址空间，因此崩溃的实验无法带走协调器。"
     },
     {
       "stage": "pre",
-      "question": "Why is the memory cap described as soft?",
+      "question": "为什么内存上限被描述为软？",
       "options": [
-        "Because it only applies to the heap, not the stack",
-        "Because the poller has a non zero interval, so a process can spike above the cap between polls and the runner only acts on the next observation",
-        "Because the operating system always overrides it",
-        "Because numpy ignores the cap"
+        "因为它只适用于堆，不适用于栈",
+        "由于轮询器具有非零间隔，因此进程可能会在轮询之间超出上限，并且运行器仅对下一个观察起作用",
+        "因为操作系统总是会覆盖它",
+        "因为 numpy 忽略了上限"
       ],
       "correct": 1,
-      "explanation": "The cap is enforced by polling, not by an in kernel limit. The poller interval is the resolution of the cap, and short spikes can briefly exceed the cap before the next observation."
+      "explanation": "该上限是通过轮询而不是内核限制来强制执行的。轮询器间隔是上限的分辨率，短峰值可能会在下一次观察之前短暂超过上限。"
     },
     {
       "stage": "check",
-      "question": "Which terminal label does the runner return when stdout has the metrics but the exit code is non zero?",
+      "question": "当 stdout 具有指标但退出代码不为零时，运行程序会返回哪个终端标签？",
       "options": [
         "ok",
-        "timeout",
+        "暂停",
         "oom",
-        "crash"
+        "碰撞"
       ],
       "correct": 3,
-      "explanation": "Terminal is ok only when exit code is zero and metrics parsed. A non zero exit code is crash even if some metrics were captured before the failure."
+      "explanation": "仅当退出代码为零且指标已解析时，终端才正常。即使在失败之前捕获了某些指标，非零退出代码也会崩溃。"
     },
     {
       "stage": "check",
-      "question": "How does the runner identify the final metrics blob inside stdout?",
+      "question": "跑步者如何识别标准输出中的最终指标 blob？",
       "options": [
-        "It reads the first json line",
-        "It reads the last json line whose keys cover the required metric_keys; earlier covering lines become intermediate metrics",
-        "It scans stderr for json",
-        "It expects exactly one line of output"
+        "它读取第一行 json",
+        "它读取最后一个 json 行，其键覆盖所需的 metric_keys；早期覆盖线成为中间指标",
+        "它扫描 stderr 中的 json",
+        "它期望只有一行输出"
       ],
       "correct": 1,
-      "explanation": "Final metrics are the last line that parses as json and includes every required key. Earlier covering lines are kept as intermediate metrics for learning curves."
+      "explanation": "最终指标是解析为 json 的最后一行，包含每个必需的键。早期的覆盖线保留作为学习曲线的中间指标。"
     },
     {
       "stage": "check",
-      "question": "Why does the ablation helper sweep one knob at a time rather than a full factorial?",
+      "question": "为什么消融助手一次扫描一个旋钮而不是完整的阶乘？",
       "options": [
-        "Because the runner cannot launch more than one subprocess",
-        "Because one knob at a time produces a clean axis the evaluator can plot, while full factorial blows up exponentially and confuses interpretation",
-        "Because numpy does not support the cartesian product",
-        "Because the seed only varies along one knob"
+        "因为运行程序无法启动多个子进程",
+        "因为一次一个旋钮会产生一个干净的轴，因此评估者可以绘制出来，而全阶乘则呈指数级增长并混淆了解释",
+        "因为numpy不支持笛卡尔积",
+        "因为种子只沿着一个旋钮变化"
       ],
       "correct": 1,
-      "explanation": "Single knob sweeps keep the result interpretable. Full factorial costs scale exponentially with the number of knobs and the resulting table is hard to read."
+      "explanation": "单旋钮扫描使结果易于解释。全部阶乘成本随着旋钮的数量呈指数级增长，并且生成的表格很难阅读。"
     },
     {
       "stage": "check",
-      "question": "What guarantee does forwarding spec.seed into config['__seed'] give the evaluator?",
+      "question": "将spec.seed转发到config['__seed']会给评估者带来什么保证？",
       "options": [
-        "Faster wall time",
-        "Lower memory consumption",
-        "Determinism, so a re run with the same seed produces identical metrics and the evaluator can detect real changes from random noise",
-        "A free significance test"
+        "更快的挂墙时间",
+        "更低的内存消耗",
+        "确定性，因此使用相同的种子重新运行会产生相同的指标，并且评估器可以检测随机噪声中的真实变化",
+        "免费显着性检验"
       ],
       "correct": 2,
-      "explanation": "The seed pins random initialisation in the experiment. Two runs with the same seed produce identical metrics, which is what lets the evaluator distinguish a real regression from a different draw."
+      "explanation": "实验中种子引脚随机初始化。使用相同种子的两次运行会产生相同的指标，这使得评估者能够区分真正的回归和不同的抽签。"
     }
   ]
 }

@@ -1,90 +1,90 @@
 {
   "lesson": "18-agno-and-mastra-runtimes",
-  "title": "Agno 与 Mastra：高性能与 TypeScript 原生 Agent 运行时",
+  "title": "Agno 与 Mastra：高性能与 TypeScript 代理运行时",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which language pairing does the lesson recommend for each runtime?",
+      "question": "本课程为每个运行时推荐哪种语言配对？",
       "options": [
-        "Agno for TypeScript, Mastra for Python",
-        "Agno for Python, Mastra for TypeScript",
-        "Both are Rust-first",
-        "Both are Go-first"
+        "Agno 用于 TypeScript，Mastra 用于 Python",
+        "Agno 用于 Python，Mastra 用于 TypeScript",
+        "两者都是 Rust-first",
+        "两者都是 Go-first"
       ],
       "correct": 1,
-      "explanation": "Agno is Python (FastAPI-shaped); Mastra is TypeScript (Vercel AI SDK-shaped)."
+      "explanation": "Agno 是 Python（FastAPI 型）； Mastra 是 TypeScript（Vercel AI SDK 形式）。"
     },
     {
       "stage": "pre",
-      "question": "What is Agno's recommended production deployment shape?",
+      "question": "Agno 推荐的生产部署形态是什么？",
       "options": [
-        "A long-lived stateful daemon",
-        "A stateless session-scoped FastAPI backend; each request starts a fresh agent and session state lives in a DB",
-        "A serverless cron worker only",
-        "A WebSocket-only server"
+        "一个长寿命的有状态守护进程",
+        "无状态会话范围的 FastAPI 后端；每个请求都会启动一个新的代理，并且会话状态存在于数据库中",
+        "仅限无服务器 cron 工作人员",
+        "仅 WebSocket 服务器"
       ],
       "correct": 1,
-      "explanation": "Stateless FastAPI per request; session state externalized to a DB."
+      "explanation": "每个请求无状态 FastAPI；会话状态外部化到数据库。"
     },
     {
       "stage": "check",
-      "question": "What are Mastra's three primitives?",
+      "question": "马斯特拉的三个原语是什么？",
       "options": [
-        "Agents, Tools, Workflows",
-        "Actor, Message, Inbox",
-        "Plan, Worker, Solver",
-        "Node, Edge, State"
+        "代理、工具、工作流程",
+        "演员、消息、收件箱",
+        "计划、工作者、求解器",
+        "节点、边缘、状态"
       ],
       "correct": 0,
-      "explanation": "Agents (LLM + role), Tools (Zod-typed), and Workflows are Mastra's three primitives."
+      "explanation": "代理（LLM + 角色）、工具（Zod 类型）和工作流程是 Mastra 的三个原语。"
     },
     {
       "stage": "check",
-      "question": "Roughly what agent-instantiation cost does Agno target per its docs?",
+      "question": "Agno 根据其文档大致确定代理实例化成本是多少？",
       "options": [
-        "About 2 microseconds with about 3.75 KiB per agent",
-        "About 200 milliseconds and 100 MiB per agent",
-        "About 1 second and 1 GiB per agent",
-        "About 10 minutes and 4 GiB per agent"
+        "每个代理大约 2 微秒，大约 3.75 KiB",
+        "每个代理大约 200 毫秒和 100 MiB",
+        "每个代理大约 1 秒和 1 GiB",
+        "每个代理大约 10 分钟和 4 GiB"
       ],
       "correct": 0,
-      "explanation": "Agno's docs cite about 2 microseconds and about 3.75 KiB per agent."
+      "explanation": "Agno 的文档引用了每个代理大约 2 微秒和大约 3.75 KiB。"
     },
     {
       "stage": "check",
-      "question": "What does Mastra's Unified Model Router give?",
+      "question": "Mastra 的统一模型路由器提供什么？",
       "options": [
-        "A single client surface for thousands of models across many providers",
-        "A queue for tool calls",
-        "A vector DB layer",
-        "A graph checkpointer"
+        "单个客户端界面适用于许多提供商的数千个模型",
+        "工具调用队列",
+        "矢量 DB 层",
+        "图形检查点"
       ],
       "correct": 0,
-      "explanation": "Mastra's Unified Model Router cites 3,300+ models across 94 providers."
+      "explanation": "Mastra 的统一模型路由器引用了 94 个提供商的 3,300 多个模型。"
     },
     {
       "stage": "post",
-      "question": "When is perf-for-perf's-sake the wrong reason to pick Agno?",
+      "question": "什么时候为了性能而选择 Agno 是错误的理由？",
       "options": [
-        "When the workload is one slow agent call per request and overhead is not the bottleneck",
-        "When using Python 3.13",
-        "When deploying to AWS",
-        "When using Langfuse"
+        "当工作负载是每个请求一个缓慢的代理调用并且开销不是瓶颈时",
+        "使用Python 3.13时",
+        "部署到 AWS 时",
+        "使用Langfuse时"
       ],
       "correct": 0,
-      "explanation": "2 microseconds matters at chat fan-in scale, not for a single slow call per request."
+      "explanation": "对于聊天扇入规模而言，2 微秒很重要，但对于每个请求的单个缓慢调用而言，这并不重要。"
     },
     {
       "stage": "post",
-      "question": "What licensing surface should you read carefully before forking Mastra?",
+      "question": "在分叉 Mastra 之前，您应该仔细阅读哪些许可表面？",
       "options": [
-        "There is no license file",
-        "ee/ directories are source-available rather than Apache 2.0 and restrict commercial use",
-        "All of Mastra is GPL",
-        "Mastra requires CLA but no license review"
+        "没有许可证文件",
+        "ee/ 目录是可用源代码而不是 Apache 2.0，并且限制商业用途",
+        "Mastra 的全部内容都是 GPL",
+        "Mastra 需要 CLA，但无需许可证审查"
       ],
       "correct": 1,
-      "explanation": "Mastra is Apache 2.0 except for ee/ which is source-available; check the restrictions before forking."
+      "explanation": "Mastra 是 Apache 2.0，除了 ee/ 之外，它是可用的源代码；在分叉之前检查限制。"
     }
   ]
 }

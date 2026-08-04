@@ -1,75 +1,75 @@
 {
   "lesson": "86-constitutional-rules-engine",
-  "title": "Capstone 86 — Constitutional Rules Engine",
+  "title": "Capstone 86 — 宪法规则引擎",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why use a declarative YAML constitution rather than ad-hoc code checks?",
+      "question": "为什么使用声明性 YAML 构成而不是临时代码检查？",
       "options": [
-        "Because YAML is faster to parse than Python",
-        "Because rules in YAML are reviewable by non-engineers, lived in version control, and replaceable without a code change",
-        "Because the standard library prefers YAML",
-        "Because YAML supports anchors"
+        "因为 YAML 的解析速度比 Python 更快",
+        "因为 YAML 中的规则可由非工程师审查，存在于版本控制中，并且无需更改代码即可替换",
+        "因为标准库更喜欢YAML",
+        "因为 YAML 支持锚点"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "What fields must every rule have at minimum?",
+      "question": "每条规则必须至少包含哪些字段？",
       "options": [
-        "name, regex, fix",
-        "id, owner, timestamp",
-        "name, severity, must, explanation",
-        "predicate, severity, owner"
+        "名称、正则表达式、修复",
+        "id、所有者、时间戳",
+        "名称、严重性、必须、解释",
+        "谓词、严重性、所有者"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does the engine compose predicates?",
+      "question": "引擎如何组成谓词？",
       "options": [
-        "Only via a single contains_regex per rule",
-        "Via all_of, any_of, and not_ which recursively wrap atomic predicates",
-        "By multiplying confidence scores",
-        "Through a neural classifier"
+        "每个规则仅通过一个 contains_regex",
+        "通过 all_of、any_of 和 not_ 递归包装原子谓词",
+        "通过乘以置信度分数",
+        "通过神经分类器"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the role of applies_when?",
+      "question": "apply_when 的作用是什么？",
       "options": [
-        "It always evaluates to true",
-        "It gates the must predicate so rules that do not apply are recorded as not_applicable rather than violation",
-        "It overrides the severity",
-        "It picks the fixer operation"
+        "它总是评估为 true",
+        "它控制必须谓词，因此不适用的规则被记录为 not_applicable 而不是违规",
+        "它覆盖了严重性",
+        "它选择修复程序操作"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the Fixer do?",
+      "question": "固定器是做什么的？",
       "options": [
-        "It rewrites the rules file",
-        "It applies the per-rule declarative fix (append, prepend, replace_regex) to produce a revised text",
-        "It computes severity from the fix",
-        "It calls a remote model to repair the text"
+        "它重写规则文件",
+        "它应用每个规则的声明性修复（append、prepend、replace_regex）来生成修订后的文本",
+        "它计算修复的严重性",
+        "它调用远程模型来修复文本"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why does the demo run the engine a second time after the fixer?",
+      "question": "为什么演示程序在修复程序后第二次运行引擎？",
       "options": [
-        "To inflate the report size",
-        "To verify the revised text satisfies the rules and to surface any rule the fixer cannot repair locally",
-        "To re-load the constitution",
-        "Because the first pass is only a dry run"
+        "扩大报告大小",
+        "验证修改后的文本是否满足规则并显示修复程序无法在本地修复的任何规则",
+        "重新加载宪法",
+        "因为第一遍只是预演"
       ],
       "correct": 1,
       "explanation": ""

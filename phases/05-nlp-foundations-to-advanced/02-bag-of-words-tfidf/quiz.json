@@ -1,102 +1,102 @@
 {
   "lesson": "02-bag-of-words-tfidf",
-  "title": "Bag of Words, TF-IDF, and Text Representation",
+  "title": "词袋、TF-IDF 和文本表示",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does Bag of Words throw away?",
+      "question": "词袋会扔掉什么？",
       "options": [
-        "Token order",
-        "Vocabulary size",
-        "Document length",
-        "Punctuation"
+        "代币订单",
+        "词汇量",
+        "文件长度",
+        "标点"
       ],
       "correct": 0,
-      "explanation": "BoW counts tokens per document but discards their sequence."
+      "explanation": "BoW 对每个文档的标记进行计数，但丢弃它们的序列。"
     },
     {
       "stage": "pre",
-      "question": "Why scale TF by an IDF factor?",
+      "question": "为什么要通过 IDF 因子来缩放 TF？",
       "options": [
-        "Words that appear in every document carry little discriminative signal and should be downweighted",
-        "To normalize document length",
-        "To accelerate training",
-        "To remove punctuation"
+        "每个文档中出现的单词几乎没有任何歧视性信号，应降低权重",
+        "标准化文档长度",
+        "加速训练",
+        "删除标点符号"
       ],
       "correct": 0,
-      "explanation": "IDF penalizes ubiquitous words and boosts rare ones."
+      "explanation": "IDF 惩罚普遍存在的单词并提高罕见的单词。"
     },
     {
       "stage": "check",
-      "question": "In the smoothed IDF formula log((N+1)/(df+1)) + 1, what does the trailing +1 ensure?",
+      "question": "在平滑后的IDF公式log((N+1)/(df+1)) + 1中，尾随的+1保证了什么？",
       "options": [
-        "Faster computation",
-        "A word that appears in every document still has IDF 1 instead of 0",
-        "Compatibility with raw counts",
-        "Numerical stability for large N"
+        "计算速度更快",
+        "每个文档中出现的单词仍然具有 IDF 1 而不是 0",
+        "与原始计数的兼容性",
+        "大 N 的数值稳定性"
       ],
       "correct": 1,
-      "explanation": "The +1 keeps ubiquitous words at IDF=1 so they are not zeroed out, matching scikit-learn's default."
+      "explanation": "+1 将普遍存在的单词保留在 IDF=1 处，因此它们不会被清零，这与 scikit-learn 的默认值相匹配。"
     },
     {
       "stage": "check",
-      "question": "Why L2-normalize TF-IDF rows before cosine similarity?",
+      "question": "为什么在余弦相似度之前对 TF-IDF 行进行 L2 归一化？",
       "options": [
-        "To convert sparse vectors to dense",
-        "To compress the vocabulary",
-        "To remove zero entries",
-        "Longer documents would otherwise dominate similarity scores; normalization puts all docs on the unit hypersphere"
+        "将稀疏向量转换为稠密向量",
+        "压缩词汇量",
+        "删除零条目",
+        "否则，较长的文档将主导相似性得分；标准化将所有文档放在单位超球面上"
       ],
       "correct": 3,
-      "explanation": "L2 normalization removes document-length bias and turns cosine similarity into a dot product."
+      "explanation": "L2 归一化消除了文档长度偏差，并将余弦相似度转换为点积。"
     },
     {
       "stage": "check",
-      "question": "Which TfidfVectorizer setting is risky to enable for sentiment analysis?",
+      "question": "哪种 TfidfVectorizer 设置对于启用情感分析存在风险？",
       "options": [
-        "stop_words='english'",
+        "stop_words='英语'",
         "ngram_range=(1, 2)",
         "min_df=2",
-        "sublinear_tf=True"
+        "亚线性_tf=真"
       ],
       "correct": 0,
-      "explanation": "English stopword lists drop negations like 'not', which carry sentiment signal."
+      "explanation": "英语停用词列出了诸如“not”之类的否定词，这些否定词带有情感信号。"
     },
     {
       "stage": "post",
-      "question": "Which task does TF-IDF still win in 2026?",
+      "question": "2026 年 TF-IDF 还能赢得哪项任务？",
       "options": [
-        "Open-ended dialogue",
-        "Machine translation",
-        "Spam detection, log anomaly flagging, and low-latency narrow classification",
-        "Image captioning"
+        "开放式对话",
+        "机器翻译",
+        "垃圾邮件检测、日志异常标记和低延迟窄分类",
+        "图像字幕"
       ],
       "correct": 2,
-      "explanation": "TF-IDF beats embeddings when word presence is the signal and explainability or speed matter."
+      "explanation": "当单词存在是信号并且可解释性或速度很重要时，TF-IDF 击败嵌入。"
     },
     {
       "stage": "post",
-      "question": "Why does TF-IDF fail on the pair 'The movie was not good' vs 'The movie was excellent'?",
+      "question": "为什么 TF-IDF 在“电影不好”与“电影很棒”这对上失败？",
       "options": [
-        "TF-IDF cannot handle stopwords",
-        "TF-IDF requires bigrams to work",
-        "Embeddings overlap is too high",
-        "Both documents share most tokens; bag-of-words has no notion of negation or word order"
+        "TF-IDF 无法处理停用词",
+        "TF-IDF 需要二元组才能工作",
+        "嵌入重叠太高",
+        "两个文档共享大部分代币；词袋没有否定或词序的概念"
       ],
       "correct": 3,
-      "explanation": "Without word order or syntactic context, BoW cannot model that 'not' flips the sentiment of 'good'."
+      "explanation": "如果没有词序或句法上下文，BoW 就无法模拟“不”翻转“好”的情绪。"
     },
     {
       "stage": "post",
-      "question": "What is the TF-IDF weighted embedding hybrid?",
+      "question": "什么是 TF-IDF 加权嵌入混合？",
       "options": [
-        "Using TF-IDF weights as a pooling weight over per-token embeddings before averaging",
-        "Running PCA on TF-IDF then re-embedding",
-        "Concatenating BoW and dense embeddings",
-        "Training BERT on TF-IDF features"
+        "在平均之前使用 TF-IDF 权重作为每个令牌嵌入的池化权重",
+        "在 TF-IDF 上运行 PCA，然后重新嵌入",
+        "连接 BoW 和密集嵌入",
+        "在 TF-IDF 特征上训练 BERT"
       ],
       "correct": 0,
-      "explanation": "The hybrid weights each token's embedding by its TF-IDF score and averages, blending semantic capacity with rare-word emphasis."
+      "explanation": "该混合通过 TF-IDF 分数和平均值对每个标记的嵌入进行加权，将语义容量与稀有词强调相结合。"
     }
   ]
 }

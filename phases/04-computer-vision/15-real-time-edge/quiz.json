@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "You benchmark a model and report 'average 12ms per image on a 4090'. What is missing?",
-      "options": ["Nothing; that is a complete benchmark", "Percentiles (p50/p95/p99), warmup discipline, and CUDA synchronisation; a mean alone hides tail latency and may measure kernel dispatch instead of kernel execution", "The model size", "The dataset name"],
+      "question": "您对模型进行基准测试并报告“4090 上每个图像平均 12 毫秒”。缺什么？",
+      "options": [
+        "没有什么;这是一个完整的基准",
+        "百分位数 (p50/p95/p99)、预热规则和 CUDA 同步；单独的均值隐藏了尾部延迟，并且可以测量内核调度而不是内核执行",
+        "型号尺寸",
+        "数据集名称"
+      ],
       "correct": 1,
-      "explanation": "Production latency is measured in percentiles because real-time systems fail on tails, not averages. Without warmup, JIT compilation inflates the first few measurements. Without torch.cuda.synchronize, GPU kernel launches return before the kernel finishes, so you measure dispatch, not execution. All three have to be right for the number to be meaningful."
+      "explanation": "生产延迟以百分位数来衡量，因为实时系统失败是尾部失败，而不是平均失败。如果没有预热，JIT 编译会夸大前几个测量值。如果没有 torch.cuda.synchronize，GPU 内核会在内核完成之前启动返回，因此您测量的是调度，而不是执行。三者都必须正确，数字才有意义。"
     },
     {
       "stage": "pre",
-      "question": "FLOPs and on-device latency do not correlate perfectly. Why?",
-      "options": ["FLOPs counters are broken", "Different operations have different hardware friendliness; depthwise convolutions may have lower FLOPs but are memory-bound on GPUs, while dense convolutions use Tensor Cores efficiently. Memory bandwidth, kernel launch overhead, and cache behaviour also shape latency beyond raw FLOPs", "FLOPs ignore batch size", "PyTorch counts FLOPs incorrectly"],
+      "question": "FLOP 和设备上的延迟并不完全相关。为什么？",
+      "options": [
+        "FLOP 计数器损坏",
+        "不同的操作有不同的硬件友好性；深度卷积可能具有较低的 FLOP，但在 GPU 上受内存限制，而密集卷积则有效地使用 Tensor Core。内存带宽、内核启动开销和缓存行为也会影响原始 FLOP 之外的延迟",
+        "FLOP 忽略批量大小",
+        "PyTorch 错误地计算 FLOP 次数"
+      ],
       "correct": 1,
-      "explanation": "FLOPs is a cheap proxy. Wall-clock latency depends on how well an operation matches the hardware's strengths: dense matmuls pin Tensor Cores; depthwise convs stall on memory bandwidth; attention stalls on sequence-length^2 memory reads. For architecture search FLOPs is useful; for deployment decisions measure on the target device."
+      "explanation": "FLOPs 是一个廉价的代理。挂钟延迟取决于操作与硬件优势的匹配程度：密集的 matmuls 引脚 Tensor Core；深度转换在内存带宽上停滞；注意力在序列长度^2内存读取上停滞。对于架构搜索 FLOP 很有用；用于在目标设备上进行部署决策测量。"
     },
     {
       "stage": "post",
-      "question": "Post-training static INT8 quantisation typically loses how much accuracy on ImageNet-class vision models?",
-      "options": ["5-10 percentage points", "0.1-1 percentage points when properly calibrated; batch-norm-fused conv models are particularly well-behaved under INT8", "Always 0; it is lossless", "20+ points; unusable"],
+      "question": "训练后静态 INT8 量化通常会损失 ImageNet 级视觉模型的准确度多少？",
+      "options": [
+        "5-10个百分点",
+        "正确校准后为 0.1-1 个百分点；批量标准化融合的卷积模型在 INT8 下表现得特别好",
+        "始终为 0；它是无损的",
+        "20+分；无法使用的"
+      ],
       "correct": 1,
-      "explanation": "Static PTQ on well-calibrated vision models loses a fraction of a point to about 1 point. The bigger loss modes are (a) insufficient calibration data, (b) quantising activations with extreme outliers (fix with per-channel quantisation or clipping), (c) un-fused BatchNorm layers. When those are handled, INT8 is essentially free."
+      "explanation": "校准良好的视觉模型上的静态 PTQ 会损失一小部分到大约 1 分。较大的损失模式是（a）校准数据不足，（b）具有极端异常值的量化激活（通过每通道量化或裁剪进行修复），（c）未融合的 BatchNorm 层。当这些处理完成后，INT8 基本上是免费的。"
     },
     {
       "stage": "post",
-      "question": "Your mobile app needs a vision model under 10MB with sub-10ms latency. Which backbone do you pick?",
-      "options": ["ResNet-50", "MobileNetV3-Small or EfficientNet-Lite-B0 quantised to INT8; both target this budget and compile cleanly to TFLite / Core ML", "ViT-Base", "ConvNeXt-Large"],
+      "question": "您的移动应用程序需要一个低于 10MB 且延迟低于 10 毫秒的视觉模型。你选择哪个骨干？",
+      "options": [
+        "ResNet-50",
+        "MobileNetV3-Small 或 EfficientNet-Lite-B0 量化为 INT8；两者都以这个预算为目标，并干净地编译为 TFLite / Core ML",
+        "ViT-基础",
+        "大型Conv"
+      ],
       "correct": 1,
-      "explanation": "Mobile vision shipping in 2026 is still dominated by MobileNetV3 and EfficientNet-Lite variants because they were designed for this budget: depthwise convs, h-swish, squeeze-excite, quantisation-aware from day one. ResNet-50 and ViT-Base are 100MB+ in FP32 and 25MB+ in INT8, blowing the size budget before latency is even measured."
+      "explanation": "2026 年的移动视觉出货量仍以 MobileNetV3 和 EfficientNet-Lite 变体为主，因为它们是为此预算而设计的：深度方向转换、h-swish、squeeze-excite、从第一天起就具有量化感知能力。 ResNet-50 和 ViT-Base 在 FP32 中为 100MB+，在 INT8 中为 25MB+，甚至在测量延迟之前就超出了大小预算。"
     },
     {
       "stage": "post",
-      "question": "You export a PyTorch model to ONNX with opset 17 and it fails with 'Unsupported operator'. What are the most likely causes?",
-      "options": ["The ONNX library is outdated", "(1) A custom op that has no ONNX mapping; (2) a non-deterministic control-flow path that tracing cannot capture; (3) a tensor-scalar interaction that is implicit in Python but has no ONNX equivalent. Fixes: replace the op, use `torch.jit.script` for control flow, or upgrade opset", "The model has too many parameters", "The input shape is wrong"],
+      "question": "您使用 opset 17 将 PyTorch 模型导出到 ONNX，但失败并显示“不支持的运算符”。最可能的原因是什么？",
+      "options": [
+        "ONNX 库已过时",
+        "(1) 没有 ONNX 映射的自定义操作； (2) 跟踪无法捕获的非确定性控制流路径； (3) Python 中隐含的张量-标量交互，但没有 ONNX 等效项。修复：替换 op、使用“torch.jit.script”控制流程或升级 opset",
+        "模型参数太多",
+        "输入形状错误"
+      ],
       "correct": 1,
-      "explanation": "ONNX export is tracing by default, so anything that tracing cannot capture — runtime control flow, Python-level branches, custom CUDA ops — fails. Most failures are a single node that has no ONNX equivalent (often a tiny custom op or a call to torch.special.*). The fix is either replacing the op, switching to `torch.jit.script`, or moving to a newer opset where the op exists."
+      "explanation": "ONNX 导出默认进行跟踪，因此跟踪无法捕获的任何内容（运行时控制流、Python 级分支、自定义 CUDA 操作）都会失败。大多数故障是没有 ONNX 等效项的单个节点（通常是一个微小的自定义操作或对 torch.special.* 的调用）。解决方法是替换操作，切换到“torch.jit.script”，或者移动到操作所在的较新的操作集。"
     }
   ]
 }

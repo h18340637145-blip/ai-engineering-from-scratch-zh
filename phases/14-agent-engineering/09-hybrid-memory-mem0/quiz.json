@@ -4,87 +4,87 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "Which query class does a KV store handle best?",
+      "question": "KV 存储最能处理哪种查询类？",
       "options": [
-        "Semantic similarity over long conversations",
-        "Direct fact lookup keyed by (user, type, entity)",
-        "Reachability across customers sharing a billing entity",
-        "Temporal queries valid-at-time"
+        "长时间对话的语义相似性",
+        "按（用户、类型、实体）键入的直接事实查找",
+        "共享计费实体的客户之间的可达性",
+        "时态查询在时间有效"
       ],
       "correct": 1,
-      "explanation": "KV is O(1) on exact keys; vector is for similarity, graph is for relationships."
+      "explanation": "KV 在精确键上是 O(1)；向量用于相似性，图用于关系。"
     },
     {
       "stage": "pre",
-      "question": "What are the three stores Mem0 writes in parallel on each add()?",
+      "question": "Mem0 在每个 add() 上并行写入的三个存储是什么？",
       "options": [
-        "Vector, KV, graph",
-        "Cache, queue, log",
-        "Postgres, Redis, ClickHouse",
-        "Embedding, attention, FFN"
+        "矢量、KV、图",
+        "缓存、队列、日志",
+        "Postgres、Redis、ClickHouse",
+        "嵌入、注意力、FFN"
       ],
       "correct": 0,
-      "explanation": "Mem0 fans every write out to vector, KV, and graph stores."
+      "explanation": "Mem0 粉丝每次都会写入向量、KV 和图形存储。"
     },
     {
       "stage": "check",
-      "question": "What three dimensions feed Mem0's fusion score?",
+      "question": "Mem0 的融合分数由哪三个维度提供？",
       "options": [
-        "Relevance, importance, recency",
-        "Precision, recall, F1",
-        "Latency, throughput, cost",
-        "Confidence, perplexity, BLEU"
+        "相关性、重要性、新近度",
+        "准确率、召回率、F1",
+        "延迟、吞吐量、成本",
+        "置信度、困惑度、BLEU"
       ],
       "correct": 0,
-      "explanation": "Score is a weighted sum of relevance, importance, and recency; weights tune per product."
+      "explanation": "分数是相关性、重要性和新近度的加权总和；每个产品的权重调整。"
     },
     {
       "stage": "check",
-      "question": "What does Mem0g do when an incoming fact contradicts an existing edge?",
+      "question": "当传入的事实与现有边缘相矛盾时，Mem0g 会做什么？",
       "options": [
-        "Deletes the edge",
-        "Marks the existing edge invalid but does not delete it, so temporal queries can still traverse",
-        "Raises an exception",
-        "Rewrites the user_id"
+        "删除边缘",
+        "将现有边标记为无效但不删除它，因此时间查询仍然可以遍历",
+        "引发异常",
+        "重写user_id"
       ],
       "correct": 1,
-      "explanation": "Soft invalidation preserves history for temporal (valid-at-time) queries."
+      "explanation": "软失效保留临时（当时有效）查询的历史记录。"
     },
     {
       "stage": "check",
-      "question": "Why does the lesson recommend tuning fusion weights per product?",
+      "question": "为什么本课程建议调整每个产品的融合权重？",
       "options": [
-        "Providers require it",
-        "Recency dominates for chat agents while importance dominates for compliance agents and relevance dominates for retrieval agents",
-        "Vector libraries reject equal weights",
-        "It is required by Apache 2.0"
+        "提供商需要它",
+        "聊天代理的新近度占主导地位，合规代理的重要性占主导地位，检索代理的相关性占主导地位",
+        "向量库拒绝同等权重",
+        "Apache 2.0 需要它"
       ],
       "correct": 1,
-      "explanation": "Different products want different bias on relevance/importance/recency; one set of weights does not fit all."
+      "explanation": "不同的产品需要对相关性/重要性/新近度有不同的偏见；一套重量并不适合所有的重量。"
     },
     {
       "stage": "post",
-      "question": "What is the scope taxonomy Mem0 uses?",
+      "question": "Mem0 使用的范围分类法是什么？",
       "options": [
-        "Public, private, secret",
-        "User, session, agent",
-        "Local, regional, global",
-        "Read, write, admin"
+        "公开、私人、秘密",
+        "用户、会话、代理",
+        "本地、区域、全球",
+        "读、写、管理"
       ],
       "correct": 1,
-      "explanation": "Scopes are user (cross-session), session (one thread), agent (per-instance state)."
+      "explanation": "范围是用户（跨会话）、会话（一个线程）、代理（每个实例状态）。"
     },
     {
       "stage": "post",
-      "question": "What is embedding drift in this pattern, and how does the lesson recommend mitigating it?",
+      "question": "此模式中的嵌入漂移是什么？本课程建议如何减轻它？",
       "options": [
-        "Vectors get encrypted; rotate keys",
-        "Vector retrieval quality degrades as the corpus grows; periodically re-embed the top-N most used records",
-        "Embeddings overflow integers; switch to float64",
-        "The embedding API changes URL; pin a domain"
+        "矢量被加密；轮换钥匙",
+        "随着语料库的增长，矢量检索质量会下降；定期重新嵌入前 N 个最常用的记录",
+        "嵌入溢出整数；切换到float64",
+        "嵌入API改变URL；固定域名"
       ],
       "correct": 1,
-      "explanation": "Periodic re-embedding of hot records keeps retrieval quality steady as the corpus grows."
+      "explanation": "随着语料库的增长，定期重新嵌入热门记录可以保持检索质量稳定。"
     }
   ]
 }

@@ -1,78 +1,78 @@
 {
   "lesson": "73-perplexity-calibration",
-  "title": "Perplexity and Calibration",
+  "title": "困惑度和校准",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does a perplexity of 1.0 imply about a language model on the test corpus?",
+      "question": "对于测试语料库上的语言模型，困惑度为 1.0 意味着什么？",
       "options": [
-        "The model assigns probability 1 to every actual token; it is a perfect model",
-        "The model is uniform over the vocabulary",
-        "The corpus is empty",
-        "The model is broken"
+        "该模型为每个实际令牌分配概率 1；这是一个完美的模型",
+        "该模型在词汇表上是统一的",
+        "语料库为空",
+        "模型坏了"
       ],
       "correct": 0,
-      "explanation": "Perplexity equals exp(avg negative log-likelihood). When every token gets probability 1, the NLL is zero, and exp(0) is 1."
+      "explanation": "困惑度等于 exp(平均负对数似然)。当每个 token 的概率为 1 时，NLL 为零，exp(0) 为 1。"
     },
     {
       "stage": "pre",
-      "question": "Why does the harness require non-negative log-probabilities from the adapter?",
+      "question": "为什么线束需要适配器提供非负对数概率？",
       "options": [
-        "Perplexity is undefined for negative values",
-        "Negative log-probabilities are non-negative by definition; receiving a negative value means the adapter sent log p, not -log p",
-        "Numpy crashes on negatives",
-        "The bin edges in ECE assume positivity"
+        "负值的困惑度未定义",
+        "根据定义，负对数概率是非负的；接收负值意味着适配器发送了 log p，而不是 -log p",
+        "Numpy 在负数上崩溃",
+        "ECE 中的 bin 边缘呈现正值"
       ],
       "correct": 1,
-      "explanation": "-log p of a probability is non-negative. A negative value is a contract violation that would silently give perplexity < 1, which is impossible."
+      "explanation": "-log p 概率是非负的。负值是违反合同的行为，它会默默地使困惑度<1，这是不可能的。"
     },
     {
       "stage": "check",
-      "question": "What does expected calibration error measure?",
+      "question": "预期校准误差衡量什么？",
       "options": [
-        "The mean absolute distance between predicted and true labels",
-        "The average gap between bin-level confidence and bin-level accuracy, weighted by bin size",
-        "The variance of the softmax output",
-        "The cross-entropy of the predictions"
+        "预测标签和真实标签之间的平均绝对距离",
+        "箱级置信度和箱级准确度之间的平均差距（按箱大小加权）",
+        "softmax 输出的方差",
+        "预测的交叉熵"
       ],
       "correct": 1,
-      "explanation": "ECE bins predictions by confidence, measures the gap between average confidence and average accuracy per bin, weights by bin size."
+      "explanation": "ECE 按置信度对预测进行分箱，测量每个分箱的平均置信度和平均准确度之间的差距，按分箱大小进行权重。"
     },
     {
       "stage": "check",
-      "question": "Why does the implementation also return populated_bins alongside the ECE value?",
+      "question": "为什么该实现还返回 populated_bins 和 ECE 值？",
       "options": [
-        "It is required for reliability diagrams",
-        "It signals when too few bins are populated for the single number to be trustworthy",
-        "It is the denominator of the Brier score",
-        "It is needed by numpy"
+        "可靠性图需要它",
+        "当填充的垃圾箱太少而导致单个数字不可信时，它会发出信号",
+        "它是 Brier 分数的分母",
+        "numpy 需要它"
       ],
       "correct": 1,
-      "explanation": "With few populated bins the ECE is dominated by noise. Reporting the populated count lets the runner refuse to publish a misleading single number."
+      "explanation": "由于垃圾箱很少，ECE 中主要是噪音。报告填充计数可以让跑步者拒绝发布误导性的单个数字。"
     },
     {
       "stage": "check",
-      "question": "What does Brier score capture that ECE does not?",
+      "question": "Brier 分数涵盖了哪些 ECE 未涵盖的内容？",
       "options": [
-        "It is faster to compute",
-        "It penalises local miscalibration directly, since it is the per-prediction squared error",
-        "It does not need ground-truth labels",
-        "It works only on binary outcomes"
+        "计算速度更快",
+        "它直接惩罚局部误校准，因为它是每个预测的平方误差",
+        "它不需要真实标签",
+        "它仅适用于二元结果"
       ],
       "correct": 1,
-      "explanation": "ECE only looks at averages per bin. Brier squares the error per prediction, so it catches the case where bins cancel out on average but are individually miscalibrated."
+      "explanation": "ECE 仅查看每个箱的平均值。 Brier 对每个预测的误差进行平方，因此它捕获了箱体平均抵消但单独校准错误的情况。"
     },
     {
       "stage": "post",
-      "question": "Why is calibration a per-model report rather than a per-task metric?",
+      "question": "为什么校准是每个模型的报告而不是每个任务的指标？",
       "options": [
-        "Tasks do not have probabilities",
-        "Single tasks have too few predictions to estimate bin statistics; the report aggregates across the whole eval",
-        "Calibration is too slow to compute per task",
-        "ECE requires the runner to know the model architecture"
+        "任务没有概率",
+        "单个任务的预测太少，无法估计 bin 统计数据；该报告汇总了整个评估过程",
+        "校准太慢而无法计算每个任务",
+        "ECE要求跑步者了解模型架构"
       ],
       "correct": 1,
-      "explanation": "Per-task calibration is dominated by noise. The runner pools confidence/correctness pairs across all tasks before computing ECE, Brier, and the reliability diagram."
+      "explanation": "每任务校准主要受噪声影响。在计算 ECE、Brier 和可靠性图之前，运行程序会汇集所有任务的置信度/正确性对。"
     }
   ]
 }

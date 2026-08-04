@@ -1,90 +1,90 @@
 {
   "lesson": "13-langgraph-stateful-graphs",
-  "title": "LangGraph：基于状态图与检查点机制的 Agent 编排",
+  "title": "LangGraph：基于状态图与检查点机制的Agent编排",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does LangGraph treat as the core unit of the agent?",
+      "question": "LangGraph将什么视为agent的核心单元？",
       "options": [
-        "A free-form LLM call",
-        "A state machine with typed state, function nodes, and conditional edges",
-        "A single tool registry",
-        "A vector index"
+        "自由形式的 LLM 电话",
+        "具有类型化状态、函数节点和条件边的状态机",
+        "单一工具注册表",
+        "向量索引"
       ],
       "correct": 1,
-      "explanation": "LangGraph models the agent as a state graph: nodes are pure functions, edges are transitions, state is typed and immutable."
+      "explanation": "LangGraph 将代理建模为状态图：节点是纯函数，边是转换，状态是类型化且不可变的。"
     },
     {
       "stage": "pre",
-      "question": "Which problem does durable execution solve?",
+      "question": "持久执行解决了什么问题？",
       "options": [
-        "Reducing inference cost",
-        "Resuming a 40-step run from step 38 when it fails, with exact state, instead of starting over",
-        "Generating embeddings faster",
-        "Translating between providers"
+        "降低推理成本",
+        "当失败时从步骤 38 恢复 40 步运行，并具有准确的状态，而不是重新开始",
+        "更快地生成嵌入",
+        "提供商之间的翻译"
       ],
       "correct": 1,
-      "explanation": "Checkpoints after every node let the runtime resume from the last successful step."
+      "explanation": "每个节点后面的检查点让运行时从上一个成功的步骤恢复。"
     },
     {
       "stage": "check",
-      "question": "Which of these is NOT one of the three topologies LangGraph supports?",
+      "question": "LangGraph 支持的三种拓扑结构中，哪一个不是其中之一？",
       "options": [
-        "Supervisor",
-        "Swarm (peer-to-peer)",
-        "Hierarchical (nested subgraphs)",
-        "Gradient ring"
+        "导师",
+        "群（点对点）",
+        "分层（嵌套子图）",
+        "渐变环"
       ],
       "correct": 3,
-      "explanation": "Topologies are supervisor, swarm, and hierarchical. Gradient ring is not a LangGraph topology."
+      "explanation": "拓扑有监督式、群式和分层式。梯度环不是 LangGraph 拓扑。"
     },
     {
       "stage": "check",
-      "question": "Why must nodes be deterministic for resume to work cleanly?",
+      "question": "为什么节点必须具有确定性才能干净地恢复工作？",
       "options": [
-        "Providers require determinism",
-        "Resume assumes the same inputs produce the same state update; random seeds, wall-clock, and external APIs must be captured",
-        "Determinism reduces token cost",
-        "It is required by the GIL"
+        "提供商需要确定性",
+        "恢复假设相同的输入产生相同的状态更新；必须捕获随机种子、挂钟和外部 API",
+        "确定性降低了代币成本",
+        "GIL 要求"
       ],
       "correct": 1,
-      "explanation": "If a node depends on uncaptured nondeterminism, resume cannot reconstruct the post-step state."
+      "explanation": "如果节点依赖于未捕获的不确定性，则恢复无法重建后步状态。"
     },
     {
       "stage": "check",
-      "question": "What is a conditional edge?",
+      "question": "什么是条件边？",
       "options": [
-        "An edge weighted by training loss",
-        "An edge chosen by a function of state, used to branch the graph",
-        "An edge that runs only on GPUs",
-        "An edge with a TTL"
+        "通过训练损失加权的边缘",
+        "由状态函数选择的边，用于对图进行分支",
+        "仅在 GPU 上运行的边缘",
+        "具有 TTL 的边缘"
       ],
       "correct": 1,
-      "explanation": "Conditional edges branch based on state; overusing them makes the graph hard to reason about."
+      "explanation": "基于状态的条件边分支；过度使用它们会使图表难以推理。"
     },
     {
       "stage": "post",
-      "question": "What goes wrong when checkpoints are too small?",
+      "question": "当检查点太小时会出现什么问题？",
       "options": [
-        "Tool state and memory writes are not recoverable; full state must serialize",
-        "The disk fills up",
-        "The graph cannot reach END",
-        "The model produces shorter answers"
+        "工具状态和内存写入不可恢复；完整状态必须序列化",
+        "磁盘已满",
+        "图表无法到达END",
+        "该模型产生更短的答案"
       ],
       "correct": 0,
-      "explanation": "Only checkpointing conversation turns leaves tool state and memory writes outside resume's reach."
+      "explanation": "只有检查点对话轮次才会使工具状态和内存写入超出简历的范围。"
     },
     {
       "stage": "post",
-      "question": "Where does human-in-the-loop fit into LangGraph's design?",
+      "question": "人机交互在 LangGraph 的设计中处于什么位置？",
       "options": [
-        "It requires a fork of the runtime",
-        "Pause before a critical node, surface serialized state to a human, accept modifications, resume; the checkpointer makes this cheap",
-        "Only at START and END",
-        "Through a separate provider API"
+        "它需要运行时的分叉",
+        "在关键节点之前暂停，向人类展示序列化状态，接受修改，恢复；检查点使这变得便宜",
+        "仅在开始和结束时",
+        "通过单独的提供商 API"
       ],
       "correct": 1,
-      "explanation": "Because state is already serialized between nodes, human review and edit is a natural pause-and-resume pattern."
+      "explanation": "由于状态已经在节点之间序列化，因此人工审查和编辑是一种自然的暂停和恢复模式。"
     }
   ]
 }

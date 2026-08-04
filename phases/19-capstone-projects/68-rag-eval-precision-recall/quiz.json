@@ -1,78 +1,78 @@
 {
   "lesson": "68-rag-eval-precision-recall",
-  "title": "RAG Evaluation: Precision, Recall, MRR, nDCG, Faithfulness, Answer Relevance",
+  "title": "RAG 评估：精确率、召回率、MRR、nDCG、忠实度、答案相关性",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why is recall@k usually the headline retrieval metric in production RAG?",
+      "question": "为什么recall@k 通常是生产 RAG 中的标题检索指标？",
       "options": [
-        "Recall ignores ranking",
-        "Generation can drop irrelevant chunks but cannot invent an answer from a chunk it never saw, so missing the right chunk is the more expensive failure",
-        "Recall is required by the OpenAPI spec",
-        "Recall is the same as precision in RAG"
+        "召回率忽略排名",
+        "生成可以删除不相关的块，但无法从它从未见过的块中发明答案，因此丢失正确的块是更昂贵的失败",
+        "OpenAPI 规范要求召回",
+        "RAG 中的召回率与精度相同"
       ],
       "correct": 1,
-      "explanation": "A retriever that misses the right chunk cannot be repaired downstream; surplus chunks waste tokens but rarely poison the answer."
+      "explanation": "丢失正确块的检索器无法在下游修复；多余的块会浪费代币，但很少会毒害答案。"
     },
     {
       "stage": "pre",
-      "question": "What does MRR compute?",
+      "question": "MRR 计算什么？",
       "options": [
-        "The mean of 1 / position-of-first-relevant-document across queries",
-        "The geometric mean of cosine similarity",
-        "Median rank of the second relevant document",
-        "Token count of the answer"
+        "跨查询的 1 / 第一个相关文档位置的平均值",
+        "余弦相似度的几何平均值",
+        "第二个相关文档的中位排名",
+        "答案的标记计数"
       ],
       "correct": 0,
-      "explanation": "MRR is dominated by the top of the list: rank 1 contributes 1.0, rank 2 contributes 0.5, rank 10 contributes 0.1."
+      "explanation": "MRR 由列表顶部主导：排名 1 贡献 1.0，排名 2 贡献 0.5，排名 10 贡献 0.1。"
     },
     {
       "stage": "check",
-      "question": "When should you reach for nDCG instead of recall@k?",
+      "question": "您什么时候应该使用 nDCG 而不是recall@k？",
       "options": [
-        "When the corpus is small",
-        "When the gold labels carry graded relevance (e.g. doc A is 3, doc B is 2, doc C is 1) and binary metrics lose information",
-        "When the retriever does not return scores",
-        "Never"
+        "当语料库较小时",
+        "当黄金标签具有分级相关性时（例如，文档 A 为 3、文档 B 为 2、文档 C 为 1）并且二进制指标会丢失信息",
+        "当检索器没有返回分数时",
+        "绝不"
       ],
       "correct": 1,
-      "explanation": "nDCG uses graded gains and a position discount; recall flattens everything to binary."
+      "explanation": "nDCG 使用分级收益和头寸折扣；回忆将一切都扁平化为二进制。"
     },
     {
       "stage": "check",
-      "question": "What is the difference between faithfulness and answer relevance?",
+      "question": "忠实度和答案相关性有什么区别？",
       "options": [
-        "Faithfulness asks 'is the answer grounded in the retrieved context'; answer relevance asks 'does the answer address the question'",
-        "Faithfulness measures precision; relevance measures recall",
-        "Faithfulness is a retrieval metric and relevance is a chunker metric",
-        "They are the same metric with two names"
+        "忠实性询问“答案是否基于检索到的上下文”；答案相关性询问“答案是否解决了问题”",
+        "忠诚衡量精确；相关性措施回忆",
+        "可信度是一个检索指标，相关性是一个分块指标",
+        "它们是具有两个名称的相同指标"
       ],
       "correct": 0,
-      "explanation": "A faithful but off-topic answer scores high on faithfulness, low on relevance; a relevant but ungrounded answer scores high on relevance, low on faithfulness."
+      "explanation": "忠实但偏离主题的答案在忠诚度上得分高，在相关性上得分低；相关但没有根据的答案在相关性方面得分较高，在忠诚度方面得分较低。"
     },
     {
       "stage": "check",
-      "question": "A pipeline shows decent recall@5 but low MRR. Which stage should you investigate first?",
+      "question": "管道显示出不错的召回率@5，但 MRR 较低。您应该首先调查哪个阶段？",
       "options": [
-        "The chunker",
-        "The reranker, because the right chunk is in the top-k but not at the top",
-        "The generator",
-        "The corpus ingestor"
+        "分块器",
+        "重新排序器，因为正确的块位于 top-k 中但不在顶部",
+        "发电机",
+        "语料库摄取器"
       ],
       "correct": 1,
-      "explanation": "Recall@5 means the gold is in top-5; low MRR means it is not at the top of the list. That is the rerank stage's job."
+      "explanation": "Recall@5 表示金牌位于前 5 名；低 MRR 意味着它不在列表的顶部。这就是重新排序阶段的工作。"
     },
     {
       "stage": "post",
-      "question": "What production hazard makes a frozen qrels file dangerous over time?",
+      "question": "随着时间的推移，什么生产危害会使冻结的 qrels 文件变得危险？",
       "options": [
-        "The retriever stops working after six months",
-        "Qrels rot: the corpus changes and a doc that was the gold answer last quarter is no longer the right answer; metrics get reported against stale labels",
-        "Embedding vectors expire",
-        "The eval suite uses up disk space"
+        "六个月后猎犬停止工作",
+        "Qrels rot：语料库发生变化，上个季度的黄金答案不再是正确的答案；根据过时的标签报告指标",
+        "嵌入向量过期",
+        "eval 套件占用磁盘空间"
       ],
       "correct": 1,
-      "explanation": "Schedule a quarterly qrels review or your metrics will be measuring the wrong thing as the corpus evolves."
+      "explanation": "安排季度 qrels 审查，否则随着语料库的发展，您的指标将衡量错误的事物。"
     }
   ]
 }

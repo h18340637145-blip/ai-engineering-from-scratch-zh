@@ -1,78 +1,78 @@
 {
   "lesson": "77-data-parallel-ddp",
-  "title": "Data Parallel DDP From Scratch",
+  "title": "从头开始数据并行 DDP",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does DDP broadcast parameters at construction instead of relying on the same seed across ranks?",
+      "question": "为什么 DDP 在构建时广播参数而不是跨等级依赖相同的种子？",
       "options": [
-        "Broadcast is faster than seeding",
-        "Same-seed init drifts by float epsilon across ranks; broadcast guarantees byte-equal weights before training starts",
-        "PyTorch forbids same-seed init",
-        "Broadcast saves memory"
+        "广播比播种更快",
+        "相同种子 init 通过 float epsilon 跨等级漂移；广播在训练开始前保证字节相等的权重",
+        "PyTorch 禁止同种子初始化",
+        "广播节省内存"
       ],
       "correct": 1,
-      "explanation": "Float ops on different hardware (or even different process orders) can differ at the bit level. A broadcast from rank 0 is the only way to get byte-equal weights everywhere."
+      "explanation": "不同硬件（甚至不同的进程顺序）上的浮点操作在位级别上可能有所不同。从 0 级开始的广播是在各处获得字节相等权重的唯一方法。"
     },
     {
       "stage": "pre",
-      "question": "What does DDP do after backward and before optimizer.step?",
+      "question": "在backward之后和optimizer.step之前DDP做了什么？",
       "options": [
-        "Nothing",
-        "Saves a checkpoint",
-        "Allreduce-SUM every parameter's gradient and divide by world_size to get the mean gradient",
-        "Broadcasts logits"
+        "没有什么",
+        "保存检查点",
+        "Allreduce-SUM 每个参数的梯度并除以 world_size 以获得平均梯度",
+        "广播逻辑"
       ],
       "correct": 2,
-      "explanation": "The mean gradient is invariant to world_size so a learning rate tuned at one rank works at N ranks."
+      "explanation": "平均梯度对于 world_size 是不变的，因此在一级调整的学习率适用于 N 级。"
     },
     {
       "stage": "check",
-      "question": "Why divide by world_size after allreduce-SUM instead of using allreduce-MEAN?",
+      "question": "为什么在 allreduce-SUM 之后除以 world_size 而不是使用 allreduce-MEAN？",
       "options": [
-        "Allreduce-MEAN does not exist in gloo",
-        "Division by world_size on each rank is a local op; allreduce-MEAN would be implemented the same way under the hood",
-        "Division produces NaN",
-        "world_size is unknown"
+        "Gloo 中不存在 Allreduce-MEAN",
+        "每个等级除以 world_size 就是一个本地操作； allreduce-MEAN 将在后台以相同的方式实现",
+        "除法产生 NaN",
+        "world_size 未知"
       ],
       "correct": 1,
-      "explanation": "Both approaches yield the same arithmetic. NCCL ships allreduce-AVG since 2.10; gloo does not, so divide locally after SUM."
+      "explanation": "两种方法产生相同的算术。 NCCL 自 2.10 起发布 allreduce-AVG； gloo 没有，因此在 SUM 之后进行局部除法。"
     },
     {
       "stage": "check",
-      "question": "What does gradient bucketing in production DDP achieve?",
+      "question": "生产 DDP 中的梯度分桶实现了什么？",
       "options": [
-        "Quantises gradients to int8",
-        "Coalesces many small allreduces into one large allreduce, amortising the per-call latency floor",
-        "Frees gradient memory",
-        "Skips backward"
+        "将梯度量化为 int8",
+        "将许多小的 allreduce 合并为一个大的 allreduce，分摊每次调用的延迟下限",
+        "释放梯度内存",
+        "向后跳"
       ],
       "correct": 1,
-      "explanation": "A 1B-parameter model has thousands of grad tensors; one allreduce per tensor pays gloo or NCCL latency thousands of times."
+      "explanation": "1B 参数模型有数千个梯度张量；每个张量的一次 allreduce 会导致 gloo 或 NCCL 延迟数千倍。"
     },
     {
       "stage": "check",
-      "question": "Why does no_sync() exist in PyTorch DDP?",
+      "question": "为什么 PyTorch DDP 中存在 no_sync() ？",
       "options": [
-        "To turn off DDP",
-        "Gradient accumulation over K microbatches needs to skip the post-backward allreduce for K-1 of them; no_sync wraps that pause",
-        "To switch backends",
-        "To debug"
+        "关闭 DDP",
+        "K 个微批次的梯度累积需要跳过其中 K-1 个微批次的后向 Allreduce； no_sync 包装该暂停",
+        "切换后端",
+        "调试"
       ],
       "correct": 1,
-      "explanation": "Without no_sync the allreduce fires K times per accumulated step and throughput drops to the floor."
+      "explanation": "如果没有 no_sync，allreduce 每个累积步骤会触发 K 次，吞吐量会下降到最低水平。"
     },
     {
       "stage": "post",
-      "question": "Why does this lesson's reference implementation walk every rank's micro-batch sequentially in one process?",
+      "question": "为什么本课的参考实现会在一个进程中按顺序遍历每个级别的微批次？",
       "options": [
-        "Single-process is faster",
-        "It gives a byte-equal baseline: the sequential mean gradient must equal DDP's allreduced mean gradient at every step",
-        "It is the only way to use gloo",
-        "It saves memory"
+        "单进程速度更快",
+        "它给出了字节相等的基线：每一步的顺序平均梯度必须等于 DDP 的 allreduce 平均梯度",
+        "这是使用 gloo 的唯一方法",
+        "它节省内存"
       ],
       "correct": 1,
-      "explanation": "Equivalence to the reference loop is the load-bearing correctness test; without it gradient sync bugs hide until step 10000."
+      "explanation": "与参考回路的等效性即为承载正确性检验；如果没有它，梯度同步错误会隐藏到步骤 10000。"
     }
   ]
 }

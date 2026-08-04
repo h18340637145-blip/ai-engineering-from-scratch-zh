@@ -1,78 +1,78 @@
 {
   "lesson": "phase-19/29-end-to-end-coding-task-demo",
-  "title": "End-to-End Coding Agent on the Harness",
+  "title": "线束上的端到端编码代理",
   "questions": [
     {
       "stage": "pre",
-      "question": "Before reading the lesson: why does the end-to-end demo replace the LLM with a deterministic policy?",
+      "question": "在阅读课程之前：为什么端到端演示要用确定性策略取代 LLM？",
       "options": [
-        "The LLM is too slow to run in tests.",
-        "The harness is what the lesson is testing; the policy is the substitutable seam.",
-        "Deterministic policies always outperform LLMs on coding tasks.",
-        "The lesson cannot afford the inference cost."
+        "LLM 太慢，无法在测试中运行。",
+        "课程正在测试的是安全带；政策是可替代的接缝。",
+        "确定性策略在编码任务上总是优于法学硕士。",
+        "教训承担不起推理成本。"
       ],
       "correct": 1,
-      "explanation": "The harness contract does not care whether the policy is an LLM or a state machine. Removing the LLM removes the network and the variance and turns the lesson into a reproducible integration test."
+      "explanation": "利用合约不关心策略是 LLM 还是状态机。删除法学硕士会删除网络和方差，并将课程变成可重复的集成测试。"
     },
     {
       "stage": "check",
-      "question": "The agent's state machine has five states. In what order does it execute them on a normal pass?",
+      "question": "代理的状态机有五个状态。在普通通道中它以什么顺序执行它们？",
       "options": [
-        "SURVEY -> FIX -> VERIFY -> RUN_TESTS -> INSPECT.",
-        "SURVEY -> RUN_TESTS -> INSPECT -> FIX -> VERIFY.",
-        "RUN_TESTS -> SURVEY -> INSPECT -> FIX -> VERIFY.",
-        "SURVEY -> INSPECT -> FIX -> RUN_TESTS -> VERIFY."
+        "调查 -> 修复 -> 验证 -> 运行测试 -> 检查。",
+        "调查 -> 运行测试 -> 检查 -> 修复 -> 验证。",
+        "运行测试 -> 调查 -> 检查 -> 修复 -> 验证。",
+        "调查 -> 检查 -> 修复 -> 运行测试 -> 验证。"
       ],
       "correct": 1,
-      "explanation": "The agent surveys the project, runs the tests, inspects the failing test, fixes the bug, then verifies. RUN_TESTS comes before INSPECT because the test failure is the signal the policy reads."
+      "explanation": "代理调查项目、运行测试、检查失败的测试、修复错误，然后进行验证。 RUN_TESTS 出现在 INSPECT 之前，因为测试失败是策略读取的信号。"
     },
     {
       "stage": "check",
-      "question": "The bundled fixture's bug is an off-by-one in src/fizz.py: range(1, n) instead of range(1, n + 1). Where does the policy decide to apply the fix?",
+      "question": "捆绑的固定装置的错误是 src/fizz.py 中的一个偏差：range(1, n) 而不是 range(1, n + 1)。策略决定在哪里应用修复？",
       "options": [
-        "Inside the SURVEY state, by reading the file header.",
-        "Inside the INSPECT state, after the test failure has named the expected output.",
-        "Inside the VERIFY state, after the rerun.",
-        "Outside the state machine, in the gate chain."
+        "在SURVEY状态下，通过读取文件头。",
+        "在 INSPECT 状态下，测试失败后已指定预期输出。",
+        "在 VERIFY 状态下，重新运行后。",
+        "在状态机之外，在门链中。"
       ],
       "correct": 1,
-      "explanation": "INSPECT is where the policy reads the failing test and learns the expected shape. The fix is identified there and written in the next FIX state."
+      "explanation": "INSPECT 是策略读取失败测试并了解预期形状的地方。修复在那里被识别并写入下一个修复状态。"
     },
     {
       "stage": "check",
-      "question": "Every tool call goes through what chain of components in order?",
+      "question": "每个工具调用都按顺序经过哪些组件链？",
       "options": [
-        "Sandbox -> GateChain -> SpanBuilder -> ObservationLedger.",
-        "GateChain -> SpanBuilder -> Sandbox -> ObservationLedger.",
-        "SpanBuilder -> GateChain -> Sandbox -> ObservationLedger.",
-        "ObservationLedger -> GateChain -> Sandbox -> SpanBuilder."
+        "沙盒 -> GateChain -> SpanBuilder -> ObservationLedger。",
+        "GateChain -> SpanBuilder -> 沙箱 -> ObservationLedger。",
+        "SpanBuilder -> GateChain -> 沙盒 -> ObservationLedger。",
+        "ObservationLedger -> GateChain -> 沙盒 -> SpanBuilder。"
       ],
       "correct": 1,
-      "explanation": "Gate first (allow / refuse), span next (so the refusal is also captured), sandbox third (only if allowed), ledger last (only on success). The lesson code wires it that way."
+      "explanation": "首先是门（允许/拒绝），其次是跨度（因此拒绝也会被捕获），第三是沙箱（仅在允许的情况下），最后是账本（仅在成功时）。课程代码就是这样连接的。"
     },
     {
       "stage": "post",
-      "question": "You replace the deterministic policy with a real LLM. Which harness component changes?",
+      "question": "您用真正的法学硕士取代了确定性政策。哪个线束组件发生变化？",
       "options": [
-        "The gate chain has to be rewritten to handle LLM stochasticity.",
-        "The sandbox has to be hardened with seccomp.",
-        "Nothing in the harness changes; the policy is the only piece that swaps.",
-        "The Prometheus exposition format becomes incompatible."
+        "必须重写门链以处理 LLM 随机性。",
+        "沙箱必须使用 seccomp 进行加固。",
+        "安全带中没有任何变化；保单是唯一可以互换的部分。",
+        "Prometheus 展示格式变得不兼容。"
       ],
       "correct": 2,
-      "explanation": "The lesson's point: the harness is policy-agnostic. The seam is the next_action / observe interface. The LLM plugs in there without touching gate, sandbox, ledger, or spans."
+      "explanation": "教训的要点：该工具与政策无关。接缝是next_action/observe接口。法学硕士可以插入其中，无需接触门、沙箱、账本或跨度。"
     },
     {
       "stage": "post",
-      "question": "The demo asserts the agent solves the fixture in fewer than 12 steps. The deterministic policy uses 5. What is a real-LLM agent likely to do, and how does the harness handle it?",
+      "question": "该演示声称智能体只需不到 12 个步骤即可解决该问题。确定性策略使用 5. 真正的 LLM 代理可能会做什么，以及该工具如何处理它？",
       "options": [
-        "The LLM uses 5 steps too; the harness is unchanged.",
-        "The LLM may use more steps; the step_budget bounds the loop and an unsolved run is reported as a failure with a halted_reason.",
-        "The LLM cannot run inside this harness.",
-        "The harness silently extends the budget."
+        "LLM也采用5个步骤；线束没有改变。",
+        "LLM可能会使用更多步骤； step_budget 限制了循环，未解决的运行将被报告为带有halted_reason 的失败。",
+        "LLM 无法在此线束内运行。",
+        "安全带默默地延长了预算。"
       ],
       "correct": 1,
-      "explanation": "The step budget is the loud, deterministic stopping criterion. An LLM that wanders gets capped and the report tells you exactly why."
+      "explanation": "步骤预算是响亮的、确定性的停止标准。徘徊的法学硕士会受到限制，报告会告诉您确切的原因。"
     }
   ]
 }

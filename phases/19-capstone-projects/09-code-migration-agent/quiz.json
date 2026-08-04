@@ -1,87 +1,87 @@
 {
   "lesson": "09-code-migration-agent",
-  "title": "Capstone 09 — Code Migration Agent (Repo-Level Language / Runtime Upgrade)",
+  "title": "Capstone 09 — 代码迁移代理（回购级语言/运行时升级）",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the pipeline combine a deterministic substrate with an agent layer rather than using just one?",
+      "question": "为什么管道将确定性基底与代理层结合在一起，而不是只使用一个？",
       "options": [
-        "OpenRewrite or libcst handles 70-80% of mechanical rewrites safely and cheaply, leaving the agent for the ambiguous long tail",
-        "Agents alone are faster than recipes",
-        "Deterministic recipes are slower than LLMs",
-        "Determinism is needed only for the build system"
+        "OpenRewrite 或 libcs​​t 安全且廉价地处理 70-80% 的机械重写，将代理留给模糊的长尾",
+        "单独使用代理比菜谱更快",
+        "确定性食谱比法学硕士慢",
+        "仅构建系统需要确定性"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "What signal does the pipeline use as ground truth for a successful migration?",
+      "question": "管道使用什么信号作为成功迁移的基本事实？",
       "options": [
-        "Agent self-grading on a rubric",
-        "Reviewer approval on the PR",
-        "Diff size below a hard limit",
-        "Green CI in the sandbox without a coverage regression beyond a small threshold"
+        "座席在评分标准上进行自我评分",
+        "审稿人对 PR 的批准",
+        "差异大小低于硬限制",
+        "沙盒中的绿色 CI，覆盖率回归不超过小阈值"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which budget caps does the agent loop enforce per repo?",
+      "question": "代理循环对每个存储库强制执行哪些预算上限？",
       "options": [
-        "Unlimited time and cost; abort only on errors",
-        "No turn limit, $100 ceiling",
-        "1 hour wall-clock and 100 turns",
-        "30 minutes wall-clock, $8 cost, and 20 agent turns"
+        "时间和费用不受限制；仅在出现错误时中止",
+        "无回合限制，上限为 100 美元",
+        "1 小时挂钟和 100 圈",
+        "30 分钟挂钟，8 美元费用，20 次代理轮流"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What gate fires when coverage drops more than about 2% after migration?",
+      "question": "当迁移后覆盖率下降超过 2% 左右时，什么门会触发？",
       "options": [
-        "The reviewer is bypassed",
-        "The repo gets filed under a coverage_regression failure class instead of opening a clean PR",
-        "The deterministic substrate replays its recipes",
-        "The agent automatically force-pushes a fix"
+        "审稿人被绕过",
+        "该存储库会在coverage_regression失败类下归档，而不是打开一个干净的PR",
+        "确定性基质重播其配方",
+        "代理自动强制推送修复"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why is the failure taxonomy treated as a deliverable rather than a side artifact?",
+      "question": "为什么失败分类被视为可交付成果而不是副产品？",
       "options": [
-        "It replaces the test suite",
-        "It groups failed repos by class so future recipe authors can target the top failure modes",
-        "It is required by GitHub branch protection",
-        "It satisfies a compliance checklist"
+        "它取代了测试套件",
+        "它按类别对​​失败的存储库进行分组，以便未来的配方作者可以针对最常见的故障模式",
+        "这是 GitHub 分支保护所必需的",
+        "它满足合规性检查表"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which public benchmark does the capstone target for Java 8 to 17 migration?",
+      "question": "Java 8 到 17 迁移的 Capstone 目标是哪个公共基准？",
       "options": [
-        "MigrationBench from Amazon",
-        "SWE-bench Pro",
-        "MMLU-Pro",
-        "ViDoRe v3"
+        "来自亚马逊的 MigrationBench",
+        "SWE 工作台 Pro",
+        "MMLU-专业版",
+        "维多雷 v3"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does the agent integration rubric measure about the fix distribution?",
+      "question": "代理集成标准衡量修复分布的哪些内容？",
       "options": [
-        "Tokenization speed of the source file",
-        "The number of force-pushes per repo",
-        "Number of dependencies pinned",
-        "The fraction of fixes handled by OpenRewrite versus authored by the agent layer"
+        "源文件的标记化速度",
+        "每个存储库的强制推送数量",
+        "固定的依赖项数量",
+        "由 OpenRewrite 处理的修复与由代理层编写的修复所占的比例"
       ],
       "correct": 3,
       "explanation": ""

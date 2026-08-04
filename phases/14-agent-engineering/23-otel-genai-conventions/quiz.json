@@ -1,58 +1,58 @@
 {
   "lesson": "23-otel-genai-conventions",
-  "title": "OpenTelemetry GenAI 规范：Agent 可观测性与 Trace 监控",
+  "title": "OpenTelemetry GenAI 规范：Agent 可启动性与 Trace 监控",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which span name represents an agent run in the GenAI conventions?",
+      "question": "哪个跨度名称代表在 GenAI 约定中运行的代理？",
       "options": [
-        "agent.start",
-        "invoke_agent (optionally suffixed by gen_ai.agent.name)",
-        "run_chain",
-        "agent_loop"
+        "代理.启动",
+        "invoke_agent（可选后缀为 gen_ai.agent.name）",
+        "运行链",
+        "代理循环"
       ],
       "correct": 1,
-      "explanation": "invoke_agent is the canonical name; the agent's name attribute appears in the span name when set."
+      "explanation": "invoke_agent 是规范名称；设置后，代理的名称属性将显示在跨度名称中。"
     },
     {
       "stage": "pre",
-      "question": "Which three span categories does the GenAI SIG define?",
+      "question": "GenAI SIG 定义了哪三个跨度类别？",
       "options": [
-        "Model/client, agent, tool",
-        "Frontend, backend, db",
-        "Read, write, exec",
-        "Latency, error, throughput"
+        "模型/客户、代理人、工具",
+        "前端、后端、数据库",
+        "读、写、执行",
+        "延迟、错误、吞吐量"
       ],
       "correct": 0,
-      "explanation": "Model/client (LLM calls), agent (create/invoke), tool (per invocation) are the categories."
+      "explanation": "模型/客户端（LLM 调用）、代理（创建/调用）、工具（每次调用）是类别。"
     },
     {
       "stage": "check",
-      "question": "When does an invoke_agent span use kind CLIENT vs INTERNAL?",
+      "question": "invoke_agent 范围何时使用 CLIENT 类型和 INTERNAL 类型？",
       "options": [
-        "Always INTERNAL",
-        "CLIENT for remote agent services (OpenAI Assistants, Bedrock Agents); INTERNAL for in-process frameworks (LangChain, CrewAI, local ReAct)",
-        "CLIENT for HTTPS only",
-        "Always CLIENT"
+        "始终是内部的",
+        "用于远程代理服务的客户端（OpenAI Assistants、Bedrock Agents）； INTERNAL 用于进程内框架（LangChain、CrewAI、本地 ReAct）",
+        "仅适用于 HTTPS 的客户端",
+        "始终是客户"
       ],
       "correct": 1,
-      "explanation": "Remote agent calls are CLIENT; in-process agent runs are INTERNAL."
+      "explanation": "远程代理呼叫是CLIENT；进程内代理运行是内部的。"
     },
     {
       "stage": "check",
-      "question": "What is the default rule for content capture (inputs and outputs)?",
+      "question": "内容捕获（输入和输出）的默认规则是什么？",
       "options": [
-        "Capture everything by default",
-        "Instrumentations SHOULD NOT capture by default; capture is opt-in via gen_ai.* attributes",
-        "Capture only output, never input",
-        "Capture only on errors"
+        "默认捕获所有内容",
+        "默认情况下，仪器不应捕获；捕获是通过 gen_ai.* 属性选择加入的",
+        "仅捕获输出，从不捕获输入",
+        "仅捕获错误"
       ],
       "correct": 1,
-      "explanation": "Default-off content capture protects PII and secrets; opt-in is explicit."
+      "explanation": "默认关闭内容捕获可保护 PII 和机密；选择加入是明确的。"
     },
     {
       "stage": "check",
-      "question": "Which attribute identifies the corpus or store consulted for a retrieval?",
+      "question": "哪个属性标识检索时参考的语料库或存储？",
       "options": [
         "gen_ai.provider.name",
         "gen_ai.request.model",
@@ -60,31 +60,31 @@
         "gen_ai.agent.name"
       ],
       "correct": 2,
-      "explanation": "gen_ai.data_source.id labels the RAG corpus or store hit by retrieval."
+      "explanation": "gen_ai.data_source.id 标记 RAG 语料库或检索命中的存储。"
     },
     {
       "stage": "post",
-      "question": "What does the lesson recommend for storing prompt content in production?",
+      "question": "本课程建议如何在生产中存储提示内容？",
       "options": [
-        "Capture full prompts on every span as plain text",
-        "Store content externally (S3, log store) and record reference IDs on the span instead",
-        "Never store any content",
-        "Encrypt prompts in span attributes"
+        "以纯文本形式捕获每个跨度的完整提示",
+        "在外部存储内容（S3、日志存储）并在跨度上记录引用 ID",
+        "绝不存储任何内容",
+        "加密 span 属性中的提示"
       ],
       "correct": 1,
-      "explanation": "External storage with pointer IDs avoids PII leaking into traces that ops can read."
+      "explanation": "具有指针 ID 的外部存储可避免 PII 泄漏到操作员可以读取的跟踪中。"
     },
     {
       "stage": "post",
-      "question": "How do you opt into the experimental stable preview of GenAI conventions?",
+      "question": "您如何选择加入 GenAI 约定的实验性稳定预览版？",
       "options": [
-        "Edit the OTel collector config",
-        "Set OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental",
-        "Rebuild the SDK from source",
-        "Pay for a license"
+        "编辑 OTel 收集器配置",
+        "设置 OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental",
+        "从源代码重建 SDK",
+        "支付许可证费用"
       ],
       "correct": 1,
-      "explanation": "The env var pins the experimental conventions so attributes are not silently renamed."
+      "explanation": "环境变量固定实验约定，因此属性不会被静默重命名。"
     }
   ]
 }

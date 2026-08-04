@@ -1,75 +1,75 @@
 {
   "lesson": "10-ai-control-subversion",
-  "title": "AI Control - Safety Despite Subversion",
+  "title": "AI控制——颠覆中的安全",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which best captures the difference between alignment and AI control?",
+      "question": "哪个最能体现对齐和人工智能控制之间的差异？",
       "options": [
-        "Alignment asks whether U is trustworthy; control asks whether we can safely use U without trusting it",
-        "Control replaces the loss function while alignment changes the optimizer",
-        "They are synonyms",
-        "Control is about hardware; alignment is about software"
+        "结盟询问U是否值得信赖；控制询问我们是否可以在不信任 U 的情况下安全地使用它",
+        "控制取代了损失函数，而对齐则改变了优化器",
+        "它们是同义词",
+        "控制是关于硬件的；对齐与软件有关"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What does the AI Control threat model assume?",
+      "question": "AI Control 威胁模型假设什么？",
       "options": [
-        "U is untrusted strong, T is trusted weak, H is bounded trusted human labor",
-        "U and T are both adversarial",
-        "All three resources (U, T, H) are trusted",
-        "Only U exists"
+        "U是不可信的强，T是可信的弱，H是有界的可信的人力",
+        "U和T都是敌对的",
+        "所有三个资源（U、T、H）均受信任",
+        "只有U存在"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the key risk in Untrusted Monitoring that Trusted Editing avoids?",
+      "question": "可信编辑在不可信监控中避免的主要风险是什么？",
       "options": [
-        "Two instances of U can collude or share priors, so the protocol must spend budget on collusion-resistance",
-        "Humans cannot be audited",
-        "Hardware contention",
-        "T cannot edit text"
+        "U 的两个实例可以共谋或共享先验，因此协议必须在抗共谋上花费预算",
+        "人类无法被审计",
+        "硬件争用",
+        "T 无法编辑文本"
       ],
       "correct": 0,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "On the Greenblatt et al. (ICML 2024) code-backdoor task, what does Trusted Editing achieve relative to Untrusted Monitoring?",
+      "question": "关于格林布拉特等人。 (ICML 2024) 代码后门任务，相对于不可信监控，可信编辑实现了什么？",
       "options": [
-        "It is strictly worse",
-        "It only wins at zero human budget",
-        "They are exactly equivalent",
-        "It strictly Pareto-dominates: higher usefulness at every safety level"
+        "严格来说更糟",
+        "它只有在人力预算为零的情况下才能获胜",
+        "它们是完全等价的",
+        "它严格帕累托主导：在每个安全级别都有更高的实用性"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Which of the following is NOT one of the lesson's three fundamental limits of control?",
+      "question": "以下哪一项不是本课程的三个基本控制限制之一？",
       "options": [
-        "Trusted weak models eventually lag U",
-        "Control produces aligned models as a byproduct",
-        "Humans do not scale",
-        "Control may fail at higher capability levels if U can manipulate T or reason about H's audit distribution"
+        "值得信赖的弱模型最终落后于 U",
+        "控制产生对齐的模型作为副产品",
+        "人类无法规模化",
+        "如果 U 可以操纵 T 或推理 H 的审计分布，则控制可能会在更高的能力级别上失败"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What does a Control Safety Case argue?",
+      "question": "控制安全案例主张什么？",
       "options": [
-        "That T is more capable than U",
-        "That under worst-case assumptions about U, the deployment protocol bounds the probability of an unacceptable outcome",
-        "That U is trustworthy",
-        "That the model passed a manual jailbreak test"
+        "T比U更有能力",
+        "在关于 U 的最坏情况假设下，部署协议限制了不可接受结果的概率",
+        "U值得信赖",
+        "该模型通过了手动越狱测试"
       ],
       "correct": 1,
       "explanation": ""

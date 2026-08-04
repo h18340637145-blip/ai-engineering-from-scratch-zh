@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does OCR use CTC loss instead of plain cross-entropy?",
-      "options": ["CTC is faster", "OCR maps a fixed-length feature sequence to a variable-length character sequence without per-timestep alignment; CTC loss marginalises over all alignments that reduce to the target after removing repeats and blanks, so you can train without character-level timing labels", "CTC is required by PyTorch", "Cross-entropy overflows for long sequences"],
+      "question": "为什么 OCR 使用 CTC 损失而不是简单的交叉熵？",
+      "options": [
+        "CTC 更快",
+        "OCR 将固定长度的特征序列映射到可变长度的字符序列，无需按时间步对齐； CTC 损失边缘化了所有在删除重复和空白后减少到目标的对齐，因此您可以在没有字符级计时标签的情况下进行训练",
+        "PyTorch 需要 CTC",
+        "长序列的交叉熵溢出"
+      ],
       "correct": 1,
-      "explanation": "Recognition produces one distribution per time step, but the target text has no per-step alignment. CTC handles that by summing over every alignment that reduces to the target via the merge-repeats-and-remove-blanks operation. This is why CRNNs can be trained on just (image, text) pairs without knowing where each character starts and ends in the image."
+      "explanation": "识别每个时间步产生一个分布，但目标文本没有每步对齐。 CTC 通过对通过合并重复和删除空白操作减少到目标的每个对齐求和来处理该问题。这就是为什么 CRNN 可以仅在（图像、文本）对上进行训练，而无需知道图像中每个字符的开始和结束位置。"
     },
     {
       "stage": "pre",
-      "question": "In CTC decoding, what does the blank token do?",
-      "options": ["Pads the sequence to a fixed length", "Separates adjacent identical characters so that outputs like 'hello' with a double L can be produced by the model emitting 'h e l _ l o' — without the blank, 'l l' would collapse to one 'l'", "Masks noisy regions", "Indicates end of sequence"],
+      "question": "CTC解码中，空白token有什么作用？",
+      "options": [
+        "将序列填充到固定长度",
+        "分隔相邻的相同字符，以便发出“h e l _ l o”的模型可以生成诸如带有双 L 的“hello”之类的输出 - 如果没有空格，“l l”将折叠为一个“l”",
+        "掩盖噪声区域",
+        "表示序列结束"
+      ],
       "correct": 1,
-      "explanation": "The blank is the mechanism that lets CTC encode double characters. 'll' needs a blank between the two l's so the 'merge repeats' step keeps them distinct: 'l _ l' survives merging, 'l l' does not. Without the blank, CTC cannot represent any word containing adjacent identical characters."
+      "explanation": "空白是让CTC编码双字符的机制。 'll' 需要在两个 l 之间有一个空格，因此“合并重复”步骤使它们保持不同：'l _ l' 在合并后仍然存在，而 'l l' 则不然。如果没有空格，CTC 就无法表示任何包含相邻相同字符的单词。"
     },
     {
       "stage": "post",
-      "question": "Why is greedy CTC decoding sometimes better than beam search on simple datasets?",
-      "options": ["Greedy is always better", "When the model is confident at every step (clean handwriting, printed fonts), greedy's argmax is usually the beam winner; beam search adds latency with no accuracy gain. On noisy or ambiguous inputs, beam search helps", "Beam search requires a language model", "Greedy is easier to implement"],
+      "question": "为什么贪婪 CTC 解码有时比简单数据集上的波束搜索更好？",
+      "options": [
+        "贪婪总是更好",
+        "当模型对每一步都充满信心时（干净的笔迹、印刷字体），greedy 的 argmax 通常是获胜者；波束搜索增加了延迟，但没有精度增益。对于嘈杂或模糊的输入，波束搜索会有所帮助",
+        "集束搜索需要语言模型",
+        "贪心法更容易实现"
+      ],
       "correct": 1,
-      "explanation": "Beam search only wins when the per-step argmax is unreliable — ambiguous characters, overlapping letters, degraded scans. For clean printed text, the model is confident at each step and greedy is within 1% CER of beam. Always benchmark both; the latency trade is real."
+      "explanation": "仅当每步 argmax 不可靠（字符不明确、字母重叠、扫描质量下降）时，波束搜索才会获胜。对于干净的打印文本，模型对每一步都很有信心，贪婪的误差在光束的 1% CER 以内。始终对两者进行基准测试；延迟交易是真实存在的。"
     },
     {
       "stage": "post",
-      "question": "Donut skips explicit text detection and character recognition. How?",
-      "options": ["It uses an external OCR engine internally", "It is a ViT encoder + text decoder trained to produce the final output string (often JSON) directly from the image; the model learns both localisation and recognition implicitly through the training objective", "It is limited to document categories with fixed layouts", "It preprocesses images with a CNN text detector"],
+      "question": "Donut 跳过显式文本检测和字符识别。如何？",
+      "options": [
+        "它内部使用外部 OCR 引擎",
+        "它是一个 ViT 编码器 + 文本解码器，经过训练可以直接从图像生成最终输出字符串（通常是 JSON）；该模型通过训练目标隐式学习定位和识别",
+        "仅限于具有固定布局的文档类别",
+        "它使用 CNN 文本检测器预处理图像"
+      ],
       "correct": 1,
-      "explanation": "Donut is an end-to-end model: the ViT encoder sees the whole document, the transformer decoder emits the target text or JSON auto-regressively. No pipeline of detector + recogniser + layout module. This skips error accumulation across stages but requires large labelled training sets for the specific document types you care about."
+      "explanation": "Donut 是一个端到端模型：ViT 编码器查看整个文档，Transformer 解码器自动回归发出目标文本或 JSON。没有检测器+识别器+布局模块的流水线。这会跳过各个阶段的错误累积，但需要针对您关心的特定文档类型的大量标记训练集。"
     },
     {
       "stage": "post",
-      "question": "For extracting `invoice_total` from receipts, which approach is typically best in 2026?",
-      "options": ["A hand-crafted regex on Tesseract output", "Fine-tuned Donut or a VLM on a small labelled set of the target receipts; both handle layout and semantic extraction in one model and generalise across receipt variants better than pipeline-based approaches", "Only classical OCR is reliable enough", "A separate CNN for each field"],
+      "question": "要从收据中提取“invoice_total”，哪种方法通常在 2026 年最好？",
+      "options": [
+        "关于 Tesseract 输出的手工制作的正则表达式",
+        "在一小部分标记的目标收据上微调 Donut 或 VLM；两者都在一个模型中处理布局和语义提取，并且比基于管道的方法更好地泛化收据变体",
+        "只有经典 OCR 才足够可靠",
+        "每个领域都有一个单独的 CNN"
+      ],
       "correct": 1,
-      "explanation": "Structured-field extraction used to be the domain of LayoutLM + heuristics. End-to-end models (Donut, Qwen-VL-OCR) have overtaken that path: they accept an image and produce the JSON directly. For a small set of labelled receipts (100-1000), fine-tuning Donut reaches higher F1 than any pipeline of OCR + rules."
+      "explanation": "结构化字段提取曾经是 LayoutLM + 启发式的领域。端到端模型（Donut、Qwen-VL-OCR）已经超越了这条道路：它们接受图像并直接生成 JSON。对于一小组带标签的收据（100-1000），微调 Donut 达到比任何 OCR + 规则管道更高的 F1。"
     }
   ]
 }

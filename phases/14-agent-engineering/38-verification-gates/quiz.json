@@ -4,87 +4,87 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What single question does the verification gate answer?",
+      "question": "验证门回答哪一个问题？",
       "options": [
-        "Is the model fast?",
-        "Is this task actually complete? (reading scope, rule, feedback, and diff artifacts)",
-        "Is the prompt optimal?",
-        "Is the token budget healthy?"
+        "模型速度快吗？",
+        "这个任务真的完成了吗？ （阅读范围、规则、反馈和差异工件）",
+        "提示是最佳的吗？",
+        "代币预算是否健康？"
       ],
       "correct": 1,
-      "explanation": "The gate is a deterministic function over workbench artifacts producing a pass/fail verdict."
+      "explanation": "门是针对工作台工件的确定性函数，可产生通过/失败判定。"
     },
     {
       "stage": "pre",
-      "question": "Why must the gate be deterministic?",
+      "question": "为什么门必须是确定性的？",
       "options": [
-        "Determinism is free",
-        "The same artifact set must produce the same verdict every time; LLM judges belong in the reviewer (qualitative), not the gate (status)",
-        "Providers require it",
-        "It saves money"
+        "决定论是免费的",
+        "相同的工件集每次都必须产生相同的判决； LLM评委属于审稿人（定性），而不是门（地位）",
+        "提供商需要它",
+        "省钱"
       ],
       "correct": 1,
-      "explanation": "Mixing model judgment into the gate collapses the deterministic/qualitative split."
+      "explanation": "将模型判断混合到门中会瓦解确定性/定性的分裂。"
     },
     {
       "stage": "check",
-      "question": "What is the gate's override discipline?",
+      "question": "门的超控规则是什么？",
       "options": [
-        "Anyone can override silently",
-        "Block-severity findings can only be overridden by a human with a recorded override_reason and overridden_by user id in a signed audit log",
-        "Override requires a manager email",
-        "Overrides are forbidden"
+        "任何人都可以默默地覆盖",
+        "块严重性结果只能由在签名审核日志中记录了 override_reason 和 overridden_​​by 用户 ID 的人员覆盖",
+        "覆盖需要经理电子邮件",
+        "禁止覆盖"
       ],
       "correct": 1,
-      "explanation": "Signed overrides land in outputs/verification/overrides.jsonl; agent cannot self-override."
+      "explanation": "签名的覆盖位于outputs/verification/overrides.jsonl中；代理不能自我覆盖。"
     },
     {
       "stage": "check",
-      "question": "What is the Hybrid Norm pairing the lesson cites?",
+      "question": "课程引用的混合规范配对是什么？",
       "options": [
-        "Hot/cold prompts",
-        "Verifiable rewards (tests, schemas, exit codes) answer 'did it solve the problem?'; LLM rubrics answer 'is it readable, secure, on-style?'",
-        "GPU and CPU split",
-        "Cache vs no-cache"
+        "热/冷提示",
+        "可验证的奖励（测试、模式、退出代码）回答“它解决了问题吗？”； LLM 的标准回答“可读、安全、合乎风格吗？”",
+        "GPU 和 CPU 分割",
+        "缓存与无缓存"
       ],
       "correct": 1,
-      "explanation": "Anthropic 2026 guidance: gate runs the first class; reviewer (Lesson 39) runs the second."
+      "explanation": "人择2026指引：门跑一流；审阅者（第 39 课）运行第二个。"
     },
     {
       "stage": "check",
-      "question": "How does defense-in-depth layer the gates?",
+      "question": "纵深防御如何分层？",
       "options": [
-        "Single gate at merge time",
-        "Pre-commit hook -> CI status check -> pre-tool authz hook -> pre-merge gate; each layer is deterministic so failure in one is caught by the next",
-        "Only IDE warnings",
-        "Only a chat reminder"
+        "合流时单门",
+        "预提交钩子 -> CI 状态检查 -> 预工具 authz 钩子 -> 预合并门；每一层都是确定性的，因此一层的失败会被下一层捕获",
+        "仅 IDE 警告",
+        "仅聊天提醒"
       ],
       "correct": 1,
-      "explanation": "Multiple non-bypassable layers catch what a single layer would miss."
+      "explanation": "多个不可绕过的层可以捕获单个层会错过的内容。"
     },
     {
       "stage": "post",
-      "question": "What does a coverage_floor check protect against?",
+      "question": "coverage_floor 检查可以防止什么？",
       "options": [
-        "Hot-path latency",
-        "Agents quietly deleting tests that fail; the gate fails if measured coverage drops below the floor or last merge by more than 1 percentage point",
-        "Cold starts",
-        "Outdated lockfiles"
+        "热路径延迟",
+        "代理悄悄删除失败的测试；如果测量的覆盖范围低于下限或上次合并超过 1 个百分点，则门将失败",
+        "冷启动",
+        "过时的锁文件"
       ],
       "correct": 1,
-      "explanation": "Without a floor, agents can silently lower coverage to keep the verdict green."
+      "explanation": "如果没有下限，代理人可以默默地降低覆盖范围以保持裁决绿色。"
     },
     {
       "stage": "post",
-      "question": "When should --strict mode promote every warn to block?",
+      "question": "--strict 模式什么时候应该促进每个警告被阻止？",
       "options": [
-        "Always",
-        "Release branches, ship-blocking PRs, post-incident triage; not the daily default because strict-on-everything corrodes flow",
-        "Never",
-        "Only on Sundays"
+        "总是",
+        "发布分支、阻船 PR、事件后分类；不是每日默认设置，因为严格控制一切会腐蚀流程",
+        "绝不",
+        "仅限周日"
       ],
       "correct": 1,
-      "explanation": "--strict is opt-in by branch; reserve for high-stakes moments."
+      "explanation": "--strict 是按分支选择加入；为高风险时刻做好准备。"
     }
   ]
 }

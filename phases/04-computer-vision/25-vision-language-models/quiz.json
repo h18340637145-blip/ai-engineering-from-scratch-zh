@@ -2,38 +2,63 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "In the ViT-MLP-LLM VLM pattern, which component is most commonly trained while the others are kept frozen during alignment?",
-      "options": ["The vision encoder", "The projector (the 2-4 layer MLP between ViT and LLM) — it maps vision tokens into the LLM's embedding space and carries most of the cross-modal alignment signal", "The LLM", "All components are always trained together"],
+      "question": "在 ViT-MLP-LLM VLM 模式中，哪个组件最常被训练，而其他组件在对齐过程中保持冻结？",
+      "options": [
+        "视觉编码器",
+        "投影仪（ViT 和 LLM 之间的 2-4 层 MLP）——它将视觉标记映射到 LLM 的嵌入空间并携带大部分跨模态对齐信号",
+        "法学硕士",
+        "所有组件始终一起训练"
+      ],
       "correct": 1,
-      "explanation": "The standard VLM recipe trains the projector first with ViT and LLM frozen (alignment stage), then optionally unfreezes everything for pre-training and instruction tuning. The projector is small (tens to hundreds of millions of params) and takes the brunt of the modality bridge. Fine-tuning in production often trains only the projector + LoRA on attention — cheap and effective."
+      "explanation": "标准 VLM 配方首先使用冻结的 ViT 和 LLM（对齐阶段）来训练投影仪，然后可选择解冻所有内容以进行预训练和指令调整。投影仪很小（数千万到数亿参数），并且在模态桥中首当其冲。制作中的微调通常只训练投影仪 + LoRA 的注意力——廉价而有效。"
     },
     {
       "stage": "pre",
-      "question": "DeepStack (used in Qwen3-VL) does what?",
-      "options": ["Uses only the deepest ViT layer's features", "Stacks features from multiple ViT depths before projection, so the LLM sees both high-level semantics (deep layers) and fine-grained spatial detail (shallow layers)", "Doubles the depth of the LLM", "Is a specific quantisation scheme"],
+      "question": "DeepStack（用于Qwen3-VL）的作用是什么？",
+      "options": [
+        "仅使用最深的 ViT 层的特征",
+        "在投影之前堆叠来自多个 ViT 深度的特征，因此法学硕士可以看到高级语义（深层）和细粒度空间细节（浅层）",
+        "LLM 深度加倍",
+        "是一个特定的量化方案"
+      ],
       "correct": 1,
-      "explanation": "Vanilla VLMs project only last-layer ViT features. DeepStack samples multiple depths, concatenates, and projects. Deep layers give semantics ('this is a chart'); shallow layers give position and texture ('the bar at x=120 is red'). The combination closes the grounding gap on tasks requiring fine localisation, like GUI agent actions or dense captioning."
+      "explanation": "Vanilla VLM 仅投影最后一层 ViT 功能。 DeepStack 对多个深度进行采样、连接和项目。深层给出语义（“这是一张图表”）；浅层给出位置和纹理（“x=120 处的条是红色的”）。这种组合缩小了需要精细本地化的任务的基础差距，例如 GUI 代理操作或密集字幕。"
     },
     {
       "stage": "post",
-      "question": "A production VLM shows high text confidence but the generated text describes objects not present in the image. Which metric captures this failure?",
-      "options": ["Perplexity", "Cross-Modal Error Rate (CMER) — fraction of outputs where text confidence is high but image-text cosine similarity (via a CLIP-family checker) is low; ~12% typical on uncurated web data", "Accuracy on MMMU", "Token generation latency"],
+      "question": "生产 VLM 显示出较高的文本置信度，但生成的文本描述了图像中不存在的对象。哪个指标反映了这种失败？",
+      "options": [
+        "困惑",
+        "跨模态错误率 (CMER) — 文本置信度较高但图像文本余弦相似度（通过 CLIP 系列检查器）较低的输出比例；未经整理的网络数据的典型值约为 12%",
+        "MMMU 精度",
+        "令牌生成延迟"
+      ],
       "correct": 1,
-      "explanation": "CMER is a production alignment KPI. It catches the classic VLM hallucination pattern: the model is sure about its text, but the text is not grounded in the image. Monitor CMER per endpoint and prompt type; treat rising CMER as a signal that the model is drifting out of distribution or encountering a prompt category it cannot handle. Skywork.ai cut hallucinations ~35% by making CMER a first-class KPI."
+      "explanation": "CMER 是生产调整 KPI。它捕捉到了经典的 VLM 幻觉模式：模型对其文本很确定，但文本并不以图像为基础。监控每个端点的 CMER 和提示类型；将上升的 CMER 视为模型偏离分布或遇到无法处理的提示类别的信号。 Skywork.ai 通过使 CMER 成为一流 KPI，将幻觉减少了约 35%。"
     },
     {
       "stage": "post",
-      "question": "Why do modern VLMs use SigLIP or custom vision encoders rather than a supervised ImageNet ResNet as the backbone?",
-      "options": ["SigLIP is faster", "CLIP/SigLIP-style encoders are trained jointly with text, so their output space is already approximately aligned with language; the projector then has to do much less work and the model reasons better about visual-textual concepts", "ResNets cannot produce tokens", "SigLIP has more parameters"],
+      "question": "为什么现代 VLM 使用 SigLIP 或自定义视觉编码器而不是监督 ImageNet ResNet 作为主干？",
+      "options": [
+        "SigLIP 更快",
+        "CLIP/SigLIP 式编码器与文本联合训练，因此它们的输出空间已经与语言大致对齐；投影仪只需做更少的工作，模型就能更好地解释视觉文本概念",
+        "ResNet 无法生成代币",
+        "SigLIP有更多参数"
+      ],
       "correct": 1,
-      "explanation": "Vision-language pretraining shapes the encoder to live in a text-compatible space. A supervised ImageNet ResNet was trained without any text signal, so bridging to an LLM requires much larger projectors and more data. CLIP/SigLIP/DINOv3 encoders produce features that an LLM can consume with a few linear layers. Almost every SOTA VLM uses a CLIP-family or SigLIP encoder for this reason."
+      "explanation": "视觉语言预训练使编码器能够生活在文本兼容的空间中。有监督的 ImageNet ResNet 是在没有任何文本信号的情况下进行训练的，因此过渡到法学硕士需要更大的投影仪和更多的数据。 CLIP/SigLIP/DINOv3 编码器产生的特征可供 LLM 通过几个线性层使用。由于这个原因，几乎每个 SOTA VLM 都使用 CLIP 系列或 SigLIP 编码器。"
     },
     {
       "stage": "post",
-      "question": "Qwen3-VL-235B-A22B achieves top scores on OSWorld. What is OSWorld, and what does this imply?",
-      "options": ["A synthetic benchmark", "An agent benchmark where the model operates desktop GUIs — identifies buttons, reads UI state, emits actions; Qwen3-VL's top scores imply VLMs are now viable visual agents for GUI automation", "A pose-estimation benchmark", "A video QA benchmark"],
+      "question": "Qwen3-VL-235B-A22B 在 OSWorld 上获得最高分。什么是 OSWorld，这意味着什么？",
+      "options": [
+        "综合基准",
+        "模型操作桌面 GUI 的代理基准测试 — 识别按钮、读取 UI 状态、发出操作； Qwen3-VL 的最高分意味着 VLM 现在是 GUI 自动化的可行视觉代理",
+        "姿态估计基准",
+        "视频质量检查基准"
+      ],
       "correct": 1,
-      "explanation": "OSWorld tests whether a model can autonomously operate a desktop environment via screenshots. Qwen3-VL's top global scores indicate the 'visual agent' paradigm — VLM reads screen, decides action, tool-calls the mouse/keyboard — has crossed into practical territory. This is what 2026 AI PC demos run; it is also a direct route into automated QA, RPA, and accessibility products."
+      "explanation": "OSWorld通过截图测试模型是否能够自主操作桌面环境。 Qwen3-VL 的全球最高分数表明“视觉代理”范式——VLM 读取屏幕、决定操作、工具调用鼠标/键盘——已经进入实用领域。这就是 2026 AI PC 演示运行的内容；它也是进入自动化 QA、RPA 和辅助产品的直接途径。"
     }
   ]
 }

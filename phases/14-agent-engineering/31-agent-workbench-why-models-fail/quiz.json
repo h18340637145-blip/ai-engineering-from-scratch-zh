@@ -1,90 +1,90 @@
 {
   "lesson": "31-agent-workbench-why-models-fail",
-  "title": "Agent 工作台：模型失灵归因与错误解构",
+  "title": "Agent工作台：模型失灵与错误解构",
   "questions": [
     {
       "stage": "pre",
-      "question": "What does the lesson identify as the root cause of agent failures on real tasks?",
+      "question": "本课程认为代理在实际任务中失败的根本原因是什么？",
       "options": [
-        "Insufficient model parameters",
-        "Workbench failures: missing surfaces around the model, not LLM limitations",
-        "Slow network",
-        "Outdated training data"
+        "模型参数不足",
+        "工作台失败：模型周围缺少曲面，而不是 LLM 限制",
+        "网络慢",
+        "过时的训练数据"
       ],
       "correct": 1,
-      "explanation": "The model is not wrong about Python; it is wrong about the work. Surfaces around the model are missing."
+      "explanation": "这个模型对于 Python 来说并没有错；关于工作的问题是错误的。模型周围的表面缺失。"
     },
     {
       "stage": "pre",
-      "question": "What are the seven workbench surfaces the lesson names?",
+      "question": "课程名称的七个工作台表面是什么？",
       "options": [
-        "Instructions, state, scope, feedback, verification, review, handoff",
-        "Train, eval, deploy, monitor, retrain, scale, retire",
-        "Plan, act, reflect, refine, debate, vote, ship",
-        "Read, write, exec, fork, exit, wait, kill"
+        "说明、状态、范围、反馈、验证、审查、移交",
+        "训练、评估、部署、监控、重新训练、扩展、退役",
+        "计划、行动、反思、完善、辩论、投票、发布",
+        "读、写、执行、fork、退出、等待、杀死"
       ],
       "correct": 0,
-      "explanation": "The seven surfaces are instructions, state, scope, feedback, verification, review, handoff."
+      "explanation": "这七个表面是指令、状态、范围、反馈、验证、审查、移交。"
     },
     {
       "stage": "check",
-      "question": "Which is NOT one of the eight distributed-systems primitives the lesson maps surfaces to?",
+      "question": "哪一个不是本课程所涉及的八个分布式系统原语之一？",
       "options": [
-        "Function",
-        "Worker",
-        "Trigger",
-        "Backpropagation"
+        "功能",
+        "工人",
+        "扳机",
+        "反向传播"
       ],
       "correct": 3,
-      "explanation": "The eight primitives are function, worker, trigger, runtime, HTTP/RPC, queue, session persistence, authorization policy."
+      "explanation": "这八个原语是函数、工作线程、触发器、运行时、HTTP/RPC、队列、会话持久性、授权策略。"
     },
     {
       "stage": "check",
-      "question": "What did Vercel's reported harness change move success rate from and to?",
+      "question": "Vercel 报告的线束更换成功率有何变化？",
       "options": [
         "20% to 60%",
-        "80% to 100%, by deleting 80% of the agent's tools",
-        "0% to 100%, by switching models",
-        "50% to 70%, by adding RAG"
+        "80% 到 100%，通过删除 80% 的代理工具",
+        "0% 至 100%，通过切换型号",
+        "50% 至 70%，通过添加 RAG"
       ],
       "correct": 1,
-      "explanation": "Deleting 80% of tools moved Vercel's agent from 80% to 100% success."
+      "explanation": "删除 80% 的工具使 Vercel 的代理成功率从 80% 提高到 100%。"
     },
     {
       "stage": "check",
-      "question": "What does Terminal Bench 2.0 demonstrate about model vs harness?",
+      "question": "Terminal Bench 2.0 演示了模型与线束的哪些内容？",
       "options": [
-        "Models alone determine ranking",
-        "Same model moved from outside top 30 to rank five by changing only the harness",
-        "Harness changes do not matter",
-        "Only GPUs matter"
+        "模型本身决定排名",
+        "同一型号仅通过改变安全带就从前 30 名之外跃升至第五名",
+        "线束变化并不重要",
+        "只有 GPU 才重要"
       ],
       "correct": 1,
-      "explanation": "LangChain's Anatomy of an Agent Harness: same model, harness change, 25+ rank jump."
+      "explanation": "浪链对特工线束的剖析：相同型号，线束变化，25+等级跳跃。"
     },
     {
       "stage": "post",
-      "question": "What does the lesson recommend doing when you hear new harness vocabulary?",
+      "question": "当您听到新的安全带词汇时，本课程建议您做什么？",
       "options": [
-        "Adopt the vocabulary verbatim",
-        "Translate back to primitives (function, worker, trigger, runtime, HTTP/RPC, queue, persistence, policy) before adopting",
-        "Reject it",
-        "Wait for OpenAI to standardize it"
+        "逐字采用词汇",
+        "在采用之前转换回原语（函数、工作线程、触发器、运行时、HTTP/RPC、队列、持久性、策略）",
+        "拒绝它",
+        "等待 OpenAI 标准化它"
       ],
       "correct": 1,
-      "explanation": "Reason from primitives, not vendor taxonomies; the vocabulary changes but the engineering does not."
+      "explanation": "来自原语的推理，而不是供应商分类法；词汇改变了，但工程没有改变。"
     },
     {
       "stage": "post",
-      "question": "Where does chat history sit relative to the workbench?",
+      "question": "聊天历史记录相对于工作台位于什么位置？",
       "options": [
-        "Chat is the system of record",
-        "Chat is volatile; the repo is the system of record",
-        "Both are equivalent",
-        "Neither matters"
+        "聊天是记录系统",
+        "聊天内容不稳定；回购协议是记录系统",
+        "两者是等价的",
+        "都不重要"
       ],
       "correct": 1,
-      "explanation": "The loop closes on the state file, not on chat history."
+      "explanation": "循环在状态文件上关闭，而不是在聊天历史记录上关闭。"
     }
   ]
 }

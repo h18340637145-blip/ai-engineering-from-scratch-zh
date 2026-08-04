@@ -1,37 +1,62 @@
 [
   {
-    "question": "What problem does momentum solve in gradient descent?",
-    "options": ["It reduces memory usage", "It dampens oscillation by accumulating past gradients, accelerating movement in consistent directions", "It eliminates the need for a learning rate", "It prevents overfitting"],
+    "question": "梯度下降中动量解决了什么问题？",
+    "options": [
+      "它减少了内存使用",
+      "它通过累积过去的梯度来抑制振荡，加速一致方向的运动",
+      "它消除了对学习率的需要",
+      "它可以防止过度拟合"
+    ],
     "correct": 1,
-    "explanation": "In narrow valleys, gradients oscillate across the valley while making slow progress along it. Momentum accumulates past gradients: consistent directions amplify while oscillating directions cancel, giving smoother, faster convergence.",
+    "explanation": "在狭窄的山谷中，梯度在山谷中振荡，同时沿着山谷缓慢前进。动量累积过去的梯度：一致的方向放大，而振荡的方向抵消，从而提供更平滑、更快的收敛。",
     "stage": "pre"
   },
   {
-    "question": "What is the key difference between Adam and AdamW?",
-    "options": ["AdamW uses a higher learning rate", "AdamW applies weight decay directly to weights instead of through the gradient, giving proper regularization", "AdamW doesn't use momentum", "AdamW only works with transformers"],
+    "question": "Adam 和 AdamW 之间的主要区别是什么？",
+    "options": [
+      "AdamW使用更高的学习率",
+      "AdamW 将权重衰减直接应用于权重，而不是通过梯度，从而给出适当的正则化",
+      "AdamW 不使用动量",
+      "AdamW 仅适用于变压器"
+    ],
     "correct": 1,
-    "explanation": "In Adam + L2, the adaptive learning rate scales the regularization term differently per parameter. AdamW decouples weight decay from the gradient update, applying uniform shrinkage regardless of gradient statistics.",
+    "explanation": "在 Adam + L2 中，自适应学习率对每个参数的正则化项进行不同的缩放。 AdamW 将权重衰减与梯度更新解耦，无论梯度统计数据如何，都应用均匀收缩。",
     "stage": "pre"
   },
   {
-    "question": "Why does Adam use bias correction in early training steps?",
-    "options": ["To prevent overfitting", "The moment estimates are initialized to zero, so early values are biased toward zero; correction compensates for this cold start", "To clip large gradients", "To speed up convergence"],
+    "question": "为什么 Adam 在早期训练步骤中使用偏差校正？",
+    "options": [
+      "防止过度拟合",
+      "时刻估计初始化为零，因此早期值偏向于零；校正补偿了这种冷启动",
+      "剪切大渐变",
+      "为了加快收敛速度"
+    ],
     "correct": 1,
-    "explanation": "At step 1 with beta1=0.9, m_1 = 0.1 * gradient (10x too small). Dividing by (1 - 0.9^1) = 0.1 corrects this to the actual gradient. The correction becomes negligible after ~50 steps.",
+    "explanation": "在第 1 步，beta1=0.9，m_1 = 0.1 * 梯度（太小 10 倍）。除以 (1 - 0.9^1) = 0.1 可将此校正为实际梯度。大约 50 步后，校正变得可以忽略不计。",
     "stage": "post"
   },
   {
-    "question": "What are the standard default hyperparameters for Adam?",
-    "options": ["lr=0.1, beta1=0.5, beta2=0.5", "lr=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8", "lr=0.01, beta1=0.99, beta2=0.99", "lr=0.0001, beta1=0.8, beta2=0.9"],
+    "question": "Adam 的标准默认超参数是什么？",
+    "options": [
+      "lr=0.1，beta1=0.5，beta2=0.5",
+      "lr=0.001，beta1=0.9，beta2=0.999，epsilon=1e-8",
+      "lr=0.01，beta1=0.99，beta2=0.99",
+      "lr=0.0001，beta1=0.8，beta2=0.9"
+    ],
     "correct": 1,
-    "explanation": "The original Adam paper (Kingma & Ba, 2014) recommended lr=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8. These defaults work well for most problems.",
+    "explanation": "最初的 Adam 论文（Kingma & Ba，2014）建议 lr=0.001，beta1=0.9，beta2=0.999，epsilon=1e-8。这些默认值适用于大多数问题。",
     "stage": "post"
   },
   {
-    "question": "Which optimizer is the modern default for training transformers and LLMs?",
-    "options": ["Vanilla SGD", "SGD with momentum", "RMSProp", "AdamW"],
+    "question": "哪种优化器是训练 Transformer 和 LLM 的现代默认优化器？",
+    "options": [
+      "香草新元",
+      "新元势头强劲",
+      "RMS属性",
+      "亚当·W"
+    ],
     "correct": 3,
-    "explanation": "AdamW (Adam with decoupled weight decay) is used to train BERT, GPT, LLaMA, and virtually all modern transformers. It combines adaptive learning rates with proper weight decay regularization.",
+    "explanation": "AdamW（具有解耦权重衰减的 Adam）用于训练 BERT、GPT、LLaMA 和几乎所有现代 Transformer。它将自适应学习率与适当的权重衰减正则化结合起来。",
     "stage": "post"
   }
 ]

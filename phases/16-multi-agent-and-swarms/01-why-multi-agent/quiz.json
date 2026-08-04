@@ -2,64 +2,64 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the 'single-agent ceiling'?",
+      "question": "什么是“单一代理上限”？",
       "options": [
-        "The maximum number of tools an agent can use",
-        "The point where a single agent fails because the task exceeds one context window, requires different expertise, or needs parallel work",
-        "The limit on how many API calls an agent can make per minute",
-        "The maximum model size that can run on a single GPU"
+        "代理可以使用的最大工具数量",
+        "单个代理因任务超出一个上下文窗口、需要不同的专业知识或需要并行工作而失败的点",
+        "代理每分钟可以进行的 API 调用数量限制",
+        "单个GPU上可以运行的最大模型大小"
       ],
       "correct": 1,
-      "explanation": "A single agent has one context window, one system prompt, and processes sequentially. When tasks require reading 50 files (context overflow), switching between research and coding (mixed expertise), or doing independent work simultaneously (parallelism), a single agent breaks down."
+      "explanation": "单个代理具有一个上下文窗口、一个系统提示符并按顺序进行处理。当任务需要读取 50 个文件（上下文溢出）、在研究和编码之间切换（混合专业知识）或同时进行独立工作（并行性）时，单个代理就会崩溃。"
     },
     {
       "stage": "pre",
-      "question": "Why might you use multiple specialized agents instead of one powerful general agent?",
+      "question": "为什么要使用多个专门代理而不是一个强大的通用代理？",
       "options": [
-        "Multiple agents are always cheaper than a single large model",
-        "Each agent can have a focused system prompt, smaller context, and specialized tools, leading to better performance on its specific subtask",
-        "Multiple agents can share the same context window",
-        "General agents cannot use tools"
+        "多个代理总是比单个大型号便宜",
+        "每个代理都可以有一个集中的系统提示、较小的上下文和专门的工具，从而在其特定子任务上获得更好的性能",
+        "多个代理可以共享同一个上下文窗口",
+        "一般代理无法使用工具"
       ],
       "correct": 1,
-      "explanation": "A researcher agent optimized for search, a coder agent optimized for implementation, and a reviewer agent optimized for code quality each do their job better than a single agent trying to be all three simultaneously."
+      "explanation": "针对搜索进行优化的研究人员代理、针对实施进行优化的编码员代理以及针对代码质量进行优化的审阅者代理，每个代理都比试图同时完成这三个任务的单个代理做得更好。"
     },
     {
       "stage": "post",
-      "question": "When is a pipeline (sequential) multi-agent pattern better than a parallel fan-out pattern?",
+      "question": "什么时候管道（顺序）多代理模式比并行扇出模式更好？",
       "options": [
-        "When you want to minimize total latency",
-        "When each stage depends on the output of the previous stage, such as research then code then review",
-        "When all subtasks are independent of each other",
-        "When you have more GPUs than tasks"
+        "当您想要最小化总延迟时",
+        "当每个阶段都依赖于前一阶段的输出时，例如研究然后编码然后审查",
+        "当所有子任务彼此独立时",
+        "当 GPU 数量多于任务数量时"
       ],
       "correct": 1,
-      "explanation": "Pipeline patterns are right when work is inherently sequential: the coder needs the researcher's output, and the reviewer needs the coder's output. Parallel fan-out is better when subtasks are independent."
+      "explanation": "当工作本质上是连续的时，管道模式是正确的：编码器需要研究人员的输出，审阅者需要编码器的输出。当子任务独立时，并行扇出效果更好。"
     },
     {
       "stage": "post",
-      "question": "What is the supervisor pattern in multi-agent systems?",
+      "question": "多智能体系统中的主管模式是什么？",
       "options": [
-        "A human manually assigns tasks to each agent",
-        "A central orchestrator agent that decomposes the task, delegates to worker agents, collects results, and decides next steps",
-        "A monitoring system that logs agent actions for debugging",
-        "A pattern where agents vote on the best response"
+        "人工手动将任务分配给每个代理",
+        "中央协调器代理，分解任务、委托给工作代理、收集结果并决定后续步骤",
+        "记录代理操作以进行调试的监控系统",
+        "代理投票选出最佳响应的模式"
       ],
       "correct": 1,
-      "explanation": "The supervisor agent acts as a project manager: it breaks the task into subtasks, assigns them to specialized workers, reviews their output, and decides whether to iterate or finalize. This provides centralized control over the workflow."
+      "explanation": "主管代理充当项目经理：它将任务分解为子任务，将它们分配给专门的工作人员，检查他们的输出，并决定是否迭代或最终确定。这提供了对工作流程的集中控制。"
     },
     {
       "stage": "post",
-      "question": "What is the primary tradeoff of multi-agent systems compared to single agents?",
+      "question": "与单代理系统相比，多代理系统的主要权衡是什么？",
       "options": [
-        "Multi-agent systems always produce lower quality results",
-        "Increased complexity, latency, and cost from multiple LLM calls and inter-agent communication, traded for better handling of complex tasks",
-        "Multi-agent systems require more training data",
-        "Multi-agent systems cannot use external tools"
+        "多智能体系统总是产生较低质量的结果",
+        "多个 LLM 调用和代理间通信增加了复杂性、延迟和成本，以更好地处理复杂任务",
+        "多智能体系统需要更多的训练数据",
+        "多代理系统无法使用外部工具"
       ],
       "correct": 1,
-      "explanation": "Every additional agent means more LLM calls (cost), more round trips (latency), and more failure modes (debugging complexity). Multi-agent is only worth it when the task genuinely exceeds what a single agent can handle."
+      "explanation": "每增加一个代理就意味着更多的 LLM 调用（成本）、更多的往返次数（延迟）和更多的故障模式（调试复杂性）。只有当任务真正超出单个代理的处理能力时，多代理才值得。"
     }
   ],
-  "title": "为什么需要多 Agent 系统：单 Agent 瓶颈与分工协作"
+  "title": "为什么需要多Agent系统：单Agent瓶颈与分工协作"
 }

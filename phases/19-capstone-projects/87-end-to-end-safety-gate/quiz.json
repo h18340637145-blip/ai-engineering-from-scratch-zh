@@ -1,75 +1,75 @@
 {
   "lesson": "87-end-to-end-safety-gate",
-  "title": "Capstone 87 — End-to-End Safety Gate",
+  "title": "Capstone 87 — 端到端安全门",
   "questions": [
     {
       "stage": "pre",
-      "question": "Where do the three checkpoints sit in the request lifecycle?",
+      "question": "这三个检查点位于请求生命周期的哪个位置？",
       "options": [
-        "All three run after the model finishes",
-        "Pre-gen runs on the prompt before the model, during-gen filters the stream, post-gen runs on the completed output",
-        "All three run before the model is called",
-        "Only post-gen runs; pre-gen and during-gen are aliases"
+        "所有三个都在模型完成后运行",
+        "预生成在模型之前的提示上运行，在生成过程中过滤流，后生成在完成的输出上运行",
+        "所有三个都在调用模型之前运行",
+        "仅在生成后运行； pre-gen 和 while-gen 是别名"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "pre",
-      "question": "What is the goal of during-gen filtering?",
+      "question": "生成期间过滤的目标是什么？",
       "options": [
-        "To translate the output to another language",
-        "To buffer chunks and terminate the stream early when a known harmful continuation appears, before the user sees it",
-        "To increase token throughput",
-        "To replace the prompt with a refusal"
+        "将输出翻译为另一种语言",
+        "当出现已知的有害延续时，在用户看到它之前，缓冲块并尽早终止流",
+        "增加令牌吞吐量",
+        "将提示替换为拒绝"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does the aggregator decide the final action?",
+      "question": "聚合器如何决定最终的行动？",
       "options": [
-        "By averaging the confidences of every signal",
-        "By taking the maximum severity across detector, token-filter, classifier, and rules signals and mapping it to block, redact, warn, or allow",
-        "By calling the model a second time",
-        "By looking only at the rules engine"
+        "通过平均每个信号的置信度",
+        "通过检测器、令牌过滤器、分类器和规则信号的最大严重性并将其映射到阻止、编辑、警告或允许",
+        "通过第二次调用模型",
+        "仅查看规则引擎"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why does the gate emit a structured RequestTrace per request?",
+      "question": "为什么门会针对每个请求发出结构化的 RequestTrace？",
       "options": [
-        "To slow the system down",
-        "To give a reviewer a per-checkpoint audit trail so a regression in any layer can be traced to the right module",
-        "To replace logging",
-        "To replicate the trace into the prompt"
+        "减慢系统速度",
+        "为审阅者提供每个检查点的审计跟踪，以便任何层中的回归都可以追溯到正确的模块",
+        "替换日志记录",
+        "将跟踪复制到提示中"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What happens when pre-gen confidence exceeds the block threshold?",
+      "question": "当预生成置信度超过区块阈值时会发生什么？",
       "options": [
-        "The model is still called for completeness",
-        "The gate returns the policy refusal and skips during-gen and post-gen entirely",
-        "The gate raises an exception",
-        "The gate lowers the threshold and retries"
+        "该模型仍要求完整性",
+        "门返回策略拒绝并完全跳过生成期间和生成后",
+        "门引发异常",
+        "门降低阈值并重试"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why does the demo intentionally let some encoding-trick prompts reach during-gen?",
+      "question": "为什么演示故意让一些编码技巧提示在生成期间出现？",
       "options": [
-        "Because encoding tricks are not real attacks",
-        "Because the input pipeline does not always normalize them in time; the during-gen filter is the defense in depth that catches the leaked continuation",
-        "Because the model refuses them anyway",
-        "Because the rules engine handles encoding"
+        "因为编码技巧并不是真正的攻击",
+        "因为输入管道并不总是及时对它们进行标准化；生成期间过滤器是捕获泄漏延续的深度防御",
+        "因为无论如何模特都会拒绝他们",
+        "因为规则引擎处理编码"
       ],
       "correct": 1,
       "explanation": ""

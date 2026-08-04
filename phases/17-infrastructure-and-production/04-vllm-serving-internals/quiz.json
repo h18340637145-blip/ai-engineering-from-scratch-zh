@@ -4,72 +4,72 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the main problem classic static batching has with mixed-length requests?",
+      "question": "经典静态批处理对于混合长度请求的主要问题是什么？",
       "options": [
-        "It only works with FP4",
-        "It requires NVLink between every GPU",
-        "It cannot use GPUs at all",
-        "Padding to the longest prompt and longest output wastes memory and stalls the whole batch on the slowest sequence"
+        "仅适用于 FP4",
+        "每个 GPU 之间都需要 NVLink",
+        "它根本无法使用 GPU",
+        "填充到最长的提示和最长的输出会浪费内存，并使整个批次停止在最慢的序列上"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "How does PagedAttention reduce KV cache fragmentation from 60-80% to under 4%?",
+      "question": "PagedAttention 如何将 KV 缓存碎片从 60-80% 减少到 4% 以下？",
       "options": [
-        "By disabling KV cache entirely",
-        "By compressing weights to INT4",
-        "By allocating KV cache in fixed-size blocks (default 16 tokens) referenced through a per-sequence block table",
-        "By holding the full prompt in CPU RAM"
+        "通过完全禁用 KV 缓存",
+        "通过将权重压缩为 INT4",
+        "通过在通过每个序列块表引用的固定大小块（默认 16 个令牌）中分配 KV 缓存",
+        "通过将完整的提示符保存在 CPU RAM 中"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What invariant defines continuous batching in vLLM's V1 scheduler?",
+      "question": "vLLM 的 V1 调度程序中定义连续批处理的不变量是什么？",
       "options": [
-        "The scheduler runs once per request and the batch never changes",
-        "Each request gets its own dedicated GPU stream",
-        "The scheduler waits 10 ms windows to fill a batch before running",
-        "The scheduler runs once per decode iteration, admitting finished sequences out and waiting ones in"
+        "调度程序每个请​​求运行一次，并且批次永远不会改变",
+        "每个请求都有自己的专用 GPU 流",
+        "调度程序在运行之前等待 10 毫秒窗口来填充批次",
+        "调度程序每次解码迭代运行一次，允许完成的序列输出并等待序列输入"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which latency metric does chunked prefill primarily protect under mixed load?",
+      "question": "在混合负载下，分块预填充主要保护哪种延迟指标？",
       "options": [
-        "Mean throughput",
-        "Cold-start time",
-        "Network RTT",
-        "P99 inter-token latency (ITL)"
+        "平均吞吐量",
+        "冷启动时间",
+        "网络RTT",
+        "P99 令牌间延迟 (ITL)"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "In vLLM v0.18.0, which speculative-decoding variant remains compatible with --enable-chunked-prefill?",
+      "question": "在 vLLM v0.18.0 中，哪种推测解码变体仍然与 --enable-chunked-prefill 兼容？",
       "options": [
-        "EAGLE-1 only",
-        "N-gram GPU speculative decoding in the V1 scheduler",
-        "No speculative decoding is compatible",
-        "Draft-model speculative decoding"
+        "仅限 EAGLE-1",
+        "V1 调度程序中的 N-gram GPU 推测解码",
+        "不兼容推测解码",
+        "草稿模型推测解码"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Why does chunked prefill not in isolation increase mean throughput?",
+      "question": "为什么分块预填充不能单独增加平均吞吐量？",
       "options": [
-        "It runs on a different GPU than decode",
-        "It uses speculative decoding under the hood",
-        "It compresses weights more aggressively",
-        "It only reduces decode-time jitter; the throughput win in practice comes from keeping decode sequences alive during long prefills, not from changing the work done"
+        "它运行在与解码不同的 GPU 上",
+        "它在幕后使用推测解码",
+        "它更积极地压缩重量",
+        "它仅减少解码时间抖动；实践中的吞吐量胜利来自于在长时间预填充期间保持解码序列处于活动状态，而不是来自改变已完成的工作"
       ],
       "correct": 3,
       "explanation": ""

@@ -3,60 +3,60 @@
   "questions": [
     {
       "stage": "post",
-      "question": "Why does the `messages` field in a LangGraph State TypedDict need `Annotated[list, add_messages]`?",
+      "question": "为什么 LangGraph State TypedDict 中的“messages”字段需要“Annotated[list, add_messages]”？",
       "options": [
-        "It enables streaming of token deltas from the model.",
-        "Without the reducer, node updates overwrite the list instead of appending, so every turn loses the prior history.",
-        "It compresses the message list when checkpoints are written to disk.",
-        "It converts plain dicts into LangChain message objects at runtime."
+        "它支持从模型中流式传输令牌增量。",
+        "如果没有减速器，节点更新会覆盖列表而不是追加，因此每轮都会丢失先前的历史记录。",
+        "当检查点写入磁盘时，它会压缩消息列表。",
+        "它在运行时将普通字典转换为 LangChain 消息对象。"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the difference between `interrupt_before=['tools']` and `interrupt_after=['tools']`?",
+      "question": "`interrupt_before=['tools']` 和 `interrupt_after=['tools']` 有什么区别？",
       "options": [
-        "No difference; they are aliases.",
-        "`interrupt_before` pauses after the model emits tool_calls but before the tools execute; `interrupt_after` pauses after the tools have already run.",
-        "`interrupt_before` runs the tool in a sandbox first; `interrupt_after` runs it in production.",
-        "`interrupt_before` is for unit tests; `interrupt_after` is for production."
+        "没有区别；他们是别名。",
+        "`interrupt_before` 在模型发出 tool_calls 之后但在工具执行之前暂停； `interrupt_after` 在工具运行后暂停。",
+        "`interrupt_before` 首先在沙箱中运行该工具； `interrupt_after` 在生产中运行它。",
+        "`interrupt_before` 用于单元测试； `interrupt_after` 用于生产。"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Given a thread's checkpoint history, how do you time-travel to a prior state and explore a different branch?",
+      "question": "给定线程的检查点历史记录，如何时间旅行到先前的状态并探索不同的分支？",
       "options": [
-        "Call `graph.reset(thread_id)` then `graph.invoke(new_input, config)`.",
-        "Delete the checkpoint directory and reinvoke with the same thread_id.",
-        "Invoke the graph with the desired prior `checkpoint_id` in the config; passing `None` as input replays from that checkpoint, passing a new value appends to it before resuming.",
-        "Set `graph.rewind = True` and reinvoke."
+        "调用“graph.reset(thread_id)”，然后调用“graph.invoke(new_input, config)”。",
+        "删除检查点目录并使用相同的thread_id重新调用。",
+        "使用配置中所需的先前“checkpoint_id”调用图表；传递“None”作为从该检查点重播的输入，在恢复之前传递一个新值附加到它。",
+        "设置 `graph.rewind = True` 并重新调用。"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "In a four-node ReAct graph (agent, tools, conditional edge, static edge back to agent), where does the conditional edge live?",
+      "question": "在四节点 ReAct 图中（代理、工具、条件边、返回代理的静态边），条件边位于何处？",
       "options": [
-        "From `tools` back to `agent`, routing on whether tool output was empty.",
-        "From `agent`, routing to `tools` if the last message has tool_calls and to `END` otherwise.",
-        "From `START`, routing to either `agent` or `END` based on input length.",
-        "There is no conditional edge; both are static."
+        "从“tools”回到“agent”，根据工具输出是否为空进行路由。",
+        "从“agent”，如果最后一条消息有 tool_calls，则路由到“tools”，否则路由到“END”。",
+        "从“START”，根据输入长度路由到“agent”或“END”。",
+        "没有条件边缘；两者都是静态的。"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "When should you use `Send(node_name, state)` instead of a plain edge?",
+      "question": "什么时候应该使用“Send(node_name, state)”而不是普通边缘？",
       "options": [
-        "To retry a node after a failure.",
-        "To defer a node until a timer expires.",
-        "To dispatch N parallel executions of a target node whose outputs merge back through the state reducer.",
-        "To invoke a node in a different process for isolation."
+        "失败后重试节点。",
+        "推迟节点直到计时器到期。",
+        "调度目标节点的 N 个并行执行，其输出通过状态缩减器合并回来。",
+        "调用不同进程中的节点进行隔离。"
       ],
       "correct": 2,
       "explanation": ""

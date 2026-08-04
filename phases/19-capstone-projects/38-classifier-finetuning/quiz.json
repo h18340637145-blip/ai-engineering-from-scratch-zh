@@ -1,46 +1,46 @@
 {
   "lesson": "phase-19/38-classifier-finetuning",
-  "title": "Classifier Fine-Tuning by Head Swap",
+  "title": "通过头部交换进行分类器微调",
   "questions": [
     {
       "stage": "pre",
-      "question": "Before reading: a pretrained language model has a body with 5M parameters and an output head that projects to a 30K vocabulary. You want a 2-class classifier. Which is the most defensible first move?",
+      "question": "阅读之前：预训练的语言模型有一个包含 5M 个参数的主体和一个可投影 30K 词汇量的输出头。你想要一个 2 类分类器。哪一个第一步最有防御性？",
       "options": [
-        "Discard the body and train a new transformer from scratch on the 800-example labelled set.",
-        "Replace only the head with a 2-class linear layer and decide later whether to train the body.",
-        "Keep the original head but mask all but two output logits.",
-        "Freeze the head and train only the body."
+        "丢弃主体并在 800 个示例标记集上从头开始训练新的变压器。",
+        "仅用 2 类线性层替换头部，稍后决定是否训练身体。",
+        "保留原始头部，但屏蔽除两个输出逻辑之外的所有输出逻辑。",
+        "冻结头部，只训练身体。"
       ],
       "correct": 1,
-      "explanation": "The body is the expensive part and encodes useful structure from pretraining. Swap the head first. Whether to freeze the body is a separate decision driven by data size and domain drift."
+      "explanation": "身体是昂贵的部分，编码来自预训练的有用结构。先换头。是否冻结身体是由数据大小和域漂移驱动的单独决定。"
     },
     {
       "stage": "check",
-      "question": "Why does the lesson use mean pooling with an attention-mask weighting instead of a plain mean across the sequence axis?",
+      "question": "为什么本课程使用带有注意掩模权重的均值池，而不是跨序列轴的简单均值？",
       "options": [
-        "Plain mean is mathematically undefined for transformers.",
-        "Padding positions contribute irrelevant hidden states that would pull the pooled vector toward zero.",
-        "Mean pool requires masking by convention even when there are no pads.",
-        "Plain mean ignores the batch dimension."
+        "对于变压器来说，普通平均值在数学上是不确定的。",
+        "填充位置会产生不相关的隐藏状态，从而将池向量拉向零。",
+        "即使没有焊盘，平均池也需要按照惯例进行掩蔽。",
+        "普通均值忽略批次维度。"
       ],
       "correct": 1,
-      "explanation": "Padding tokens carry no signal but the body still produces hidden states for them. Without masking, padded positions corrupt the pooled representation, especially on short sequences in a batch padded to the longest example."
+      "explanation": "填充令牌不携带信号，但主体仍然为它们产生隐藏状态。如果没有掩码，填充的位置会破坏池表示，尤其是在填充到最长示例的批次中的短序列上。"
     },
     {
       "stage": "check",
-      "question": "In `train_classifier`, the optimiser is constructed with `[p for p in model.parameters() if p.requires_grad]`. What does this idiom enforce?",
+      "question": "在“train_classifier”中，优化器是用“[p for p in model.parameters() if p.requires_grad]”构建的。这个习语强制执行什么？",
       "options": [
-        "It silently ignores the head when the body is frozen.",
-        "It tells PyTorch to autograd through frozen parameters anyway.",
-        "It builds the param group from only the trainable subset, so the head-only and full-FT cases share the same code path.",
-        "It is required by the Adam constructor."
+        "当身体被冻结时，它会默默无视头部。",
+        "它告诉 PyTorch 通过冻结参数进行自动分级。",
+        "它仅从可训练子集构建参数组，因此 head-only 和 full-FT 情况共享相同的代码路径。",
+        "Adam 构造函数需要它。"
       ],
       "correct": 2,
-      "explanation": "The optimiser only updates the parameters in its param list. By filtering on `requires_grad`, the same training function works for both regimes; the toggle is the freeze call, not the loop."
+      "explanation": "优化器仅更新其参数列表中的参数。通过对“requires_grad”进行过滤，相同的训练函数适用于两种机制；切换是冻结调用，而不是循环。"
     },
     {
       "stage": "check",
-      "question": "Precision is 0.9 and recall is 0.6 on the spam class. What is the F1?",
+      "question": "垃圾邮件类别的精度为 0.9，召回率为 0.6。 F1是什么？",
       "options": [
         "0.75",
         "0.72",
@@ -48,31 +48,31 @@
         "0.30"
       ],
       "correct": 1,
-      "explanation": "F1 is the harmonic mean of precision and recall: 2 * 0.9 * 0.6 / (0.9 + 0.6) = 1.08 / 1.5 = 0.72."
+      "explanation": "F1 是精度和召回率的调和平均值：2 * 0.9 * 0.6 / (0.9 + 0.6) = 1.08 / 1.5 = 0.72。"
     },
     {
       "stage": "post",
-      "question": "You retrain the model with full fine-tuning at the same learning rate as head-only training. F1 collapses to 0.55 from 0.90. What is the most likely cause?",
+      "question": "您可以以与仅头部训练相同的学习速率通过完全微调重新训练模型。 F1 从 0.90 降至 0.55。最可能的原因是什么？",
       "options": [
-        "The body parameters needed a smaller learning rate than the head.",
-        "Adam is incompatible with classification objectives.",
-        "Cross-entropy loss is not defined for two-class problems.",
-        "PyTorch silently disables gradients during full fine-tuning."
+        "身体参数需要比头部更小的学习率。",
+        "Adam 与分类目标不相容。",
+        "交叉熵损失没有针对二类问题定义。",
+        "PyTorch 在完全微调期间默默地禁用渐变。"
       ],
       "correct": 0,
-      "explanation": "A pretrained body usually needs a smaller learning rate than a fresh head. A common pattern is two parameter groups: high LR on the head, smaller LR on the body. The same LR for both destroys pretraining signal."
+      "explanation": "预训练的主体通常需要比新的头部更小的学习率。常见的模式是两个参数组：头部的高 LR，身体的较小 LR。两者的相同 LR 会破坏预训练信号。"
     },
     {
       "stage": "post",
-      "question": "Your team wants to deploy the classifier and asks how to record which regime produced the production checkpoint. Which artifact answers that question reproducibly?",
+      "question": "您的团队想要部署分类器并询问如何记录哪个政权产生了生产检查点。哪个工件可以重复地回答这个问题？",
       "options": [
-        "The final loss value, since head-only loss is always higher than full-FT loss.",
-        "The `trainable` count in `TrainReport`, which differs by orders of magnitude between regimes.",
-        "The confusion matrix, which uniquely identifies the regime.",
-        "The precision-recall-F1 triple."
+        "最终损失值，因为仅头部损失始终高于全 FT 损失。",
+        "“TrainReport”中的“可训练”计数，在不同制度之间存在数量级差异。",
+        "混淆矩阵，唯一标识该政权。",
+        "精确率-召回率-F1 三重。"
       ],
       "correct": 1,
-      "explanation": "`trainable` records the number of parameters that received gradients during training. Head-only has on the order of `hidden * num_classes`; full FT has the whole model. The number is the audit trail."
+      "explanation": "“trainable”记录训练期间接收梯度的参数数量。 Head-only 的数量级为“hidden * num_classes”； full FT 有整个模型。这个数字就是审计线索。"
     }
   ]
 }

@@ -1,78 +1,78 @@
 {
   "lesson": "55-critic-loop",
-  "title": "Critic Loop",
+  "title": "评论循环",
   "questions": [
     {
       "stage": "pre",
-      "question": "Why does the critic score across five fixed dimensions instead of returning a freeform paragraph?",
+      "question": "为什么评论家会在五个固定维度上进行评分，而不是返回一个自由格式的段落？",
       "options": [
-        "Because models cannot generate paragraphs reliably",
-        "Because a fixed vector lets the harness detect per-dimension regressions across rounds",
-        "Because LaTeX requires a score field",
-        "Because the reviser only accepts JSON"
+        "因为模型无法可靠地生成段落",
+        "因为固定向量可以让线束检测各轮次的每维度回归",
+        "因为 LaTeX 需要一个分数字段",
+        "因为修订者只接受 JSON"
       ],
       "correct": 1,
-      "explanation": "A fixed dimension vector turns critique into structured data the harness can compare across rounds. Freeform criticism is unverifiable; vectors make regressions visible."
+      "explanation": "固定维度向量将批评转化为结构化数据，该工具可以跨轮进行比较。自由形式的批评是无法证实的；向量使回归可见。"
     },
     {
       "stage": "pre",
-      "question": "In what order does the loop check stop conditions at the end of a round?",
+      "question": "循环在一轮结束时以什么顺序检查停止条件？",
       "options": [
-        "Budget, then plateau, then target",
-        "Target, then plateau, then budget",
-        "Plateau, then target, then budget",
-        "Whichever fires first by random tie-break"
+        "预算，然后稳定，然后目标",
+        "目标，然后稳定，然后预算",
+        "稳定期，然后是目标，然后是预算",
+        "随机抢七，以先开火者为准"
       ],
       "correct": 1,
-      "explanation": "Target met wins (the work is done). Then plateau (no more progress is achievable). Then budget (hard cap). The order makes the result deterministic when more than one condition could fire."
+      "explanation": "达到目标即获胜（工作已完成）。然后进入平台期（无法取得更多进展）。然后是预算（硬顶）。当可能触发多个条件时，该顺序使结果具有确定性。"
     },
     {
       "stage": "check",
-      "question": "Why does plateau detection require two consecutive flat rounds rather than one?",
+      "question": "为什么平台检测需要连续两轮而不是一轮？",
       "options": [
-        "Because the dataclass requires a list",
-        "Because deterministic scoring still has noise per round; one flat round is not enough signal",
-        "Because the model returns nondeterministic scores",
-        "Because the dashboard expects two points"
+        "因为数据类需要一个列表",
+        "因为确定性评分每轮仍然有噪音；一轮平局信号不够",
+        "因为模型返回不确定的分数",
+        "因为仪表板期望有两个点"
       ],
       "correct": 1,
-      "explanation": "Even a deterministic scorer's output changes round to round depending on which suggestions were applied. Requiring two flat rounds filters that noise."
+      "explanation": "即使是确定性记分员的输出也会根据所应用的建议而逐轮变化。需要两个扁平圆形过滤噪音。"
     },
     {
       "stage": "check",
-      "question": "What does the reviser receive as input each round?",
+      "question": "修订者每轮收到的输入是什么？",
       "options": [
-        "The full Critique object including scores",
-        "The paper and the list of Suggestion records",
-        "A model-generated paragraph",
-        "The raw LaTeX source"
+        "完整的 Critique 对象，包括分数",
+        "论文及建议记录清单",
+        "模型生成的段落",
+        "原始 LaTeX 源"
       ],
       "correct": 1,
-      "explanation": "Reviser.__call__ takes (paper, suggestions). Each Suggestion carries a dimension, target section, and an edit instruction. The reviser does not see scores. That separation lets either side be swapped without touching the other."
+      "explanation": "修订者.__call__ 接受（论文、建议）。每个建议都带有维度、目标部分和编辑指令。审阅者看不到分数。这种分离使得任何一侧都可以在不接触另一侧的情况下进行交换。"
     },
     {
       "stage": "post",
-      "question": "What does the trace contain for each round?",
+      "question": "每轮跟踪包含什么？",
       "options": [
-        "Just the final paper draft",
-        "Round number, score vector, mean, suggestions applied, verdict",
-        "The model prompt and completion",
-        "Only the convergence verdict"
+        "只是最终的论文草稿",
+        "整数、分数向量、平均值、应用的建议、结论",
+        "模型提示及完成",
+        "仅收敛判定"
       ],
       "correct": 1,
-      "explanation": "The trace is the per-round event log. Dashboards render it as a score-over-time chart; the next stage reads it to decide whether the branch is worth keeping."
+      "explanation": "跟踪是每轮事件日志。仪表板将其呈现为随时间变化的分数图表；下一阶段读取它来决定该分支是否值得保留。"
     },
     {
       "stage": "post",
-      "question": "A critic that keeps emitting suggestions that never improve any score will produce which terminal verdict?",
+      "question": "一个不断提出永远不会提高任何分数的建议的批评家会得出什么样的最终结论？",
       "options": [
-        "target, because the budget hides the bug",
-        "plateau or budget, because the harness will catch the lack of progress",
-        "converged, because suggestions were applied",
-        "An exception, because the loop crashes"
+        "目标，因为预算隐藏了错误",
+        "平台或预算，因为利用工具会发现缺乏进展的情况",
+        "收敛，因为建议已被应用",
+        "异常，因为循环崩溃"
       ],
       "correct": 1,
-      "explanation": "Either plateau (two flat rounds) or budget (hard cap) fires. Both verdicts surface the bug. The loop never silently succeeds."
+      "explanation": "要么是平台期（两轮平局），要么是预算（硬顶）火灾。两个判决都暴露了这个错误。循环永远不会默默地成功。"
     }
   ]
 }

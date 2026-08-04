@@ -4,87 +4,87 @@
   "questions": [
     {
       "stage": "pre",
-      "question": "What are CrewAI's four primitives?",
+      "question": "CrewAI 的四个原语是什么？",
       "options": [
-        "Agent, Task, Crew, Process",
-        "Node, Edge, Reducer, Checkpointer",
-        "Actor, Message, Inbox, Runtime",
-        "Tool, Prompt, Model, Memory"
+        "代理、任务、人员、流程",
+        "节点、边缘、Reducer、检查点",
+        "演员、消息、收件箱、运行时",
+        "工具、提示、模型、内存"
       ],
       "correct": 0,
-      "explanation": "Agent, Task, Crew, and Process are the four primitives."
+      "explanation": "Agent、Task、Crew 和 Process 是四个原语。"
     },
     {
       "stage": "pre",
-      "question": "What is the recommended production starting point per the CrewAI docs?",
+      "question": "CrewAI 文档建议的生产起点是什么？",
       "options": [
-        "Crew",
-        "Flow",
-        "Sequential process",
-        "Hierarchical process"
+        "全体人员",
+        "流动",
+        "顺序过程",
+        "分层流程"
       ],
       "correct": 1,
-      "explanation": "The docs say start production apps with Flows; fold Crews in as sub-steps when autonomy earns its cost."
+      "explanation": "文档说使用 Flows 启动生产应用程序；当自主性产生成本时，将 Crews 作为子步骤纳入其中。"
     },
     {
       "stage": "check",
-      "question": "What is the difference between a Crew and a Flow?",
+      "question": "Crew 和 Flow 有什么区别？",
       "options": [
-        "Crew is paid, Flow is free",
-        "Crew is autonomous and LLM-driven; Flow is event-driven, code-owned, deterministic and testable",
-        "Crew runs on GPUs only",
-        "Flow has no agents"
+        "船员有酬，流程免费",
+        "Crew 是自主的，由法学硕士驱动；流程是事件驱动的、代码拥有的、确定性的和可测试的",
+        "Crew 仅在 GPU 上运行",
+        "Flow没有代理"
       ],
       "correct": 1,
-      "explanation": "Crew is autonomy-first; Flow is determinism-first."
+      "explanation": "船员自主第一；流程是决定论第一的。"
     },
     {
       "stage": "check",
-      "question": "Which of these is NOT one of the four memory types CrewAI ships?",
+      "question": "以下哪一项不是 CrewAI 提供的四种内存类型之一？",
       "options": [
-        "Short-term",
-        "Long-term",
-        "Entity",
-        "Quantized"
+        "短期",
+        "长期",
+        "实体",
+        "量化"
       ],
       "correct": 3,
-      "explanation": "Short-term, long-term, entity, and contextual are the four. Quantized memory is not a CrewAI concept."
+      "explanation": "短期、长期、实体和情境是四个。量化内存不是 CrewAI 的概念。"
     },
     {
       "stage": "check",
-      "question": "What is backstory bloat and how does the lesson recommend handling it?",
+      "question": "什么是背景故事膨胀以及本课程建议如何处理它？",
       "options": [
-        "Storing too many crews; archive old ones",
-        "2000-word agent backstories push out context budget; keep them tight",
-        "Too many tools; delete some",
-        "Slow Bedrock calls; switch regions"
+        "储存过多的人员；归档旧的",
+        "2000字的特工背景故事超出了背景预算；保持紧绷",
+        "工具太多；删除一些",
+        "基岩呼叫缓慢；切换区域"
       ],
       "correct": 1,
-      "explanation": "Backstories shape tone and judgment but eat context if oversized."
+      "explanation": "背景故事会影响语气和判断力，但如果篇幅过大，就会影响背景故事。"
     },
     {
       "stage": "post",
-      "question": "When is Hierarchical process worth picking over Sequential?",
+      "question": "什么时候值得选择分层流程而不是顺序流程？",
       "options": [
-        "Always",
-        "When you have 4+ specialists that need a manager Agent to route between them",
-        "When you have one task",
-        "When you do not have any tools"
+        "总是",
+        "当您有 4 名以上的专家需要经理代理在他们之间进行路由时",
+        "当你有一项任务时",
+        "当你没有任何工具时"
       ],
       "correct": 1,
-      "explanation": "Hierarchical adds a manager Agent; only worthwhile when several specialists need dynamic routing."
+      "explanation": "分层增加了一个管理器Agent；仅当多个专家需要动态路由时才值得。"
     },
     {
       "stage": "post",
-      "question": "Why does the lesson caution against using a free-form Crew in production?",
+      "question": "为什么本课程警告不要在制作中使用自由形式的 Crew？",
       "options": [
-        "Crews are unsupported",
-        "Output variability is high and debugging is painful without a Flow wrapper",
-        "Crews cost more than Flows",
-        "Crews lack memory"
+        "船员不受支持",
+        "输出变化很大，如果没有 Flow 包装器，调试会很痛苦",
+        "人员成本高于流程",
+        "船员缺乏记忆"
       ],
       "correct": 1,
-      "explanation": "Crew autonomy makes prod replay and audit painful; wrap with a Flow when shipping."
+      "explanation": "人员自治使得产品重播和审核变得痛苦；运输时用 Flow 包裹。"
     }
   ]
 }

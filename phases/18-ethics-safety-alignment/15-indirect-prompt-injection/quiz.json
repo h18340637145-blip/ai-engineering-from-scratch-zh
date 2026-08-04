@@ -1,75 +1,75 @@
 {
   "lesson": "15-indirect-prompt-injection",
-  "title": "Indirect Prompt Injection - Production Attack Surface",
+  "title": "间接提示注入 - 生产攻击面",
   "questions": [
     {
       "stage": "pre",
-      "question": "What distinguishes indirect prompt injection (IPI) from direct prompt injection?",
+      "question": "间接提示注入 (IPI) 与直接提示注入有何区别？",
       "options": [
-        "IPI requires fine-tuning the target model",
-        "IPI embeds instructions inside external content (web pages, emails, tool outputs) that the agent consumes during normal operation, without the attacker touching the user's prompt",
-        "IPI is a synonym for jailbreaking",
-        "IPI only works on multimodal models"
+        "IPI需要对目标模型进行微调",
+        "IPI 将指令嵌入到代理在正常操作期间使用的外部内容（网页、电子邮件、工具输出）中，而攻击者无需接触用户的提示",
+        "IPI是越狱的同义词",
+        "IPI 仅适用于多式联运模型"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Which of these is NOT one of the three IPI delivery vectors listed in the lesson?",
+      "question": "以下哪一个不是本课程中列出的三个 IPI 传递载体之一？",
       "options": [
-        "Retrieval-augmented generation (poisoned retrieval)",
-        "Direct system-prompt edits by the user",
-        "Tool output",
-        "Inbox / document workflows"
+        "检索增强生成（中毒检索）",
+        "用户直接进行系统提示编辑",
+        "刀具输出",
+        "收件箱/文档工作流程"
       ],
       "correct": 1,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Why do user-input filters miss IPI?",
+      "question": "为什么用户输入过滤器会错过 IPI？",
       "options": [
-        "Filters cannot read JSON",
-        "User-input filters are case-sensitive",
-        "The payload never appears in the user's input; it appears in retrieved or tool-supplied content",
-        "Filters only run after the model responds"
+        "过滤器无法读取 JSON",
+        "用户输入过滤器区分大小写",
+        "有效负载永远不会出现在用户的输入中；它出现在检索到的或工具提供的内容中",
+        "过滤器仅在模型响应后运行"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is the central principle of Information Flow Control (IFC) for AI agents?",
+      "question": "人工智能代理的信息流控制（IFC）的核心原则是什么？",
       "options": [
-        "Encrypt all retrieved content",
-        "Use only single-turn prompts",
-        "Disable all tools by default",
-        "Label content by source as trusted or untrusted; actions triggered by untrusted content must be ratified by trusted input before execution"
+        "加密所有检索到的内容",
+        "仅使用单轮提示",
+        "默认禁用所有工具",
+        "按来源将内容标记为可信或不可信；由不可信内容触发的操作在执行之前必须得到可信输入的批准"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What did Nasr et al. (October 2025, 'The Attacker Moves Second') find about 12 published IPI defenses with adaptive attacks?",
+      "question": "纳斯尔等人做了什么？ （2025 年 10 月，“攻击者第二次行动”）找到大约 12 个已发布的带有自适应攻击的 IPI 防御？",
       "options": [
-        "Adaptive attacks were too expensive to evaluate",
-        "Their reported near-zero ASR held under adaptive attack",
-        "Only one defense was broken",
-        "Adaptive attacks (gradient, RL, random search, human red-team) broke >90% of them despite their original near-zero ASR claims"
+        "自适应攻击的评估成本太高",
+        "他们报告的 ASR 接近于零，但受到自适应攻击",
+        "仅一处防御被破",
+        "自适应攻击（梯度、强化学习、随机搜索、人类红队）打破了超过 90% 的攻击，尽管它们最初声称 ASR 接近于零"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "Where does prompt injection rank in the 2025 OWASP LLM Top 10?",
+      "question": "即时注入在 2025 年 OWASP LLM 前 10 名中排名第几？",
       "options": [
-        "Not listed",
-        "LLM01 (top, #1 application-layer threat)",
+        "未列出",
+        "LLM01（顶级，#1 应用层威胁）",
         "LLM05",
-        "LLM10 (lowest)"
+        "LLM10（最低）"
       ],
       "correct": 1,
       "explanation": ""

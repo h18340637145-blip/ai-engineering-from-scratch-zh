@@ -1,78 +1,78 @@
 {
   "lesson": "76-collective-ops-from-scratch",
-  "title": "Collective Ops From Scratch",
+  "title": "从头开始的集体行动",
   "questions": [
     {
       "stage": "pre",
-      "question": "What is the per-rank bandwidth cost of ring allreduce for a tensor of T bytes on N ranks?",
+      "question": "对于 N 列上的​​ T 字节张量，ring allreduce 的每列带宽成本是多少？",
       "options": [
-        "T bytes",
-        "N * T bytes",
-        "2T(N-1)/N bytes",
-        "T log2(N) bytes"
+        "T字节",
+        "N * T 字节",
+        "2T(N-1)/N字节",
+        "T log2(N) 字节"
       ],
       "correct": 2,
-      "explanation": "Ring allreduce moves N-1 chunks of size T/N twice (reduce-scatter then allgather); the per-rank total is 2T(N-1)/N, independent of cluster size."
+      "explanation": "Ring allreduce 将 N-1 个大小为 T/N 的块移动两次（减少-分散然后全部聚集）；每列总数为 2T(N-1)/N，与簇大小无关。"
     },
     {
       "stage": "pre",
-      "question": "Why is the queue mesh in this lesson an honest stand-in for NCCL on a real cluster?",
+      "question": "为什么本课中的队列网格是真实集群上 NCCL 的诚实替代品？",
       "options": [
-        "It runs on CUDA cores",
-        "It hardware-offloads reductions",
-        "It implements the same wire pattern (ordered point-to-point sends around a ring), only the medium differs",
-        "It compresses messages"
+        "它在 CUDA 核心上运行",
+        "它通过硬件卸载减少",
+        "它实现相同的线路模式（围绕环有序点对点发送），只是介质不同",
+        "它压缩消息"
       ],
       "correct": 2,
-      "explanation": "Algorithmic correctness depends on the wire pattern, not the medium; the queue ring exposes the same race shapes and chunk schedule as NCCL ring allreduce."
+      "explanation": "算法的正确性取决于线路模式，而不是介质；队列环公开与 NCCL 环 allreduce 相同的竞赛形状和块调度。"
     },
     {
       "stage": "check",
-      "question": "After the reduce-scatter half of ring allreduce, what does rank r hold?",
+      "question": "环的reduce-scatter一半全部reduce后，秩r持有什么？",
       "options": [
-        "Nothing",
-        "The full tensor unreduced",
-        "The reduced sum for one chunk (one Nth of the tensor)",
-        "The reduced sum for two chunks"
+        "没有什么",
+        "未约化的完整张量",
+        "一个块的减少总和（张量的 N 分之一）",
+        "两个块的减少总和"
       ],
       "correct": 2,
-      "explanation": "Reduce-scatter parks the sum of one chunk on one rank; the allgather half then rotates those completed chunks around the ring."
+      "explanation": "减少分散将一大块的总和放在一个等级上；然后，所有收集的一半将这些完成的块绕着环旋转。"
     },
     {
       "stage": "check",
-      "question": "Why use tree broadcast instead of N-1 direct sends from the source?",
+      "question": "为什么使用树广播而不是从源直接发送N-1个？",
       "options": [
-        "Trees use less memory",
-        "Trees double the holder set per round; depth is log2(N) so latency scales as log not N",
-        "Trees are mandatory in PyTorch",
-        "Direct sends drop packets"
+        "树使用更少的内存",
+        "树木每轮的支架数量加倍；深度为 log2(N)，因此延迟按 log 而非 N 缩放",
+        "PyTorch 中树是必需的",
+        "直接发送丢包"
       ],
       "correct": 1,
-      "explanation": "log2(N) hops dominate when latency per hop is the bottleneck; N-1 sequential sends pay that latency floor N times."
+      "explanation": "当每跳延迟成为瓶颈时，log2(N) 跳占主导地位； N-1 个顺序发送将延迟下限支付 N 倍。"
     },
     {
       "stage": "check",
-      "question": "Why verify against torch.distributed gloo on the same input?",
+      "question": "为什么要在同一输入上针对 torch.distributed gloo 进行验证？",
       "options": [
-        "Gloo is faster",
-        "Gloo is the legal reference for collective semantics; byte-equal output proves your algorithm agrees with the spec before it runs on a real cluster",
-        "Gloo writes JSONL automatically",
-        "Gloo requires no setup"
+        "格鲁速度更快",
+        "Gloo是集体语义的法律参考；字节相等的输出证明您的算法在真正的集群上运行之前符合规范",
+        "Gloo 自动写入 JSONL",
+        "Gloo 无需设置"
       ],
       "correct": 1,
-      "explanation": "Without a reference, the primitive looks correct until step 10000 of a real training run; gloo gives byte-equal ground truth on CPU."
+      "explanation": "如果没有参考，基元在实际训练运行的第 10000 步之前看起来都是正确的； gloo 给出了 CPU 上字节相等的基本事实。"
     },
     {
       "stage": "post",
-      "question": "When does tree allreduce win over ring allreduce?",
+      "question": "树 allreduce 何时战胜环 allreduce？",
       "options": [
-        "Always",
-        "When messages are large",
-        "Small messages or high-latency links; the log2(N) hop count beats the bandwidth term 2T(N-1)/N below the crossover",
-        "Never"
+        "总是",
+        "当消息很大时",
+        "小消息或高延迟链接； log2(N) 跳数比交叉点以下的带宽项 2T(N-1)/N 好",
+        "绝不"
       ],
       "correct": 2,
-      "explanation": "NCCL picks ring above ~1 MB and tree below; the crossover is bandwidth-versus-latency on the given cluster topology."
+      "explanation": "NCCL 选择约 1 MB 以上的环和以下的树；交叉是给定集群拓扑上的带宽与延迟。"
     }
   ]
 }

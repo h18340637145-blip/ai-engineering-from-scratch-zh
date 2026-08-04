@@ -1,78 +1,78 @@
 {
   "lesson": "47-checkpoint-save-resume",
-  "title": "Checkpoint Save and Resume",
+  "title": "检查点保存和恢复",
   "questions": [
     {
       "stage": "pre",
-      "question": "Which set best describes a complete training checkpoint?",
+      "question": "哪一组最能描述完整的训练检查点？",
       "options": [
-        "Model weights only",
-        "Model state, optimizer state, scheduler state, step counters, loss history, and RNG state for python, numpy, torch CPU, torch CUDA",
-        "Just the loss history",
-        "Anything torch.save() can serialize"
+        "仅模型重量",
+        "python、numpy、torch CPU、torch CUDA 的模型状态、优化器状态、调度程序状态、步数计数器、损失历史记录和 RNG 状态",
+        "只是损失历史",
+        "任何 torch.save() 都可以序列化"
       ],
       "correct": 1,
-      "explanation": "Resume must walk the same trajectory. Without optimizer moments, scheduler position, and RNG state the resumed loss is a different curve."
+      "explanation": "Resume must walk the same trajectory.如果没有优化器时刻、调度器位置和 RNG 状态，恢复的损失是一条不同的曲线。"
     },
     {
       "stage": "pre",
-      "question": "Why does the saver write to a temporary file and then rename instead of writing the target name directly?",
+      "question": "为什么saver要写入临时文件然后重命名而不是直接写入目标名称？",
       "options": [
-        "Faster I/O",
-        "POSIX rename within the same directory is atomic, so a crash mid-write leaves the previous good file in place rather than a half-written file at the target name",
-        "It dedupes the file",
-        "It bypasses fsync"
+        "更快的输入/输出",
+        "同一目录内的 POSIX 重命名是原子性的，因此写入过程中发生崩溃时，会将之前的好文件保留在原处，而不是在目标名称处保留写了一半的文件",
+        "它对文件进行重复数据删除",
+        "它绕过 fsync"
       ],
       "correct": 1,
-      "explanation": "atomic_save calls os.replace from a temp file in the same directory. Cross-device renames lose atomicity, which is why the temp file must live in the target directory."
+      "explanation": "atomic_save 从同一目录中的临时文件调用 os.replace 。跨设备重命名会失去原子性，这就是临时文件必须位于目标目录中的原因。"
     },
     {
       "stage": "check",
-      "question": "Why does a sharded checkpoint store a sha256 in index.json per shard?",
+      "question": "为什么分片检查点在每个分片的 index.json 中存储 sha256？",
       "options": [
-        "For SEO",
-        "So the loader can detect a truncated or tampered shard at load time instead of silently merging a bad state_dict",
-        "To compress the file",
-        "Because torch requires it"
+        "对于搜索引擎优化",
+        "因此加载器可以在加载时检测到截断或篡改的分片，而不是默默地合并错误的 state_dict",
+        "压缩文件",
+        "因为火炬需要它"
       ],
       "correct": 1,
-      "explanation": "load_sharded_checkpoint asserts each shard's actual hash matches the recorded one and the meta file's hash too. Silent corruption is the worst failure mode."
+      "explanation": "load_sharded_checkpoint 断言每个分片的实际哈希值与记录的哈希值以及元文件的哈希值相匹配。无声的腐败是最糟糕的失败模式。"
     },
     {
       "stage": "check",
-      "question": "How does resume continue at the right offset inside the current epoch?",
+      "question": "如何在当前纪元内的正确偏移处继续恢复？",
       "options": [
-        "It skips to the next epoch boundary",
-        "TrainState records (epoch, batch_in_epoch) and the RNG state is restored, so the loader fast-forwards the generator past the batches already consumed before continuing",
-        "It uses a special database",
-        "It always restarts from step 0"
+        "它跳到下一个纪元边界",
+        "TrainState 记录（epoch、batch_in_epoch）并且 RNG 状态已恢复，因此加载器在继续之前将生成器快进到已消耗的批次",
+        "它使用特殊的数据库",
+        "总是从第 0 步重新开始"
       ],
       "correct": 1,
-      "explanation": "Without (epoch, batch_in_epoch) you snap to the next epoch boundary and waste work. Without RNG you see different batches. Both are required."
+      "explanation": "如果没有（epoch，batch_in_epoch），您将捕捉到下一个纪元边界并浪费工作。如果没有 RNG，你会看到不同的批次。两者都是必需的。"
     },
     {
       "stage": "check",
-      "question": "What does the schema field on the payload buy you?",
+      "question": "有效负载上的架构字段会给您带来什么？",
       "options": [
-        "Nothing",
-        "A migration hook: future format changes bump the schema string and the loader can dispatch on it instead of breaking old runs",
-        "A pretty filename",
-        "Compression"
+        "没有什么",
+        "迁移挂钩：未来的格式更改会影响模式字符串，加载器可以对其进行分派，而不是破坏旧的运行",
+        "一个漂亮的文件名",
+        "压缩"
       ],
       "correct": 1,
-      "explanation": "The lesson uses ckpt.v1; the next version is ckpt.v2 with a migrate function. Without the field, format evolution requires breakage."
+      "explanation": "本课使用ckpt.v1；下一个版本是带有迁移功能的ckpt.v2。没有了这个领域，格式的演变就需要打破。"
     },
     {
       "stage": "post",
-      "question": "Reading the resume demo summary, what does max_loss_diff_after_resume near 0 prove?",
+      "question": "阅读简历演示摘要，max_loss_diff_after_resume 接近 0 证明了什么？",
       "options": [
-        "Nothing useful",
-        "That the post-resume loss trajectory matches the uninterrupted baseline within floating point noise, which means the RNG state and the optimizer state were both restored faithfully",
-        "That the model is good",
-        "That the disk is fast"
+        "没有什么用处",
+        "恢复后的损失轨迹与浮点噪声内的不间断基线相匹配，这意味着 RNG 状态和优化器状态都得到了忠实的恢复",
+        "说明模型不错",
+        "磁盘速度很快"
       ],
       "correct": 1,
-      "explanation": "If you forget RNG you see a different curve and a non-trivial diff. If you forget optimizer state the diff is huge. The near-zero number is the contract."
+      "explanation": "如果你忘记了 RNG，你会看到不同的曲线和不平凡的差异。如果您忘记优化器状态，​​则差异会很大。接近于零的数字是合同。"
     }
   ]
 }

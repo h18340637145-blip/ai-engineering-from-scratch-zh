@@ -1,22 +1,22 @@
 {
   "lesson": "16-red-team-tooling-garak-llamaguard-pyrit",
-  "title": "Red-Team Tooling - Garak, Llama Guard, PyRIT",
+  "title": "红队工具 - Garak、Llama Guard、PyRIT",
   "questions": [
     {
       "stage": "pre",
-      "question": "What role does Llama Guard play in a typical 2026 deployment?",
+      "question": "Llama Guard 在 2026 年典型部署中扮演什么角色？",
       "options": [
-        "A reasoning scaffolder for chain-of-thought",
-        "A reward model for RLHF",
-        "A tokenizer alternative",
-        "An input and/or output safety classifier across MLCommons hazard categories, placed before and after the LLM"
+        "思维链的推理脚手架",
+        "RLHF 的奖励模型",
+        "分词器替代品",
+        "跨 MLCommons 危险类别的输入和/或输出安全分类器，放置在 LLM 之前和之后"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "Roughly how many MLCommons hazard categories does Llama Guard 3 cover?",
+      "question": "Llama Guard 3 大约涵盖多少个 MLCommons 危险类别？",
       "options": [
         "7",
         "3",
@@ -28,48 +28,48 @@
     },
     {
       "stage": "check",
-      "question": "How is Garak's architecture organized?",
+      "question": "Garak 的架构是如何组织的？",
       "options": [
-        "Tools, resources, prompts",
-        "Embeddings, retrievers, rerankers",
-        "Routers, agents, queues",
-        "Probes (attack generators), Detectors (output scorers), Harnesses (campaign managers)"
+        "工具、资源、提示",
+        "嵌入、检索器、重新排序器",
+        "路由器、代理、队列",
+        "探测器（攻击发生器）、探测器（输出得分器）、线束（活动管理器）"
       ],
       "correct": 3,
       "explanation": ""
     },
     {
       "stage": "check",
-      "question": "What is PyRIT primarily designed for, and how does it differ from Garak?",
+      "question": "PyRIT 的主要设计目的是什么？它与 Garak 有何不同？",
       "options": [
-        "They are identical in scope and audience",
-        "PyRIT is a reward model trainer; Garak is a tokenizer",
-        "PyRIT runs deep multi-turn campaigns (converter chains, orchestrators like Crescendo and TAP, scoring) while Garak runs thousands of single-turn probes",
-        "PyRIT is a Llama Guard variant; Garak is a Prompt-Guard variant"
+        "它们的范围和受众是相同的",
+        "PyRIT 是一个奖励模型训练器； Garak 是一个标记器",
+        "PyRIT 运行深度多轮活动（转换器链、Crescendo 和 TAP 等编排器、评分），而 Garak 运行数千个单轮探针",
+        "PyRIT 是 Llama Guard 的变种； Garak 是 Prompt-Guard 的变种"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What is the recommended 2026 default red-team stack configuration?",
+      "question": "推荐的 2026 年默认红队堆栈配置是什么？",
       "options": [
-        "Replace LLM evaluation with manual review only",
-        "Use PAIR instead of any tooling",
-        "Put Llama Guard on both sides of the model, run Garak nightly for regression, and run PyRIT for pre-release campaigns",
-        "Run Garak once at launch only"
+        "仅用人工审核取代 LLM 评估",
+        "使用 PAIR 代替任何工具",
+        "将 Llama Guard 放在模型的两侧，每晚运行 Garak 进行回归，并运行 PyRIT 进行预发布活动",
+        "仅在启动时运行一次 Garak"
       ],
       "correct": 2,
       "explanation": ""
     },
     {
       "stage": "post",
-      "question": "What evaluation pitfall is shared across Llama Guard, Garak, and PyRIT?",
+      "question": "Llama Guard、Garak 和 PyRIT 共有哪些评估陷阱？",
       "options": [
-        "Reported attack/defense rates depend on the judge identity and probe staleness; you must specify the judge and refresh probes as models are patched",
-        "They only work in English",
-        "They require white-box access",
-        "They cannot run on GPUs"
+        "报告的攻击/防御率取决于法官身份和探针陈旧程度；您必须在模型修补时指定判断和刷新探针",
+        "他们只用英语工作",
+        "他们需要白盒访问",
+        "它们无法在 GPU 上运行"
       ],
       "correct": 0,
       "explanation": ""
