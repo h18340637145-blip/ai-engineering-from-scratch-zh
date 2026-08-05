@@ -1719,15 +1719,15 @@
   </button>
 
   <div class="mermaid-modal-overlay" id="mermaidModalOverlay" aria-hidden="true">
-    <div class="mermaid-modal" role="dialog" aria-modal="true" aria-label="Expanded diagram">
-      <div class="mermaid-modal-header">
-        <div class="mermaid-modal-title" id="mermaidModalTitle">Diagram</div>
-        <div class="mermaid-modal-actions">
-          <button class="mermaid-btn" type="button" id="mermaidModalClose">Close</button>
-        </div>
-      </div>
-      <div class="mermaid-modal-body" id="mermaidModalBody"><div class="mermaid-modal-center" id="mermaidModalCenter"></div></div>
-    </div>
+   <div class="mermaid-modal" role="dialog" aria-modal="true" aria-label="展开图表">
+     <div class="mermaid-modal-header">
+       <div class="mermaid-modal-title" id="mermaidModalTitle">图表</div>
+       <div class="mermaid-modal-actions">
+         <button class="mermaid-btn" type="button" id="mermaidModalClose">关闭</button>
+       </div>
+     </div>
+     <div class="mermaid-modal-body" id="mermaidModalBody"><div class="mermaid-modal-center" id="mermaidModalCenter"></div></div>
+   </div>
   </div>
 
   <div class="lesson-layout">
@@ -1736,7 +1736,7 @@
       <div class="lesson-content" id="lessonContent">
         <div class="lesson-loading" id="lessonLoading">
           <div class="spinner"></div>
-          <div class="lesson-loading-text">Loading lesson...</div>
+          <div class="lesson-loading-text">正在加载课程...</div>
         </div>
       </div>
     </main>
@@ -1819,7 +1819,7 @@
       var lessonPath = params.get('path');
 
       if (!lessonPath) {
-        showError('No lesson path specified', 'Add ?path=phases/01-math-foundations/01-linear-algebra-intuition to the URL.');
+        showError('未指定课程路径', '请在 URL 中添加 ?path=phases/01-math-foundations/01-linear-algebra-intuition 参数。');
         return;
       }
 
@@ -2429,7 +2429,7 @@
                 out += '<div class="mermaid-container">';
                 out += '<div class="mermaid-block" data-mermaid-index="' + mermaidBlocks + '">';
                 out += '<div class="mermaid-toolbar">';
-                out += '<button type="button" class="mermaid-btn mermaid-expand" data-mermaid-index="' + mermaidBlocks + '">Expand</button>';
+                out += '<button type="button" class="mermaid-btn mermaid-expand" data-mermaid-index="' + mermaidBlocks + '">展开</button>';
                 out += '</div>';
                 out += '<pre class="mermaid mermaid-source" id="mermaid-' + mermaidBlocks + '">' + escapeHtml(raw) + '</pre>';
                 out += '<div class="mermaid-render" id="mermaid-render-' + mermaidBlocks + '"></div>';
@@ -2814,7 +2814,7 @@
           var target = document.getElementById('mermaid-render-' + idx);
           if (!target) return;
           var def = mermaidPreprocess(pre.textContent);
-          target.innerHTML = '<div class="panel-loading">Rendering diagram...</div>';
+          target.innerHTML = '<div class="panel-loading">正在渲染图表...</div>';
 
           var token = ++mermaidRenderSeq;
           target._mermaidRenderToken = token;
@@ -2824,7 +2824,7 @@
             target.innerHTML = result.svg;
           }).catch(function () {
             if (target._mermaidRenderToken !== token) return;
-            target.innerHTML = '<p style="color:var(--text-muted);font-style:italic;">Diagram could not be rendered.</p>';
+            target.innerHTML = '<p style="color:var(--text-muted);font-style:italic;">图表渲染失败。</p>';
           });
         });
       }
@@ -2904,7 +2904,7 @@
         lastMermaidTrigger = triggerEl || document.activeElement;
         openMermaidIndex = idx;
 
-        if (title) title.textContent = 'Diagram';
+        if (title) title.textContent = '图表';
 
         overlay.classList.add('open');
         overlay.setAttribute('aria-hidden', 'false');
@@ -2927,7 +2927,7 @@
         if (!pre) return;
         var def = mermaidPreprocess(pre.textContent);
 
-        center.innerHTML = '<div class="panel-loading">Rendering diagram...</div>';
+        center.innerHTML = '<div class="panel-loading">正在渲染图表...</div>';
         var token = ++mermaidRenderSeq;
         center._mermaidRenderToken = token;
 
@@ -2936,7 +2936,7 @@
           center.innerHTML = result.svg;
         }).catch(function () {
           if (center._mermaidRenderToken !== token) return;
-          center.innerHTML = '<p style="color:var(--text-muted);font-style:italic;">Diagram could not be rendered.</p>';
+          center.innerHTML = '<p style="color:var(--text-muted);font-style:italic;">图表渲染失败。</p>';
         });
       }
 
@@ -3220,7 +3220,7 @@
       function renderOutputsPanel(container) {
         var panel = document.createElement('div');
         panel.className = 'ai-panel';
-        panel.innerHTML = '<div class="ai-panel-header"><div class="ai-panel-icon">O</div><div class="ai-panel-title">What This Lesson Ships</div></div><div class="ai-panel-subtitle">Prompts, skills, and artifacts you can use right now</div><div id="outputsContent" class="panel-loading">Loading outputs...</div>';
+        panel.innerHTML = '<div class="ai-panel-header"><div class="ai-panel-icon">O</div><div class="ai-panel-title">本课产出内容</div></div><div class="ai-panel-subtitle">可立即使用的提示词、技能与产物</div><div id="outputsContent" class="panel-loading">正在加载产出内容...</div>';
         container.appendChild(panel);
 
         var outputsEl = panel.querySelector('#outputsContent');
@@ -3248,7 +3248,7 @@
             html += '<div class="output-card">';
             html += '<div class="output-badge ' + badgeClass + '">' + badgeText + '</div>';
             html += '<div class="output-card-name">' + escapeHtml(file.name) + '</div>';
-            html += '<div class="output-desc" id="desc-' + idx + '">Loading description...</div>';
+            html += '<div class="output-desc" id="desc-' + idx + '">正在加载描述...</div>';
             html += '<div class="output-actions">';
             html += '<a class="output-btn" href="' + file.html_url + '" target="_blank" rel="noopener">View on GitHub</a>';
             if (installHint) {
@@ -3279,7 +3279,7 @@
       function renderCodePanel(container) {
         var panel = document.createElement('div');
         panel.className = 'ai-panel';
-        panel.innerHTML = '<div class="ai-panel-header"><div class="ai-panel-icon">C</div><div class="ai-panel-title">Run the Code</div></div><div class="ai-panel-subtitle">Executable files from this lesson</div><div id="codeContent" class="panel-loading">Loading code files...</div>';
+        panel.innerHTML = '<div class="ai-panel-header"><div class="ai-panel-icon">C</div><div class="ai-panel-title">运行代码</div></div><div class="ai-panel-subtitle">本课可执行文件</div><div id="codeContent" class="panel-loading">正在加载代码文件...</div>';
         container.appendChild(panel);
 
         var codeEl = panel.querySelector('#codeContent');
