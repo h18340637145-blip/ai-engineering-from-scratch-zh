@@ -24,7 +24,9 @@
 
 ## 概念
 
-### 语义 vs 实例 vs 全景```mermaid
+### 语义 vs 实例 vs 全景
+
+```mermaid
 flowchart LR
     IN["Input image"] --> SEM["Semantic<br/>(pixel → class)"]
     IN --> INS["Instance<br/>(pixel → object id,<br/>only foreground classes)"]
@@ -39,7 +41,9 @@ flowchart LR
 
 本课讲解语义分割。下节课（Mask R-CNN）讲解实例分割。
 
-### U-Net 的结构```mermaid
+### U-Net 的结构
+
+```mermaid
 flowchart LR
     subgraph ENC["Encoder (contracting)"]
         E1["64<br/>H x W"] --> E2["128<br/>H/2 x W/2"]
@@ -64,7 +68,9 @@ flowchart LR
     style ENC fill:#dbeafe,stroke:#2563eb
     style BOT fill:#fef3c7,stroke:#d97706
     style DEC fill:#dcfce7,stroke:#16a34a
-```编码器将空间分辨率降低四次，同时将通道数翻倍。解码器则相反：将空间分辨率翻倍四次，同时将通道数减半。跳跃连接在每一层分辨率上将编码器的特征与解码器的特征拼接在一起。最终的 1x1 卷积在完整分辨率上映射 `64 -> num_classes`。
+```
+
+编码器将空间分辨率降低四次，同时将通道数翻倍。解码器则相反：将空间分辨率翻倍四次，同时将通道数减半。跳跃连接在每一层分辨率上将编码器的特征与解码器的特征拼接在一起。最终的 1x1 卷积在完整分辨率上映射 `64 -> num_classes`。
 
 为什么需要跳跃连接：当解码器试图输出像素级预测时，它只看到了小的特征图。如果没有跳跃连接，它无法准确地定位边缘，因为这些信息在编码器中被压缩掉了。跳跃连接将编码器在下传过程中计算的高分辨率特征图传递给解码器。
 
@@ -79,22 +85,34 @@ flowchart LR
 
 ### 像素网格上的交叉熵
 
-对于具有 C 个类别的语义分割，模型的输出是 `(N, C, H, W)`。目标是 `(N, H, W)`，包含整数类别 ID。交叉熵与分类情况相同，只是在每个空间位置上应用：```
+对于具有 C 个类别的语义分割，模型的输出是 `(N, C, H, W)`。目标是 `(N, H, W)`，包含整数类别 ID。交叉熵与分类情况相同，只是在每个空间位置上应用：
+
+```
 Loss = mean over (n, h, w) of -log( softmax(logits[n, :, h, w])[target[n, h, w]] )
-````F.cross_entropy` 在 PyTorch 中原生处理这种形状。无需重塑。
+```
+
+`F.cross_entropy` 在 PyTorch 中原生处理这种形状。无需重塑。
 
 ### Dice 损失及其必要性
 
 交叉熵损失将每个像素视为同等重要。当某一类在图像中占据主导地位时（例如医学影像中 99% 是背景，1% 是肿瘤），这种做法是错误的。网络可以通过在所有位置预测背景而达到 99% 的准确率，但这样的模型仍然毫无用处。
 
-Dice 损失通过直接优化预测掩膜和真实掩膜之间的重叠程度来解决这个问题：```
+Dice 损失通过直接优化预测掩膜和真实掩膜之间的重叠程度来解决这个问题：
+
+```
 Dice(p, y) = 2 * sum(p * y) / (sum(p) + sum(y) + epsilon)
 Dice_loss = 1 - Dice
-```其中 `p` 是某类的 sigmoid/softmax 概率图，而 `y` 是二值真实标签掩膜。只有当重叠完全吻合时，损失值才为零。由于它是基于比例的，因此类别不平衡问题无关紧要。
+```
 
-在实践中，使用 **联合损失**：```
+其中 `p` 是某类的 sigmoid/softmax 概率图，而 `y` 是二值真实标签掩膜。只有当重叠完全吻合时，损失值才为零。由于它是基于比例的，因此类别不平衡问题无关紧要。
+
+在实践中，使用 **联合损失**：
+
+```
 L = L_cross_entropy + lambda * L_dice       (lambda ~ 1)
-```交叉熵损失在训练初期提供稳定的梯度；Dice损失则将训练后期的重点放在与掩膜形状的匹配上。这种组合是医学影像领域的默认选择，在任何类别不平衡的数据集上都难以被超越。
+```
+
+交叉熵损失在训练初期提供稳定的梯度；Dice损失则将训练后期的重点放在与掩膜形状的匹配上。这种组合是医学影像领域的默认选择，在任何类别不平衡的数据集上都难以被超越。
 
 ### 评估指标
 
@@ -119,7 +137,9 @@ U-Net的编码器将分辨率减半四次，因此输入必须能被16整除。�
 
 ### 第一步：编码器模块
 
-两个3x3的卷积层，带有批量归一化和ReLU激活。第一个卷积层改变通道数；第二个卷积层保持通道数不变。```python
+两个3x3的卷积层，带有批量归一化和ReLU激活。第一个卷积层改变通道数；第二个卷积层保持通道数不变。
+
+```python
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -138,9 +158,13 @@ class DoubleConv(nn.Module):
 
     def forward(self, x):
         return self.net(x)
-```此模块在整个过程中被重复使用。`bias=False` 因为 BN 的 beta 处理了偏置。
+```
 
-### 步骤 2：下采样和上采样模块```python
+此模块在整个过程中被重复使用。`bias=False` 因为 BN 的 beta 处理了偏置。
+
+### 步骤 2：下采样和上采样模块
+
+```python
 class Down(nn.Module):
     def __init__(self, in_c, out_c):
         super().__init__()
@@ -165,9 +189,13 @@ class Up(nn.Module):
             x = F.interpolate(x, size=skip.shape[-2:], mode="bilinear", align_corners=False)
         x = torch.cat([skip, x], dim=1)
         return self.conv(x)
-```仅空间形状检查（`shape[-2:]`）处理那些维度不能被16整除的输入；一个安全的 `F.interpolate` 在拼接前对张量进行对齐。比较完整形状时也会触发通道数差异，这应该是一个明显的错误，而不是静默插值。
+```
 
-### 第3步：U-Net```python
+仅空间形状检查（`shape[-2:]`）处理那些维度不能被16整除的输入；一个安全的 `F.interpolate` 在拼接前对张量进行对齐。比较完整形状时也会触发通道数差异，这应该是一个明显的错误，而不是静默插值。
+
+### 第3步：U-Net
+
+```python
 class UNet(nn.Module):
     def __init__(self, in_channels=3, num_classes=2, base=64):
         super().__init__()
@@ -198,9 +226,13 @@ net = UNet(in_channels=3, num_classes=2, base=32)
 x = torch.randn(1, 3, 256, 256)
 print(f"output: {net(x).shape}")
 print(f"params: {sum(p.numel() for p in net.parameters()):,}")
-```输出形状 `(1, 2, 256, 256)` — 与输入相同的空域尺寸，`num_classes` 个通道。在 `base=32` 大约有 7.7M 个参数。
+```
 
-### 第 4 步：损失函数```python
+输出形状 `(1, 2, 256, 256)` — 与输入相同的空域尺寸，`num_classes` 个通道。在 `base=32` 大约有 7.7M 个参数。
+
+### 第 4 步：损失函数
+
+```python
 def dice_loss(logits, targets, num_classes, eps=1e-6):
     probs = F.softmax(logits, dim=1)
     targets_one_hot = F.one_hot(targets, num_classes).permute(0, 3, 1, 2).float()
@@ -217,7 +249,9 @@ def combined_loss(logits, targets, num_classes, lam=1.0):
     return ce + lam * dc, {"ce": ce.item(), "dice": dc.item()}
 ```Dice 按类计算然后取平均（宏 Dice）。`eps` 防止在批次中不存在的类别上出现除以零的情况。
 
-### 步骤 5：IoU 指标```python
+### 步骤 5：IoU 指标
+
+```python
 @torch.no_grad()
 def iou_per_class(logits, targets, num_classes):
     preds = logits.argmax(dim=1)
@@ -229,11 +263,15 @@ def iou_per_class(logits, targets, num_classes):
         union = (pred_c | true_c).sum().float()
         ious[c] = (inter / union) if union > 0 else torch.tensor(float("nan"))
     return ious
-```返回一个长度为 C 的向量。`nan` 表示批次中不存在的类别 —— 计算 mIoU 时不要对这些类别进行平均。
+```
+
+返回一个长度为 C 的向量。`nan` 表示批次中不存在的类别 —— 计算 mIoU 时不要对这些类别进行平均。
 
 ### 第 6 步：用于端到端验证的合成数据集
 
-在彩色背景上生成形状，使网络必须学习形状，而不是像素颜色。```python
+在彩色背景上生成形状，使网络必须学习形状，而不是像素颜色。
+
+```python
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
@@ -275,9 +313,13 @@ class SegDataset(Dataset):
         img = torch.from_numpy(self.images[i]).permute(2, 0, 1).float()
         mask = torch.from_numpy(self.masks[i]).long()
         return img, mask
-```三个类别：背景（0）、圆形（1）、方形（2）。网络必须学会区分形状。
+```
 
-### 第7步：训练循环```python
+三个类别：背景（0）、圆形（1）、方形（2）。网络必须学会区分形状。
+
+### 第7步：训练循环
+
+```python
 def train_one_epoch(model, loader, optimizer, device, num_classes):
     model.train()
     loss_sum, total = 0.0, 0
@@ -293,11 +335,15 @@ def train_one_epoch(model, loader, optimizer, device, num_classes):
         total += x.size(0)
         iou_sum += iou_per_class(logits, y, num_classes).nan_to_num(0)
     return loss_sum / total, iou_sum / len(loader)
-```在合成数据集上运行10-30个epoch，观察形状类别的mIoU值超过0.9。注意`nan_to_num(0)`将批次中不存在的类别视为零；为了获得更准确的每类IoU值，在评估时应通过存在性进行掩码，并使用`torch.nanmean`跨批次计算，而不是在这里进行平均。
+```
+
+在合成数据集上运行10-30个epoch，观察形状类别的mIoU值超过0.9。注意`nan_to_num(0)`将批次中不存在的类别视为零；为了获得更准确的每类IoU值，在评估时应通过存在性进行掩码，并使用`torch.nanmean`跨批次计算，而不是在这里进行平均。
 
 ## 使用方法
 
-在生产环境中，`segmentation_models_pytorch`（"smp"）将任何标准分割架构与任何torchvision或timm的主干网络进行封装。只需三行代码：```python
+在生产环境中，`segmentation_models_pytorch`（"smp"）将任何标准分割架构与任何torchvision或timm的主干网络进行封装。只需三行代码：
+
+```python
 import segmentation_models_pytorch as smp
 
 model = smp.Unet(
@@ -306,7 +352,9 @@ model = smp.Unet(
     in_channels=3,
     classes=3,
 )
-```在实际工作中也值得了解以下内容：
+```
+
+在实际工作中也值得了解以下内容：
 - **DeepLabV3+** 用扩张卷积取代最大池化下采样，使瓶颈层保持分辨率；在卫星和驾驶数据上边界检测更快。
 - **SegFormer** 用分层的Transformer取代卷积编码器；在许多基准测试中目前是SOTA。
 - **Mask2Former** / **OneFormer** 在单一架构中统一了语义分割、实例分割和全景分割。

@@ -26,10 +26,14 @@
 
 ### 为什么线性回归不适合分类
 
-设想根据学习时长预测考试通过或不通过（1/0）。线性回归会在数据中拟合一条直线：```
+设想根据学习时长预测考试通过或不通过（1/0）。线性回归会在数据中拟合一条直线：
+
+```
 hours:  1   2   3   4   5   6   7   8   9   10
 actual: 0   0   0   0   1   1   1   1   1   1
-```线性拟合可能在学习 1 小时时预测出 -0.2，在学习 10 小时时预测出 1.3。这些值不是概率，因为它们会小于 0 或大于 1。更糟的是，单个异常值（例如某人学习了 50 小时）就可能拉动整条直线，从而改变所有人的预测。
+```
+
+线性拟合可能在学习 1 小时时预测出 -0.2，在学习 10 小时时预测出 1.3。这些值不是概率，因为它们会小于 0 或大于 1。更糟的是，单个异常值（例如某人学习了 50 小时）就可能拉动整条直线，从而改变所有人的预测。
 
 分类任务需要一个满足以下条件的函数：
 - 输出 0 到 1 之间的值（概率）
@@ -38,9 +42,13 @@ actual: 0   0   0   0   1   1   1   1   1   1
 
 ### Sigmoid 函数
 
-Sigmoid 函数正好满足这些要求：```
+Sigmoid 函数正好满足这些要求：
+
+```
 sigmoid(z) = 1 / (1 + e^(-z))
-```性质如下：
+```
+
+性质如下：
 - 当 z 是很大的正数时，sigmoid(z) 趋近于 1
 - 当 z 是绝对值很大的负数时，sigmoid(z) 趋近于 0
 - 当 z = 0 时，sigmoid(z) = 0.5
@@ -51,20 +59,28 @@ sigmoid(z) = 1 / (1 + e^(-z))
 
 ### 逻辑回归 = 线性模型 + Sigmoid
 
-模型先计算 z = wx + b（与线性回归相同），再应用 Sigmoid 函数：```mermaid
+模型先计算 z = wx + b（与线性回归相同），再应用 Sigmoid 函数：
+
+```mermaid
 flowchart LR
     X[输入特征 x] --> L["线性组合：z = wx + b"]
     L --> S["Sigmoid: p = 1/(1+e^-z)"]
     S --> D{"p >= 0.5?"}
     D -->|是| P[预测为 1]
     D -->|否| N[预测为 0]
-```输出 $ p $ 被解释为 $ P(y=1 \mid x) $，即输入属于类别 1 的概率。决策边界位于 $ wx + b = 0 $ 的位置，此时 Sigmoid 的输出恰好为 0.5。
+```
+
+输出 $ p $ 被解释为 $ P(y=1 \mid x) $，即输入属于类别 1 的概率。决策边界位于 $ wx + b = 0 $ 的位置，此时 Sigmoid 的输出恰好为 0.5。
 
 ### 二元交叉熵损失
 
-逻辑回归不能使用均方误差。均方误差与 Sigmoid 组合后会形成具有多个局部最小值的非凸代价曲面。应改用二元交叉熵（对数损失）：```
+逻辑回归不能使用均方误差。均方误差与 Sigmoid 组合后会形成具有多个局部最小值的非凸代价曲面。应改用二元交叉熵（对数损失）：
+
+```
 Loss = -(1/n) * sum(y * log(p) + (1-y) * log(1-p))
-```其有效性来自以下性质：
+```
+
+其有效性来自以下性质：
 - 当 y=1 且 p 接近 1 时：log(1) = 0，因此损失接近 0（预测正确，代价低）
 - 当 y=1 且 p 接近 0 时：log(0) 趋近于负无穷，因此损失极大（预测错误，代价高）
 - 当 y=0 且 p 接近 0 时：log(1) = 0，因此损失接近 0（预测正确，代价低）
@@ -74,10 +90,16 @@ Loss = -(1/n) * sum(y * log(p) + (1-y) * log(1-p))
 
 ### 逻辑回归的梯度下降
 
-Sigmoid 与二元交叉熵组合后的梯度形式非常简洁：```
+Sigmoid 与二元交叉熵组合后的梯度形式非常简洁：
+
+```
 dL/dw = (1/n) * sum((p - y) * x)
 dL/db = (1/n) * sum(p - y)
-```它们看起来与线性回归的梯度完全相同。区别在于 p = sigmoid(wx + b)，而不是 p = wx + b。Sigmoid 引入了非线性，但梯度更新规则保持不变。```mermaid
+```
+
+它们看起来与线性回归的梯度完全相同。区别在于 p = sigmoid(wx + b)，而不是 p = wx + b。Sigmoid 引入了非线性，但梯度更新规则保持不变。
+
+```mermaid
 flowchart TD
     A[初始化 w=0, b=0] --> B[前向传播：z = wx+b, p = sigmoid z]
     B --> C[计算损失：二元交叉熵]
@@ -86,21 +108,35 @@ flowchart TD
     E --> F{收敛了吗？}
     F -->|否| B
     F -->|是| G[模型训练完成]
-```### 决策边界
+```
 
-对于二维输入（两个特征），决策边界是满足下式的直线：```
+### 决策边界
+
+对于二维输入（两个特征），决策边界是满足下式的直线：
+
+```
 w1*x1 + w2*x2 + b = 0
-```直线一侧的点被分类为 1，另一侧的点被分类为 0。逻辑回归总会产生线性决策边界。如果需要曲线边界，可以加入多项式特征，或改用非线性模型。
+```
+
+直线一侧的点被分类为 1，另一侧的点被分类为 0。逻辑回归总会产生线性决策边界。如果需要曲线边界，可以加入多项式特征，或改用非线性模型。
 
 ### 使用 Softmax 进行多分类
 
-二元逻辑回归处理两个类别。对于 k 个类别，应使用 Softmax 函数：```
-softmax(z_i) = e^(z_i) / sum(e^(z_j) for all j)
-```每个类别都有自己的权重向量。模型为每个类别计算分数 $ z_i $，再由 Softmax 将这些分数转换为总和为 1 的概率。概率最高的类别就是预测结果。
+二元逻辑回归处理两个类别。对于 k 个类别，应使用 Softmax 函数：
 
-此时损失函数变为分类交叉熵：```
+```
+softmax(z_i) = e^(z_i) / sum(e^(z_j) for all j)
+```
+
+每个类别都有自己的权重向量。模型为每个类别计算分数 $ z_i $，再由 Softmax 将这些分数转换为总和为 1 的概率。概率最高的类别就是预测结果。
+
+此时损失函数变为分类交叉熵：
+
+```
 Loss = -(1/n) * sum(sum(y_k * log(p_k)))
-```其中，真实类别对应的 $ y_k $ 为 1，其余类别均为 0（独热编码）。
+```
+
+其中，真实类别对应的 $ y_k $ 为 1，其余类别均为 0（独热编码）。
 
 ### 评估指标
 
@@ -113,20 +149,34 @@ Loss = -(1/n) * sum(sum(y_k * log(p_k)))
 | 实际为正类 | 真正例（TP） | 假负例（FN） |
 | 实际为负类 | 假正例（FP） | 真负例（TN） |
 
-**精确率：** 在所有预测为正类的样本中，实际为正类的有多少？```
+**精确率：** 在所有预测为正类的样本中，实际为正类的有多少？
+
+```
 Precision = TP / (TP + FP)
-```**召回率（敏感度）：** 在所有实际为正类的样本中，我们识别出了多少？```
+```**召回率（敏感度）：** 在所有实际为正类的样本中，我们识别出了多少？
+
+```
 Recall = TP / (TP + FN)
-```**F1 分数：** 精确率与召回率的调和平均数，用于平衡两项指标。```
+```**F1 分数：** 精确率与召回率的调和平均数，用于平衡两项指标。
+
+```
 F1 = 2 * (Precision * Recall) / (Precision + Recall)
-```优先考虑不同指标的场景：
+```
+
+优先考虑不同指标的场景：
 - **精确率：** 假正例代价很高时（例如垃圾邮件过滤器中不希望误拦正常邮件）
 - **召回率：** 假负例代价很高时（例如癌症筛查中不希望漏诊肿瘤）
-- **F1：** 需要一个兼顾两者的单一指标时```figure
-logistic-sigmoid
-```## 动手构建
+- **F1：** 需要一个兼顾两者的单一指标时
 
-### 第 1 步：Sigmoid 函数与数据生成```python
+```figure
+logistic-sigmoid
+```
+
+## 动手构建
+
+### 第 1 步：Sigmoid 函数与数据生成
+
+```python
 import random
 import math
 
@@ -159,7 +209,11 @@ print(f"Class 0 center: (2, 2), Class 1 center: (5, 5)")
 print(f"First 5 samples:")
 for i in range(5):
     print(f"  Features: [{X[i][0]:.2f}, {X[i][1]:.2f}], Label: {y[i]}")
-```### 第 2 步：从零实现逻辑回归```python
+```
+
+### 第 2 步：从零实现逻辑回归
+
+```python
 class LogisticRegression:
     def __init__(self, n_features, learning_rate=0.01):
         self.weights = [0.0] * n_features
@@ -221,7 +275,11 @@ print(f"\nTrain accuracy: {model.accuracy(X_train, y_train):.4f}")
 print(f"Test accuracy:  {model.accuracy(X_test, y_test):.4f}")
 print(f"Weights: [{model.weights[0]:.4f}, {model.weights[1]:.4f}]")
 print(f"Bias: {model.bias:.4f}")
-```### 第 3 步：从零实现混淆矩阵与评估指标```python
+```
+
+### 第 3 步：从零实现混淆矩阵与评估指标
+
+```python
 class ClassificationMetrics:
     def __init__(self, y_true, y_pred):
         self.tp = sum(1 for t, p in zip(y_true, y_pred) if t == 1 and p == 1)
@@ -265,7 +323,11 @@ y_pred_test = [model.predict(x) for x in X_test]
 print("\n=== Classification Report (Test Set) ===")
 metrics = ClassificationMetrics(y_test, y_pred_test)
 metrics.print_report()
-```### 第 4 步：分析决策边界```python
+```
+
+### 第 4 步：分析决策边界
+
+```python
 print("\n=== Decision Boundary ===")
 w1, w2 = model.weights
 b = model.bias
@@ -285,7 +347,11 @@ for point in test_points:
     prob = model.predict_proba(point)
     pred = model.predict(point)
     print(f"  [{point[0]}, {point[1]}] -> prob={prob:.4f}, class={pred}")
-```### 第 5 步：使用 Softmax 进行多分类```python
+```
+
+### 第 5 步：使用 Softmax 进行多分类
+
+```python
 class SoftmaxRegression:
     def __init__(self, n_features, n_classes, learning_rate=0.01):
         self.n_features = n_features
@@ -373,7 +439,11 @@ for i in range(5):
     probs = softmax_model.predict_proba(X_test_3[i])
     pred = softmax_model.predict(X_test_3[i])
     print(f"  True: {y_test_3[i]}, Predicted: {pred}, Probs: [{', '.join(f'{p:.3f}' for p in probs)}]")
-```### 第 6 步：阈值调优```python
+```
+
+### 第 6 步：阈值调优
+
+```python
 print("\n=== Threshold Tuning ===")
 print("Default threshold: 0.5. Adjusting the threshold trades precision for recall.\n")
 
@@ -385,9 +455,13 @@ for t in thresholds:
     y_pred_t = [1 if model.predict_proba(x) >= t else 0 for x in X_test]
     m = ClassificationMetrics(y_test, y_pred_t)
     print(f"{t:>10.1f} {m.accuracy():>10.4f} {m.precision():>10.4f} {m.recall():>10.4f} {m.f1():>10.4f}")
-```## 实际应用
+```
 
-现在使用 scikit-learn 完成同样的任务。```python
+## 实际应用
+
+现在使用 scikit-learn 完成同样的任务。
+
+```python
 from sklearn.linear_model import LogisticRegression as SklearnLR
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.metrics import confusion_matrix, classification_report
@@ -418,7 +492,9 @@ print(f"Recall:    {recall_score(y_te, y_pred):.4f}")
 print(f"F1:        {f1_score(y_te, y_pred):.4f}")
 print(f"\nConfusion Matrix:\n{confusion_matrix(y_te, y_pred)}")
 print(f"\nClassification Report:\n{classification_report(y_te, y_pred)}")
-```你的从零实现会产生相同的决策边界和评估指标。scikit-learn 还提供求解器选项（liblinear、lbfgs、saga）、自动正则化、多分类策略（一对其余、多项式）以及数值稳定性优化。
+```
+
+你的从零实现会产生相同的决策边界和评估指标。scikit-learn 还提供求解器选项（liblinear、lbfgs、saga）、自动正则化、多分类策略（一对其余、多项式）以及数值稳定性优化。
 
 ## 交付成果
 

@@ -24,7 +24,9 @@
 
 ## 概念
 
-### 三个预算```mermaid
+### 三个预算
+
+```mermaid
 flowchart LR
     M["Model"] --> LAT["Latency<br/>ms per image"]
     M --> MEM["Memory<br/>peak MB"]
@@ -96,11 +98,17 @@ FLOPs（每次推理的浮点运算）是一个便宜且与设备无关的延迟
 | 20-30M     | MobileViT-S 或 EfficientViT | 带有 ImageNet 准确率的 Transformer                          |
 | 30-80M     | Swin-V2-Tiny          | 如果堆栈支持窗口注意力                                       |
 
-除非有特殊原因，否则将所有这些都量化为 INT8。```figure
-cnn-param-count
-```## 构建它
+除非有特殊原因，否则将所有这些都量化为 INT8。
 
-### 步骤 1：正确测量延迟```python
+```figure
+cnn-param-count
+```
+
+## 构建它
+
+### 步骤 1：正确测量延迟
+
+```python
 import time
 import torch
 
@@ -128,9 +136,13 @@ def measure_latency(model, input_shape, device="cpu", warmup=10, iters=50):
         "p99_ms": times[int(len(times) * 0.99)],
         "mean_ms": sum(times) / len(times),
     }
-```预热，同步，使用 `time.perf_counter()`。报告百分位数，而不仅仅是平均值。
+```
 
-### 步骤 2：参数和 FLOP 数量```python
+预热，同步，使用 `time.perf_counter()`。报告百分位数，而不仅仅是平均值。
+
+### 步骤 2：参数和 FLOP 数量
+
+```python
 def parameter_count(model):
     return sum(p.numel() for p in model.parameters())
 
@@ -159,9 +171,13 @@ def flops_estimate(model, input_shape):
     for h in hooks:
         h.remove()
     return total
-```在实际项目中使用 `fvcore.nn.FlopCountAnalysis` 或 `ptflops`；它们能正确处理每种模块类型。
+```
 
-### 第 3 步：训练后静态量化```python
+在实际项目中使用 `fvcore.nn.FlopCountAnalysis` 或 `ptflops`；它们能正确处理每种模块类型。
+
+### 第 3 步：训练后静态量化
+
+```python
 def quantise_ptq(model, calibration_loader, backend="x86"):
     import torch.ao.quantization as tq
     model = model.eval().cpu()
@@ -172,9 +188,13 @@ def quantise_ptq(model, calibration_loader, backend="x86"):
             model(x)
     tq.convert(model, inplace=True)
     return model
-```三个步骤：配置、准备（插入观察者）、使用真实数据校准、转换（融合 + 量化）。需要将模型进行融合（`Conv -> BN -> ReLU` -> `ConvBnReLU`），这由 `torch.ao.quantization.fuse_modules` 处理。
+```
 
-### 步骤 4：导出到 ONNX```python
+三个步骤：配置、准备（插入观察者）、使用真实数据校准、转换（融合 + 量化）。需要将模型进行融合（`Conv -> BN -> ReLU` -> `ConvBnReLU`），这由 `torch.ao.quantization.fuse_modules` 处理。
+
+### 步骤 4：导出到 ONNX
+
+```python
 def export_onnx(model, sample_input, path="model.onnx"):
     model = model.eval()
     torch.onnx.export(
@@ -187,9 +207,13 @@ def export_onnx(model, sample_input, path="model.onnx"):
         opset_version=17,
     )
     return path
-````opset_version=17` 是 2026 年的安全默认值。`dynamic_axes` 让你能够使用任意批量大小运行 ONNX 模型。
+```
 
-### 步骤 5：基准测试并比较制度```python
+`opset_version=17` 是 2026 年的安全默认值。`dynamic_axes` 让你能够使用任意批量大小运行 ONNX 模型。
+
+### 步骤 5：基准测试并比较制度
+
+```python
 import torch.nn as nn
 from torchvision.models import mobilenet_v3_small
 
@@ -200,7 +224,9 @@ def compare_regimes():
     lat_fp32 = measure_latency(model, (1, 3, 224, 224), device="cpu")
     print(f"FP32 MobileNetV3-Small: {params:,} params  {flops/1e9:.2f} GFLOPs  "
           f"p50={lat_fp32['p50_ms']:.2f}ms  p95={lat_fp32['p95_ms']:.2f}ms")
-```对 `resnet50`、`efficientnet_v2_s` 和 `convnext_tiny` 运行相同的函数，你就能得到用于部署决策所需的比较表格。
+```
+
+对 `resnet50`、`efficientnet_v2_s` 和 `convnext_tiny` 运行相同的函数，你就能得到用于部署决策所需的比较表格。
 
 ## 使用它
 

@@ -20,7 +20,9 @@ Every AI project starts with data. You need to find datasets, download them, con
 
 ## The Concept
 
- /think```mermaid
+ /think
+
+```mermaid
 graph TD
     A["Hugging Face Hub"] --> B["datasets library"]
     B --> C["Load / Stream"]
@@ -34,7 +36,9 @@ graph TD
 
 ### 步骤1：安装 datasets 库
 
- /think```bash
+ /think
+
+```bash
 pip install datasets huggingface_hub
 ```
 
@@ -46,30 +50,40 @@ from datasets import load_dataset
 dataset = load_dataset("stanfordnlp/imdb")
 print(dataset)
 print(dataset["train"][0])
-```这会下载IMDB电影评论数据集。首次下载后，会从缓存路径`~/.cache/huggingface/datasets/`加载。
+```
+
+这会下载IMDB电影评论数据集。首次下载后，会从缓存路径`~/.cache/huggingface/datasets/`加载。
 
 ### 步骤3：流式处理大型数据集
 
-某些数据集太大无法完全存储在磁盘上。流式处理可以逐行加载数据，而无需下载完整文件。```python
+某些数据集太大无法完全存储在磁盘上。流式处理可以逐行加载数据，而无需下载完整文件。
+
+```python
 dataset = load_dataset("wikimedia/wikipedia", "20220301.en", split="train", streaming=True)
 
 for i, example in enumerate(dataset):
     print(example["title"])
     if i >= 4:
         break
-```流式处理为你提供一个 `IterableDataset`。你可以在数据到达时逐行处理。内存使用量与数据集大小无关，始终保持恒定。
+```
+
+流式处理为你提供一个 `IterableDataset`。你可以在数据到达时逐行处理。内存使用量与数据集大小无关，始终保持恒定。
 
 ### 步骤4：数据集格式
 
 `datasets` 库内部使用 Apache Arrow。根据流水线的需求，可以转换为其他格式。
 
- /think```python
+ /think
+
+```python
 dataset = load_dataset("stanfordnlp/imdb", split="train")
 
 dataset.to_csv("imdb_train.csv")
 dataset.to_json("imdb_train.json")
 dataset.to_parquet("imdb_train.parquet")
-```格式对比：
+```
+
+格式对比：
 
 | 格式 | 大小 | 读取速度 | 最适合用于 |
 |------|------|-----------|-----|
@@ -90,7 +104,9 @@ dataset.to_parquet("imdb_train.parquet")
 
 一些数据集已经预先划分好了。如果没有，自行划分：
 
- /```python
+ /
+
+```python
 dataset = load_dataset("stanfordnlp/imdb", split="train")
 
 split = dataset.train_test_split(test_size=0.2, seed=42)
@@ -101,11 +117,15 @@ val_ds = train_val["test"]
 test_ds = split["test"]
 
 print(f"Train: {len(train_ds)}, Val: {len(val_ds)}, Test: {len(test_ds)}")
-```始终设置种子以确保可重复性。相同的种子每次都会生成相同的分割。
+```
+
+始终设置种子以确保可重复性。相同的种子每次都会生成相同的分割。
 
 ### 第6步：下载并缓存模型
 
-模型是大型文件。`huggingface_hub`库负责处理下载和缓存。```python
+模型是大型文件。`huggingface_hub`库负责处理下载和缓存。
+
+```python
 from huggingface_hub import hf_hub_download, snapshot_download
 
 model_path = hf_hub_download(
@@ -116,13 +136,17 @@ print(f"Cached at: {model_path}")
 
 model_dir = snapshot_download("sentence-transformers/all-MiniLM-L6-v2")
 print(f"Full model at: {model_dir}")
-```模型缓存至 `~/.cache/huggingface/hub/`。一旦下载完成，后续运行时会立即加载。
+```
+
+模型缓存至 `~/.cache/huggingface/hub/`。一旦下载完成，后续运行时会立即加载。
 
 ### 第7步：处理大文件
 
 模型权重和大型数据集不应纳入git。三个选项：
 
-**选项A：.gitignore（最简单）**```
+**选项A：.gitignore（最简单）**
+
+```
 *.bin
 *.safetensors
 *.pt
@@ -141,7 +165,9 @@ git lfs track "*.safetensors"
 git add .gitattributes
 ```Git LFS 在你的仓库中存储指针，而实际文件则存储在单独的服务器上。GitHub 为你提供 1 GB 的免费空间。
 
-**选项 C: DVC (data version control)**```bash
+**选项 C: DVC (data version control)**
+
+```bash
 pip install dvc
 dvc init
 dvc add data/training_set.parquet
@@ -163,7 +189,9 @@ git commit -m "Track training data with DVC"
 
 **云存储** 用于更大的数据集或需要跨机器共享的数据：
 
- /think```python
+ /think
+
+```python
 import os
 
 local_path = os.path.expanduser("~/.cache/huggingface/datasets/")
@@ -177,7 +205,9 @@ DVC integrates with S3 and GCS directly:
 ```bash
 dvc remote add -d myremote s3://my-bucket/dvc-store
 dvc push
-```对于本课程，本地存储已足够。当在远程GPU实例上进行微调时，云存储才变得相关。
+```
+
+对于本课程，本地存储已足够。当在远程GPU实例上进行微调时，云存储才变得相关。
 
 ## 本课程使用的数据集
 
@@ -196,9 +226,13 @@ dvc push
 
 运行实用脚本以验证所有内容是否正常工作：
 
- /think```bash
+ /think
+
+```bash
 python code/data_utils.py
-```这会下载一个小型数据集，对其进行转换、拆分，并打印摘要。
+```
+
+这会下载一个小型数据集，对其进行转换、拆分，并打印摘要。
 
 ## Ship It
 

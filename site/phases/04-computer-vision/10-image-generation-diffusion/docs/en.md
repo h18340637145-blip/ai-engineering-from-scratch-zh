@@ -26,13 +26,19 @@ GANs 一次性生成图像：输入噪声，输出图像，一次前向传递。
 
 ### 前向过程
 
-取一张图像 `x_0`。添加一点点高斯噪声以得到 `x_1`。再添加一点点以得到 `x_2`。继续进行 T 步，直到 `x_T` 几乎与纯高斯噪声无法区分。```
+取一张图像 `x_0`。添加一点点高斯噪声以得到 `x_1`。再添加一点点以得到 `x_2`。继续进行 T 步，直到 `x_T` 几乎与纯高斯噪声无法区分。
+
+```
 q(x_t | x_{t-1}) = N(x_t; sqrt(1 - beta_t) * x_{t-1},  beta_t * I)
-````beta_t` 是一个小型的方差计划，通常在 T=1000 步中从 0.0001 线性增加到 0.02。每一步都会略微缩小信号并注入新的噪声。
+```
+
+`beta_t` 是一个小型的方差计划，通常在 T=1000 步中从 0.0001 线性增加到 0.02。每一步都会略微缩小信号并注入新的噪声。
 
 ### 闭式跳跃
 
-一次一步地添加噪声是一个马尔可夫链，但数学上可以折叠：你可以直接从 `x_0` 一步跳转到 `x_t`。```
+一次一步地添加噪声是一个马尔可夫链，但数学上可以折叠：你可以直接从 `x_0` 一步跳转到 `x_t`。
+
+```
 Define alpha_t = 1 - beta_t
 Define alpha_bar_t = prod_{s=1..t} alpha_s
 
@@ -42,11 +48,15 @@ Then:
 Equivalently:
   x_t = sqrt(alpha_bar_t) * x_0 + sqrt(1 - alpha_bar_t) * epsilon
   where epsilon ~ N(0, I)
-```这个单一的方程就是扩散之所以实用的全部原因。在训练过程中，你随机选择一个 `t`，直接从 `x_0` 中采样 `x_t`，然后一步训练完成 —— 不需要模拟完整的马尔可夫链。
+```
+
+这个单一的方程就是扩散之所以实用的全部原因。在训练过程中，你随机选择一个 `t`，直接从 `x_0` 中采样 `x_t`，然后一步训练完成 —— 不需要模拟完整的马尔可夫链。
 
 ### 逆过程
 
-正向过程是固定的。逆过程 `p(x_{t-1} | x_t)` 是神经网络需要学习的部分。扩散模型并不直接预测 `x_{t-1}`；它们预测在第 t 步添加的噪声 `epsilon`，并通过数学推导得出 `x_{t-1}`。```mermaid
+正向过程是固定的。逆过程 `p(x_{t-1} | x_t)` 是神经网络需要学习的部分。扩散模型并不直接预测 `x_{t-1}`；它们预测在第 t 步添加的噪声 `epsilon`，并通过数学推导得出 `x_{t-1}`。
+
+```mermaid
 flowchart LR
     X0["x_0<br/>(clean image)"] --> Q1["q(x_t|x_0)<br/>add noise"]
     Q1 --> XT["x_t<br/>(noisy)"]
@@ -62,7 +72,9 @@ flowchart LR
     style MODEL fill:#fef3c7,stroke:#d97706
     style LOSS fill:#fecaca,stroke:#dc2626
     style X0S fill:#dbeafe,stroke:#2563eb
-```### 训练损失
+```
+
+### 训练损失
 
 对于每一个训练步骤：
 
@@ -77,13 +89,17 @@ flowchart LR
 
 ### 采样器（DDPM）
 
-为了生成：从 `x_T ~ N(0, I)` 开始，一步一步地向后走。```
+为了生成：从 `x_T ~ N(0, I)` 开始，一步一步地向后走。
+
+```
 for t = T, T-1, ..., 1:
     eps = model(x_t, t)
     x_{t-1} = (1 / sqrt(alpha_t)) * (x_t - (beta_t / sqrt(1 - alpha_bar_t)) * eps) + sqrt(beta_t) * z
     where z ~ N(0, I) if t > 1, else 0
 return x_0
-```关键在于，尽管在一般情况下反向条件无法用闭合形式表示，但对于这个特定的高斯正向过程却可以。那些看起来很丑的系数，就是贝叶斯规则给你的结果。
+```
+
+关键在于，尽管在一般情况下反向条件无法用闭合形式表示，但对于这个特定的高斯正向过程却可以。那些看起来很丑的系数，就是贝叶斯规则给你的结果。
 
 ### 为什么是 1000 步
 
@@ -95,11 +111,15 @@ return x_0
 
 ### 时间条件
 
-网络 `epsilon_theta(x_t, t)` 需要知道它正在去除噪声的时间步。现代扩散模型通过正弦时间嵌入（与变压器中的位置编码思想相同）注入 `t`，这些嵌入在每个 U-Net 层级的特征图中都会被添加。```
+网络 `epsilon_theta(x_t, t)` 需要知道它正在去除噪声的时间步。现代扩散模型通过正弦时间嵌入（与变压器中的位置编码思想相同）注入 `t`，这些嵌入在每个 U-Net 层级的特征图中都会被添加。
+
+```
 t_embedding = sinusoidal(t)
 feature_map += MLP(t_embedding)
-```如果没有时间条件，网络必须从图像本身猜测噪声水平，这虽然可行，但样本效率要低得多。
+```
 
+如果没有时间条件，网络必须从图像本身猜测噪声水平，这虽然可行，但样本效率要低得多。
+
 ## 构建它
 
 ### 第一步：噪声计划
@@ -1111,8 +1131,10 @@ feature_map += MLP(t_embedding)
 ## 构建它
 
 ### 第一步：噪声计划
+
+ /no_think
 
- /no_think```python
+```python
 import torch
 
 def linear_beta_schedule(T=1000, beta_start=1e-4, beta_end=2e-2):
@@ -1132,16 +1154,24 @@ def precompute_schedule(betas):
     }
 
 schedule = precompute_schedule(linear_beta_schedule(T=1000))
-```预计算一次，在训练和采样过程中通过索引收集。
+```
 
-### 步骤 2：前向扩散（q_sample）```python
+预计算一次，在训练和采样过程中通过索引收集。
+
+### 步骤 2：前向扩散（q_sample）
+
+```python
 def q_sample(x0, t, noise, schedule):
     sqrt_a = schedule["sqrt_alphas_cumprod"][t].view(-1, 1, 1, 1)
     sqrt_one_minus_a = schedule["sqrt_one_minus_alphas_cumprod"][t].view(-1, 1, 1, 1)
     return sqrt_a * x0 + sqrt_one_minus_a * noise
-```一行闭合形式。`t` 是一组时间步，每张图像对应一个时间步。
+```
 
-### 步骤3：一个小型的时间条件U-Net```python
+一行闭合形式。`t` 是一组时间步，每张图像对应一个时间步。
+
+### 步骤3：一个小型的时间条件U-Net
+
+```python
 import torch.nn as nn
 import torch.nn.functional as F
 import math
@@ -1181,9 +1211,13 @@ class TinyUNet(nn.Module):
         d1 = F.silu(self.dec1(h3))
         d2 = torch.cat([d1, h1], dim=1)
         return self.dec2(d2)
-```带有在瓶颈处注入时间条件的两层 U-Net。对于真实图像，增加深度和宽度。
+```
 
-### 步骤 4：训练循环```python
+带有在瓶颈处注入时间条件的两层 U-Net。对于真实图像，增加深度和宽度。
+
+### 步骤 4：训练循环
+
+```python
 def train_step(model, x0, schedule, optimizer, device, T=1000):
     model.train()
     x0 = x0.to(device)
@@ -1197,9 +1231,13 @@ def train_step(model, x0, schedule, optimizer, device, T=1000):
     loss.backward()
     optimizer.step()
     return loss.item()
-```这就是整个训练循环。没有 GAN 游戏，没有专门的损失函数，只需要一次 MSE 调用。
+```
 
-### 步骤 5：采样器（DDPM）```python
+这就是整个训练循环。没有 GAN 游戏，没有专门的损失函数，只需要一次 MSE 调用。
+
+### 步骤 5：采样器（DDPM）
+
+```python
 @torch.no_grad()
 def sample(model, schedule, shape, T=1000, device="cpu"):
     model.eval()
@@ -1220,7 +1258,9 @@ def sample(model, schedule, shape, T=1000, device="cpu"):
     return x
 ```1000次前向传递以生成一批样本。在实际代码中，你会将这个替换为DDIM 50步采样器。
 
-### 第6步：DDIM采样器（确定性，约20倍更快）```python
+### 第6步：DDIM采样器（确定性，约20倍更快）
+
+```python
 @torch.no_grad()
 def sample_ddim(model, schedule, shape, steps=50, T=1000, device="cpu", eta=0.0):
     model.eval()
@@ -1241,16 +1281,22 @@ def sample_ddim(model, schedule, shape, steps=50, T=1000, device="cpu", eta=0.0)
         noise = sigma * torch.randn_like(x) if eta > 0 else 0
         x = torch.sqrt(a_prev) * x0_pred + dir_xt + noise
     return x
-````eta=0` 完全确定性（相同的噪声输入始终产生相同的输出）。`eta=1` 恢复 DDPM。
+```
+
+`eta=0` 完全确定性（相同的噪声输入始终产生相同的输出）。`eta=1` 恢复 DDPM。
 
 ## 使用方法
 
-对于生产工作，请使用 `diffusers`:```python
+对于生产工作，请使用 `diffusers`:
+
+```python
 from diffusers import DDPMScheduler, UNet2DModel
 
 unet = UNet2DModel(sample_size=32, in_channels=3, out_channels=3, layers_per_block=2)
 scheduler = DDPMScheduler(num_train_timesteps=1000)
-```该库提供现成的调度器（DDPM、DDIM、DPM-Solver、Euler、Heun）、可配置的U-Nets、文本到图像和图像到图像的流程，以及LoRA微调助手。
+```
+
+该库提供现成的调度器（DDPM、DDIM、DPM-Solver、Euler、Heun）、可配置的U-Nets、文本到图像和图像到图像的流程，以及LoRA微调助手。
 
 对于研究，`k-diffusion`（Katherine Crowson）提供了最忠实的参考实现和最佳的采样变体。
 

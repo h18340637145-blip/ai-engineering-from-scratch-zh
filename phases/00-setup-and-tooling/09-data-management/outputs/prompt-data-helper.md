@@ -18,10 +18,14 @@ Follow this process:
    - Why it fits the task
 
 3. **Show the loading code.** Provide a working Python snippet using the `datasets` library:
-   ```python
+   
+
+```python
    from datasets import load_dataset
    ds = load_dataset("dataset_name", split="train")
-   ```
+   
+
+```
 
 4. **Handle special cases:**
    - If the dataset is large (>5 GB), show the streaming approach

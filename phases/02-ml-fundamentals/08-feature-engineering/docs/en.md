@@ -26,7 +26,9 @@
 
 ## 概念
 
-### 特征管道```mermaid
+### 特征管道
+
+```mermaid
 flowchart LR
     A[Raw Data] --> B[Handle Missing Values]
     B --> C[Numerical Transforms]
@@ -37,7 +39,9 @@ flowchart LR
     E --> F
     F --> G[Feature Selection]
     G --> H[Model-Ready Data]
-```### 数值特征
+```
+
+### 数值特征
 
 原始数字很少可以直接用于模型。常见的转换方法：
 
@@ -63,11 +67,15 @@ flowchart LR
 
 **计数向量化器：** 统计每个词在文档中出现的次数。“the cat sat on the mat” 变为 {the: 2, cat: 1, sat: 1, on: 1, mat: 1}。
 
-**TF-IDF：** 词频-逆文档频率。根据词语在文档中的唯一性对词语进行加权。常见词语如 “the” 会获得较低的权重。罕见且有特色的词语会获得较高的权重。```
+**TF-IDF：** 词频-逆文档频率。根据词语在文档中的唯一性对词语进行加权。常见词语如 “the” 会获得较低的权重。罕见且有特色的词语会获得较高的权重。
+
+```
 TF(word, doc) = count(word in doc) / total words in doc
 IDF(word) = log(total docs / docs containing word)
 TF-IDF = TF * IDF
-```### 缺失值
+```
+
+### 缺失值
 
 真实数据存在空缺。策略：
 
@@ -94,11 +102,17 @@ TF-IDF = TF * IDF
 - **L1正则化（Lasso）：** 将无关特征的权重驱动为零
 - **递归特征消除：** 训练，删除最不重要的特征，重复该过程
 
-**为什么特征选择很重要：** 通常，一个包含10个良好特征的模型会比一个包含10个良好特征和90个噪声特征的模型表现更好。噪声特征会为模型提供在训练数据上拟合不具有泛化能力的模式的机会。```figure
-feature-scaling
-```## 构建它
+**为什么特征选择很重要：** 通常，一个包含10个良好特征的模型会比一个包含10个良好特征和90个噪声特征的模型表现更好。噪声特征会为模型提供在训练数据上拟合不具有泛化能力的模式的机会。
 
-### 第一步：从零开始实现数值转换```python
+```figure
+feature-scaling
+```
+
+## 构建它
+
+### 第一步：从零开始实现数值转换
+
+```python
 import math
 
 
@@ -146,7 +160,11 @@ def polynomial_features(row, degree=2):
             for j in range(i + 1, n):
                 result.append(row[i] * row[j])
     return result
-```### 步骤 2：从零开始进行分类编码```python
+```
+
+### 步骤 2：从零开始进行分类编码
+
+```python
 def one_hot_encode(values):
     categories = sorted(set(values))
     cat_to_idx = {cat: i for i, cat in enumerate(categories)}
@@ -184,7 +202,11 @@ def target_encode(feature_values, target_values, smoothing=10):
         encoding[cat] = weight * cat_mean + (1 - weight) * global_mean
 
     return [encoding[v] for v in feature_values], encoding
-```### 第三步：从零开始提取文本特征```python
+```
+
+### 第三步：从零开始提取文本特征
+
+```python
 def count_vectorize(documents):
     vocab = {}
     idx = 0
@@ -239,7 +261,11 @@ def tfidf(documents):
         vectors.append(vec)
 
     return vectors, vocab
-```### 步骤 4：从零开始进行缺失值填补```python
+```
+
+### 步骤 4：从零开始进行缺失值填补
+
+```python
 def impute_mean(values):
     present = [v for v in values if v is not None]
     if not present:
@@ -273,7 +299,11 @@ def impute_mode(values):
 
 def add_missing_indicator(values):
     return [0 if v is not None else 1 for v in values]
-```### 步骤 5：从零开始进行特征选择```python
+```
+
+### 步骤 5：从零开始进行特征选择
+
+```python
 def correlation(x, y):
     n = len(x)
     mean_x = sum(x) / n
@@ -352,7 +382,11 @@ def remove_correlated(features, threshold=0.9):
                 to_remove.add(j)
 
     return [i for i in range(n_features) if i not in to_remove]
-```### 第6步：完整流程和演示```python
+```
+
+### 第6步：完整流程和演示
+
+```python
 import random
 
 
@@ -487,9 +521,13 @@ if __name__ == "__main__":
         col = [feature_matrix[i][j] for i in range(len(feature_matrix))]
         corr = correlation(col, prices)
         print(f"    {feature_names[j]}: r={corr:.4f}")
-```## 使用它
+```
 
-使用 scikit-learn，这些转换可以组合成管道：```python
+## 使用它
+
+使用 scikit-learn，这些转换可以组合成管道：
+
+```python
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, PolynomialFeatures
 from sklearn.impute import SimpleImputer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -510,7 +548,9 @@ preprocessor = ColumnTransformer([
     ("num", numeric_pipe, ["sqft", "age"]),
     ("cat", categorical_pipe, ["neighborhood"]),
 ])
-```从零开始的版本展示了每个转换内部发生的确切过程。库版本增加了边缘情况处理、稀疏矩阵支持和流水线组合，但数学原理是相同的。
+```
+
+从零开始的版本展示了每个转换内部发生的确切过程。库版本增加了边缘情况处理、稀疏矩阵支持和流水线组合，但数学原理是相同的。
 
 ## 发布它
 

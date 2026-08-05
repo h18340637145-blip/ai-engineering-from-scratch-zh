@@ -30,17 +30,23 @@
 
 给定 N 个样本 x[0], x[1], ..., x[N-1]，离散傅里叶变换（DFT）产生 N 个频率系数 X[0], X[1], ..., X[N-1]：
 
-$$ X[k] = \sum_{n=0}^{N-1} x[n] \cdot e^{-i2\pi kn/N} $$```
+$$ X[k] = \sum_{n=0}^{N-1} x[n] \cdot e^{-i2\pi kn/N} $$
+
+```
 X[k] = sum_{n=0}^{N-1} x[n] * e^(-2*pi*i*k*n/N)
 
 for k = 0, 1, ..., N-1
-```每个 X[k] 都是一个复数。它的模 |X[k]| 告诉你频率 k 的幅度。它的相位角 phase(X[k]) 告诉你该频率的相位偏移。
+```
+
+每个 X[k] 都是一个复数。它的模 |X[k]| 告诉你频率 k 的幅度。它的相位角 phase(X[k]) 告诉你该频率的相位偏移。
 
 关键见解：`e^(-2*pi*i*k*n/N)` 是一个频率为 k 的旋转相量。DFT 计算信号与每个 N 个等间距频率之间的相关性。如果信号包含频率 k 的能量，相关性就很大。如果没有，它就接近于零。
 
 ### 每个系数的含义
 
-**X[0]：直流分量。** 这是所有样本的总和——与平均值成比例。它表示信号的恒定（零频率）偏移。```
+**X[0]：直流分量。** 这是所有样本的总和——与平均值成比例。它表示信号的恒定（零频率）偏移。
+
+```
 X[0] = sum_{n=0}^{N-1} x[n] * e^0 = sum of all samples
 ```**X[k] for 1 <= k <= N/2: 正频率。** X[k] 表示每 N 个样本 k 个周期的频率。更高的 k 值意味着更高的频率（更快的振荡）。
 
@@ -50,11 +56,15 @@ X[0] = sum_{n=0}^{N-1} x[n] * e^0 = sum of all samples
 
 ### 逆 DFT
 
-逆 DFT 从频率系数重建原始信号：```
+逆 DFT 从频率系数重建原始信号：
+
+```
 x[n] = (1/N) * sum_{k=0}^{N-1} X[k] * e^(2*pi*i*k*n/N)
 
 for n = 0, 1, ..., N-1
-```与正向 DFT 的唯一不同之处在于：指数中的符号为正（而非负），并且有一个 1/N 的归一化因子。
+```
+
+与正向 DFT 的唯一不同之处在于：指数中的符号为正（而非负），并且有一个 1/N 的归一化因子。
 
 逆向 DFT 是完美的重构。没有信息丢失。你可以从时域转换到频域，再返回时域而没有任何误差。DFT 是一种基变换——它用不同的坐标系统重新表达相同的信息。
 
@@ -68,13 +78,19 @@ Cooley-Tukey 算法（最常见的 FFT 算法）通过分治法实现：
 
 1. 将信号分成偶数索引和奇数索引的样本。
 2. 递归地对每一半计算 DFT。
-3. 使用“旋转因子” e^(-2*pi*i*k/N) 将两个半大小的 DFT 结合起来。```
+3. 使用“旋转因子” e^(-2*pi*i*k/N) 将两个半大小的 DFT 结合起来。
+
+```
 X[k] = E[k] + e^(-2*pi*i*k/N) * O[k]          for k = 0, ..., N/2 - 1
 X[k + N/2] = E[k] - e^(-2*pi*i*k/N) * O[k]    for k = 0, ..., N/2 - 1
 
 where E = DFT of even-indexed samples
       O = DFT of odd-indexed samples
-```对称性意味着每次递归做 O(N) 的工作，共有 log2(N) 层递归。总时间复杂度：O(N log N)。```mermaid
+```
+
+对称性意味着每次递归做 O(N) 的工作，共有 log2(N) 层递归。总时间复杂度：O(N log N)。
+
+```mermaid
 graph TD
     subgraph "8-point FFT (Cooley-Tukey)"
         X["x[0..7]<br/>8 samples"] -->|"split even/odd"| E["Even: x[0,2,4,6]"]
@@ -94,33 +110,47 @@ graph TD
 
 **功率谱** 是 |X[k]|² -- 每个频率系数的模平方。它显示每个频率处的能量大小。
 
-**相位谱** 是 angle(X[k]) -- 每个频率的相位偏移。对于大多数分析任务，你关注的是功率谱，而忽略相位。```
+**相位谱** 是 angle(X[k]) -- 每个频率的相位偏移。对于大多数分析任务，你关注的是功率谱，而忽略相位。
+
+```
 Power at frequency k:  P[k] = |X[k]|^2 = X[k].real^2 + X[k].imag^2
 Phase at frequency k:  phi[k] = atan2(X[k].imag, X[k].real)
-```### 频率分辨率
+```
 
-DFT 的频率分辨率取决于样本数 N 和采样率 fs。```
+### 频率分辨率
+
+DFT 的频率分辨率取决于样本数 N 和采样率 fs。
+
+```
 Frequency of bin k:      f_k = k * fs / N
 Frequency resolution:    delta_f = fs / N
 Maximum frequency:       f_max = fs / 2  (Nyquist)
-```要分辨两个相近的频率，需要更多的样本。要捕捉高频信号，需要更高的采样率。
+```
+
+要分辨两个相近的频率，需要更多的样本。要捕捉高频信号，需要更高的采样率。
 
 ### 卷积定理
 
 这是信号处理中最重要的结果之一，与卷积神经网络（CNNs）直接相关。
 
-**时域中的卷积等于频域中的逐点相乘。**```
+**时域中的卷积等于频域中的逐点相乘。**
+
+```
 x * h = IFFT(FFT(x) . FFT(h))
 
 where * is convolution and . is element-wise multiplication
-```为什么这很重要：
+```
+
+为什么这很重要：
 
 - 两个长度分别为 N 和 M 的信号直接进行卷积需要 O(N*M) 次操作。
 - 基于 FFT 的卷积需要 O(N log N)：将两个信号都进行变换，相乘，再变换回来。
 - 对于大尺寸的卷积核，FFT 卷积速度明显更快。
 - 这正是具有大感受野的卷积层中发生的情况。
 
-注意：DFT 计算的是循环卷积（信号会环绕）。对于线性卷积（无环绕），在计算前请将两个信号都填充零至长度 N + M - 1。```mermaid
+注意：DFT 计算的是循环卷积（信号会环绕）。对于线性卷积（无环绕），在计算前请将两个信号都填充零至长度 N + M - 1。
+
+```mermaid
 graph LR
     subgraph "Time Domain"
         TA["Signal x[n]"] -->|"convolve (slow: O(NM))"| TC["Output y[n]"]
@@ -134,7 +164,9 @@ graph LR
     TA -.->|"FFT"| FA
     TB -.->|"FFT"| FB
     FD -.->|"same result"| TC
-```### 窗函数
+```
+
+### 窗函数
 
 DFT 假设信号是周期性的——它将 N 个样本视为一个无限重复信号的一个周期。如果信号的起始和结束值不相同，这会在边界处产生不连续性，表现为虚假的高频内容。这种现象称为频谱泄漏。
 
@@ -147,10 +179,14 @@ DFT 假设信号是周期性的——它将 N 个样本视为一个无限重复�
 | 矩形窗 | 平坦（无窗） | 最窄 | 最高 (-13 dB) | 当信号在 N 个样本中恰好是周期性时 |
 | 汉宁窗 | 升余弦 | 中等 | 低 (-31 dB) | 通用频谱分析 |
 | 汉明窗 | 改进余弦 | 中等 | 更低 (-42 dB) | 音频处理、语音分析 |
-| 布莱克曼窗 | 三阶余弦 | 宽 | 非常低 (-58 dB) | 当需要关键的旁瓣抑制时 |```
+| 布莱克曼窗 | 三阶余弦 | 宽 | 非常低 (-58 dB) | 当需要关键的旁瓣抑制时 |
+
+```
 Hann window:    w[n] = 0.5 * (1 - cos(2*pi*n / (N-1)))
 Hamming window: w[n] = 0.54 - 0.46 * cos(2*pi*n / (N-1))
-```通过对信号在进行 DFT 之前逐元素地与窗口相乘来应用窗口：`X = DFT(x * w)`。
+```
+
+通过对信号在进行 DFT 之前逐元素地与窗口相乘来应用窗口：`X = DFT(x * w)`。
 
 ### DFT 属性
 
@@ -199,10 +235,14 @@ Positional encodings are important for the Transformer model because they provid
 
 ### Summary
 
-Positional encodings are a crucial component of the Transformer model. They allow the model to process sequential data by providing information about the position of the tokens in the sequence. There are several different approaches to positional encodings, including sinusoidal positional encodings, learned positional encodings, segment embeddings, and relative positional encodings. Each of these approaches has its own advantages and disadvantages, and the choice of which to use depends on the specific task and the data being used.```
+Positional encodings are a crucial component of the Transformer model. They allow the model to process sequential data by providing information about the position of the tokens in the sequence. There are several different approaches to positional encodings, including sinusoidal positional encodings, learned positional encodings, segment embeddings, and relative positional encodings. Each of these approaches has its own advantages and disadvantages, and the choice of which to use depends on the specific task and the data being used.
+
+```
 PE(pos, 2i)   = sin(pos / 10000^(2i/d_model))
 PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
-```每个维度对（2i, 2i+1）以不同的频率振荡。这些频率从高（维度0,1）到低（最后的维度）呈几何级数分布。这使得每个位置在所有频率带中都有唯一的模式——类似于傅里叶系数如何唯一标识一个信号。
+```
+
+每个维度对（2i, 2i+1）以不同的频率振荡。这些频率从高（维度0,1）到低（最后的维度）呈几何级数分布。这使得每个位置在所有频率带中都有唯一的模式——类似于傅里叶系数如何唯一标识一个信号。
 
 这提供了以下关键特性：
 
@@ -226,7 +266,9 @@ PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
 
 一次 FFT 可以得到整个信号的频率内容，但无法提供这些频率出现的时间信息。一个啁啾信号（频率随时间增加的信号）和一个和弦（所有频率同时出现）可能具有相同的幅度谱。
 
-短时傅里叶变换（STFT）通过在信号的重叠窗口上计算 FFT 来解决这个问题。结果是一个频谱图：一个二维表示，其中一轴是时间，另一轴是频率。每个点的强度显示了该时间点在该频率上的能量。```
+短时傅里叶变换（STFT）通过在信号的重叠窗口上计算 FFT 来解决这个问题。结果是一个频谱图：一个二维表示，其中一轴是时间，另一轴是频率。每个点的强度显示了该时间点在该频率上的能量。
+
+```
 STFT procedure:
 1. Choose a window size (e.g., 1024 samples)
 2. Choose a hop size (e.g., 256 samples -- 75% overlap)
@@ -235,11 +277,15 @@ STFT procedure:
    b. Apply a Hann/Hamming window
    c. Compute FFT
    d. Store the magnitude spectrum as one column of the spectrogram
-```语谱图是音频机器学习模型的标准输入表示。语音识别模型（Whisper、DeepSpeech）使用的是梅尔语谱图（mel-spectrograms）——将频率映射到梅尔刻度的语谱图，这种映射方式更符合人类对音高的感知。
+```
+
+语谱图是音频机器学习模型的标准输入表示。语音识别模型（Whisper、DeepSpeech）使用的是梅尔语谱图（mel-spectrograms）——将频率映射到梅尔刻度的语谱图，这种映射方式更符合人类对音高的感知。
 
 ### 频率混叠（Aliasing）
 
-如果信号中包含高于 fs/2（奈奎斯特频率）的频率，以 fs 的采样率进行采样会产生混叠的副本。以 100 Hz 的采样率对 90 Hz 的信号进行采样，会与 10 Hz 的信号看起来完全相同。仅从采样数据本身无法区分它们。```
+如果信号中包含高于 fs/2（奈奎斯特频率）的频率，以 fs 的采样率进行采样会产生混叠的副本。以 100 Hz 的采样率对 90 Hz 的信号进行采样，会与 10 Hz 的信号看起来完全相同。仅从采样数据本身无法区分它们。
+
+```
 Example:
   True signal: 90 Hz sine wave
   Sampling rate: 100 Hz
@@ -248,19 +294,27 @@ Example:
   The samples from the 90 Hz signal at 100 Hz sampling rate
   are identical to the samples from a 10 Hz signal.
   No amount of math can recover the original 90 Hz.
-```这就是为什么模数转换器包含抗混叠滤波器，用于在采样前去除高于奈奎斯特频率的频率。在机器学习中，当在没有适当的低通滤波的情况下对特征图进行下采样时，会出现混叠现象——一些架构通过使用抗混叠池化层来解决这个问题。
+```
+
+这就是为什么模数转换器包含抗混叠滤波器，用于在采样前去除高于奈奎斯特频率的频率。在机器学习中，当在没有适当的低通滤波的情况下对特征图进行下采样时，会出现混叠现象——一些架构通过使用抗混叠池化层来解决这个问题。
 
 ### 零填充不会提高分辨率
 
 一个常见的误解：在进行FFT之前对信号进行零填充可以提高频率分辨率。实际上并非如此。零填充只是在现有的频率 bins 之间进行插值，使频谱看起来更平滑。但它无法揭示原始样本中没有的频率细节。
 
-真正的频率分辨率只取决于观测时间 T = N / fs。为了分辨出间隔为 delta_f 的两个频率，你需要至少 T = 1 / delta_f 秒的数据。无论进行多少零填充，都无法改变这个基本限制。```figure
+真正的频率分辨率只取决于观测时间 T = N / fs。为了分辨出间隔为 delta_f 的两个频率，你需要至少 T = 1 / delta_f 秒的数据。无论进行多少零填充，都无法改变这个基本限制。
+
+```figure
 fourier-synthesis
-```## 构建它
+```
+
+## 构建它
 
 ### 步骤 1：从零开始构建 DFT
 
-O(N²) 的 DFT 可以直接从定义得出。```python
+O(N²) 的 DFT 可以直接从定义得出。
+
+```python
 import math
 
 class Complex:
@@ -278,9 +332,13 @@ def dft(x):
             total = total + xn * w
         result.append(total)
     return result
-```### 步骤 2：逆 DFT
+```
 
-相同结构，正指数，除以 N。```python
+### 步骤 2：逆 DFT
+
+相同结构，正指数，除以 N。
+
+```python
 def idft(X):
     N = len(X)
     result = []
@@ -292,9 +350,13 @@ def idft(X):
             total = total + X[k] * w
         result.append(Complex(total.real / N, total.imag / N))
     return result
-```### 步骤 3：FFT（Cooley-Tukey）
+```
 
-递归的 FFT 需要长度为 2 的幂。将其分为偶数和奇数部分，递归处理，再通过蝶形因子进行合并。```python
+### 步骤 3：FFT（Cooley-Tukey）
+
+递归的 FFT 需要长度为 2 的幂。将其分为偶数和奇数部分，递归处理，再通过蝶形因子进行合并。
+
+```python
 def fft(x):
     N = len(x)
     if N <= 1:
@@ -313,7 +375,11 @@ def fft(x):
         result[k] = even[k] + t
         result[k + N // 2] = even[k] - t
     return result
-```### 步骤 4：频谱分析辅助工具```python
+```
+
+### 步骤 4：频谱分析辅助工具
+
+```python
 def power_spectrum(X):
     return [xk.real ** 2 + xk.imag ** 2 for xk in X]
 
@@ -333,9 +399,13 @@ def convolve_fft(x, h):
 
     y = idft(Y)
     return [y[n].real for n in range(N)]
-```## 使用它
+```
 
-在实际工作中，请使用由高度优化的 C 库支持的 numpy 的 FFT。```python
+## 使用它
+
+在实际工作中，请使用由高度优化的 C 库支持的 numpy 的 FFT。
+
+```python
 import numpy as np
 
 signal = np.sin(2 * np.pi * 5 * np.arange(256) / 256)
@@ -346,27 +416,41 @@ power = np.abs(spectrum) ** 2
 
 positive_freqs = freqs[:len(freqs)//2]
 positive_power = power[:len(power)//2]
-```用于窗口处理和更高级的频谱分析：
+```
+
+用于窗口处理和更高级的频谱分析：
 
 ```python
 import numpy as np
 from scipy import signal
-``````python
+```
+
+```python
 from scipy.signal import windows, stft
 
 window = windows.hann(256)
 windowed = signal * window
 spectrum = np.fft.fft(windowed)
-```对于卷积：```python
+```
+
+对于卷积：
+
+```python
 from scipy.signal import fftconvolve
 
 result = fftconvolve(signal, kernel, mode='full')
-```对于频谱图：```python
+```
+
+对于频谱图：
+
+```python
 from scipy.signal import stft
 
 frequencies, times, Zxx = stft(signal, fs=sample_rate, nperseg=256)
 spectrogram = np.abs(Zxx) ** 2
-```频谱图矩阵的形状为 (n_frequencies, n_time_frames)。每一列代表一个时间窗口的功率谱。这就是音频机器学习模型所使用的输入。
+```
+
+频谱图矩阵的形状为 (n_frequencies, n_time_frames)。每一列代表一个时间窗口的功率谱。这就是音频机器学习模型所使用的输入。
 
 ## 发布它
 

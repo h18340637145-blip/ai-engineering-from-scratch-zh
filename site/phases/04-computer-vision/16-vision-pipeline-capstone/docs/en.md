@@ -24,7 +24,9 @@
 
 ## 概念
 
-### 流水线```mermaid
+### 流水线
+
+```mermaid
 flowchart LR
     REQ["HTTP request<br/>+ image bytes"] --> LOAD["Decode<br/>+ preprocess"]
     LOAD --> DET["Detector<br/>(YOLO / Mask R-CNN)"]
@@ -39,11 +41,15 @@ flowchart LR
     style DET fill:#fef3c7,stroke:#d97706
     style CLS fill:#dbeafe,stroke:#2563eb
     style SCHEMA fill:#dcfce7,stroke:#16a34a
-```七个阶段。两个模型阶段是昂贵的；其余五个阶段是错误滋生的地方。
+```
+
+七个阶段。两个模型阶段是昂贵的；其余五个阶段是错误滋生的地方。
 
 ### 使用 Pydantic 的数据契约
 
-每个模型边界都成为一个类型化的对象。这将静默失败转化为明显的错误。```
+每个模型边界都成为一个类型化的对象。这将静默失败转化为明显的错误。
+
+```
 Detection(
     box: tuple[float, float, float, float],   # (x1, y1, x2, y2), absolute pixels
     score: float,                              # [0, 1]
@@ -57,7 +63,9 @@ PipelineResult(
     classifications: list[Classification],
     inference_ms: float,
 )
-```当检测器返回的框使用 `(cx, cy, w, h)` 而非 `(x1, y1, x2, y2)` 时，Pydantic 的验证会在边界处失败，你将立即发现问题，而不是调试一个下游裁剪操作，它静默地返回空区域。
+```
+
+当检测器返回的框使用 `(cx, cy, w, h)` 而非 `(x1, y1, x2, y2)` 时，Pydantic 的验证会在边界处失败，你将立即发现问题，而不是调试一个下游裁剪操作，它静默地返回空区域。
 
 ### 延迟去向
 
@@ -85,7 +93,9 @@ PipelineResult(
 
 ## 构建它
 
-### 第一步：数据契约```python
+### 第一步：数据契约
+
+```python
 from pydantic import BaseModel, Field
 from typing import List, Optional, Tuple
 
@@ -108,9 +118,13 @@ class PipelineResult(BaseModel):
     detections: List[Detection]
     classifications: List[Classification]
     inference_ms: float
-```五秒钟的代码可以节省一小时的调试时间，无论是在任何严肃的流水线中。
+```
 
-### 步骤 2：一个最小的 Pipeline 类```python
+五秒钟的代码可以节省一小时的调试时间，无论是在任何严肃的流水线中。
+
+### 步骤 2：一个最小的 Pipeline 类
+
+```python
 import time
 import numpy as np
 import torch
@@ -195,9 +209,13 @@ class VisionPipeline:
             classifications=classifications,
             inference_ms=(time.perf_counter() - t0) * 1000,
         )
-```每个接口都有类型。每个失败路径都有特定的处理决策。
+```
 
-### 第三步：连接一个探测器和一个分类器```python
+每个接口都有类型。每个失败路径都有特定的处理决策。
+
+### 第三步：连接一个探测器和一个分类器
+
+```python
 from torchvision.models.detection import maskrcnn_resnet50_fpn_v2
 from torchvision.models import convnext_tiny
 
@@ -212,7 +230,11 @@ pipe = VisionPipeline(detector, classifier, class_names)
 test_image = (np.random.rand(400, 600, 3) * 255).astype(np.uint8)
 result = pipe.run(test_image, image_id="demo")
 print(result.model_dump_json(indent=2)[:500])
-```### 步骤 4：FastAPI 服务```python
+```
+
+### 步骤 4：FastAPI 服务
+
+```python
 from fastapi import FastAPI, UploadFile, HTTPException
 from io import BytesIO
 
@@ -237,9 +259,13 @@ async def detect_endpoint(file: UploadFile):
         raise HTTPException(status_code=400, detail="cannot decode image")
     result = pipe.run(img, image_id=file.filename or "upload")
     return result.model_dump()
-```使用 `uvicorn main:app --host 0.0.0.0 --port 8000` 运行。使用 `curl -F 'file=@dog.jpg' http://localhost:8000/detect` 进行测试。
+```
 
-### 步骤 5：对管道进行基准测试```python
+使用 `uvicorn main:app --host 0.0.0.0 --port 8000` 运行。使用 `curl -F 'file=@dog.jpg' http://localhost:8000/detect` 进行测试。
+
+### 步骤 5：对管道进行基准测试
+
+```python
 import time
 
 def benchmark(pipe, num_runs=20, image_size=(400, 600)):
@@ -274,7 +300,9 @@ def benchmark(pipe, num_runs=20, image_size=(400, 600)):
     for stage, times in stages.items():
         times.sort()
         print(f"{stage:12s}  p50={times[len(times)//2]:7.1f} ms  p95={times[int(len(times)*0.95)]:7.1f} ms")
-```在 CPU 上的典型输出：预处理 ~3 毫秒，检测 300-500 毫秒，分类 20-40 毫秒，总计 350-550 毫秒。在 GPU 上，检测时间是 20-40 毫秒，预处理 + 分类在相对意义上开始变得重要。
+```
+
+在 CPU 上的典型输出：预处理 ~3 毫秒，检测 300-500 毫秒，分类 20-40 毫秒，总计 350-550 毫秒。在 GPU 上，检测时间是 20-40 毫秒，预处理 + 分类在相对意义上开始变得重要。
 
 ## 使用它
 

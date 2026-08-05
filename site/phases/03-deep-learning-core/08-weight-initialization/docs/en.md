@@ -36,11 +36,19 @@
 
 ### 通过层的方差传播
 
-考虑一个具有fan_in输入的单层：```
+考虑一个具有fan_in输入的单层：
+
+```
 z = w1*x1 + w2*x2 + ... + w_n*x_n
-```如果每个权重 $ w_i $ 是从一个方差为 $ \text{Var}(w) $ 的分布中抽取的，每个输入 $ x_i $ 的方差为 $ \text{Var}(x) $，则输出方差为：```
+```
+
+如果每个权重 $ w_i $ 是从一个方差为 $ \text{Var}(w) $ 的分布中抽取的，每个输入 $ x_i $ 的方差为 $ \text{Var}(x) $，则输出方差为：
+
+```
 Var(z) = fan_in * Var(w) * Var(x)
-```如果 Var(w) = 1 且 fan_in = 512，输出方差是输入方差的 512 倍。经过 10 层后：512^10 = 1.2e27。你的信号已经爆炸了。
+```
+
+如果 Var(w) = 1 且 fan_in = 512，输出方差是输入方差的 512 倍。经过 10 层后：512^10 = 1.2e27。你的信号已经爆炸了。
 
 如果 Var(w) = 0.001，输出方差每层缩小 0.001 * 512 = 0.512。经过 10 层后：0.512^10 = 0.00013。你的信号已经消失了。
 
@@ -48,31 +56,57 @@ Var(z) = fan_in * Var(w) * Var(x)
 
 ### Xavier/Glorot 初始化
 
-Glorot 和 Bengio（2010）为 sigmoid 和 tanh 激活函数推导了解决方案。为了在正向和反向传播中保持方差恒定：```
+Glorot 和 Bengio（2010）为 sigmoid 和 tanh 激活函数推导了解决方案。为了在正向和反向传播中保持方差恒定：
+
+```
 Var(w) = 2 / (fan_in + fan_out)
-```实际上，权重是从以下位置获取的：```
+```
+
+实际上，权重是从以下位置获取的：
+
+```
 w ~ Uniform(-limit, limit)  where limit = sqrt(6 / (fan_in + fan_out))
-```或者：```
+```
+
+或者：
+
+```
 w ~ Normal(0, sqrt(2 / (fan_in + fan_out)))
-```这之所以有效，是因为 sigmoid 和 tanh 在零附近大致是线性的，而经过适当初始化的激活值就位于这个区域。方差在数十层中保持稳定。
+```
+
+这之所以有效，是因为 sigmoid 和 tanh 在零附近大致是线性的，而经过适当初始化的激活值就位于这个区域。方差在数十层中保持稳定。
 
 ### Kaiming/He 初始化
 
 ReLU 会将一半的输出置零（所有负值都变为零）。由于平均有一半的输入被置零，因此有效输入数量（fan_in）被减半。Xavier 初始化没有考虑到这一点——它低估了所需的方差。
 
-He 等人（2015）调整了公式：```
+He 等人（2015）调整了公式：
+
+```
 Var(w) = 2 / fan_in
-```权重来自：```
+```
+
+权重来自：
+
+```
 w ~ Normal(0, sqrt(2 / fan_in))
-```因子2补偿了ReLU将一半激活值置零的问题。如果没有这个因子，信号每层会缩小约0.5倍。50层后：0.5^50 = 8.8e-16。Kaiming初始化可以防止这种情况。
+```
+
+因子2补偿了ReLU将一半激活值置零的问题。如果没有这个因子，信号每层会缩小约0.5倍。50层后：0.5^50 = 8.8e-16。Kaiming初始化可以防止这种情况。
 
 ### Transformer 初始化
 
-GPT-2 引入了不同的模式。残差连接将每个子层的输出加到其输入上：```
-x = x + sublayer(x)
-```每次添加都会增加方差。拥有 N 个残差层时，方差与 N 成正比增长。GPT-2 通过将残差层的权重按 1/sqrt(2N) 进行缩放，其中 N 是层数，从而保持累积信号幅度的稳定。
+GPT-2 引入了不同的模式。残差连接将每个子层的输出加到其输入上：
 
-Llama 3（405B 参数，126 层）使用了类似的方案。如果没有这种缩放，残差流在经过 126 层注意力和前馈模块时会无限制增长。```mermaid
+```
+x = x + sublayer(x)
+```
+
+每次添加都会增加方差。拥有 N 个残差层时，方差与 N 成正比增长。GPT-2 通过将残差层的权重按 1/sqrt(2N) 进行缩放，其中 N 是层数，从而保持累积信号幅度的稳定。
+
+Llama 3（405B 参数，126 层）使用了类似的方案。如果没有这种缩放，残差流在经过 126 层注意力和前馈模块时会无限制增长。
+
+```mermaid
 flowchart TD
     subgraph "Zero Init"
         Z1["Layer 1<br/>All weights = 0"] --> Z2["Layer 2<br/>All neurons identical"]
@@ -91,7 +125,11 @@ flowchart TD
         K2 --> K3["Layer 50<br/>Signal stable"]
         K3 --> KR["Result: Trains with<br/>ReLU/GELU"]
     end
-```### 50层中的激活幅度```mermaid
+```
+
+### 50层中的激活幅度
+
+```mermaid
 graph LR
     subgraph "Mean Activation Magnitude"
         direction LR
@@ -104,7 +142,11 @@ graph LR
         R3["Xavier + Sigmoid: ~1.0 at layer 50"]
         R4["Kaiming + ReLU: ~1.0 at layer 50"]
     end
-```### 选择合适的 Init```mermaid
+```
+
+### 选择合适的 Init
+
+```mermaid
 flowchart TD
     Start["What activation?"] --> Act{"Activation type?"}
 
@@ -121,11 +163,15 @@ flowchart TD
 
 ```figure
 weight-init-variance
-```## 构建它
+```
+
+## 构建它
 
 ### 第一步：初始化策略
 
-初始化权重矩阵的四种方式。每种方式都返回一个二维矩阵（列表的列表），具有 fan_in 列和 fan_out 行。```python
+初始化权重矩阵的四种方式。每种方式都返回一个二维矩阵（列表的列表），具有 fan_in 列和 fan_out 行。
+
+```python
 import math
 import random
 
@@ -146,9 +192,13 @@ def xavier_init(fan_in, fan_out):
 def kaiming_init(fan_in, fan_out):
     std = math.sqrt(2.0 / fan_in)
     return [[random.gauss(0, std) for _ in range(fan_in)] for _ in range(fan_out)]
-```### 步骤 2：激活函数
+```
 
-我们需要 sigmoid、tanh 和 ReLU，以便用其对应的激活函数来测试每种初始化策略。```python
+### 步骤 2：激活函数
+
+我们需要 sigmoid、tanh 和 ReLU，以便用其对应的激活函数来测试每种初始化策略。
+
+```python
 def sigmoid(x):
     x = max(-500, min(500, x))
     return 1.0 / (1.0 + math.exp(-x))
@@ -160,9 +210,13 @@ def tanh_act(x):
 
 def relu(x):
     return max(0.0, x)
-```### 步骤 3：通过 50 层的前向传播
+```
 
-将随机数据通过一个深度网络进行传播，并在每一层测量平均激活幅度。```python
+### 步骤 3：通过 50 层的前向传播
+
+将随机数据通过一个深度网络进行传播，并在每一层测量平均激活幅度。
+
+```python
 def forward_deep(init_fn, activation_fn, n_layers=50, width=64, n_samples=100):
     random.seed(42)
     layer_magnitudes = []
@@ -189,9 +243,13 @@ def forward_deep(init_fn, activation_fn, n_layers=50, width=64, n_samples=100):
         layer_magnitudes.append(mean_mag)
 
     return layer_magnitudes
-```### 步骤 4：实验
+```
 
-运行所有组合：零初始化、随机 N(0,1)、随机 N(0,0.01)、带 sigmoid 的 Xavier、带 tanh 的 Xavier、带 ReLU 的 Kaiming。打印关键层的幅度。```python
+### 步骤 4：实验
+
+运行所有组合：零初始化、随机 N(0,1)、随机 N(0,0.01)、带 sigmoid 的 Xavier、带 tanh 的 Xavier、带 ReLU 的 Kaiming。打印关键层的幅度。
+
+```python
 def run_experiment():
     configs = [
         ("Zero init + Sigmoid", lambda fi, fo: zero_init(fi, fo), sigmoid),
@@ -217,9 +275,13 @@ def run_experiment():
             else:
                 row += f" {val:>10.4f}"
         print(row)
-```### 步骤 5：对称性演示
+```
 
-展示零初始化如何产生相同的神经元。```python
+### 步骤 5：对称性演示
+
+展示零初始化如何产生相同的神经元。
+
+```python
 def symmetry_demo():
     random.seed(42)
     weights = zero_init(2, 4)
@@ -237,9 +299,13 @@ def symmetry_demo():
     all_same = all(abs(outputs[i] - outputs[0]) < 1e-10 for i in range(len(outputs)))
     print(f"  All identical: {all_same}")
     print(f"  Effective parameters: 1 (not {len(weights) * len(weights[0])})")
-```### 步骤 6：逐层幅度报告
+```
 
-打印一个通过 50 层激活幅度的可视化条形图。```python
+### 步骤 6：逐层幅度报告
+
+打印一个通过 50 层激活幅度的可视化条形图。
+
+```python
 def magnitude_report(name, magnitudes):
     print(f"\n{name}:")
     for i, mag in enumerate(magnitudes):
@@ -252,9 +318,13 @@ def magnitude_report(name, magnitudes):
                 bar_len = min(50, max(1, int(mag * 10)))
                 bar = "#" * bar_len
             print(f"  Layer {i+1:3d}: {bar} ({mag:.6f})")
-```## 使用它
+```
 
-PyTorch 提供这些作为内置函数：```python
+## 使用它
+
+PyTorch 提供这些作为内置函数：
+
+```python
 import torch
 import torch.nn as nn
 
@@ -267,7 +337,9 @@ nn.init.kaiming_uniform_(layer.weight, nonlinearity='relu')
 nn.init.kaiming_normal_(layer.weight, nonlinearity='relu')
 
 nn.init.zeros_(layer.bias)
-```当你调用 `nn.Linear(512, 256)` 时，PyTorch 默认使用 Kaiming 均匀初始化。这就是为什么大多数简单网络“直接可用”的原因 —— PyTorch 已经做出了正确的选择。但当你构建自定义架构或层数超过 20 层时，你需要理解正在发生的事情，并可能覆盖默认设置。
+```
+
+当你调用 `nn.Linear(512, 256)` 时，PyTorch 默认使用 Kaiming 均匀初始化。这就是为什么大多数简单网络“直接可用”的原因 —— PyTorch 已经做出了正确的选择。但当你构建自定义架构或层数超过 20 层时，你需要理解正在发生的事情，并可能覆盖默认设置。
 
 对于 Transformer，HuggingFace 模型通常在其 `_init_weights` 方法中处理初始化。GPT-2 的实现通过 1/sqrt(N) 对残差投影进行缩放。如果你从零开始构建 Transformer，你需要自己添加这个功能。
 

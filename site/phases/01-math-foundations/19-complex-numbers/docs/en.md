@@ -28,22 +28,30 @@
 
 ### 什么是复数？
 
-复数有两个部分：实部和虚部。```
+复数有两个部分：实部和虚部。
+
+```
 z = a + bi
 
 where:
   a is the real part
   b is the imaginary part
   i is the imaginary unit, defined by i^2 = -1
-```就是这样。你将数轴扩展到一个平面。实数位于一个轴上，虚数位于另一个轴上。每一个复数都是这个平面上的一个点。
+```
+
+就是这样。你将数轴扩展到一个平面。实数位于一个轴上，虚数位于另一个轴上。每一个复数都是这个平面上的一个点。
 
 ### 复数运算
 
-**加法。** 将实部相加，将虚部相加。```
+**加法。** 将实部相加，将虚部相加。
+
+```
 (a + bi) + (c + di) = (a + c) + (b + d)i
 
 Example: (3 + 2i) + (1 + 4i) = 4 + 6i
-```**乘法。** 使用分配律，并记住 i² = -1。```
+```**乘法。** 使用分配律，并记住 i² = -1。
+
+```
 (a + bi)(c + di) = ac + adi + bci + bdi^2
                  = ac + adi + bci - bd
                  = (ac - bd) + (ad + bc)i
@@ -51,50 +59,80 @@ Example: (3 + 2i) + (1 + 4i) = 4 + 6i
 Example: (3 + 2i)(1 + 4i) = 3 + 12i + 2i + 8i^2
                             = 3 + 14i - 8
                             = -5 + 14i
-```**共轭。** 反转虚部的符号。```
+```**共轭。** 反转虚部的符号。
+
+```
 conjugate of (a + bi) = a - bi
-```复数与其共轭复数的乘积总是实数：```
+```
+
+复数与其共轭复数的乘积总是实数：
+
+```
 (a + bi)(a - bi) = a^2 + b^2
-```**除法。** 将分子和分母同时乘以分母的共轭。```
+```**除法。** 将分子和分母同时乘以分母的共轭。
+
+```
 (a + bi) / (c + di) = (a + bi)(c - di) / (c^2 + d^2)
-```这消除了分母中的虚部，给你一个干净的复数。
+```
+
+这消除了分母中的虚部，给你一个干净的复数。
 
 ### 复数平面
 
-复数平面将每个复数映射到一个二维点。水平轴是实轴，垂直轴是虚轴。```
+复数平面将每个复数映射到一个二维点。水平轴是实轴，垂直轴是虚轴。
+
+```
 z = 3 + 2i  corresponds to the point (3, 2)
 z = -1 + 0i corresponds to the point (-1, 0) on the real axis
 z = 0 + 4i  corresponds to the point (0, 4) on the imaginary axis
-```复数同时表示原点处的一个点和一个向量。这种双重解释使得复数在几何中非常有用。
+```
+
+复数同时表示原点处的一个点和一个向量。这种双重解释使得复数在几何中非常有用。
 
 ### 极坐标形式
 
-平面上的任何一点都可以用它到原点的距离以及它与正实轴之间的角度来描述。```
+平面上的任何一点都可以用它到原点的距离以及它与正实轴之间的角度来描述。
+
+```
 z = r * (cos(theta) + i*sin(theta))
 
 where:
   r = |z| = sqrt(a^2 + b^2)     (magnitude, or modulus)
   theta = atan2(b, a)             (phase, or argument)
-```矩形形式（a + bi）适合加法。极坐标形式（r, theta）适合乘法。
+```
 
-**极坐标形式下的乘法。** 乘以模长，加上角度。```
+矩形形式（a + bi）适合加法。极坐标形式（r, theta）适合乘法。
+
+**极坐标形式下的乘法。** 乘以模长，加上角度。
+
+```
 z1 = r1 * e^(i*theta1)
 z2 = r2 * e^(i*theta2)
 
 z1 * z2 = (r1 * r2) * e^(i*(theta1 + theta2))
-```这就是为什么复数非常适合表示旋转。乘以一个模长为1的复数就是一个纯粹的旋转。
+```
+
+这就是为什么复数非常适合表示旋转。乘以一个模长为1的复数就是一个纯粹的旋转。
 
 ### 欧拉公式
 
 复数指数与三角函数之间的桥梁：
 
-$$```
+$$
+
+```
 e^(i*theta) = cos(theta) + i*sin(theta)
-```这是本课最重要的公式。当 theta = pi 时：```
+```
+
+这是本课最重要的公式。当 theta = pi 时：
+
+```
 e^(i*pi) = cos(pi) + i*sin(pi) = -1 + 0i = -1
 
 Therefore: e^(i*pi) + 1 = 0
-```五个基本常数（e, i, pi, 1, 0）在一个方程中相互联系。
+```
+
+五个基本常数（e, i, pi, 1, 0）在一个方程中相互联系。
 
 ### 为什么欧拉公式对机器学习很重要
 
@@ -104,7 +142,9 @@ Therefore: e^(i*pi) + 1 = 0
 
 ### 与二维旋转的联系
 
-将复数(x + yi)乘以e^(i*theta)会将点(x, y)绕原点旋转theta角度。```
+将复数(x + yi)乘以e^(i*theta)会将点(x, y)绕原点旋转theta角度。
+
+```
 Rotation via complex multiplication:
   (x + yi) * (cos(theta) + i*sin(theta))
   = (x*cos(theta) - y*sin(theta)) + (x*sin(theta) + y*cos(theta))i
@@ -112,7 +152,11 @@ Rotation via complex multiplication:
 Rotation via matrix multiplication:
   [cos(theta)  -sin(theta)] [x]   [x*cos(theta) - y*sin(theta)]
   [sin(theta)   cos(theta)] [y] = [x*sin(theta) + y*cos(theta)]
-```它们产生相同的结果。复数乘法就是二维旋转。旋转矩阵只是用矩阵表示的复数乘法。```mermaid
+```
+
+它们产生相同的结果。复数乘法就是二维旋转。旋转矩阵只是用矩阵表示的复数乘法。
+
+```mermaid
 graph TD
     subgraph "Complex Multiplication = 2D Rotation"
         A["z = x + yi<br/>Point (x, y)"] -->|"multiply by e^(i*theta)"| B["z' = z * e^(i*theta)<br/>Point rotated by theta"]
@@ -121,31 +165,45 @@ graph TD
         C["vector [x, y]"] -->|"multiply by rotation matrix"| D["[x cos theta - y sin theta,<br/> x sin theta + y cos theta]"]
     end
     B -.->|"same result"| D
-```### 相量和旋转信号
+```
+
+### 相量和旋转信号
 
 一个复指数 e^(i*omega*t) 是一个以角频率 omega 绕单位圆旋转的点。随着 t 的增加，该点沿着圆周运动。
 
-这个旋转点的实部是 cos(omega*t)。虚部是 sin(omega*t)。正弦信号是一个旋转复数的投影。```
+这个旋转点的实部是 cos(omega*t)。虚部是 sin(omega*t)。正弦信号是一个旋转复数的投影。
+
+```
 e^(i*omega*t) = cos(omega*t) + i*sin(omega*t)
 
 Real part:      cos(omega*t)    -- a cosine wave
 Imaginary part: sin(omega*t)    -- a sine wave
-```这是相量表示法。与其追踪一个波动的正弦波，不如追踪一个平稳旋转的箭头。相位变化变成了角度偏移。幅度变化变成了大小变化。信号的相加变成了向量相加。
+```
+
+这是相量表示法。与其追踪一个波动的正弦波，不如追踪一个平稳旋转的箭头。相位变化变成了角度偏移。幅度变化变成了大小变化。信号的相加变成了向量相加。
 
 ### 单位根
 
-N次单位根是在单位圆上等距分布的N个点：```
+N次单位根是在单位圆上等距分布的N个点：
+
+```
 w_k = e^(2*pi*i*k/N)    for k = 0, 1, 2, ..., N-1
-```对于 N = 4，根为：1, i, -1, -i（四个方位点）。
+```
+
+对于 N = 4，根为：1, i, -1, -i（四个方位点）。
 对于 N = 8，你会得到四个方位点加上四个对角线。
 
 单位根是离散傅里叶变换的基础。DFT 将信号分解为这些 N 个等间距频率上的分量。
 
 ### 与 DFT 的联系
 
-信号 x[0], x[1], ..., x[N-1] 的离散傅里叶变换为：```
+信号 x[0], x[1], ..., x[N-1] 的离散傅里叶变换为：
+
+```
 X[k] = sum_{n=0}^{N-1} x[n] * e^(-2*pi*i*k*n/N)
-```每个 X[k] 衡量信号与单位根的第 k 个根的相关程度——即频率为 k 的复数正弦波。DFT 将信号分解为 N 个旋转的相量，并告诉你每个相量的幅度和相位。
+```
+
+每个 X[k] 衡量信号与单位根的第 k 个根的相关程度——即频率为 k 的复数正弦波。DFT 将信号分解为 N 个旋转的相量，并告诉你每个相量的幅度和相位。
 
 ### 为什么 i 不是虚数
 
@@ -174,10 +232,14 @@ def positional_encoding(position, dim):
     ] + [
         math.cos(position / (10000 ** (2 * i / dim))) for i in range(dim // 2)
     ])
-``````
+```
+
+```
 PE(pos, 2i) = sin(pos / 10000^(2i/d))
 PE(pos, 2i+1) = cos(pos / 10000^(2i/d))
-```正弦和余弦对是不同频率的复数指数的实部和虚部。每个频率为编码位置提供了不同的“分辨率”。低频变化缓慢（粗略位置），高频变化迅速（精细位置）。它们共同为每个位置提供了一个独特的频率指纹。
+```
+
+正弦和余弦对是不同频率的复数指数的实部和虚部。每个频率为编码位置提供了不同的“分辨率”。低频变化缓慢（粗略位置），高频变化迅速（精细位置）。它们共同为每个位置提供了一个独特的频率指纹。
 
 **RoPE（旋转位置嵌入）** 进一步拓展了这一点。它明确地将查询和键向量与复数旋转矩阵相乘。两个标记之间的相对位置变成了旋转角度。注意力计算使用这些旋转后的向量，使模型通过复数乘法对相对位置变得敏感。
 
@@ -189,7 +251,9 @@ PE(pos, 2i+1) = cos(pos / 10000^(2i/d))
 | 模长 | sqrt(a^2 + b^2) | 距离原点的距离 |
 | 相位 | atan2(b, a) | 从正实轴的角度 |
 | 除法 | 乘以共轭 | 反向旋转和重新缩放 |
-| 幂运算 | r^n * e^(i*n*theta) | 旋转n次，按r^n缩放 |```mermaid
+| 幂运算 | r^n * e^(i*n*theta) | 旋转n次，按r^n缩放 |
+
+```mermaid
 graph LR
     subgraph "Unit Circle"
         direction TB
@@ -210,11 +274,15 @@ graph LR
 
 ```figure
 roots-of-unity
-```## 构建它
+```
+
+## 构建它
 
 ### 第一步：复数类
 
-构建一个支持算术运算、模长、相位以及矩形坐标和极坐标形式之间转换的复数类。```python
+构建一个支持算术运算、模长、相位以及矩形坐标和极坐标形式之间转换的复数类。
+
+```python
 import math
 
 class Complex:
@@ -244,7 +312,11 @@ class Complex:
 
     def conjugate(self):
         return Complex(self.real, -self.imag)
-```### 步骤 2：极坐标转换和欧拉公式```python
+```
+
+### 步骤 2：极坐标转换和欧拉公式
+
+```python
 def to_polar(z):
     return z.magnitude(), z.phase()
 
@@ -253,16 +325,24 @@ def from_polar(r, theta):
 
 def euler(theta):
     return Complex(math.cos(theta), math.sin(theta))
-```验证：`euler(theta).magnitude()` 应该始终为 1.0。`euler(0)` 应该给出 (1, 0)。`euler(pi)` 应该给出 (-1, 0)。
+```
+
+验证：`euler(theta).magnitude()` 应该始终为 1.0。`euler(0)` 应该给出 (1, 0)。`euler(pi)` 应该给出 (-1, 0)。
 
 ### 步骤 3：旋转
 
-将点 (x, y) 按角度 theta 旋转相当于一次复数乘法：```python
+将点 (x, y) 按角度 theta 旋转相当于一次复数乘法：
+
+```python
 point = Complex(3, 4)
 rotated = point * euler(math.pi / 4)
-```幅度保持不变。只有角度发生变化。
+```
 
-### 步骤 4：从复数运算进行 DFT```python
+幅度保持不变。只有角度发生变化。
+
+### 步骤 4：从复数运算进行 DFT
+
+```python
 def dft(signal):
     N = len(signal)
     result = []
@@ -273,11 +353,15 @@ def dft(signal):
             total = total + Complex(signal[n], 0) * euler(angle)
         result.append(total)
     return result
-```这是 O(N²) 的 DFT。每个输出 X[k] 是信号样本乘以单位根的和。
+```
+
+这是 O(N²) 的 DFT。每个输出 X[k] 是信号样本乘以单位根的和。
 
 ### 步骤 5：逆 DFT
 
-逆 DFT 从频谱重建原始信号。与正向 DFT 相比，唯一的变化是：在指数中取反号，并除以 N。```python
+逆 DFT 从频谱重建原始信号。与正向 DFT 相比，唯一的变化是：在指数中取反号，并除以 N。
+
+```python
 def idft(spectrum):
     N = len(spectrum)
     result = []
@@ -288,12 +372,18 @@ def idft(spectrum):
             total = total + spectrum[k] * euler(angle)
         result.append(Complex(total.real / N, total.imag / N))
     return result
-```这使你能够实现完美的重构。应用DFT，然后应用IDFT，你将能以机器精度恢复原始信号。没有信息丢失。
+```
 
-### 步骤6：单位根```python
+这使你能够实现完美的重构。应用DFT，然后应用IDFT，你将能以机器精度恢复原始信号。没有信息丢失。
+
+### 步骤6：单位根
+
+```python
 def roots_of_unity(N):
     return [euler(2 * math.pi * k / N) for k in range(N)]
-```验证两个性质：
+```
+
+验证两个性质：
 - 每个根的模长正好是 1。
 - 所有 N 个根的和为零（它们通过对称相互抵消）。
 
@@ -301,7 +391,9 @@ def roots_of_unity(N):
 
 ## 使用它
 
-Python 内置了对复数的支持。字面量 `j` 表示虚数单位。```python
+Python 内置了对复数的支持。字面量 `j` 表示虚数单位。
+
+```python
 z = 3 + 2j
 w = 1 + 4j
 
@@ -312,7 +404,11 @@ print(abs(z))
 import cmath
 print(cmath.phase(z))
 print(cmath.exp(1j * cmath.pi))
-```对于数组，numpy 本机支持复数：```python
+```
+
+对于数组，numpy 本机支持复数：
+
+```python
 import numpy as np
 
 z = np.array([1+2j, 3+4j, 5+6j])
@@ -325,7 +421,9 @@ print(np.imag(z))
 signal = np.sin(2 * np.pi * 5 * np.linspace(0, 1, 128))
 spectrum = np.fft.fft(signal)
 freqs = np.fft.fftfreq(128, d=1/128)
-```## 发布它
+```
+
+## 发布它
 
 运行 `code/complex_numbers.py` 以生成 `outputs/skill-complex-arithmetic.md`。
 

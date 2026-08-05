@@ -24,7 +24,9 @@
 
 ## 概念
 
-### 三种架构家族```mermaid
+### 三种架构家族
+
+```mermaid
 flowchart LR
     V["Video clip<br/>(T frames)"] --> A1["2D + pool<br/>run 2D CNN per frame,<br/>average over time"]
     V --> A2["3D conv<br/>convolve over<br/>T x H x W"]
@@ -37,7 +39,9 @@ flowchart LR
     style A1 fill:#dbeafe,stroke:#2563eb
     style A2 fill:#fef3c7,stroke:#d97706
     style A3 fill:#dcfce7,stroke:#16a34a
-```### 2D + pool
+```
+
+### 2D + pool
 
 使用一个2D卷积网络（ResNet，EfficientNet，ViT）。独立地对每个采样帧运行该网络。对每个帧的嵌入向量进行平均（或最大池化，或注意力池化）。将池化后的向量输入到分类器中。
 
@@ -117,7 +121,9 @@ T通常为8、16、32或64。更高的T意味着更多的时序信息，但需�
 
 ### 第一步：帧采样器
 
-适用于帧列表（或视频张量）的均匀和密集采样器。```python
+适用于帧列表（或视频张量）的均匀和密集采样器。
+
+```python
 import numpy as np
 
 def sample_uniform(num_frames_total, T):
@@ -133,11 +139,15 @@ def sample_dense(num_frames_total, T, rng=None):
         return list(range(num_frames_total)) + [num_frames_total - 1] * (T - num_frames_total)
     start = int(rng.integers(0, num_frames_total - T + 1))
     return list(range(start, start + T))
-```两者都返回用于对视频张量进行切片的 `T` 索引。
+```
+
+两者都返回用于对视频张量进行切片的 `T` 索引。
 
 ### 步骤 2：2D+池化基线
 
-对每帧运行 2D ResNet-18，对特征进行平均池化，然后进行分类。```python
+对每帧运行 2D ResNet-18，对特征进行平均池化，然后进行分类。
+
+```python
 import torch
 import torch.nn as nn
 from torchvision.models import resnet18, ResNet18_Weights
@@ -166,7 +176,9 @@ print(f"params: {sum(p.numel() for p in model.parameters()):,}")
 
 ### 第3步：一种I3D风格的膨胀3D卷积
 
-通过沿着新的时间轴重复权重，将一个单独的2D卷积转换为3D卷积。```python
+通过沿着新的时间轴重复权重，将一个单独的2D卷积转换为3D卷积。
+
+```python
 def inflate_2d_to_3d(conv2d, time_kernel=3):
     out_c, in_c, kh, kw = conv2d.weight.shape
     weight_3d = conv2d.weight.data.unsqueeze(2)  # (out, in, 1, kh, kw)
@@ -184,11 +196,15 @@ print(f"2D weight shape:  {tuple(conv2d.weight.shape)}")
 print(f"3D weight shape:  {tuple(conv3d.weight.shape)}")
 x = torch.randn(1, 3, 8, 56, 56)
 print(f"3D output shape:  {tuple(conv3d(x).shape)}")
-```通过 `time_kernel` 进行除法操作，可以保持激活值的幅度大致恒定 —— 这对于在第一次遍历时不破坏批归一化（batch-norm）的统计信息非常重要。
+```
+
+通过 `time_kernel` 进行除法操作，可以保持激活值的幅度大致恒定 —— 这对于在第一次遍历时不破坏批归一化（batch-norm）的统计信息非常重要。
 
 ### 步骤 4：分解的（2+1）D 卷积
 
-将一个 3D 卷积拆分为一个 2D（空间）卷积和一个 1D（时间）卷积。具有相同的感受野，参数更少，在某些基准测试中准确率更高。```python
+将一个 3D 卷积拆分为一个 2D（空间）卷积和一个 1D（时间）卷积。具有相同的感受野，参数更少，在某些基准测试中准确率更高。
+
+```python
 class Conv2Plus1D(nn.Module):
     def __init__(self, in_c, out_c, kernel_size=3):
         super().__init__()
@@ -207,7 +223,9 @@ class Conv2Plus1D(nn.Module):
 c = Conv2Plus1D(3, 64)
 x = torch.randn(1, 3, 8, 56, 56)
 print(f"(2+1)D output: {tuple(c(x).shape)}")
-```一个完整的 R(2+1)D 网络与 ResNet-18 相同，只是每个 3x3 卷积都被替换为 `Conv2Plus1D`。
+```
+
+一个完整的 R(2+1)D 网络与 ResNet-18 相同，只是每个 3x3 卷积都被替换为 `Conv2Plus1D`。
 
 ## 使用方式
 

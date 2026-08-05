@@ -26,28 +26,40 @@
 
 ### 模型
 
-线性回归假设输入（x）与输出（y）之间存在线性关系：```
+线性回归假设输入（x）与输出（y）之间存在线性关系：
+
+```
 y = wx + b
 ```- `w`（权重/斜率）：x 增加 1 时，y 的变化量
 - `b`（偏置/截距）：x = 0 时 y 的值
 
-当有多个输入（特征）时，公式扩展为：```
+当有多个输入（特征）时，公式扩展为：
+
+```
 y = w1*x1 + w2*x2 + ... + wn*xn + b
-```也可以写成向量形式：`y = w^T * x + b`
+```
+
+也可以写成向量形式：`y = w^T * x + b`
 
 目标是找到 w 和 b 的取值，使所有训练样本的预测值 y 都尽可能接近实际值 y。
 
 ### 代价函数（均方误差）
 
-如何衡量“尽可能接近”？你需要用一个数值概括预测偏差有多大。最常见的选择是均方误差（MSE）：```
+如何衡量“尽可能接近”？你需要用一个数值概括预测偏差有多大。最常见的选择是均方误差（MSE）：
+
+```
 MSE = (1/n) * sum((y_predicted - y_actual)^2)
-```为什么要平方？有两个原因。第一，它对大误差的惩罚远高于小误差（误差为 10 时的惩罚是误差为 1 时的 100 倍，而不是 10 倍）。第二，平方函数处处平滑且可微，使优化过程更加直接。
+```
+
+为什么要平方？有两个原因。第一，它对大误差的惩罚远高于小误差（误差为 10 时的惩罚是误差为 1 时的 100 倍，而不是 10 倍）。第二，平方函数处处平滑且可微，使优化过程更加直接。
 
 代价函数会形成一个曲面。对于单个权重 $ w $ 和偏置 $ b $，MSE 曲面看起来像一只碗（凸抛物面）。碗底就是 MSE 最小的位置，训练的过程就是寻找这个最低点。
 
 ### 梯度下降
 
-梯度下降通过一步步向下移动来寻找碗底。```mermaid
+梯度下降通过一步步向下移动来寻找碗底。
+
+```mermaid
 flowchart TD
     A[随机初始化 w 和 b] --> B[计算预测值：y_hat = wx + b]
     B --> C[计算代价：MSE]
@@ -56,41 +68,65 @@ flowchart TD
     E --> F{代价足够低了吗？}
     F -->|否| B
     F -->|是| G[完成：找到最优 w 和 b]
-```梯度会告诉你两件事：每个参数应该向哪个方向移动，以及移动多少。
+```
 
-对于 y_hat = wx + b 的 MSE：```
+梯度会告诉你两件事：每个参数应该向哪个方向移动，以及移动多少。
+
+对于 y_hat = wx + b 的 MSE：
+
+```
 dMSE/dw = (2/n) * sum((y_hat - y) * x)
 dMSE/db = (2/n) * sum(y_hat - y)
-```更新规则如下：```
+```
+
+更新规则如下：
+
+```
 w = w - learning_rate * dMSE/dw
 b = b - learning_rate * dMSE/db
-```学习率控制步长。学习率过大，会越过最小值并发散；学习率过小，训练会耗时过久。典型的初始值包括 0.01、0.001 或 0.0001。
+```
+
+学习率控制步长。学习率过大，会越过最小值并发散；学习率过小，训练会耗时过久。典型的初始值包括 0.01、0.001 或 0.0001。
 
 ### 正规方程（闭式解）
 
-线性回归有一个直接求出最优权重、无需任何迭代的公式：```
+线性回归有一个直接求出最优权重、无需任何迭代的公式：
+
+```
 w = (X^T * X)^(-1) * X^T * y
-```该公式通过矩阵求逆一步解出 w，非常适合小型数据集。对于大型数据集（数百万行或数千个特征），通常更适合使用梯度下降，因为矩阵求逆相对于特征数的复杂度为 O(n^3)。
+```
+
+该公式通过矩阵求逆一步解出 w，非常适合小型数据集。对于大型数据集（数百万行或数千个特征），通常更适合使用梯度下降，因为矩阵求逆相对于特征数的复杂度为 O(n^3)。
 
 ### 多元线性回归
 
-当有多个特征时，模型变为：```
+当有多个特征时，模型变为：
+
+```
 y = w1*x1 + w2*x2 + ... + wn*xn + b
-```其余过程完全相同：MSE 仍是代价函数，梯度下降会同时更新所有权重。唯一的区别是，现在拟合的不再是一条直线，而是一个超平面。
+```
+
+其余过程完全相同：MSE 仍是代价函数，梯度下降会同时更新所有权重。唯一的区别是，现在拟合的不再是一条直线，而是一个超平面。
 
 此时特征缩放非常重要。如果一个特征的范围是 0 到 1，而另一个是 0 到 1,000,000，代价曲面会被拉长，梯度下降将难以收敛。训练前应将特征标准化（减去均值，再除以标准差）。
 
 ### 多项式回归
 
-如果关系不是线性的呢？你仍然可以通过创建多项式特征来使用线性回归：```
+如果关系不是线性的呢？你仍然可以通过创建多项式特征来使用线性回归：
+
+```
 y = w1*x + w2*x^2 + w3*x^3 + b
-```这仍然属于“线性”回归，因为模型对于权重（w1、w2、w3）仍是线性的，只不过使用了 x 的非线性特征。
+```
+
+这仍然属于“线性”回归，因为模型对于权重（w1、w2、w3）仍是线性的，只不过使用了 x 的非线性特征。
 
 次数更高的多项式可以拟合更复杂的曲线，但也有过拟合风险。一个 10 次多项式可以穿过包含 10 个点的数据集中的每个点，却可能在新数据上预测得很差。
 
 ### R 平方分数
 
-MSE 能告诉你误差有多大，但其数值取决于 y 的尺度。R 平方（R^2）提供了一个与尺度无关的衡量指标：```
+MSE 能告诉你误差有多大，但其数值取决于 y 的尺度。R 平方（R^2）提供了一个与尺度无关的衡量指标：
+
+```
 R^2 = 1 - (sum of squared residuals) / (sum of squared deviations from mean)
     = 1 - SS_res / SS_tot
 ```- R^2 = 1.0：预测完全正确
@@ -99,13 +135,23 @@ R^2 = 1 - (sum of squared residuals) / (sum of squared deviations from mean)
 
 ### 正则化预览（岭回归）
 
-当特征很多时，模型可能通过分配较大的权重而发生过拟合。岭回归（L2 正则化）会加入一个惩罚项：```
-Cost = MSE + lambda * sum(w_i^2)
-```惩罚项会抑制过大的权重。超参数 lambda 控制这种权衡：lambda 越大，权重越小，正则化程度越强。后续课程会深入讲解这一内容；现在只需知道它的存在及其作用。```figure
-linear-regression-fit
-```## 动手构建
+当特征很多时，模型可能通过分配较大的权重而发生过拟合。岭回归（L2 正则化）会加入一个惩罚项：
 
-### 第 1 步：生成样本数据```python
+```
+Cost = MSE + lambda * sum(w_i^2)
+```
+
+惩罚项会抑制过大的权重。超参数 lambda 控制这种权衡：lambda 越大，权重越小，正则化程度越强。后续课程会深入讲解这一内容；现在只需知道它的存在及其作用。
+
+```figure
+linear-regression-fit
+```
+
+## 动手构建
+
+### 第 1 步：生成样本数据
+
+```python
 import random
 import math
 
@@ -121,7 +167,11 @@ y = [TRUE_W * x + TRUE_B + random.gauss(0, 2.0) for x in X]
 print(f"Generated {N_SAMPLES} samples")
 print(f"True relationship: y = {TRUE_W}x + {TRUE_B} (+ noise)")
 print(f"First 5 points: {[(round(X[i], 2), round(y[i], 2)) for i in range(5)]}")
-```### 第 2 步：使用梯度下降从零实现线性回归```python
+```
+
+### 第 2 步：使用梯度下降从零实现线性回归
+
+```python
 class LinearRegression:
     def __init__(self, learning_rate=0.01):
         self.w = 0.0
@@ -170,7 +220,11 @@ model.fit(X, y, epochs=1000, print_every=200)
 print(f"\nLearned: y = {model.w:.4f}x + {model.b:.4f}")
 print(f"True:    y = {TRUE_W}x + {TRUE_B}")
 print(f"R-squared: {model.r_squared(X, y):.4f}")
-```### 第 3 步：正规方程（闭式解）```python
+```
+
+### 第 3 步：正规方程（闭式解）
+
+```python
 class LinearRegressionNormal:
     def __init__(self):
         self.w = 0.0
@@ -202,7 +256,11 @@ model_normal = LinearRegressionNormal()
 model_normal.fit(X, y)
 print(f"Learned: y = {model_normal.w:.4f}x + {model_normal.b:.4f}")
 print(f"R-squared: {model_normal.r_squared(X, y):.4f}")
-```### 第 4 步：多元线性回归```python
+```
+
+### 第 4 步：多元线性回归
+
+```python
 class MultipleLinearRegression:
     def __init__(self, n_features, learning_rate=0.01):
         self.weights = [0.0] * n_features
@@ -287,7 +345,11 @@ multi_model.fit(X_scaled, y_scaled, epochs=1000, print_every=200)
 print(f"\nWeights (standardized): {[round(w, 4) for w in multi_model.weights]}")
 print(f"Bias (standardized): {multi_model.bias:.4f}")
 print(f"R-squared: {multi_model.r_squared(X_scaled, y_scaled):.4f}")
-```### 第 5 步：多项式回归```python
+```
+
+### 第 5 步：多项式回归
+
+```python
 class PolynomialRegression:
     def __init__(self, degree, learning_rate=0.01):
         self.degree = degree
@@ -351,7 +413,11 @@ print(f"  R-squared: {poly5.r_squared(X_poly_norm, y_poly_norm):.4f}")
 
 print("\nDegree 2 fits the true curve well. Degree 5 fits training data slightly better")
 print("but risks overfitting on new data.")
-```### 第 6 步：岭回归（L2 正则化）```python
+```
+
+### 第 6 步：岭回归（L2 正则化）
+
+```python
 class RidgeRegression:
     def __init__(self, n_features, learning_rate=0.01, alpha=1.0):
         self.weights = [0.0] * n_features
@@ -392,9 +458,13 @@ ridge.fit(X_scaled, y_scaled, epochs=1000, print_every=200)
 print(f"\nRidge weights: {[round(w, 4) for w in ridge.weights]}")
 print(f"Plain weights: {[round(w, 4) for w in multi_model.weights]}")
 print("Ridge weights are smaller (shrunk toward zero) due to the L2 penalty.")
-```## 实际应用
+```
 
-现在使用 scikit-learn 完成同样的任务；在生产环境中你通常会实际使用它。```python
+## 实际应用
+
+现在使用 scikit-learn 完成同样的任务；在生产环境中你通常会实际使用它。
+
+```python
 from sklearn.linear_model import LinearRegression as SklearnLR
 from sklearn.linear_model import Ridge
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
@@ -434,7 +504,9 @@ ridge = Ridge(alpha=1.0)
 ridge.fit(X_train_scaled, y_train)
 print(f"Ridge R-squared: {r2_score(y_test, ridge.predict(X_test_scaled)):.4f}")
 print(f"Ridge coefficient: {ridge.coef_[0]:.4f}")
-```你的从零实现与 scikit-learn 会产生相同的结果。区别在于，scikit-learn 还处理了边界情况、数值稳定性和性能优化。生产环境使用库，从零实现则帮助你理解其中发生了什么。
+```
+
+你的从零实现与 scikit-learn 会产生相同的结果。区别在于，scikit-learn 还处理了边界情况、数值稳定性和性能优化。生产环境使用库，从零实现则帮助你理解其中发生了什么。
 
 ## 交付成果
 

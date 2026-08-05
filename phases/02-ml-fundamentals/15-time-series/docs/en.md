@@ -35,7 +35,9 @@
 - **不独立。** 今天的股价取决于昨天的。本周的销售额与上周的销售额相关。
 - **不独立同分布。** 分布会随时间变化。12月的销售额与3月的销售额看起来不同。
 
-这些违反是重大的。它们改变了你构建特征的方式、评估模型的方式，以及哪些算法是有效的。```mermaid
+这些违反是重大的。它们改变了你构建特征的方式、评估模型的方式，以及哪些算法是有效的。
+
+```mermaid
 flowchart LR
     subgraph IID["Standard ML (i.i.d.)"]
         direction TB
@@ -56,11 +58,15 @@ flowchart LR
     style T2 fill:#ffd
     style T3 fill:#ffd
     style T4 fill:#ffd
-```在标准的机器学习中，样本是可互换的。将它们打乱顺序不会改变任何东西。在时间序列中，顺序至关重要。打乱顺序会破坏信号。
+```
+
+在标准的机器学习中，样本是可互换的。将它们打乱顺序不会改变任何东西。在时间序列中，顺序至关重要。打乱顺序会破坏信号。
 
 ### 时间序列的组成部分
 
-每一个时间序列都是以下部分的组合：```mermaid
+每一个时间序列都是以下部分的组合：
+
+```mermaid
 flowchart TD
     A[Observed Time Series] --> B[Trend]
     A --> C[Seasonality]
@@ -81,9 +87,13 @@ flowchart TD
 
 **如何检查**: 计算窗口上的滚动均值和滚动标准差。如果它们漂移，说明时间序列是非稳定的。
 
-**如何修复**: 差分。不要对原始值进行建模，而是对连续值之间的变化进行建模：```
+**如何修复**: 差分。不要对原始值进行建模，而是对连续值之间的变化进行建模：
+
+```
 diff[t] = value[t] - value[t-1]
-```如果一轮差分后序列仍未平稳，可以再次进行差分（二阶差分）。大多数现实世界的序列最多只需要两轮差分即可。
+```
+
+如果一轮差分后序列仍未平稳，可以再次进行差分（二阶差分）。大多数现实世界的序列最多只需要两轮差分即可。
 
 **示例：**
 
@@ -134,7 +144,9 @@ diff[t] = value[t] - value[t-1]
 
 ### 前向验证
 
-这是本节课中最重要的概念。标准的k折交叉验证会随机分配样本到训练集和测试集。对于时间序列，这会泄露未来信息。```mermaid
+这是本节课中最重要的概念。标准的k折交叉验证会随机分配样本到训练集和测试集。对于时间序列，这会泄露未来信息。
+
+```mermaid
 flowchart TD
     subgraph WRONG["Random Split (WRONG)"]
         direction LR
@@ -222,7 +234,9 @@ ARIMA(p, d, q)结合了所有三个部分。你根据ACF/PACF分析或自动搜�
 
 `code/time_series.py`中的代码实现了从头开始的核心构建模块。
 
-### 滞后特征创建器```python
+### 滞后特征创建器
+
+```python
 def make_lag_features(series, n_lags):
     n = len(series)
     X = np.full((n, n_lags), np.nan)
@@ -230,9 +244,13 @@ def make_lag_features(series, n_lags):
         X[lag:, lag - 1] = series[:-lag]
     valid = ~np.isnan(X).any(axis=1)
     return X[valid], series[valid]
-```这将一个1D序列转换为一个特征矩阵，其中每一行的最后`n_lags`个值作为特征，当前值作为目标。
+```
 
-### 走向前交叉验证```python
+这将一个1D序列转换为一个特征矩阵，其中每一行的最后`n_lags`个值作为特征，当前值作为目标。
+
+### 走向前交叉验证
+
+```python
 def walk_forward_split(n_samples, n_splits=5, min_train=50):
     assert min_train < n_samples, "min_train must be less than n_samples"
     step = max(1, (n_samples - min_train) // n_splits)
@@ -242,11 +260,15 @@ def walk_forward_split(n_samples, n_splits=5, min_train=50):
         if train_end >= n_samples:
             break
         yield slice(0, train_end), slice(train_end, test_end)
-```每个分割确保训练数据严格在测试数据之前。随着每次折叠的进行，训练窗口会扩大。
+```
+
+每个分割确保训练数据严格在测试数据之前。随着每次折叠的进行，训练窗口会扩大。
 
 ### 简单的自回归模型
 
-一个纯粹的自回归模型只是对滞后特征进行线性回归：```python
+一个纯粹的自回归模型只是对滞后特征进行线性回归：
+
+```python
 class SimpleAR:
     def __init__(self, n_lags=5):
         self.n_lags = n_lags
@@ -261,7 +283,9 @@ class SimpleAR:
         self.bias = theta[0]
         self.weights = theta[1:]
         return self
-```这在概念上与第 02 课中的线性回归相同，但应用于同一变量的时间滞后版本。
+```
+
+这在概念上与第 02 课中的线性回归相同，但应用于同一变量的时间滞后版本。
 
 ### 稳态检查
 
@@ -957,7 +981,9 @@ This is conceptually identical to linear regression from Lesson 02, but applied 
 
 The code computes rolling statistics to visually and numerically assess stationarity:
 
- /no_think```python
+ /no_think
+
+```python
 def check_stationarity(series, window=50):
     rolling_mean = np.array([
         series[max(0, i - window):i].mean()
@@ -968,11 +994,15 @@ def check_stationarity(series, window=50):
         for i in range(1, len(series) + 1)
     ])
     return rolling_mean, rolling_std
-```如果滚动均值发生偏移或滚动标准差发生变化，则该序列是非平稳的。应用差分并再次检查。
+```
+
+如果滚动均值发生偏移或滚动标准差发生变化，则该序列是非平稳的。应用差分并再次检查。
 
 代码还通过比较序列的前半部分和后半部分来检查平稳性。如果均值差异超过半个标准差，或方差比超过2倍，则该序列会被标记为非平稳。
 
-### 自相关性```python
+### 自相关性
+
+```python
 def autocorrelation(series, max_lag=20):
     n = len(series)
     mean = series.mean()
@@ -982,9 +1012,13 @@ def autocorrelation(series, max_lag=20):
         cov = np.mean((series[:n-k] - mean) * (series[k:] - mean))
         acf[k] = cov / var if var > 0 else 0
     return acf
-```## 使用方法
+```
 
-使用 sklearn，你可以直接将滞后特征与任何回归器一起使用：```python
+## 使用方法
+
+使用 sklearn，你可以直接将滞后特征与任何回归器一起使用：
+
+```python
 from sklearn.linear_model import Ridge
 from sklearn.ensemble import GradientBoostingRegressor
 
@@ -994,17 +1028,25 @@ for train_idx, test_idx in walk_forward_split(len(X)):
     model = Ridge(alpha=1.0)
     model.fit(X[train_idx], y[train_idx])
     predictions = model.predict(X[test_idx])
-```对于 ARIMA，使用 statsmodels：```python
+```
+
+对于 ARIMA，使用 statsmodels：
+
+```python
 from statsmodels.tsa.arima.model import ARIMA
 
 model = ARIMA(train_series, order=(5, 1, 2))
 fitted = model.fit()
 forecast = fitted.forecast(steps=30)
-````time_series.py` 中的代码演示了这两种方法，并使用前向验证进行比较。
+```
+
+`time_series.py` 中的代码演示了这两种方法，并使用前向验证进行比较。
 
 ### sklearn 时间序列分割
 
-sklearn 提供了 `TimeSeriesSplit`，它实现了前向验证：```python
+sklearn 提供了 `TimeSeriesSplit`，它实现了前向验证：
+
+```python
 from sklearn.model_selection import TimeSeriesSplit
 
 tscv = TimeSeriesSplit(n_splits=5)
@@ -1013,12 +1055,18 @@ for train_index, test_index in tscv.split(X):
     y_train, y_test = y[train_index], y[test_index]
     model.fit(X_train, y_train)
     score = model.score(X_test, y_test)
-```这等同于我们从零开始实现的 `walk_forward_split`，但已集成到 sklearn 的交叉验证框架中。你可以用它与 `cross_val_score` 一起使用：```python
+```
+
+这等同于我们从零开始实现的 `walk_forward_split`，但已集成到 sklearn 的交叉验证框架中。你可以用它与 `cross_val_score` 一起使用：
+
+```python
 from sklearn.model_selection import cross_val_score
 
 scores = cross_val_score(model, X, y, cv=TimeSeriesSplit(n_splits=5))
 print(f"Mean score: {scores.mean():.4f} +/- {scores.std():.4f}")
-```### 评估指标
+```
+
+### 评估指标
 
 时间序列预测使用回归指标，但带有时间感知的上下文：
 

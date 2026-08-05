@@ -24,7 +24,9 @@
 
 ### 变换作为矩阵
 
-二维中的每一个线性变换都可以写成一个 2x2 矩阵。该矩阵告诉你基向量 [1, 0] 和 [0, 1] 最终会到达哪里。其他所有内容都由此推导而来。```mermaid
+二维中的每一个线性变换都可以写成一个 2x2 矩阵。该矩阵告诉你基向量 [1, 0] 和 [0, 1] 最终会到达哪里。其他所有内容都由此推导而来。
+
+```mermaid
 graph LR
     subgraph Before["Standard Basis"]
         e1["e1 = [1, 0] (along x)"]
@@ -39,9 +41,13 @@ graph LR
     end
     e1 --> M --> e1p
     e2 --> M --> e2p
-```### 旋转
+```
 
-以角度 theta 进行的 2D 旋转保持距离和角度不变。它会沿着圆弧移动每个点。```mermaid
+### 旋转
+
+以角度 theta 进行的 2D 旋转保持距离和角度不变。它会沿着圆弧移动每个点。
+
+```mermaid
 graph LR
     subgraph Before["Before Rotation"]
         A["A(2, 1)"]
@@ -56,7 +62,11 @@ graph LR
     end
     A --> R --> Ap
     B --> R --> Bp
-```在3D中，你围绕一个轴进行旋转。每个轴都有自己的旋转矩阵：```
+```
+
+在3D中，你围绕一个轴进行旋转。每个轴都有自己的旋转矩阵：
+
+```
 Rz(theta) = | cos  -sin  0 |     Rotate around z-axis
             | sin   cos  0 |     (x-y plane spins, z stays)
             |  0     0   1 |
@@ -68,9 +78,13 @@ Rx(theta) = | 1   0     0    |   Rotate around x-axis
 Ry(theta) = |  cos  0  sin |     Rotate around y-axis
             |   0   1   0  |     (x-z plane spins, y stays)
             | -sin  0  cos |
-```### 缩放
+```
 
-缩放沿每个轴独立地进行拉伸或压缩。```mermaid
+### 缩放
+
+缩放沿每个轴独立地进行拉伸或压缩。
+
+```mermaid
 graph LR
     subgraph Before["Before Scaling"]
         A["A(2, 1)"]
@@ -85,9 +99,13 @@ graph LR
     end
     A --> S --> Ap
     B --> S --> Bp
-```### 剪切
+```
 
-剪切会倾斜一个轴，而保持另一个轴固定。它会将矩形变为平行四边形。```mermaid
+### 剪切
+
+剪切会倾斜一个轴，而保持另一个轴固定。它会将矩形变为平行四边形。
+
+```mermaid
 graph LR
     subgraph Before["Before Shear"]
         A["A(1, 0)"]
@@ -102,13 +120,17 @@ graph LR
     end
     A --> Sh --> Ap
     B --> Sh --> Bp
-```剪切矩阵：
+```
+
+剪切矩阵：
 - `Shx = [[1, k], [0, 1]]` 将 x 偏移 k * y
 - `Shy = [[1, 0], [k, 1]]` 将 y 偏移 k * x
 
 ### 反射
 
-反射将点沿轴或线镜像。```mermaid
+反射将点沿轴或线镜像。
+
+```mermaid
 graph LR
     subgraph Before["Before Reflection"]
         A["A(2, 1)"]
@@ -120,29 +142,41 @@ graph LR
         Ap["A'(-2, 1)"]
     end
     A --> R --> Ap
-```反射矩阵：
+```
+
+反射矩阵：
 - 沿 y 轴反射：`[[-1, 0], [0, 1]]`
 - 沿 x 轴反射：`[[1, 0], [0, -1]]`
 
 ### 组合：变换的串联
 
-先应用变换 A，再应用变换 B，等同于将它们的矩阵相乘：`result = B @ A @ point`。顺序是有影响的。先旋转再缩放的结果与先缩放再旋转的结果不同。```mermaid
+先应用变换 A，再应用变换 B，等同于将它们的矩阵相乘：`result = B @ A @ point`。顺序是有影响的。先旋转再缩放的结果与先缩放再旋转的结果不同。
+
+```mermaid
 graph LR
     subgraph Path1["Rotate 90 then Scale (2, 0.5)"]
         P1["(1, 0)"] -->|"Rotate 90"| P2["(0, 1)"] -->|"Scale"| P3["(0, 0.5)"]
     end
-```组成：`S @ R = [[0, -2], [0.5, 0]]````mermaid
+```
+
+组成：`S @ R = [[0, -2], [0.5, 0]]`
+
+```mermaid
 graph LR
     subgraph Path2["Scale (2, 0.5) then Rotate 90"]
         Q1["(1, 0)"] -->|"Scale"| Q2["(2, 0)"] -->|"Rotate 90"| Q3["(0, 2)"]
     end
-```生成时间：`R @ S = [[0, -0.5], [2, 0]]`
+```
+
+生成时间：`R @ S = [[0, -0.5], [2, 0]]`
 
 不同结果。矩阵乘法不满足交换律。
 
 ### 特征值和特征向量
 
-大多数向量在被矩阵作用后方向会发生改变。特征向量是特殊的：矩阵只会对它们进行缩放，而不会旋转它们。缩放的比例就是特征值。```
+大多数向量在被矩阵作用后方向会发生改变。特征向量是特殊的：矩阵只会对它们进行缩放，而不会旋转它们。缩放的比例就是特征值。
+
+```
 A @ v = lambda * v
 
 v is the eigenvector (direction that survives)
@@ -156,11 +190,15 @@ Eigenvector [1, 1] with eigenvalue 3:
 
 Eigenvector [1, -1] with eigenvalue 1:
   A @ [1,-1] = [1, -1] = 1 * [1, -1]  (same direction, unchanged)
-```该矩阵沿 [1, 1] 方向将空间拉伸了 3 倍，并保持 [1, -1] 不变。其他所有方向都是这两个方向的混合。
+```
+
+该矩阵沿 [1, 1] 方向将空间拉伸了 3 倍，并保持 [1, -1] 不变。其他所有方向都是这两个方向的混合。
 
 ### 特征分解
 
-如果一个矩阵有 n 个线性无关的特征向量，它可以被分解为：```
+如果一个矩阵有 n 个线性无关的特征向量，它可以被分解为：
+
+```
 A = V @ D @ V^(-1)
 
 V = matrix whose columns are eigenvectors
@@ -168,7 +206,9 @@ D = diagonal matrix of eigenvalues
 V^(-1) = inverse of V
 
 This says: rotate into eigenvector coordinates, scale along each axis, rotate back.
-```### 为什么特征值重要
+```
+
+### 为什么特征值重要
 
 **主成分分析（PCA）**。协方差矩阵的特征向量是主成分。特征值告诉你每个成分能捕捉到多少方差。按特征值排序，保留前k个，你就实现了降维。
 
@@ -178,7 +218,9 @@ This says: rotate into eigenvector coordinates, scale along each axis, rotate ba
 
 ### 行列式作为体积缩放因子
 
-变换矩阵的行列式告诉你它如何缩放面积（二维）或体积（三维）。```
+变换矩阵的行列式告诉你它如何缩放面积（二维）或体积（三维）。
+
+```
 det = 1:   area preserved (rotation)
 det = 2:   area doubled
 det = 0:   space crushed to lower dimension (singular)
@@ -192,9 +234,13 @@ det = -1:  area preserved but orientation flipped (reflection)
 
 ```figure
 matrix-transform
-```## 构建它
+```
 
-### 第一步：从零开始构建变换矩阵（Python）```python
+## 构建它
+
+### 第一步：从零开始构建变换矩阵（Python）
+
+```python
 import math
 
 def rotation_2d(theta):
@@ -241,7 +287,11 @@ print(f"Shear (1,1) kx=1: ({sheared[0]:.1f}, {sheared[1]:.1f})")
 
 reflected = mat_vec_mul(reflection_y(), [2.0, 1.0])
 print(f"Reflect (2,1) across y: ({reflected[0]:.1f}, {reflected[1]:.1f})")
-```### 步骤 2：变换的组成```python
+```
+
+### 步骤 2：变换的组成
+
+```python
 R = rotation_2d(math.pi / 2)
 S = scaling_2d(2, 0.5)
 
@@ -255,9 +305,13 @@ result2 = mat_vec_mul(scale_then_rotate, point)
 print(f"Rotate 90 then scale: ({result1[0]:.2f}, {result1[1]:.2f})")
 print(f"Scale then rotate 90: ({result2[0]:.2f}, {result2[1]:.2f})")
 print(f"Same? {result1 == result2}")
-```### 步骤 3：从零开始计算特征值（2x2）
+```
 
-对于一个 2x2 矩阵 `[[a, b], [c, d]]`，特征值通过求解特征方程 `lambda^2 - (a+d)*lambda + (ad - bc) = 0` 来得到。```python
+### 步骤 3：从零开始计算特征值（2x2）
+
+对于一个 2x2 矩阵 `[[a, b], [c, d]]`，特征值通过求解特征方程 `lambda^2 - (a+d)*lambda + (ad - bc) = 0` 来得到。
+
+```python
 def eigenvalues_2x2(matrix):
     a, b = matrix[0]
     c, d = matrix[1]
@@ -298,7 +352,11 @@ for val in vals:
     print(f"  lambda={val:.1f}, v={[round(x,4) for x in vec]}")
     print(f"    A@v = {[round(x,4) for x in result]}")
     print(f"    l*v = {[round(x,4) for x in scaled]}")
-```### 步骤 4：行列式作为体积缩放因子```python
+```
+
+### 步骤 4：行列式作为体积缩放因子
+
+```python
 def det_2x2(matrix):
     return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
 
@@ -310,9 +368,13 @@ print(f"det(reflect y)   = {det_2x2(reflection_y()):.1f}")
 singular = [[1, 2], [2, 4]]
 print(f"det(singular)     = {det_2x2(singular):.1f}")
 print("Singular: columns are proportional, space collapses to a line.")
-```## 使用它
+```
 
-NumPy 通过优化的例程处理所有这些。```python
+## 使用它
+
+NumPy 通过优化的例程处理所有这些。
+
+```python
 import numpy as np
 
 theta = np.pi / 4
@@ -347,7 +409,11 @@ reconstructed = V @ D @ np.linalg.inv(V)
 print(f"\nEigendecomposition A = V @ D @ V^-1:")
 print(f"Original:\n{B}")
 print(f"Reconstructed:\n{reconstructed}")
-```### 使用 NumPy 进行 3D 旋转```python
+```
+
+### 使用 NumPy 进行 3D 旋转
+
+```python
 def rotation_3d_z(theta):
     c, s = np.cos(theta), np.sin(theta)
     return np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
@@ -363,7 +429,9 @@ rotated_x = rotation_3d_x(np.pi / 2) @ point_3d
 print(f"\n3D point: {point_3d}")
 print(f"Rotate 90 around z: {np.round(rotated_z, 4)}")
 print(f"Rotate 90 around x: {np.round(rotated_x, 4)}")
-```## 发布它
+```
+
+## 发布它
 
 本课构建了主成分分析（PCA，阶段2）和神经网络权重分析的几何基础。此处构建的特征值/特征向量代码是生产级机器学习系统中用于降维、谱聚类和稳定性分析的相同算法。
 

@@ -34,7 +34,9 @@
 
 **隐藏层** —— 这里才是工作的核心。每个神经元都接收前一层的所有输出，应用权重和偏置，然后将结果通过激活函数进行传递。“隐藏”是因为这些值在训练数据中永远无法直接看到。
 
-**输出层** —— 最终的答案。对于二分类，一个带有sigmoid函数的神经元；对于多分类，每个类别一个神经元。```mermaid
+**输出层** —— 最终的答案。对于二分类，一个带有sigmoid函数的神经元；对于多分类，每个类别一个神经元。
+
+```mermaid
 graph LR
     subgraph Input["Input Layer"]
         x1["x1"]
@@ -57,7 +59,9 @@ graph LR
     h1 --> y
     h2 --> y
     h3 --> y
-```这是一个 2-3-1 网络。两个输入，三个隐藏神经元，一个输出。每条连接都携带一个权重。每个神经元（除了输入）都携带一个偏置。
+```
+
+这是一个 2-3-1 网络。两个输入，三个隐藏神经元，一个输出。每条连接都携带一个权重。每个神经元（除了输入）都携带一个偏置。
 
 每一层都会产生一个称为隐藏状态的数字向量。对于文本，隐藏状态会增加维度——将一个词编码为 768 个数字以捕捉语义信息。对于图像，它们会减少维度——将数百万个像素压缩成可管理的表示形式。隐藏状态是学习发生的地方。
 
@@ -69,13 +73,17 @@ graph LR
 2. 将所有乘积相加并加上偏置
 3. 将总和通过一个激活函数
 
-目前，激活函数是 sigmoid：```
+目前，激活函数是 sigmoid：
+
+```
 sigmoid(z) = 1 / (1 + e^(-z))
 ```Sigmoid 将任何数字压缩到范围 (0, 1) 内。较大的正输入会推向 1。较大的负输入会推向 0。零映射到 0.5。这种平滑的曲线使得学习成为可能 —— 与感知机的硬阈值不同，Sigmoid 在任何地方都有梯度。
 
 ### 前向传播：数据如何流动
 
-前向传播将输入数据逐层通过网络，直到到达输出。在前向传播过程中不会发生学习。它纯粹是计算：相乘、相加、激活、重复。```mermaid
+前向传播将输入数据逐层通过网络，直到到达输出。在前向传播过程中不会发生学习。它纯粹是计算：相乘、相加、激活、重复。
+
+```mermaid
 graph TD
     X["Input: [x1, x2]"] --> WH["Multiply by Weight Matrix W1 (2x3)"]
     WH --> BH["Add Bias Vector b1 (3,)"]
@@ -85,10 +93,16 @@ graph TD
     WO --> BO["Add Bias Vector b2 (1,)"]
     BO --> AO["Apply sigmoid"]
     AO --> Y["Output: y"]
-```在每一层，依次发生三个操作：```
+```
+
+在每一层，依次发生三个操作：
+
+```
 z = W * input + b       (linear transformation)
 a = sigmoid(z)           (activation)
-```一层的输出成为下一层的输入。这就是整个前向传播过程。
+```
+
+一层的输出成为下一层的输入。这就是整个前向传播过程。
 
 ### 矩阵维度
 
@@ -110,7 +124,9 @@ a = sigmoid(z)           (activation)
 
 这并不意味着单个隐藏层总是最优的。这意味着从理论上讲，这种架构是可行的。在实践中，深度网络（更多层，每层更少的神经元）使用远少于浅而宽网络的总参数数就能学习到相同的函数。这就是深度学习之所以有效的原因。
 
-直觉：隐藏层中的每个神经元学习一个“凸起”或特征。足够多的凸起放置在正确的位置，可以逼近任何平滑曲线。更多的神经元，更多的凸起，更好的逼近。```mermaid
+直觉：隐藏层中的每个神经元学习一个“凸起”或特征。足够多的凸起放置在正确的位置，可以逼近任何平滑曲线。更多的神经元，更多的凸起，更好的逼近。
+
+```mermaid
 graph LR
     subgraph FewNeurons["4 Hidden Neurons"]
         A["Rough approximation"]
@@ -122,27 +138,39 @@ graph LR
         C["Near-perfect fit"]
     end
     FewNeurons --> MoreNeurons --> ManyNeurons
-```### 可组合性
+```
 
-神经网络是可组合的。你可以将它们堆叠、串联，或者并行运行。Whisper 模型使用一个编码器网络来处理音频，使用一个独立的解码器网络来生成文本。现代的大型语言模型（LLMs）是仅解码器的。BERT 是仅编码器的。T5 是编码器-解码器结构的。架构的选择决定了模型能做什么。```figure
+### 可组合性
+
+神经网络是可组合的。你可以将它们堆叠、串联，或者并行运行。Whisper 模型使用一个编码器网络来处理音频，使用一个独立的解码器网络来生成文本。现代的大型语言模型（LLMs）是仅解码器的。BERT 是仅编码器的。T5 是编码器-解码器结构的。架构的选择决定了模型能做什么。
+
+```figure
 mlp-forward
-```## 构建它
+```
+
+## 构建它
 
 纯 Python。不使用 numpy。所有矩阵运算都从零开始编写。
 
-### 步骤 1：Sigmoid 激活函数```python
+### 步骤 1：Sigmoid 激活函数
+
+```python
 import math
 
 def sigmoid(x):
     x = max(-500.0, min(500.0, x))
     return 1.0 / (1.0 + math.exp(-x))
-```将值限制在 [-500, 500] 范围内可以防止溢出。`math.exp(500)` 是一个大但有限的数值。`math.exp(1000)` 是无穷大。
+```
+
+将值限制在 [-500, 500] 范围内可以防止溢出。`math.exp(500)` 是一个大但有限的数值。`math.exp(1000)` 是无穷大。
 
 ### 第二步：层类
 
 在所有深度学习操作中，最重要的操作是矩阵乘法。每一层、每一个注意力头、每一次前向传播——归根结底都是矩阵乘法。一个线性层接受一个输入向量，将其乘以一个权重矩阵，并加上一个偏置向量：y = Wx + b。这个单一的方程占神经网络计算量的 90%。
 
-一个层保存一个权重矩阵和一个偏置向量。它的前向方法接受一个输入向量，并返回激活后的输出。```python
+一个层保存一个权重矩阵和一个偏置向量。它的前向方法接受一个输入向量，并返回激活后的输出。
+
+```python
 class Layer:
     def __init__(self, n_inputs, n_neurons, weights=None, biases=None):
         if weights is not None:
@@ -168,11 +196,15 @@ class Layer:
             z += self.biases[neuron_idx]
             self.last_output.append(sigmoid(z))
         return self.last_output
-```权重矩阵的形状为 (n_neurons, n_inputs)。每一行代表一个神经元在所有输入上的权重。前向方法遍历每个神经元，计算加权和加上偏置，应用sigmoid函数，并收集结果。
+```
+
+权重矩阵的形状为 (n_neurons, n_inputs)。每一行代表一个神经元在所有输入上的权重。前向方法遍历每个神经元，计算加权和加上偏置，应用sigmoid函数，并收集结果。
 
 ### 步骤3：网络类
 
-网络是由多个层组成的列表。前向传播将它们串联起来：第k层的输出作为第k+1层的输入。```python
+网络是由多个层组成的列表。前向传播将它们串联起来：第k层的输出作为第k+1层的输入。
+
+```python
 class Network:
     def __init__(self, layers):
         self.layers = layers
@@ -182,11 +214,15 @@ class Network:
         for layer in self.layers:
             current = layer.forward(current)
         return current
-```这就是整个前向传播过程。四行逻辑。数据输入，流经每一层，从另一侧输出。
+```
+
+这就是整个前向传播过程。四行逻辑。数据输入，流经每一层，从另一侧输出。
 
 ### 第4步：使用手动调整的权重进行异或（XOR）
 
-在第01课中，我们通过组合或（OR）、与非（NAND）和与（AND）感知器解决了异或（XOR）问题。现在用我们的Layer类和Network类完成同样的事情。2-2-1的架构：两个输入，两个隐藏神经元，一个输出。```python
+在第01课中，我们通过组合或（OR）、与非（NAND）和与（AND）感知器解决了异或（XOR）问题。现在用我们的Layer类和Network类完成同样的事情。2-2-1的架构：两个输入，两个隐藏神经元，一个输出。
+
+```python
 hidden = Layer(
     n_inputs=2,
     n_neurons=2,
@@ -214,11 +250,15 @@ for inputs, expected in xor_data:
     result = xor_net.forward(inputs)
     predicted = 1 if result[0] >= 0.5 else 0
     print(f"  {inputs} -> {result[0]:.6f} (rounded: {predicted}, expected: {expected})")
-```大权重（20, -20）使 sigmoid 函数表现得像一个阶跃函数。第一个隐藏神经元近似 OR 运算。第二个近似 NAND 运算。输出神经元将它们组合成 AND 运算，也就是 XOR 运算。
+```
+
+大权重（20, -20）使 sigmoid 函数表现得像一个阶跃函数。第一个隐藏神经元近似 OR 运算。第二个近似 NAND 运算。输出神经元将它们组合成 AND 运算，也就是 XOR 运算。
 
 ### 步骤 5：圆分类
 
-一个更难的问题：将二维点分类为以原点为中心、半径为 0.5 的圆的内部或外部。这需要一个弯曲的决策边界——单个感知机无法实现。```python
+一个更难的问题：将二维点分类为以原点为中心、半径为 0.5 的圆的内部或外部。这需要一个弯曲的决策边界——单个感知机无法实现。
+
+```python
 import random
 import math
 
@@ -235,7 +275,11 @@ circle_net = Network([
     Layer(n_inputs=2, n_neurons=8),
     Layer(n_inputs=8, n_neurons=1),
 ])
-```使用随机权重时，网络将无法很好地进行分类。但正向传播仍然可以运行。这一点很重要 —— 正向传播只是计算。学习合适的权重是反向传播，将在第 03 课中讲解。```python
+```
+
+使用随机权重时，网络将无法很好地进行分类。但正向传播仍然可以运行。这一点很重要 —— 正向传播只是计算。学习合适的权重是反向传播，将在第 03 课中讲解。
+
+```python
 correct = 0
 for inputs, expected in data:
     result = circle_net.forward(inputs)
@@ -244,11 +288,15 @@ for inputs, expected in data:
         correct += 1
 
 print(f"Accuracy with random weights: {correct}/{len(data)} ({100*correct/len(data):.1f}%)")
-```随机权重的准确性很差 -- 通常甚至不如猜测多数类。经过训练（第 03 课）后，使用相同架构但包含 8 个隐藏神经元的模型将绘制出一条曲线边界，将内部与外部分隔开。
+```
+
+随机权重的准确性很差 -- 通常甚至不如猜测多数类。经过训练（第 03 课）后，使用相同架构但包含 8 个隐藏神经元的模型将绘制出一条曲线边界，将内部与外部分隔开。
 
 ## 使用方法
 
-PyTorch 用四行代码即可完成上述所有操作：```python
+PyTorch 用四行代码即可完成上述所有操作：
+
+```python
 import torch
 import torch.nn as nn
 
@@ -262,7 +310,9 @@ model = nn.Sequential(
 x = torch.tensor([[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])
 output = model(x)
 print(output)
-````nn.Linear(2, 8)` 是你的 Layer 类：形状为 (8, 2) 的权重矩阵，形状为 (8,) 的偏置向量。`nn.Sigmoid()` 是你的 sigmoid 函数，按元素应用。`nn.Sequential` 是你的 Network 类：按顺序链接各层。
+```
+
+`nn.Linear(2, 8)` 是你的 Layer 类：形状为 (8, 2) 的权重矩阵，形状为 (8,) 的偏置向量。`nn.Sigmoid()` 是你的 sigmoid 函数，按元素应用。`nn.Sequential` 是你的 Network 类：按顺序链接各层。
 
 区别在于速度和规模。PyTorch 运行在 GPU 上，可以处理数百万样本的批次，并自动计算反向传播所需的梯度。但前向传播的逻辑与你刚刚从零开始构建的一样。
 

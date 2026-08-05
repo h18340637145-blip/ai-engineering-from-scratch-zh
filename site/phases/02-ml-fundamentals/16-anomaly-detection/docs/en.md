@@ -34,7 +34,9 @@
 - **上下文异常。** 给定其上下文，一个数据点是不寻常的。90度的温度在夏天是正常的，在冬天是异常的。相同的值，不同的上下文。
 - **集体异常。** 一组数据点作为一个整体是不寻常的，即使每个单独的数据点可能是正常的。五次登录失败是正常的。连续五十次是暴力破解攻击。
 
-大多数方法检测点异常。上下文异常需要时间或位置特征。集体异常需要序列感知方法。```mermaid
+大多数方法检测点异常。上下文异常需要时间或位置特征。集体异常需要序列感知方法。
+
+```mermaid
 flowchart TD
     A[Anomaly Types] --> B[Point Anomaly]
     A --> C[Contextual Anomaly]
@@ -47,7 +49,9 @@ flowchart TD
     style B fill:#fdd,stroke:#333
     style C fill:#ffd,stroke:#333
     style D fill:#fdf,stroke:#333
-```### 无监督框架
+```
+
+### 无监督框架
 
 在标准分类中，两类数据都有标签。在异常检测中，通常有以下三种情况中的一种：
 
@@ -78,10 +82,14 @@ flowchart TD
 
 ### Z-Score 方法
 
-最简单的方法。计算每个特征的均值和标准差。标记任何距离均值超过 k 个标准差的点。```text
+最简单的方法。计算每个特征的均值和标准差。标记任何距离均值超过 k 个标准差的点。
+
+```text
 z_score = (x - mean) / std
 anomaly if |z_score| > threshold
-```默认阈值为 3.0（在高斯分布中，99.7% 的正常数据落在 3 个标准差范围内）。
+```
+
+默认阈值为 3.0（在高斯分布中，99.7% 的正常数据落在 3 个标准差范围内）。
 
 **优点：** 简单。快速。可解释（“这个值与正常值相差 4.5 个标准差”）。
 
@@ -93,14 +101,18 @@ anomaly if |z_score| > threshold
 
 ### IQR 方法
 
-比 Z 分数更稳健。使用四分位距而不是均值和标准差。```
+比 Z 分数更稳健。使用四分位距而不是均值和标准差。
+
+```
 Q1 = 25th percentile
 Q3 = 75th percentile
 IQR = Q3 - Q1
 lower_bound = Q1 - factor * IQR
 upper_bound = Q3 + factor * IQR
 anomaly if x < lower_bound or x > upper_bound
-```默认因子为 1.5。
+```
+
+默认因子为 1.5。
 
 **优点：** 对异常值具有鲁棒性（百分位数不受极端值影响）。适用于偏态分布。不需要正态性假设。
 
@@ -110,7 +122,9 @@ anomaly if x < lower_bound or x > upper_bound
 
 ### 隔离森林
 
-关键洞察：异常值数量少且不同。在对数据进行随机划分时，异常值更容易被隔离——它们需要更少的随机分割即可与其余数据分离。```mermaid
+关键洞察：异常值数量少且不同。在对数据进行随机划分时，异常值更容易被隔离——它们需要更少的随机分割即可与其余数据分离。
+
+```mermaid
 flowchart TD
     A[All Data Points] --> B{Random Feature + Random Split}
     B --> C[Left Partition]
@@ -130,9 +144,13 @@ flowchart TD
 
 **为什么有效：** 正常点位于密集区域。需要许多随机分割才能将一个点与其邻居隔离。异常点位于稀疏区域。只需要一两个随机分割即可将它们隔离。
 
-异常分数基于所有树中的平均路径长度，通过随机二叉搜索树的期望路径长度进行归一化：```
+异常分数基于所有树中的平均路径长度，通过随机二叉搜索树的期望路径长度进行归一化：
+
+```
 score(x) = 2^(-average_path_length(x) / c(n))
-```其中 `c(n)` 是 n 个样本的预期路径长度。分数接近 1 表示异常。分数接近 0.5 表示正常。分数接近 0 表示非常正常（处于密集簇的深处）。
+```
+
+其中 `c(n)` 是 n 个样本的预期路径长度。分数接近 1 表示异常。分数接近 0.5 表示正常。分数接近 0 表示非常正常（处于密集簇的深处）。
 
 **优点：** 不需要分布假设。适用于高维数据。扩展性好（样本数量呈次线性增长，因为每棵树使用的是子样本）。可以处理混合特征类型。
 
@@ -179,7 +197,9 @@ LOF 比较一个点周围的局部密度与周围邻居的密度。一个点如�
 
 - **极端类别不平衡。** 当异常点仅占 0.1% 时，将所有数据预测为“正常”可以获得 99.9% 的准确率。准确率在这种情况下毫无意义。
 - **AUROC 有误导性。** 在严重不平衡的情况下，即使模型在实际阈值下漏掉大多数异常点，AUROC 也可能看起来很好。
-- **更好的指标：** Precision@k（在标记的前 k 个项目中，有多少是真正的异常），AUPRC（精确率-召回率曲线下的面积），以及在固定假阳性率下的召回率。```mermaid
+- **更好的指标：** Precision@k（在标记的前 k 个项目中，有多少是真正的异常），AUPRC（精确率-召回率曲线下的面积），以及在固定假阳性率下的召回率。
+
+```mermaid
 flowchart LR
     A[Raw Data] --> B[Train on Normal Data Only]
     B --> C[Score All Test Data]
@@ -189,7 +209,9 @@ flowchart LR
 
     style A fill:#f9f,stroke:#333
     style F fill:#9f9,stroke:#333
-```### 异常检测流程
+```
+
+### 异常检测流程
 
 在实践中，异常检测遵循以下工作流程：
 
@@ -207,16 +229,22 @@ flowchart LR
 
 在 `code/anomaly_detection.py` 中的代码实现了 Z 分数、IQR 和孤立森林算法。
 
-### Z 分数检测器```python
+### Z 分数检测器
+
+```python
 def zscore_detect(X, threshold=3.0):
     mean = X.mean(axis=0)
     std = X.std(axis=0)
     std[std == 0] = 1.0
     z = np.abs((X - mean) / std)
     return z.max(axis=1) > threshold
-```简单且向量化。如果任何特征超过阈值，则标记该点。
+```
 
-### IQR 检测器```python
+简单且向量化。如果任何特征超过阈值，则标记该点。
+
+### IQR 检测器
+
+```python
 def iqr_detect(X, factor=1.5):
     q1 = np.percentile(X, 25, axis=0)
     q3 = np.percentile(X, 75, axis=0)
@@ -226,9 +254,13 @@ def iqr_detect(X, factor=1.5):
     upper = q3 + factor * iqr
     outside = (X < lower) | (X > upper)
     return outside.any(axis=1)
-```### 从零开始的孤立森林
+```
 
-从零开始的实现构建了随机划分特征空间的孤立树：```python
+### 从零开始的孤立森林
+
+从零开始的实现构建了随机划分特征空间的孤立树：
+
+```python
 class IsolationTree:
     def __init__(self, max_depth):
         self.max_depth = max_depth
@@ -252,7 +284,9 @@ class IsolationTree:
         self.left = IsolationTree(self.max_depth).fit(X[left_mask], depth + 1)
         self.right = IsolationTree(self.max_depth).fit(X[~left_mask], depth + 1)
         return self
-```隔离一个点的路径长度决定了它的异常分数。更短的路径意味着更异常。
+```
+
+隔离一个点的路径长度决定了它的异常分数。更短的路径意味着更异常。
 
 `IsolationForest` 类封装了多个树：
 
@@ -262,7 +296,9 @@ class IsolationTree:
 
 隔离一个点的路径长度决定了它的异常分数。更短的路径意味着更异常。
 
-`IsolationForest` 类封装了多个树：```python
+`IsolationForest` 类封装了多个树：
+
+```python
 class IsolationForest:
     def __init__(self, n_estimators=100, max_samples=256, seed=42):
         self.n_estimators = n_estimators
@@ -281,7 +317,9 @@ class IsolationForest:
         avg_path = average path length across all trees
         scores = 2.0 ** (-avg_path / c(max_samples))
         return scores
-```归一化因子 `c(n)` 是在具有 n 个元素的二叉搜索树中，一次不成功搜索的预期路径长度。它等于 `2 * H(n-1) - 2*(n-1)/n`，其中 `H` 是调和数。这种归一化确保了不同大小的数据集之间的分数可以进行比较。
+```
+
+归一化因子 `c(n)` 是在具有 n 个元素的二叉搜索树中，一次不成功搜索的预期路径长度。它等于 `2 * H(n-1) - 2*(n-1)/n`，其中 `H` 是调和数。这种归一化确保了不同大小的数据集之间的分数可以进行比较。
 
 ### 演示场景
 
@@ -295,7 +333,9 @@ class IsolationForest:
 
 ## 使用方法
 
-使用 sklearn（使用库实现，而不是从零开始编写）：```python
+使用 sklearn（使用库实现，而不是从零开始编写）：
+
+```python
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 
@@ -306,26 +346,36 @@ predictions = iso.predict(X_test)
 lof = LocalOutlierFactor(n_neighbors=20, contamination=0.05, novelty=True)
 lof.fit(X_train)
 predictions = lof.predict(X_test)
-```注意 `contamination` 设置预期的异常比例。正确设置它很重要 -- 太低会遗漏异常，太高会产生误报。
+```
+
+注意 `contamination` 设置预期的异常比例。正确设置它很重要 -- 太低会遗漏异常，太高会产生误报。
 
 `anomaly_detection.py` 中的代码将从零开始的实现与 sklearn 在相同数据上的表现进行比较。
 
 ### sklearn 污染参数
 
-sklearn 中的 `contamination` 参数决定了将连续的异常分数转换为二进制预测的阈值。它不会改变底层的分数。```python
+sklearn 中的 `contamination` 参数决定了将连续的异常分数转换为二进制预测的阈值。它不会改变底层的分数。
+
+```python
 iso_5 = IsolationForest(contamination=0.05)
 iso_10 = IsolationForest(contamination=0.10)
-```两者生成的异常分数相同。但 `iso_5` 标记前 5% 的数据，而 `iso_10` 标记前 10% 的数据。如果你不知道真实的异常率（通常你都不知道），请将 contamination 设置为 "auto"，并直接使用原始分数进行处理。根据误报和漏报之间的成本权衡，设置你自己的阈值。
+```
+
+两者生成的异常分数相同。但 `iso_5` 标记前 5% 的数据，而 `iso_10` 标记前 10% 的数据。如果你不知道真实的异常率（通常你都不知道），请将 contamination 设置为 "auto"，并直接使用原始分数进行处理。根据误报和漏报之间的成本权衡，设置你自己的阈值。
 
 ### One-Class SVM
 
-另一个值得了解的无监督异常检测器。One-Class SVM 在高维特征空间中（使用核技巧）为正常数据拟合一个边界。```python
+另一个值得了解的无监督异常检测器。One-Class SVM 在高维特征空间中（使用核技巧）为正常数据拟合一个边界。
+
+```python
 from sklearn.svm import OneClassSVM
 
 oc_svm = OneClassSVM(kernel="rbf", gamma="auto", nu=0.05)
 oc_svm.fit(X_train)
 predictions = oc_svm.predict(X_test)
-````nu` 参数近似表示异常的比例。单类 SVM 在小到中等规模的数据集上表现良好，但无法扩展到非常大的数据（核矩阵呈二次增长）。
+```
+
+`nu` 参数近似表示异常的比例。单类 SVM 在小到中等规模的数据集上表现良好，但无法扩展到非常大的数据（核矩阵呈二次增长）。
 
 ### 自编码器方法（预览）
 

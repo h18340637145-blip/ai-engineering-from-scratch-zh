@@ -26,7 +26,9 @@
 
 ### 聚类：将相似的事物分组在一起
 
-聚类将每个数据点分配到一个组（聚类）中，使得同一组内的点彼此之间比其他组的点更加相似。问题始终是：“相似”意味着什么？```mermaid
+聚类将每个数据点分配到一个组（聚类）中，使得同一组内的点彼此之间比其他组的点更加相似。问题始终是：“相似”意味着什么？
+
+```mermaid
 flowchart LR
     A[Raw Data] --> B{Choose Method}
     B --> C[K-Means]
@@ -37,7 +39,9 @@ flowchart LR
     D --> H[Arbitrary shapes, noise detection]
     E --> I[Tree of nested clusters]
     F --> J[Soft assignments, elliptical clusters]
-```### K-Means：主力算法
+```
+
+### K-Means：主力算法
 
 K-Means 将数据划分为恰好 K 个聚类。每个聚类都有一个中心点（质心），并且每个数据点都属于最近的质心。
 
@@ -116,11 +120,17 @@ GMM 可以建模椭圆形聚类（而不仅仅是 K-Means 的球形聚类），�
 聚类自然支持异常检测：
 - **K-Means**：远离任何质心的点是异常点
 - **DBSCAN**：定义上噪声点是异常点
-- **GMM**：在所有高斯分布下概率较低的点是异常点```figure
-kmeans-step
-```## 构建它
+- **GMM**：在所有高斯分布下概率较低的点是异常点
 
-### 步骤 1：从零开始实现 K-Means```python
+```figure
+kmeans-step
+```
+
+## 构建它
+
+### 步骤 1：从零开始实现 K-Means
+
+```python
 import math
 import random
 
@@ -166,7 +176,11 @@ def kmeans(data, k, max_iterations=100, seed=42):
         centroids = new_centroids
 
     return assignments, centroids
-```### 步骤 2：肘部法则和轮廓系数```python
+```
+
+### 步骤 2：肘部法则和轮廓系数
+
+```python
 def compute_inertia(data, assignments, centroids):
     total = 0.0
     for point, cluster_id in zip(data, assignments):
@@ -228,7 +242,11 @@ def find_best_k(data, max_k=10):
         print(f"  K={k}: silhouette={score:.4f}")
 
     return inertias
-```### 步骤 3：从零开始实现 DBSCAN```python
+```
+
+### 步骤 3：从零开始实现 DBSCAN
+
+```python
 def dbscan(data, eps, min_samples):
     n = len(data)
     labels = [-1] * n
@@ -278,7 +296,11 @@ def dbscan(data, eps, min_samples):
         cluster_id += 1
 
     return labels
-```### 步骤 4：高斯混合模型（EM 算法）```python
+```
+
+### 步骤 4：高斯混合模型（EM 算法）
+
+```python
 def gmm(data, k, max_iterations=100, seed=42):
     random.seed(seed)
     n = len(data)
@@ -339,7 +361,11 @@ def gmm(data, k, max_iterations=100, seed=42):
         assignments.append(responsibilities[i].index(max(responsibilities[i])))
 
     return assignments, means, weights, responsibilities
-```### 步骤 5：生成测试数据并运行所有内容```python
+```
+
+### 步骤 5：生成测试数据并运行所有内容
+
+```python
 def make_blobs(centers, n_per_cluster=50, spread=0.5, seed=42):
     random.seed(seed)
     data = []
@@ -426,9 +452,13 @@ if __name__ == "__main__":
     print(f"  Detected {len(anomalies)} anomalies")
     for a in anomalies[-3:]:
         print(f"    Point {[round(v, 2) for v in a]}")
-```## 使用它
+```
 
-使用 scikit-learn，同样的算法只需一行代码：```python
+## 使用它
+
+使用 scikit-learn，同样的算法只需一行代码：
+
+```python
 from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
 from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_score as sklearn_silhouette
@@ -437,7 +467,9 @@ km = KMeans(n_clusters=3, random_state=42).fit(data)
 db = DBSCAN(eps=1.5, min_samples=5).fit(data)
 agg = AgglomerativeClustering(n_clusters=3).fit(data)
 gmm_model = GaussianMixture(n_components=3, random_state=42).fit(data)
-```从零开始实现的版本展示了这些库精确计算的内容。K-Means在分配和重新计算之间进行迭代。DBSCAN从密集的种子开始扩展聚类。GMM在期望和最大化之间交替进行。库版本增加了数值稳定性、更智能的初始化（K-Means++）和GPU加速，但核心逻辑是相同的。
+```
+
+从零开始实现的版本展示了这些库精确计算的内容。K-Means在分配和重新计算之间进行迭代。DBSCAN从密集的种子开始扩展聚类。GMM在期望和最大化之间交替进行。库版本增加了数值稳定性、更智能的初始化（K-Means++）和GPU加速，但核心逻辑是相同的。
 
 ## 发布它
 

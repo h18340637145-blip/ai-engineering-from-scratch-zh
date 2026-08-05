@@ -18,13 +18,17 @@
 
 从 Phase 11 开始，你将调用 LLM APIs (Anthropic, OpenAI, Google)。在 Phase 13-16 中你将构建使用这些 API 的循环代理。你需要了解 API 密钥的工作原理、如何安全存储它们以及如何进行首次 API 调用。
 
-## The Concept```mermaid
+## The Concept
+
+```mermaid
 sequenceDiagram
     participant C as Your Code
     participant S as API Server
     C->>S: HTTP Request (with API key)
     S->>C: HTTP Response (JSON)
-```每个API调用都有：
+```
+
+每个API调用都有：
 1. 一个端点（URL）
 2. 一个API密钥（认证）
 3. 一个请求体（你想要的内容）
@@ -36,7 +40,9 @@ sequenceDiagram
 
 切勿将API密钥直接写入代码。使用环境变量。
 
- /think```bash
+ /think
+
+```bash
 export ANTHROPIC_API_KEY="sk-ant-..."
 export OPENAI_API_KEY="sk-..."
 ```
@@ -66,9 +72,13 @@ response = client.messages.create(
 )
 
 print(response.content[0].text)
-````LLM_MODEL` 选择 Anthropic 模型 ID，默认值为未指定日期的 Sonnet 别名。其他提供商（OpenAI、Google 等）遵循相同的模式：一个键加上模型 ID，但每个提供商都有自己的 SDK、端点和请求/响应模式。
+```
 
-### 步骤3：首次 API 调用（TypeScript）```typescript
+`LLM_MODEL` 选择 Anthropic 模型 ID，默认值为未指定日期的 Sonnet 别名。其他提供商（OpenAI、Google 等）遵循相同的模式：一个键加上模型 ID，但每个提供商都有自己的 SDK、端点和请求/响应模式。
+
+### 步骤3：首次 API 调用（TypeScript）
+
+```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic();
@@ -107,7 +117,9 @@ req = urllib.request.Request(url, data=body, headers=headers, method="POST")
 with urllib.request.urlopen(req) as resp:
     result = json.loads(resp.read())
     print(result["content"][0]["text"])
-```这是 SDK 在底层所做的操作。理解原始 HTTP 请求有助于调试。
+```
+
+这是 SDK 在底层所做的操作。理解原始 HTTP 请求有助于调试。
 
 ## 使用方法
 

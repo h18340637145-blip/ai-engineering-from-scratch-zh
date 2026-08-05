@@ -32,7 +32,9 @@
 
 忘记“打印并祈祷”的调试方式。由于训练运行的反馈循环缓慢（每次训练需要几分钟到几小时），并且症状模糊（糟糕的损失可能意味着 20 种不同的事情），神经网络调试需要系统化的方法。
 
-黄金规则：**从简单开始，一次添加一个复杂部分，并独立验证每个部分。**```mermaid
+黄金规则：**从简单开始，一次添加一个复杂部分，并独立验证每个部分。**
+
+```mermaid
 flowchart TD
     A["Loss not decreasing"] --> B{"Check learning rate"}
     B -->|"Too high"| C["Loss oscillates or explodes"]
@@ -46,7 +48,9 @@ flowchart TD
     H -->|"Data is fine"| K{"Check architecture"}
     K -->|"Too small"| L["Underfitting"]
     K -->|"Too deep"| M["Optimization difficulty"]
-```### 症状 1：损失不下降
+```
+
+### 症状 1：损失不下降
 
 这是最常见的抱怨。训练循环运行，轮次不断推进，但损失保持不变或剧烈震荡。
 
@@ -84,11 +88,21 @@ flowchart TD
 
 将你的解析梯度（来自反向传播）与数值梯度（来自有限差分）进行比较。如果它们不一致，说明你的反向传播过程存在错误。
 
-参数 `w` 的数值梯度：```
+参数 `w` 的数值梯度：
+
+```
 grad_numerical = (loss(w + eps) - loss(w - eps)) / (2 * eps)
-```协议指标（相对差异）：```
+```
+
+协议指标（相对差异）：
+
+```
 rel_diff = |grad_analytical - grad_numerical| / max(|grad_analytical|, |grad_numerical|, 1e-8)
-```如果 `rel_diff < 1e-5`：正确。如果 `rel_diff > 1e-3`：几乎可以肯定是错误。```mermaid
+```
+
+如果 `rel_diff < 1e-5`：正确。如果 `rel_diff > 1e-3`：几乎可以肯定是错误。
+
+```mermaid
 flowchart LR
     A["Parameter w"] --> B["w + eps"]
     A --> C["w - eps"]
@@ -99,7 +113,9 @@ flowchart LR
     F --> H["(loss+ - loss-) / 2eps"]
     G --> H
     H --> I["Compare to backprop gradient"]
-```### 技术 2：激活统计
+```
+
+### 技术 2：激活统计
 
 在训练过程中，监控每一层之后激活值的均值和标准差。健康的网络在归一化后，激活值的均值接近 0，标准差接近 1（或至少是有限的）。
 
@@ -112,7 +128,9 @@ flowchart LR
 
 ### 技术 3：梯度流动可视化
 
-绘制每一层的平均梯度大小。在一个健康的网络中，各层的梯度大小应大致相似。如果早期层的梯度大小比后期层小 1000 倍，那么你遇到了梯度消失的问题。```mermaid
+绘制每一层的平均梯度大小。在一个健康的网络中，各层的梯度大小应大致相似。如果早期层的梯度大小比后期层小 1000 倍，那么你遇到了梯度消失的问题。
+
+```mermaid
 graph LR
     subgraph "Healthy Gradient Flow"
         L1["Layer 1<br/>grad: 0.05"] --- L2["Layer 2<br/>grad: 0.04"] --- L3["Layer 3<br/>grad: 0.06"] --- L4["Layer 4<br/>grad: 0.05"]
@@ -124,7 +142,9 @@ graph LR
     subgraph "Vanishing Gradient Flow"
         V1["Layer 1<br/>grad: 0.0001"] --- V2["Layer 2<br/>grad: 0.003"] --- V3["Layer 3<br/>grad: 0.02"] --- V4["Layer 4<br/>grad: 0.08"]
     end
-```### 技巧 4：单批次过拟合测试
+```
+
+### 技巧 4：单批次过拟合测试
 
 深度学习中最重要的调试技巧。
 
@@ -141,7 +161,9 @@ graph LR
 
 ### 技巧 5：学习率查找器
 
-Leslie Smith（2017）提出了一种方法：在一个训练周期内，将学习率从非常小（1e-7）逐渐增加到非常大（10），同时记录损失。绘制损失与学习率的关系图。最佳学习率大致是损失开始最快下降时学习率的 10 分之一。```mermaid
+Leslie Smith（2017）提出了一种方法：在一个训练周期内，将学习率从非常小（1e-7）逐渐增加到非常大（10），同时记录损失。绘制损失与学习率的关系图。最佳学习率大致是损失开始最快下降时学习率的 10 分之一。
+
+```mermaid
 graph TD
     subgraph "LR Finder Plot"
         direction LR
@@ -151,7 +173,9 @@ graph TD
         D --> E["1e-1: loss=0.5"]
         E --> F["1.0: loss=NaN -- too high"]
     end
-```此示例中最佳学习率：~1e-3（在最陡点前一个数量级）。
+```
+
+此示例中最佳学习率：~1e-3（在最陡点前一个数量级）。
 
 ### 常见 PyTorch 错误
 
@@ -181,15 +205,21 @@ graph TD
 | 训练准确率 = 测试准确率 = 随机水平 | 模型没有学习任何内容 | 运行过拟合一单批次测试 |
 | 训练准确率 = 测试准确率但两者都很低 | 欠拟合 | 更大的模型，更多层，更多特征 |
 | 所有梯度为零 | 死亡 ReLUs 或计算图分离 | 切换到 LeakyReLU，检查 `.requires_grad` |
-| 训练过程中内存溢出 | 批次过大或图未释放 | 减少批次大小，使用 `torch.no_grad()` 进行评估 |```figure
+| 训练过程中内存溢出 | 批次过大或图未释放 | 减少批次大小，使用 `torch.no_grad()` 进行评估 |
+
+```figure
 learning-curves
-```## 构建它
+```
+
+## 构建它
 
 一个诊断工具包，用于监控激活值、梯度和损失曲线。你将故意破坏一个网络，并使用该工具包来诊断每个问题。
 
 ### 第一步：NetworkDebugger 类
 
-钩入 PyTorch 模型，以记录每层的激活值和梯度统计信息。```python
+钩入 PyTorch 模型，以记录每层的激活值和梯度统计信息。
+
+```python
 import torch
 import torch.nn as nn
 import math
@@ -308,7 +338,11 @@ class NetworkDebugger:
         for hook in self.hooks:
             hook.remove()
         self.hooks.clear()
-```### 步骤 2：过拟合一个批次的测试```python
+```
+
+### 步骤 2：过拟合一个批次的测试
+
+```python
 def overfit_one_batch(model, x_batch, y_batch, criterion, lr=0.01, steps=200):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     model.train()
@@ -335,7 +369,11 @@ def overfit_one_batch(model, x_batch, y_batch, criterion, lr=0.01, steps=200):
         return False
     print(f"\n  PASS: Loss converged to {final_loss:.6f}")
     return True
-```### 步骤 3：学习率查找器```python
+```
+
+### 步骤 3：学习率查找器
+
+```python
 def find_learning_rate(model, x_data, y_data, criterion, start_lr=1e-7, end_lr=10, steps=100):
     import copy
     original_state = copy.deepcopy(model.state_dict())
@@ -381,7 +419,11 @@ def find_learning_rate(model, x_data, y_data, criterion, start_lr=1e-7, end_lr=1
     print(f"  Suggested learning rate: {suggested_lr:.2e}")
 
     return results
-```### 步骤 4：梯度检查器```python
+```
+
+### 步骤 4：梯度检查器
+
+```python
 def _flat_to_multi_index(flat_idx, shape):
     multi_idx = []
     remaining = flat_idx
@@ -451,9 +493,13 @@ def gradient_check(model, x, y, criterion, eps=1e-4):
     else:
         print("  FAIL: Gradient mismatch detected (rel_diff > 1e-3)")
     return overall_max_diff
-```### 步骤 5：故意破坏的网络
+```
 
-现在将工具套件应用于损坏的网络，并对每个网络进行诊断。```python
+### 步骤 5：故意破坏的网络
+
+现在将工具套件应用于损坏的网络，并对每个网络进行诊断。
+
+```python
 def demo_broken_networks():
     torch.manual_seed(42)
     x = torch.randn(64, 10)
@@ -545,9 +591,13 @@ def demo_broken_networks():
     print("=" * 60)
     model_grad = nn.Sequential(nn.Linear(10, 8), nn.ReLU(), nn.Linear(8, 2))
     gradient_check(model_grad, x[:4], y[:4], criterion)
-```## 使用它
+```
 
-### PyTorch 内置工具```python
+## 使用它
+
+### PyTorch 内置工具
+
+```python
 import torch
 import torch.nn as nn
 
@@ -565,7 +615,11 @@ with torch.autograd.detect_anomaly():
 for name, param in model.named_parameters():
     if param.grad is not None:
         print(f"{name}: grad_mean={param.grad.abs().mean():.2e}")
-```### 权重与偏差集成```python
+```
+
+### 权重与偏差集成
+
+```python
 import wandb
 
 wandb.init(project="debug-training")
@@ -581,7 +635,11 @@ for epoch in range(100):
     for name, param in model.named_parameters():
         if param.grad is not None:
             wandb.log({f"grad/{name}": wandb.Histogram(param.grad.cpu().numpy())})
-```### TensorBoard```python
+```
+
+### TensorBoard
+
+```python
 from torch.utils.tensorboard import SummaryWriter
 
 writer = SummaryWriter("runs/debug_experiment")
@@ -594,7 +652,9 @@ for epoch in range(100):
         writer.add_histogram(f"weights/{name}", param, epoch)
         if param.grad is not None:
             writer.add_histogram(f"gradients/{name}", param.grad, epoch)
-```### 调试检查清单（完整训练之前）
+```
+
+### 调试检查清单（完整训练之前）
 
 1. 运行单批次过拟合测试。如果失败，停止。
 2. 打印模型摘要 —— 验证参数数量是否合理。

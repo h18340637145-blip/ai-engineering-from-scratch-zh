@@ -26,22 +26,36 @@
 
 ### 优化的含义
 
-优化是寻找使函数最小化（或最大化）的输入值。在机器学习中，函数是损失函数，输入是模型的权重。训练就是优化。```
+优化是寻找使函数最小化（或最大化）的输入值。在机器学习中，函数是损失函数，输入是模型的权重。训练就是优化。
+
+```
 minimize L(w) where:
   L = loss function
   w = model weights (could be millions of parameters)
-```### 梯度下降（vanilla）
+```
 
-最简单的优化器。计算损失函数相对于每个权重的梯度。将每个权重沿着其梯度的相反方向移动。根据学习率对步长进行缩放。```
+### 梯度下降（vanilla）
+
+最简单的优化器。计算损失函数相对于每个权重的梯度。将每个权重沿着其梯度的相反方向移动。根据学习率对步长进行缩放。
+
+```
 w = w - lr * gradient
-```这就是整个算法。一行代码。```mermaid
+```
+
+这就是整个算法。一行代码。
+
+```mermaid
 graph TD
     A["* Starting point (high loss)"] --> B["Moving downhill along gradient"]
     B --> C["Approaching minimum"]
     C --> D["o Minimum (low loss)"]
-```### 学习率：最重要的超参数
+```
 
-学习率控制步长。它决定了收敛的各个方面。```mermaid
+### 学习率：最重要的超参数
+
+学习率控制步长。它决定了收敛的各个方面。
+
+```mermaid
 graph LR
     subgraph TooLarge["Too Large (lr = 1.0)"]
         A1["Step 1"] -->|overshoot| A2["Step 2"]
@@ -56,7 +70,9 @@ graph LR
     subgraph JustRight["Just Right (lr = 0.01)"]
         C1["Start"] --> C2["..."] --> C3["Converged in ~100 steps"]
     end
-```没有正确的学习率公式。你只能通过实验找到它。常见的起始点：Adam 使用 0.001，带动量的 SGD 使用 0.01。
+```
+
+没有正确的学习率公式。你只能通过实验找到它。常见的起始点：Adam 使用 0.001，带动量的 SGD 使用 0.01。
 
 ### SGD 与批量（batch）与小批量（mini-batch）
 
@@ -76,10 +92,16 @@ SGD 和小批量中的噪声不是错误。它有助于逃离浅层局部最小�
 
 ### 动量：滚动下坡的球
 
-普通梯度下降法只关注当前梯度。如果梯度出现来回震荡（在狭窄山谷中常见），进展会很缓慢。动量通过将过去的梯度累积到速度项中来解决这个问题。```
+普通梯度下降法只关注当前梯度。如果梯度出现来回震荡（在狭窄山谷中常见），进展会很缓慢。动量通过将过去的梯度累积到速度项中来解决这个问题。
+
+```
 v = beta * v + gradient
 w = w - lr * v
-```类比：一个球沿着下坡滚动。它在遇到每一个障碍时不会停止然后再启动。它以一致的方向加速，并减弱震荡。```mermaid
+```
+
+类比：一个球沿着下坡滚动。它在遇到每一个障碍时不会停止然后再启动。它以一致的方向加速，并减弱震荡。
+
+```mermaid
 graph TD
     subgraph Without["Without Momentum (zigzag, slow)"]
         W1["Start"] -->|left| W2[" "]
@@ -92,7 +114,9 @@ graph TD
     subgraph With["With Momentum (smooth, fast)"]
         M1["Start"] --> M2[" "] --> M3[" "] --> M4["Minimum"]
     end
-````beta`（通常为0.9）控制保留多少历史信息。较高的beta值意味着更强的动量，路径更平滑，但对方向变化的响应更慢。
+```
+
+`beta`（通常为0.9）控制保留多少历史信息。较高的beta值意味着更强的动量，路径更平滑，但对方向变化的响应更慢。
 
 ### Adam：自适应学习率
 
@@ -101,7 +125,9 @@ graph TD
 Adam（自适应动量估计）为每个权重跟踪两件事：
 
 1. 一阶矩（m）：梯度的移动平均值（类似于动量）
-2. 二阶矩（v）：梯度平方的移动平均值（梯度幅度）```
+2. 二阶矩（v）：梯度平方的移动平均值（梯度幅度）
+
+```
 m = beta1 * m + (1 - beta1) * gradient
 v = beta2 * v + (1 - beta2) * gradient^2
 
@@ -109,7 +135,9 @@ m_hat = m / (1 - beta1^t)    bias correction
 v_hat = v / (1 - beta2^t)    bias correction
 
 w = w - lr * m_hat / (sqrt(v_hat) + epsilon)
-```由 `sqrt(v_hat)` 进行的除法是关键的见解。梯度较大的权重会被一个较大的数除（有效步长较小）。梯度较小的权重会被一个较小的数除（有效步长较大）。每个权重都会拥有自己自适应的学习率。
+```
+
+由 `sqrt(v_hat)` 进行的除法是关键的见解。梯度较大的权重会被一个较大的数除（有效步长较小）。梯度较小的权重会被一个较小的数除（有效步长较大）。每个权重都会拥有自己自适应的学习率。
 
 默认的超参数：`lr=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8`。这些默认值对于大多数问题都能很好地工作。
 
@@ -130,7 +158,9 @@ w = w - lr * m_hat / (sqrt(v_hat) + epsilon)
 
 凸函数只有一个最小值。梯度下降总是能找到这个最小值。像 `f(x) = x^2` 这样的二次函数是凸函数。
 
-神经网络的损失函数是非凸的。它们有很多局部最小值、鞍点和平坦区域。```mermaid
+神经网络的损失函数是非凸的。它们有很多局部最小值、鞍点和平坦区域。
+
+```mermaid
 graph LR
     subgraph Convex["Convex: One valley, one answer"]
         direction TB
@@ -142,11 +172,15 @@ graph LR
         NC1 --> NC3["Saddle point"]
         NC1 --> NC4["Global minimum"]
     end
-```实际上，在高维神经网络中，局部最小值很少成为问题。大多数局部最小值的损失值都接近全局最小值。真正的问题是鞍点（在某些方向上平坦，在其他方向上弯曲）。动量和小批量的噪声有助于逃离这些鞍点。
+```
+
+实际上，在高维神经网络中，局部最小值很少成为问题。大多数局部最小值的损失值都接近全局最小值。真正的问题是鞍点（在某些方向上平坦，在其他方向上弯曲）。动量和小批量的噪声有助于逃离这些鞍点。
 
 ### 损失景观可视化
 
-损失是所有权重的函数。对于一个拥有100万权重的模型，损失景观存在于100万+1维的空间中。我们通过在权重空间中选择两个随机方向，并沿着这两个方向绘制损失，从而对其进行可视化，生成一个二维曲面。```mermaid
+损失是所有权重的函数。对于一个拥有100万权重的模型，损失景观存在于100万+1维的空间中。我们通过在权重空间中选择两个随机方向，并沿着这两个方向绘制损失，从而对其进行可视化，生成一个二维曲面。
+
+```mermaid
 graph TD
     HL["High loss region"] --> SP["Saddle point"]
     HL --> LM["Local minimum"]
@@ -157,13 +191,21 @@ graph TD
     style SP fill:#ffcc66,color:#000
     style LM fill:#66ccff,color:#000
     style GM fill:#66ff66,color:#000
-```尖锐的极小值泛化能力差。平坦的极小值泛化能力好。这是为什么带有动量的随机梯度下降（SGD）通常在最终测试准确率上优于Adam的一个原因：它的噪声防止了陷入尖锐的极小值。```figure
+```
+
+尖锐的极小值泛化能力差。平坦的极小值泛化能力好。这是为什么带有动量的随机梯度下降（SGD）通常在最终测试准确率上优于Adam的一个原因：它的噪声防止了陷入尖锐的极小值。
+
+```figure
 gradient-descent
-```## 构建它
+```
+
+## 构建它
 
 ### 步骤 1：定义一个测试函数
 
-Rosenbrock 函数是一个经典的优化基准测试函数。它的最小值位于一个狭窄的弯曲山谷内部的 (1, 1) 点，这个点很容易找到，但很难跟踪。```
+Rosenbrock 函数是一个经典的优化基准测试函数。它的最小值位于一个狭窄的弯曲山谷内部的 (1, 1) 点，这个点很容易找到，但很难跟踪。
+
+```
 f(x, y) = (1 - x)^2 + 100 * (y - x^2)^2
 ```
 
@@ -177,14 +219,22 @@ def rosenbrock_gradient(params):
     df_dx = -2 * (1 - x) + 200 * (y - x ** 2) * (-2 * x)
     df_dy = 200 * (y - x ** 2)
     return [df_dx, df_dy]
-```### 步骤 2：普通梯度下降```python
+```
+
+### 步骤 2：普通梯度下降
+
+```python
 class GradientDescent:
     def __init__(self, lr=0.001):
         self.lr = lr
 
     def step(self, params, grads):
         return [p - self.lr * g for p, g in zip(params, grads)]
-```### 步骤 3：带有动量的 SGD```python
+```
+
+### 步骤 3：带有动量的 SGD
+
+```python
 class SGDMomentum:
     def __init__(self, lr=0.001, momentum=0.9):
         self.lr = lr
@@ -199,7 +249,11 @@ class SGDMomentum:
             for v, g in zip(self.velocity, grads)
         ]
         return [p - self.lr * v for p, v in zip(params, self.velocity)]
-```### 步骤 4: Adam```python
+```
+
+### 步骤 4: Adam
+
+```python
 class Adam:
     def __init__(self, lr=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
         self.lr = lr
@@ -233,7 +287,11 @@ class Adam:
             p - self.lr * mh / (vh ** 0.5 + self.epsilon)
             for p, mh, vh in zip(params, m_hat, v_hat)
         ]
-```### 步骤 5：运行和比较```python
+```
+
+### 步骤 5：运行和比较
+
+```python
 def optimize(optimizer, func, grad_func, start, steps=5000):
     params = list(start)
     history = [params[:]]
@@ -253,11 +311,15 @@ for name, history in [("GD", gd_history), ("SGD+M", sgd_history), ("Adam", adam_
     final = history[-1]
     loss = rosenbrock(final)
     print(f"{name:6s} -> x={final[0]:.6f}, y={final[1]:.6f}, loss={loss:.8f}")
-```预期输出：Adam 收敛最快。带动量的 SGD 路径更平滑。普通 GD 在狭窄的山谷中进展缓慢。
+```
+
+预期输出：Adam 收敛最快。带动量的 SGD 路径更平滑。普通 GD 在狭窄的山谷中进展缓慢。
 
 ## 使用方法
 
-在实践中，使用 PyTorch 或 JAX 的优化器。它们可以处理参数组、权重衰减、梯度裁剪和 GPU 加速。```python
+在实践中，使用 PyTorch 或 JAX 的优化器。它们可以处理参数组、权重衰减、梯度裁剪和 GPU 加速。
+
+```python
 import torch
 
 model = torch.nn.Linear(784, 10)
@@ -267,7 +329,9 @@ adam = torch.optim.Adam(model.parameters(), lr=0.001)
 adamw = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
 
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(adam, T_max=100)
-```经验法则：
+```
+
+经验法则：
 
 - 从 Adam（lr=0.001）开始。它在大多数问题中无需调整即可正常工作。
 - 当你需要最佳最终精度并且能够承担更多调整时，切换为带有动量的 SGD（lr=0.01, momentum=0.9）。

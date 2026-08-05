@@ -26,17 +26,23 @@
 
 ### 什么是张量
 
-张量是一个多维数组，具有统一的数据类型。维度的数量称为**秩**（或**阶数**）。每个维度是一个**轴**。**形状**是一个元组，列出了每个轴上的大小。```mermaid
+张量是一个多维数组，具有统一的数据类型。维度的数量称为**秩**（或**阶数**）。每个维度是一个**轴**。**形状**是一个元组，列出了每个轴上的大小。
+
+```mermaid
 graph LR
     S["Scalar<br/>rank 0<br/>shape: ()"] --> V["Vector<br/>rank 1<br/>shape: (3,)"]
     V --> M["Matrix<br/>rank 2<br/>shape: (2,3)"]
     M --> T3["3D Tensor<br/>rank 3<br/>shape: (2,2,2)"]
     T3 --> T4["4D Tensor<br/>rank 4<br/>shape: (B,C,H,W)"]
-```总元素数 = 所有尺寸的乘积。一个形状 `(2, 3, 4)` 包含 `2 * 3 * 4 = 24` 个元素。
+```
+
+总元素数 = 所有尺寸的乘积。一个形状 `(2, 3, 4)` 包含 `2 * 3 * 4 = 24` 个元素。
 
 ### 深度学习中的张量形状
 
-不同的数据类型按照惯例映射到特定的张量形状。```mermaid
+不同的数据类型按照惯例映射到特定的张量形状。
+
+```mermaid
 graph TD
     subgraph Vision
         V1["(B, C, H, W)<br/>32, 3, 224, 224"]
@@ -54,7 +60,9 @@ graph TD
 
 ### 内存布局是如何工作的
 
-内存中的二维数组是一个一维的字节序列。**步长**告诉你沿着每个轴移动一步需要跳过多少个元素。```mermaid
+内存中的二维数组是一个一维的字节序列。**步长**告诉你沿着每个轴移动一步需要跳过多少个元素。
+
+```mermaid
 graph LR
     subgraph "Row-major (C order)"
         R["a b c d e f<br/>strides: (3, 1)"]
@@ -62,32 +70,48 @@ graph LR
     subgraph "Column-major (F order)"
         C["a d b e c f<br/>strides: (1, 2)"]
     end
-```转置不会移动数据。它只是交换了步长，使张量变为**非连续**的——行的元素在内存中不再相邻。
+```
+
+转置不会移动数据。它只是交换了步长，使张量变为**非连续**的——行的元素在内存中不再相邻。
 
 ### 广播规则
 
-广播允许你在不复制数据的情况下对不同形状的张量进行操作。从右侧对齐形状。当两个维度相等，或者其中一个为1时，这两个维度是兼容的。维度较少的张量在左侧用1进行填充。```
+广播允许你在不复制数据的情况下对不同形状的张量进行操作。从右侧对齐形状。当两个维度相等，或者其中一个为1时，这两个维度是兼容的。维度较少的张量在左侧用1进行填充。
+
+```
 Tensor A:     (8, 1, 6, 1)
 Tensor B:        (7, 1, 5)
 Padded B:     (1, 7, 1, 5)
 Result:       (8, 7, 6, 5)
-```### Einsum：通用张量操作
+```
 
-爱因斯坦求和法用一个字母标记每个轴。输入中但输出中没有的轴会被求和。在输入和输出中都存在的轴会被保留。```mermaid
+### Einsum：通用张量操作
+
+爱因斯坦求和法用一个字母标记每个轴。输入中但输出中没有的轴会被求和。在输入和输出中都存在的轴会被保留。
+
+```mermaid
 graph LR
     subgraph "matmul: ik,kj -> ij"
         A["A(I,K)"] --> |"sum over k"| C["C(I,J)"]
         B["B(K,J)"] --> |"sum over k"| C
     end
-```关键模式：`i,i->`（点积），`i,j->ij`（外积），`ii->`（迹），`ij->ji`（转置），`bij,bjk->bik`（批量矩阵乘法），`bhtd,bhsd->bhts`（注意力得分）。```figure
+```
+
+关键模式：`i,i->`（点积），`i,j->ij`（外积），`ii->`（迹），`ij->ji`（转置），`bij,bjk->bik`（批量矩阵乘法），`bhtd,bhsd->bhts`（注意力得分）。
+
+```figure
 tensor-broadcast
-```## 构建它
+```
+
+## 构建它
 
 代码位于 `code/tensors.py`。每一步都引用了那里的实现。
 
 ### 步骤 1：张量存储和步长
 
-张量存储一个数字的扁平列表加上形状元数据。步长告诉索引逻辑如何将多维索引映射到扁平位置。```python
+张量存储一个数字的扁平列表加上形状元数据。步长告诉索引逻辑如何将多维索引映射到扁平位置。
+
+```python
 class Tensor:
     def __init__(self, data, shape=None):
         if isinstance(data, (list, tuple)):
@@ -117,42 +141,60 @@ class Tensor:
         for i in range(len(shape) - 2, -1, -1):
             strides[i] = strides[i + 1] * shape[i + 1]
         return tuple(strides)
-```对于形状 `(3, 4)`，步长为 `(4, 1)` -- 跳过 4 个元素以前进一行，跳过 1 个元素以前进一列。
+```
+
+对于形状 `(3, 4)`，步长为 `(4, 1)` -- 跳过 4 个元素以前进一行，跳过 1 个元素以前进一列。
 
 ### 步骤 2：重塑、压缩、扩展
 
-重塑会改变形状而不改变元素顺序。元素总数必须保持不变。使用 `-1` 表示一个维度以推断其大小。```python
+重塑会改变形状而不改变元素顺序。元素总数必须保持不变。使用 `-1` 表示一个维度以推断其大小。
+
+```python
 t = Tensor(list(range(12)), shape=(2, 6))
 r = t.reshape((3, 4))
 r = t.reshape((-1, 3))
-```Squeeze 移除大小为 1 的轴。Unsqueeze 插入一个。Unsqueezing 对于广播至关重要 -- 一个偏置向量 `(D,)` 添加到一个批次 `(B, T, D)` 需要 unsqueeze 以 `(1, 1, D)`。```python
+```Squeeze 移除大小为 1 的轴。Unsqueeze 插入一个。Unsqueezing 对于广播至关重要 -- 一个偏置向量 `(D,)` 添加到一个批次 `(B, T, D)` 需要 unsqueeze 以 `(1, 1, D)`。
+
+```python
 t = Tensor(list(range(6)), shape=(1, 3, 1, 2))
 s = t.squeeze()
 v = Tensor([1, 2, 3])
 u = v.unsqueeze(0)
-```### 步骤 3：转置和排列
+```
 
-转置交换两个轴。排列重新排列所有轴。这是你如何在 NCHW 和 NHWC 之间进行转换的方法。```python
+### 步骤 3：转置和排列
+
+转置交换两个轴。排列重新排列所有轴。这是你如何在 NCHW 和 NHWC 之间进行转换的方法。
+
+```python
 mat = Tensor(list(range(6)), shape=(2, 3))
 tr = mat.transpose(0, 1)
 
 t4d = Tensor(list(range(24)), shape=(1, 2, 3, 4))
 perm = t4d.permute((0, 2, 3, 1))
-```在转置或排列之后，张量在内存中是非连续的。在 PyTorch 中，`view` 在非连续张量上会失败——请使用 `reshape` 或者先调用 `.contiguous()`。
+```
+
+在转置或排列之后，张量在内存中是非连续的。在 PyTorch 中，`view` 在非连续张量上会失败——请使用 `reshape` 或者先调用 `.contiguous()`。
 
 ### 第 4 步：逐元素操作和归约操作
 
-逐元素操作（加法、乘法、减法）独立地应用于每个元素，并保留形状。归约操作（总和、均值、最大值）会折叠一个或多个轴。```python
+逐元素操作（加法、乘法、减法）独立地应用于每个元素，并保留形状。归约操作（总和、均值、最大值）会折叠一个或多个轴。
+
+```python
 a = Tensor([[1, 2], [3, 4]])
 b = Tensor([[10, 20], [30, 40]])
 c = a + b
 d = a * 2
 s = a.sum(axis=0)
-```卷积神经网络中的全局平均池化：`(B, C, H, W).mean(axis=[2, 3])` 产生 `(B, C)`。自然语言处理中的序列平均池化：`(B, T, D).mean(axis=1)` 产生 `(B, D)`。
+```
+
+卷积神经网络中的全局平均池化：`(B, C, H, W).mean(axis=[2, 3])` 产生 `(B, C)`。自然语言处理中的序列平均池化：`(B, T, D).mean(axis=1)` 产生 `(B, D)`。
 
 ### 步骤 5：使用 NumPy 进行广播
 
-`tensors.py` 中的 `demo_broadcasting_numpy()` 函数展示了核心模式。```python
+`tensors.py` 中的 `demo_broadcasting_numpy()` 函数展示了核心模式。
+
+```python
 activations = np.random.randn(4, 3)
 bias = np.array([0.1, 0.2, 0.3])
 result = activations + bias
@@ -164,11 +206,15 @@ result = images * scale
 a = np.array([1, 2, 3]).reshape(-1, 1)
 b = np.array([10, 20, 30, 40]).reshape(1, -1)
 outer = a * b
-```通过广播计算成对距离：将 `(M, 2)` 重塑为 `(M, 1, 2)`，将 `(N, 2)` 重塑为 `(1, N, 2)`，然后相减，平方，沿最后一个轴求和，再取平方根。结果：`(M, N)`。
+```
+
+通过广播计算成对距离：将 `(M, 2)` 重塑为 `(M, 1, 2)`，将 `(N, 2)` 重塑为 `(1, N, 2)`，然后相减，平方，沿最后一个轴求和，再取平方根。结果：`(M, N)`。
 
 ### 第6步：Einsum 操作
 
-`demo_einsum()` 和 `demo_einsum_gallery()` 函数会遍历所有常见的模式。```python
+`demo_einsum()` 和 `demo_einsum_gallery()` 函数会遍历所有常见的模式。
+
+```python
 a = np.array([1.0, 2.0, 3.0])
 b = np.array([4.0, 5.0, 6.0])
 dot = np.einsum("i,i->", a, b)
@@ -180,11 +226,15 @@ matmul = np.einsum("ik,kj->ij", A, B)
 batch_A = np.random.randn(4, 3, 5)
 batch_B = np.random.randn(4, 5, 2)
 batch_mm = np.einsum("bij,bjk->bik", batch_A, batch_B)
-```收缩的计算成本是所有索引大小（保留的和求和的）的乘积。对于 `bij,bjk->bik`，其中 B=32，I=128，J=64，K=128：`32 * 128 * 64 * 128 = 33,554,432` 个乘加操作。
+```
+
+收缩的计算成本是所有索引大小（保留的和求和的）的乘积。对于 `bij,bjk->bik`，其中 B=32，I=128，J=64，K=128：`32 * 128 * 64 * 128 = 33,554,432` 个乘加操作。
 
 ### 步骤 7：通过 einsum 实现注意力机制
 
-`demo_attention_einsum()` 函数实现了端到端的多头注意力。```python
+`demo_attention_einsum()` 函数实现了端到端的多头注意力。
+
+```python
 B, H, T, D = 2, 4, 8, 16
 E = H * D
 
@@ -200,7 +250,9 @@ attn_output = np.einsum("bhts,bhsd->bhtd", weights, V)
 
 concat = attn_output.transpose(0, 2, 1, 3).reshape(B, T, E)
 output = np.einsum("bte,ek->btk", concat, W_o)
-```每一步都是一个张量操作：投影（通过 einsum 的 matmul）、头拆分（reshape + transpose）、注意力得分（通过 einsum 的 batch matmul）、加权求和（通过 einsum 的 batch matmul）、头合并（transpose + reshape）、输出投影（通过 einsum 的 matmul）。
+```
+
+每一步都是一个张量操作：投影（通过 einsum 的 matmul）、头拆分（reshape + transpose）、注意力得分（通过 einsum 的 batch matmul）、加权求和（通过 einsum 的 batch matmul）、头合并（transpose + reshape）、输出投影（通过 einsum 的 matmul）。
 
 ## 使用它
 
@@ -215,7 +267,9 @@ output = np.einsum("bte,ek->btk", concat, W_o)
 | 求和 | `t.sum(axis=0)` | `a.sum(axis=0)` |
 | Einsum | 无 | `np.einsum("ij,jk->ik", a, b)` |
 
-### 从零开始 vs PyTorch```python
+### 从零开始 vs PyTorch
+
+```python
 import torch
 
 t = torch.tensor([[1, 2, 3], [4, 5, 6]], dtype=torch.float32)

@@ -16,9 +16,13 @@
 
 ## The Problem
 
-你想构建一个神经网络。你阅读代码并看到如下内容：```
+你想构建一个神经网络。你阅读代码并看到如下内容：
+
+```
 output = activation(weights @ input + bias)
-````@` 是矩阵乘法。`weights` 是矩阵。`input` 是向量。如果你不知道这些操作的作用，这一行就是魔法。如果你知道，它就是用三次操作完成一个层的整个前向传播过程。
+```
+
+`@` 是矩阵乘法。`weights` 是矩阵。`input` 是向量。如果你不知道这些操作的作用，这一行就是魔法。如果你知道，它就是用三次操作完成一个层的整个前向传播过程。
 
 你模型处理的每一张图像都是像素值的矩阵。每个词嵌入都是一个向量。每个神经网络的每一层都是一个矩阵变换。没有对矩阵操作的熟练掌握，你无法构建人工智能系统，就像不了解变量就无法编写代码一样。
 
@@ -28,26 +32,38 @@ output = activation(weights @ input + bias)
 
 ### 向量：有序的数字列表
 
-向量是具有方向和大小的数字列表。在人工智能中，向量表示数据点、特征或参数。```
+向量是具有方向和大小的数字列表。在人工智能中，向量表示数据点、特征或参数。
+
+```
 v = [3, 4]        -- a 2D vector
 w = [1, 0, -2]    -- a 3D vector
-```一个二维向量 `[3, 4]` 指向平面上的坐标 (3, 4)。它的长度（模）是 5（3-4-5 三角形）。
+```
+
+一个二维向量 `[3, 4]` 指向平面上的坐标 (3, 4)。它的长度（模）是 5（3-4-5 三角形）。
 
 ### 矩阵：数字的网格
 
-矩阵是一个二维网格。行和列。一个 m x n 矩阵有 m 行和 n 列。```
+矩阵是一个二维网格。行和列。一个 m x n 矩阵有 m 行和 n 列。
+
+```
 A = | 1  2  3 |     -- 2x3 matrix (2 rows, 3 columns)
     | 4  5  6 |
-```在神经网络中，权重矩阵将输入向量转换为输出向量。一个有784个输入和128个输出的层使用一个128x784的权重矩阵。
+```
+
+在神经网络中，权重矩阵将输入向量转换为输出向量。一个有784个输入和128个输出的层使用一个128x784的权重矩阵。
 
 ### 为什么形状很重要
 
-矩阵乘法有一个严格的规则：`(m x n) @ (n x p) = (m x p)`。内部维度必须匹配。```
+矩阵乘法有一个严格的规则：`(m x n) @ (n x p) = (m x p)`。内部维度必须匹配。
+
+```
 (128 x 784) @ (784 x 1) = (128 x 1)
   weights       input       output
 
 Inner dimensions: 784 = 784  -- valid
-```如果你在 PyTorch 中遇到形状不匹配的错误，原因就在这里。
+```
+
+如果你在 PyTorch 中遇到形状不匹配的错误，原因就在这里。
 
 ### 操作映射
 
@@ -65,17 +81,27 @@ Inner dimensions: 784 = 784  -- valid
 
 这个区别常常让初学者感到困惑。
 
-按元素乘法：相匹配的位置相乘。两个矩阵的形状必须相同。```
+按元素乘法：相匹配的位置相乘。两个矩阵的形状必须相同。
+
+```
 | 1  2 |   | 5  6 |   | 5  12 |
 | 3  4 | * | 7  8 | = | 21 32 |
-```矩阵乘法：行和列的点积。内维必须匹配。```
+```
+
+矩阵乘法：行和列的点积。内维必须匹配。
+
+```
 | 1  2 |   | 5  6 |   | 1*5+2*7  1*6+2*8 |   | 19  22 |
 | 3  4 | @ | 7  8 | = | 3*5+4*7  3*6+4*8 | = | 43  50 |
-```不同的操作，不同的结果，不同的规则。
+```
+
+不同的操作，不同的结果，不同的规则。
 
 ### 广播
 
-当你将一个偏置向量添加到一个输出矩阵时，它们的形状不匹配。广播会将较小的数组扩展以适应较大的数组。```
+当你将一个偏置向量添加到一个输出矩阵时，它们的形状不匹配。广播会将较小的数组扩展以适应较大的数组。
+
+```
 | 1  2  3 |   +   [10, 20, 30]
 | 4  5  6 |
 
@@ -83,11 +109,19 @@ Broadcasting stretches the vector across rows:
 
 | 1  2  3 |   | 10  20  30 |   | 11  22  33 |
 | 4  5  6 | + | 10  20  30 | = | 14  25  36 |
-```每个现代框架都会自动完成这一点。理解它可以在形状看起来不对但代码却能运行时避免混淆。```figure
-vector-projection
-```## 构建它
+```
 
-### 第一步：向量类```python
+每个现代框架都会自动完成这一点。理解它可以在形状看起来不对但代码却能运行时避免混淆。
+
+```figure
+vector-projection
+```
+
+## 构建它
+
+### 第一步：向量类
+
+```python
 class Vector:
     def __init__(self, data):
         self.data = list(data)
@@ -110,7 +144,11 @@ class Vector:
 
     def magnitude(self):
         return sum(x ** 2 for x in self.data) ** 0.5
-```### 步骤 2：具有核心操作的矩阵类```python
+```
+
+### 步骤 2：具有核心操作的矩阵类
+
+```python
 class Matrix:
     def __init__(self, data):
         self.data = [list(row) for row in data]
@@ -190,7 +228,11 @@ class Matrix:
             [1 if i == j else 0 for j in range(n)]
             for i in range(n)
         ])
-```### 步骤 3：看到它运行```python
+```
+
+### 步骤 3：看到它运行
+
+```python
 A = Matrix([[1, 2], [3, 4]])
 B = Matrix([[5, 6], [7, 8]])
 
@@ -202,7 +244,11 @@ print("A^-1 =", A.inverse_2x2().data)
 
 I = Matrix.identity(2)
 print("A @ A^-1 =", A.matmul(A.inverse_2x2()).data)
-```### 步骤 4：连接到神经网络```python
+```
+
+### 步骤 4：连接到神经网络
+
+```python
 import random
 
 inputs = Matrix([[0.5], [0.8], [0.2]])
@@ -222,11 +268,15 @@ print(f"Input shape: {inputs.shape}")
 print(f"Weight shape: {weights.shape}")
 print(f"Output shape: {output.shape}")
 print(f"Output: {output.data}")
-```这是一个单一的密集层：`output = relu(W @ x + b)`。每个神经网络中的每个密集层都确切地执行这个操作。
+```
+
+这是一个单一的密集层：`output = relu(W @ x + b)`。每个神经网络中的每个密集层都确切地执行这个操作。
 
 ## 使用它
 
-NumPy 用更少的代码行数，以更高的速度完成以上所有操作。```python
+NumPy 用更少的代码行数，以更高的速度完成以上所有操作。
+
+```python
 import numpy as np
 
 A = np.array([[1, 2], [3, 4]])
@@ -249,7 +299,9 @@ print(f"\nNeural network layer: {weights.shape} @ {inputs.shape} = {output.shape
 print(f"Output:\n{output}")
 ```Python 中的 `@` 运算符调用 `__matmul__`。NumPy 使用用 C 和 Fortran 编写的优化 BLAS 程序实现它。同样的数学运算，速度快 100 倍。
 
-NumPy 中的广播：```python
+NumPy 中的广播：
+
+```python
 matrix = np.array([[1, 2, 3], [4, 5, 6]])
 bias = np.array([10, 20, 30])
 print(matrix + bias)

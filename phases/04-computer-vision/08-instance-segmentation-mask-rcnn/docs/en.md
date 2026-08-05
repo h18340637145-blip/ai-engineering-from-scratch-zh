@@ -24,7 +24,9 @@ Mask R-CNN（He 等，2017）通过将实例分割重新定义为检测加 mask 
 
 ## 概念
 
-### 架构```mermaid
+### 架构
+
+```mermaid
 flowchart LR
     IMG["Input"] --> BB["ResNet<br/>backbone"]
     BB --> FPN["Feature<br/>Pyramid Network"]
@@ -41,7 +43,9 @@ flowchart LR
     style FPN fill:#fef3c7,stroke:#d97706
     style RPN fill:#fecaca,stroke:#dc2626
     style OUT fill:#dcfce7,stroke:#16a34a
-```理解五个关键部分：
+```
+
+理解五个关键部分：
 
 1. **Backbone** — 在ImageNet上训练的ResNet-50或ResNet-101。在步长为4、8、16、32时生成特征图的层次结构。
 2. **FPN (Feature Pyramid Network)** — 通过自上而下和横向连接，为每一层提供具有丰富语义信息的C通道特征。检测时查询与目标尺寸匹配的FPN层级。
@@ -51,7 +55,9 @@ flowchart LR
 
 ### 为什么使用RoIAlign而不是RoIPool
 
-原始的Fast R-CNN使用了RoIPool，它将候选框分割成网格，每个单元格中取最大特征值，并将所有坐标四舍五入为整数。这种四舍五入可能导致特征图与输入像素坐标之间最多错位一个特征图像素——在224x224图像中影响较小，但在步长为32的特征图中可能导致灾难性的错位。```
+原始的Fast R-CNN使用了RoIPool，它将候选框分割成网格，每个单元格中取最大特征值，并将所有坐标四舍五入为整数。这种四舍五入可能导致特征图与输入像素坐标之间最多错位一个特征图像素——在224x224图像中影响较小，但在步长为32的特征图中可能导致灾难性的错位。
+
+```
 RoIPool:
   box (34.7, 51.3, 98.2, 142.9)
   round -> (34, 51, 98, 142)
@@ -76,7 +82,9 @@ RoIAlign:
 
 ### 损失函数
 
-Mask R-CNN 总共有四个损失函数相加：```
+Mask R-CNN 总共有四个损失函数相加：
+
+```
 L = L_rpn_cls + L_rpn_box + L_box_cls + L_box_reg + L_mask
 ```- `L_rpn_cls`, `L_rpn_box` — 用于 RPN 候选框的对象性 + 边界框回归。
 - `L_box_cls` — 在头部分类器上对 (C+1) 类（包括背景）的交叉熵。
@@ -87,20 +95,26 @@ L = L_rpn_cls + L_rpn_box + L_box_cls + L_box_reg + L_mask
 
 ### 输出格式
 
-`torchvision.models.detection.maskrcnn_resnet50_fpn_v2` 返回一个字典列表，每个图像对应一个字典：```
+`torchvision.models.detection.maskrcnn_resnet50_fpn_v2` 返回一个字典列表，每个图像对应一个字典：
+
+```
 {
     "boxes":  (N, 4) in (x1, y1, x2, y2) pixel coordinates,
     "labels": (N,) class IDs, 0 = background so indices are 1-based,
     "scores": (N,) confidence scores,
     "masks":  (N, 1, H, W) float masks in [0, 1] — threshold at 0.5 for binary,
 }
-```该掩码已经是完整图像分辨率。28x28 的头部输出已经在内部进行了上采样。
+```
+
+该掩码已经是完整图像分辨率。28x28 的头部输出已经在内部进行了上采样。
 
 ## 构建它
 
 ### 步骤 1：从零开始实现 RoIAlign
 
-这是 Mask R-CNN 中唯一一个作为代码比作为文字更易于理解的组件。```python
+这是 Mask R-CNN 中唯一一个作为代码比作为文字更易于理解的组件。
+
+```python
 import torch
 import torch.nn.functional as F
 
@@ -126,9 +140,13 @@ def roi_align_single(feature, box, output_size=7, spatial_scale=1 / 16.0):
     sampled = F.grid_sample(feature.unsqueeze(0), grid, mode="bilinear",
                             align_corners=False)
     return sampled.squeeze(0)
-```每个数字都位于双线性采样的位置。没有四舍五入，没有量化，没有梯度丢失。
+```
 
-### 步骤 2：与 torchvision 的 RoIAlign 进行比较```python
+每个数字都位于双线性采样的位置。没有四舍五入，没有量化，没有梯度丢失。
+
+### 步骤 2：与 torchvision 的 RoIAlign 进行比较
+
+```python
 from torchvision.ops import roi_align
 
 feature = torch.randn(1, 16, 50, 50)
@@ -140,9 +158,13 @@ theirs = roi_align(feature, boxes, output_size=(7, 7), spatial_scale=1/4, sampli
 print(f"shape ours:   {tuple(ours.shape)}")
 print(f"shape theirs: {tuple(theirs.shape)}")
 print(f"max|diff|:    {(ours - theirs).abs().max().item():.3e}")
-```使用 `sampling_ratio=1` 和 `aligned=True`，两者匹配精度在 `1e-5` 之内。
+```
 
-### 步骤 3：加载预训练的 Mask R-CNN```python
+使用 `sampling_ratio=1` 和 `aligned=True`，两者匹配精度在 `1e-5` 之内。
+
+### 步骤 3：加载预训练的 Mask R-CNN
+
+```python
 import torch
 from torchvision.models.detection import maskrcnn_resnet50_fpn_v2, MaskRCNN_ResNet50_FPN_V2_Weights
 
@@ -152,7 +174,9 @@ print(f"params: {sum(p.numel() for p in model.parameters()):,}")
 print(f"classes (including background): {len(model.roi_heads.box_predictor.cls_score.out_features * [0])}")
 ```46M 参数，91 个类别（COCO）。第一个类别（id 0）是背景；模型实际检测到的对象从 id 1 开始。
 
-### 步骤 4：运行推理```python
+### 步骤 4：运行推理
+
+```python
 with torch.no_grad():
     x = torch.randn(3, 400, 600)
     predictions = model([x])
@@ -161,11 +185,19 @@ print(f"boxes:  {tuple(p['boxes'].shape)}")
 print(f"labels: {tuple(p['labels'].shape)}")
 print(f"scores: {tuple(p['scores'].shape)}")
 print(f"masks:  {tuple(p['masks'].shape)}")
-```掩码张量的形状为 `(N, 1, H, W)`。阈值设为 0.5 以获得每个对象的二值掩码：```python
-binary_masks = (p['masks'] > 0.5).squeeze(1)  # (N, H, W) boolean
-```### 步骤 5：为自定义类别数量交换头部
+```
 
-常见的微调方法：复用骨干网络、FPN 和 RPN；替换两个分类器头部。```python
+掩码张量的形状为 `(N, 1, H, W)`。阈值设为 0.5 以获得每个对象的二值掩码：
+
+```python
+binary_masks = (p['masks'] > 0.5).squeeze(1)  # (N, H, W) boolean
+```
+
+### 步骤 5：为自定义类别数量交换头部
+
+常见的微调方法：复用骨干网络、FPN 和 RPN；替换两个分类器头部。
+
+```python
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 
@@ -180,11 +212,15 @@ def build_custom_maskrcnn(num_classes):
 
 custom = build_custom_maskrcnn(num_classes=5)
 print(f"custom cls_score.out_features: {custom.roi_heads.box_predictor.cls_score.out_features}")
-````num_classes` 必须包含背景类别，因此具有 4 个对象类别的数据集使用 `num_classes=5`。
+```
+
+`num_classes` 必须包含背景类别，因此具有 4 个对象类别的数据集使用 `num_classes=5`。
 
 ### 步骤 6：冻结不需要训练的部分
 
-在小数据集上，冻结骨干网络和 FPN。只有 RPN 的对象性 + 回归和两个头部进行学习。```python
+在小数据集上，冻结骨干网络和 FPN。只有 RPN 的对象性 + 回归和两个头部进行学习。
+
+```python
 def freeze_backbone_and_fpn(model):
     # torchvision Mask R-CNN packs the FPN inside `model.backbone` (as
     # `model.backbone.fpn`), so iterating `model.backbone.parameters()` covers
@@ -196,11 +232,15 @@ def freeze_backbone_and_fpn(model):
 custom = freeze_backbone_and_fpn(custom)
 trainable = sum(p.numel() for p in custom.parameters() if p.requires_grad)
 print(f"trainable after freeze: {trainable:,}")
-```在包含 500 张图像的数据集上，这之间的区别就是收敛与过拟合。
+```
+
+在包含 500 张图像的数据集上，这之间的区别就是收敛与过拟合。
 
 ## 使用方法
 
-在 torchvision 中，Mask R-CNN 的完整训练循环只有 40 行代码，并且在不同任务之间不会发生显著变化 —— 只需更换数据集即可继续使用。```python
+在 torchvision 中，Mask R-CNN 的完整训练循环只有 40 行代码，并且在不同任务之间不会发生显著变化 —— 只需更换数据集即可继续使用。
+
+```python
 def train_step(model, images, targets, optimizer):
     model.train()
     loss_dict = model(images, targets)
@@ -209,7 +249,9 @@ def train_step(model, images, targets, optimizer):
     losses.backward()
     optimizer.step()
     return {k: v.item() for k, v in loss_dict.items()}
-````targets` 列表必须为每张图像提供包含 `boxes`、`labels` 和 `masks` 的字典（以 `(num_instances, H, W)` 二进制张量形式）。模型在训练过程中返回包含四个损失的字典，在评估过程中返回以 `model.training` 为键的预测列表。
+```
+
+`targets` 列表必须为每张图像提供包含 `boxes`、`labels` 和 `masks` 的字典（以 `(num_instances, H, W)` 二进制张量形式）。模型在训练过程中返回包含四个损失的字典，在评估过程中返回以 `model.training` 为键的预测列表。
 
 `pycocotools` 评估器对框和掩码都产生 mAP@IoU=0.5:0.95；你需要这两个数值来判断是框头还是掩码头成为瓶颈。
 

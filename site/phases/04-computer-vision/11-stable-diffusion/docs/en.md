@@ -24,7 +24,9 @@
 
 ## 概念
 
-### 管道```mermaid
+### 管道
+
+```mermaid
 flowchart LR
     TXT["Text prompt"] --> TE["Text encoder<br/>(CLIP-L or T5)"]
     TE --> CT["Text<br/>embedding"]
@@ -49,9 +51,13 @@ flowchart LR
 
 ### 无分类器引导（CFG）
 
-普通的文本条件设置为每个提示 `c` 学习 `epsilon_theta(x_t, t, c)`。CFG 训练相同的网络时，有 10% 的时间会丢弃 `c`（用空嵌入替换），从而得到一个可以同时预测条件和无条件噪声的单一模型。在推理时：```
+普通的文本条件设置为每个提示 `c` 学习 `epsilon_theta(x_t, t, c)`。CFG 训练相同的网络时，有 10% 的时间会丢弃 `c`（用空嵌入替换），从而得到一个可以同时预测条件和无条件噪声的单一模型。在推理时：
+
+```
 eps = eps_uncond + w * (eps_cond - eps_uncond)
-````w` 是引导尺度。`w=0` 是无条件的，`w=1` 是普通条件，`w>1` 会推动输出更“依赖于提示”，但会牺牲多样性。SD 默认值为 `w=7.5`。
+```
+
+`w` 是引导尺度。`w=0` 是无条件的，`w=1` 是普通条件，`w>1` 会推动输出更“依赖于提示”，但会牺牲多样性。SD 默认值为 `w=7.5`。
 
 CFG 是文本到图像在生产质量上工作的关键原因。没有它，提示对输出的影响较弱；有了它，提示则占主导地位。
 
@@ -76,7 +82,9 @@ SD 1.5 的总参数：约 8.6 亿。SDXL：约 26 亿。FLUX：约 120 亿。参
 
 ### LoRA 微调
 
-对 Stable Diffusion 进行完整的微调需要 20+ GB 的 VRAM 并更新 8.6 亿个参数。LoRA（低秩适应）保持基础模型冻结，并将小的秩分解矩阵注入注意力层。SD 的一个 LoRA 适配器通常为 10-50 MB，在单个消费级 GPU 上训练需要 10-60 分钟，并在推理时作为即插即用的修改加载。```
+对 Stable Diffusion 进行完整的微调需要 20+ GB 的 VRAM 并更新 8.6 亿个参数。LoRA（低秩适应）保持基础模型冻结，并将小的秩分解矩阵注入注意力层。SD 的一个 LoRA 适配器通常为 10-50 MB，在单个消费级 GPU 上训练需要 10-60 分钟，并在推理时作为即插即用的修改加载。
+
+```
 Original: W_q : (d_in, d_out)   frozen
 LoRA:     W_q + alpha * (A @ B)   where A : (d_in, r), B : (r, d_out)
 
@@ -96,7 +104,9 @@ r is typically 4-32.
 
 本课程使用 `diffusers` 进行端到端处理，而不是从零开始重建 Stable Diffusion。如果你需要重新构建的部分（VAE、文本编码器、U-Net、调度器）是其他课程的主题；在这里，目标是熟练掌握生产 API。
 
-### 第一步：文本到图像```python
+### 第一步：文本到图像
+
+```python
 import torch
 from diffusers import StableDiffusionPipeline
 
@@ -112,16 +122,24 @@ image = pipe(
     generator=torch.Generator("cuda").manual_seed(42),
 ).images[0]
 image.save("dog.png")
-````float16` 在不损失可见质量的情况下将 VRAM 减半。使用默认的 DPM-Solver++ 的 `num_inference_steps=25` 与使用 DDIM 的 `num_inference_steps=50` 相匹配。
+```
 
-### 步骤 2：更换调度器```python
+`float16` 在不损失可见质量的情况下将 VRAM 减半。使用默认的 DPM-Solver++ 的 `num_inference_steps=25` 与使用 DDIM 的 `num_inference_steps=50` 相匹配。
+
+### 步骤 2：更换调度器
+
+```python
 from diffusers import DPMSolverMultistepScheduler, EulerAncestralDiscreteScheduler
 
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
-```调度器状态与 U-Net 权重是解耦的。你可以在 DDPM 上进行训练，并使用任何调度器进行采样。
+```
 
-### 步骤 3：图像到图像```python
+调度器状态与 U-Net 权重是解耦的。你可以在 DDPM 上进行训练，并使用任何调度器进行采样。
+
+### 步骤 3：图像到图像
+
+```python
 from diffusers import StableDiffusionImg2ImgPipeline
 from PIL import Image
 
@@ -137,9 +155,13 @@ out = img2img(
     strength=0.6,
     guidance_scale=7.5,
 ).images[0]
-````strength` 是在去噪之前要添加的噪声量（0.0 = 保持不变，1.0 = 完全再生）。0.5-0.7 是风格迁移的标准范围。
+```
 
-### 步骤 4：修复绘画```python
+`strength` 是在去噪之前要添加的噪声量（0.0 = 保持不变，1.0 = 完全再生）。0.5-0.7 是风格迁移的标准范围。
+
+### 步骤 4：修复绘画
+
+```python
 from diffusers import StableDiffusionInpaintPipeline
 
 inpaint = StableDiffusionInpaintPipeline.from_pretrained(
@@ -156,18 +178,26 @@ out = inpaint(
     mask_image=mask,
     guidance_scale=7.5,
 ).images[0]
-```掩膜中的白色像素是要再生的区域。黑色像素是保留的。
+```
 
-### 步骤 5：LoRA 加载```python
+掩膜中的白色像素是要再生的区域。黑色像素是保留的。
+
+### 步骤 5：LoRA 加载
+
+```python
 pipe.load_lora_weights("sayakpaul/sd-lora-ghibli")
 pipe.fuse_lora(lora_scale=0.8)
 
 image = pipe(prompt="a village square in ghibli style").images[0]
-````lora_scale` 控制强度；0.0 = 无效果，1.0 = 完全生效。`fuse_lora` 将适配器烘焙到权重中以提高速度，但会阻止切换。在加载不同的适配器之前，请调用 `pipe.unfuse_lora()`。
+```
+
+`lora_scale` 控制强度；0.0 = 无效果，1.0 = 完全生效。`fuse_lora` 将适配器烘焙到权重中以提高速度，但会阻止切换。在加载不同的适配器之前，请调用 `pipe.unfuse_lora()`。
 
 ### 步骤 6：LoRA 训练（草图）
 
-真实的 LoRA 训练位于 `peft` 或 `diffusers.training`。概要如下：```python
+真实的 LoRA 训练位于 `peft` 或 `diffusers.training`。概要如下：
+
+```python
 # Pseudocode
 for step, batch in enumerate(dataloader):
     images, prompts = batch
@@ -184,7 +214,9 @@ for step, batch in enumerate(dataloader):
     loss = F.mse_loss(pred_noise, noise)
     loss.backward()
     optimizer.step()
-```仅 LoRA 矩阵接收梯度；基础 U-Net、VAE 和文本编码器被冻结。使用批量大小为 1 和梯度检查点，这可以适应 8 GB 的 VRAM。
+```
+
+仅 LoRA 矩阵接收梯度；基础 U-Net、VAE 和文本编码器被冻结。使用批量大小为 1 和梯度检查点，这可以适应 8 GB 的 VRAM。
 
 ## 使用它
 

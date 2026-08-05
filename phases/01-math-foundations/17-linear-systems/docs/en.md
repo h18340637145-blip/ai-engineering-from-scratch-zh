@@ -26,7 +26,9 @@
 
 ### Ax = b 几何上的含义
 
-线性方程组具有几何解释。每个方程定义一个超平面。解是所有超平面相交的点（或点集）。```
+线性方程组具有几何解释。每个方程定义一个超平面。解是所有超平面相交的点（或点集）。
+
+```
 2x + y = 5          Two lines in 2D.
 x - y  = 1          They intersect at x=2, y=1.
 ```
@@ -35,7 +37,11 @@ x - y  = 1          They intersect at x=2, y=1.
 graph LR
     A["2x + y = 5"] --- S["Solution: (2, 1)"]
     B["x - y = 1"] --- S
-```可能发生三件事：```mermaid
+```
+
+可能发生三件事：
+
+```mermaid
 graph TD
     subgraph "One Solution"
         A1["Lines intersect at a single point"]
@@ -46,7 +52,9 @@ graph TD
     subgraph "Infinite Solutions"
         A3["Lines are identical — every point is a solution"]
     end
-```用矩阵形式表示，“唯一解”意味着矩阵 A 是可逆的。“无解”意味着该系统是不一致的。“无限解”意味着矩阵 A 有零空间。大多数机器学习问题都属于“没有精确解”的类别，因为通常你拥有的方程（数据点）比未知数（参数）更多。这就是最小二乘法派上用场的地方。
+```
+
+用矩阵形式表示，“唯一解”意味着矩阵 A 是可逆的。“无解”意味着该系统是不一致的。“无限解”意味着矩阵 A 有零空间。大多数机器学习问题都属于“没有精确解”的类别，因为通常你拥有的方程（数据点）比未知数（参数）更多。这就是最小二乘法派上用场的地方。
 
 ### 列图像与行图像
 
@@ -54,7 +62,9 @@ graph TD
 
 **行图像。** 矩阵 A 的每一行定义一个方程。每个方程对应一个超平面。解是所有这些超平面的交点。
 
-**列图像。** 矩阵 A 的每一列都是一个向量。问题就变成了：A 的列向量的什么线性组合可以产生向量 b？```
+**列图像。** 矩阵 A 的每一列都是一个向量。问题就变成了：A 的列向量的什么线性组合可以产生向量 b？
+
+```
 A = | 2  1 |    b = | 5 |
     | 1 -1 |        | 1 |
 
@@ -63,13 +73,17 @@ Row picture: solve 2x + y = 5 and x - y = 1 simultaneously.
 Column picture: find x1, x2 such that:
   x1 * [2, 1] + x2 * [1, -1] = [5, 1]
   2 * [2, 1] + 1 * [1, -1] = [4+1, 2-1] = [5, 1]   check.
-```列图像更为基本。如果 b 位于 A 的列空间中，方程组有解。如果不在，你将找到列空间中距离 b 最近的点。这个最近的点就是最小二乘解。
+```
+
+列图像更为基本。如果 b 位于 A 的列空间中，方程组有解。如果不在，你将找到列空间中距离 b 最近的点。这个最近的点就是最小二乘解。
 
 ### 高斯消元法
 
 高斯消元法将 Ax = b 转化为一个上三角系统 Ux = c，然后通过回代求解。这是最直接的方法。
 
-算法：```
+算法：
+
+```
 1. For each column k (the pivot column):
    a. Find the largest entry in column k at or below row k (partial pivoting).
    b. Swap that row with row k.
@@ -77,10 +91,14 @@ Column picture: find x1, x2 such that:
       - Compute multiplier m = A[i][k] / A[k][k]
       - Subtract m times row k from row i.
 2. Back substitute: solve from the last equation upward.
-```将以下 Markdown 文本完整翻译为简体中文。保留 Markdown 标记、段落、列表、标题层级、占位符、变量名和专有技术名词；不要省略任何标题，不要输出解释，不要输出思考过程，只输出译文。
+```
+
+将以下 Markdown 文本完整翻译为简体中文。保留 Markdown 标记、段落、列表、标题层级、占位符、变量名和专有技术名词；不要省略任何标题，不要输出解释，不要输出思考过程，只输出译文。
 
 
-示例:```
+示例:
+
+```
 Original:
 | 2  1  1 | 8 |       R2 = R2 - (2)R1     | 2  1   1 |  8 |
 | 4  3  3 |20 |  -->  R3 = R3 - (1)R1 --> | 0  1   1 |  4 |
@@ -94,11 +112,15 @@ Back substitute:
   -2 * x3 = -4    -->  x3 = 2
   x2 + 2  = 4     -->  x2 = 2
   2*x1 + 2 + 2 = 8 --> x1 = 2
-```高斯消元法需要 $O(n^3)$ 次操作。对于一个 1000x1000 的系统，大约需要进行十亿次浮点运算。虽然很快，但如果你需要求解多个具有相同矩阵 $A$ 的系统，可以做得更好。
+```
+
+高斯消元法需要 $O(n^3)$ 次操作。对于一个 1000x1000 的系统，大约需要进行十亿次浮点运算。虽然很快，但如果你需要求解多个具有相同矩阵 $A$ 的系统，可以做得更好。
 
 ### 部分选主元：为什么它很重要
 
-如果不进行选主元，高斯消元法可能会失败或产生错误的结果。如果主元元素为零，就会出现除以零的情况。如果主元元素很小，就会放大舍入误差。```
+如果不进行选主元，高斯消元法可能会失败或产生错误的结果。如果主元元素为零，就会出现除以零的情况。如果主元元素很小，就会放大舍入误差。
+
+```
 Bad pivot:                       With partial pivoting:
 | 0.001  1 | 1.001 |            Swap rows first:
 | 1      1 | 2     |            | 1      1 | 2     |
@@ -111,17 +133,25 @@ R2 = R2 - 1000*R1               R2 = R2 - 0.001*R1
 x2 = 1.000 (correct)            x2 = 1.000 (correct)
 x1 = (1.001 - 1)/0.001          x1 = (2 - 1)/1 = 1.000 (correct)
    = 0.001/0.001 = 1.000        Stable because the multiplier is small.
-```在有限精度的浮点运算中，未进行选主元的版本可能会丢失有效数字。部分选主元总是选择可用的主元中最大的一个，以最小化误差放大。
+```
+
+在有限精度的浮点运算中，未进行选主元的版本可能会丢失有效数字。部分选主元总是选择可用的主元中最大的一个，以最小化误差放大。
 
 ### LU 分解
 
-LU 分解将矩阵 A 分解为一个下三角矩阵 L 和一个上三角矩阵 U：A = LU。L 矩阵存储了高斯消元法中的乘数。U 矩阵是消元后的结果。```
+LU 分解将矩阵 A 分解为一个下三角矩阵 L 和一个上三角矩阵 U：A = LU。L 矩阵存储了高斯消元法中的乘数。U 矩阵是消元后的结果。
+
+```
 A = L @ U
 
 | 2  1  1 |   | 1  0  0 |   | 2  1   1 |
 | 4  3  3 | = | 2  1  0 | @ | 0  1   1 |
 | 2  3  1 |   | 1  2  1 |   | 0  0  -2 |
-```为什么使用分解而不是直接消元？因为一旦你得到了 L 和 U，对于任何新的 b 解方程 Ax = b 的成本只需 O(n²)：```
+```
+
+为什么使用分解而不是直接消元？因为一旦你得到了 L 和 U，对于任何新的 b 解方程 Ax = b 的成本只需 O(n²)：
+
+```
 Ax = b
 LUx = b
 Let y = Ux:
@@ -135,7 +165,9 @@ Let y = Ux:
 
 QR 分解将矩阵 A 分解为一个正交矩阵 Q 和一个上三角矩阵 R：A = QR。
 
-正交矩阵具有 QᵀQ = I 的性质。它的列是正交单位向量。乘以 Q 会保持长度和角度不变。```
+正交矩阵具有 QᵀQ = I 的性质。它的列是正交单位向量。乘以 Q 会保持长度和角度不变。
+
+```
 A = Q @ R
 
 Q has orthonormal columns: Q^T Q = I
@@ -145,7 +177,9 @@ To solve Ax = b:
   QRx = b
   Rx = Q^T b    (just multiply by Q^T, no inversion needed)
   Back substitute to get x.
-```QR 算法在求解最小二乘问题时比 LU 分解数值上更稳定。Gram-Schmidt 过程按列构建 Q：```
+```QR 算法在求解最小二乘问题时比 LU 分解数值上更稳定。Gram-Schmidt 过程按列构建 Q：
+
+```
 Given columns a1, a2, ... of A:
 
 q1 = a1 / ||a1||
@@ -157,11 +191,15 @@ q3 = a3 - (a3 . q1) * q1 - (a3 . q2) * q2
 q3 = q3 / ||q3||
 
 R[i][j] = qi . aj    for i <= j
-```每一步都会沿着所有先前的 q 向量方向移除该分量，只留下新的正交方向。
+```
+
+每一步都会沿着所有先前的 q 向量方向移除该分量，只留下新的正交方向。
 
 ### 乔列斯基分解
 
-当 A 是对称矩阵（A = A^T）且正定（所有特征值为正）时，可以将其分解为 A = L L^T 的形式，其中 L 是下三角矩阵。这就是乔列斯基分解。```
+当 A 是对称矩阵（A = A^T）且正定（所有特征值为正）时，可以将其分解为 A = L L^T 的形式，其中 L 是下三角矩阵。这就是乔列斯基分解。
+
+```
 A = L @ L^T
 
 | 4  2 |   | 2  0 |   | 2  1 |
@@ -180,14 +218,24 @@ L[i][j] = (A[i][j] - sum(L[i][k]*L[j][k] for k < j)) / L[j][j]    for i > j
 
 ### 最小二乘法：当 Ax = b 没有精确解时
 
-如果 A 是 m x n 的矩阵，且 m > n（方程数量多于未知数数量），那么系统是超定的。此时没有精确解。取而代之的是，你最小化平方误差：```
+如果 A 是 m x n 的矩阵，且 m > n（方程数量多于未知数数量），那么系统是超定的。此时没有精确解。取而代之的是，你最小化平方误差：
+
+```
 minimize ||Ax - b||^2
 
 This is the sum of squared residuals:
   sum((A[i,:] @ x - b[i])^2 for i in range(m))
-```最小化器满足正规方程：```
+```
+
+最小化器满足正规方程：
+
+```
 A^T A x = A^T b
-```推导：展开 ||Ax - b||² = (Ax - b)^T (Ax - b) = x^T A^T A x - 2 x^T A^T b + b^T b。对 x 求梯度，设为零：2 A^T A x - 2 A^T b = 0.```
+```
+
+推导：展开 ||Ax - b||² = (Ax - b)^T (Ax - b) = x^T A^T A x - 2 x^T A^T b + b^T b。对 x 求梯度，设为零：2 A^T A x - 2 A^T b = 0.
+
+```
 Original system (overdetermined, 4 equations, 2 unknowns):
 | 1  1 |         | 3 |
 | 1  2 | x     = | 5 |       No exact x satisfies all 4 equations.
@@ -201,25 +249,39 @@ A^T A = | 4  10 |    A^T b = | 22 |
 Solve: x = [1.5, 1.7]
 
 This is linear regression. x[0] is the intercept, x[1] is the slope.
-```### 正则方程 = 线性回归
+```
 
-这种联系是精确的。在线性回归中，你的数据矩阵 X 每个样本对应一行，每个特征对应一列。你的目标向量 y 每个样本对应一个条目。权重向量 w 满足：```
+### 正则方程 = 线性回归
+
+这种联系是精确的。在线性回归中，你的数据矩阵 X 每个样本对应一行，每个特征对应一列。你的目标向量 y 每个样本对应一个条目。权重向量 w 满足：
+
+```
 X^T X w = X^T y
 w = (X^T X)^(-1) X^T y
-```这是线性回归的闭合形式解。每次调用 `sklearn.linear_model.LinearRegression.fit()` 都会计算这个（或通过 QR 或 SVD 等价的形式）。
+```
 
-向矩阵中添加一个正则化项 lambda * I，你就会得到岭回归：```
+这是线性回归的闭合形式解。每次调用 `sklearn.linear_model.LinearRegression.fit()` 都会计算这个（或通过 QR 或 SVD 等价的形式）。
+
+向矩阵中添加一个正则化项 lambda * I，你就会得到岭回归：
+
+```
 (X^T X + lambda * I) w = X^T y
 w = (X^T X + lambda * I)^(-1) X^T y
-```正则化使矩阵的条件更好（更容易准确求逆），并通过将权重向零收缩来防止过拟合。当 lambda > 0 时，矩阵 X^T X + lambda * I 始终是对称正定的，因此你可以使用 Cholesky 分解来求解它。
+```
+
+正则化使矩阵的条件更好（更容易准确求逆），并通过将权重向零收缩来防止过拟合。当 lambda > 0 时，矩阵 X^T X + lambda * I 始终是对称正定的，因此你可以使用 Cholesky 分解来求解它。
 
 ### 伪逆（Moore-Penrose）
 
-伪逆 A+ 将矩阵求逆推广到非方阵和奇异矩阵。对于任何矩阵 A：```
+伪逆 A+ 将矩阵求逆推广到非方阵和奇异矩阵。对于任何矩阵 A：
+
+```
 x = A+ b
 
 where A+ = V Sigma+ U^T    (computed via SVD)
-```Sigma+ 是通过对每个非零奇异值取倒数，并将结果转置而形成的。如果 A = U Sigma V^T，那么 A+ = V Sigma+ U^T。```
+```Sigma+ 是通过对每个非零奇异值取倒数，并将结果转置而形成的。如果 A = U Sigma V^T，那么 A+ = V Sigma+ U^T。
+
+```
 A = U Sigma V^T        (SVD)
 
 Sigma = | 5  0 |       Sigma+ = | 1/5  0  0 |
@@ -227,7 +289,9 @@ Sigma = | 5  0 |       Sigma+ = | 1/5  0  0 |
         | 0  0 |
 
 A+ = V Sigma+ U^T
-```伪逆给出了最小范数的最小二乘解。如果系统有：
+```
+
+伪逆给出了最小范数的最小二乘解。如果系统有：
 - 一个解：A+ b 给出这个解。
 - 没有解：A+ b 给出最小二乘解。
 - 无限多解：A+ b 给出其中范数 ||x|| 最小的那个。
@@ -236,16 +300,24 @@ NumPy 的 `np.linalg.lstsq` 和 `np.linalg.pinv` 都在内部使用 SVD。
 
 ### 条件数
 
-条件数衡量了解对输入微小变化的敏感程度。对于矩阵 A，条件数是：```
+条件数衡量了解对输入微小变化的敏感程度。对于矩阵 A，条件数是：
+
+```
 kappa(A) = ||A|| * ||A^(-1)|| = sigma_max / sigma_min
-```其中 sigma_max 和 sigma_min 分别是最大和最小的奇异值。```
+```
+
+其中 sigma_max 和 sigma_min 分别是最大和最小的奇异值。
+
+```
 Well-conditioned (kappa ~ 1):        Ill-conditioned (kappa ~ 10^15):
 Small change in b -->                Small change in b -->
 small change in x                    huge change in x
 
 | 2  0 |   kappa = 2/1 = 2          | 1   1          |   kappa ~ 10^15
 | 0  1 |   safe to solve            | 1   1+10^(-15) |   solution is garbage
-```经验法则：
+```
+
+经验法则：
 - kappa < 100：安全，解是准确的。
 - kappa ~ 10^k：你的浮点运算会损失大约k位精度。
 - kappa ~ 10^16（对于float64）：解是没有意义的。矩阵实际上可以视为奇异矩阵。
@@ -256,7 +328,9 @@ small change in x                    huge change in x
 
 对于非常大的稀疏系统（数百万个未知数），像LU或Cholesky这样的直接方法成本太高。迭代方法通过在许多迭代中改进猜测来近似解。
 
-共轭梯度法（CG）用于求解对称正定矩阵A的Ax = b问题。在精确算术中，它最多需要n次迭代找到精确解，但如果A的特征值聚集在一起，通常会收敛得更快。```
+共轭梯度法（CG）用于求解对称正定矩阵A的Ax = b问题。在精确算术中，它最多需要n次迭代找到精确解，但如果A的特征值聚集在一起，通常会收敛得更快。
+
+```
 Algorithm sketch:
   x0 = initial guess (often zero)
   r0 = b - A x0           (residual)
@@ -303,11 +377,17 @@ Algorithm sketch:
 
 **预处理。** 大规模优化器使用不完全乔列斯基分解或不完全 LU 分解作为共轭梯度求解器的预处理子。
 
-**特征工程。** X^T X 的条件数告诉你特征是否共线。如果 kappa 很大，丢弃特征或添加正则化。```figure
-linear-system-conditioning
-```## 构建它
+**特征工程。** X^T X 的条件数告诉你特征是否共线。如果 kappa 很大，丢弃特征或添加正则化。
 
-### 步骤 1：带部分选主元的高斯消去法```python
+```figure
+linear-system-conditioning
+```
+
+## 构建它
+
+### 步骤 1：带部分选主元的高斯消去法
+
+```python
 import numpy as np
 
 def gaussian_elimination(A, b):
@@ -330,7 +410,11 @@ def gaussian_elimination(A, b):
         x[i] = (Ab[i, -1] - Ab[i, i+1:n] @ x[i+1:n]) / Ab[i, i]
 
     return x
-```### 步骤 2：LU 分解```python
+```
+
+### 步骤 2：LU 分解
+
+```python
 def lu_decompose(A):
     n = A.shape[0]
     L = np.eye(n)
@@ -364,7 +448,11 @@ def lu_solve(P, L, U, b):
         x[i] = (y[i] - U[i, i+1:] @ x[i+1:]) / U[i, i]
 
     return x
-```### 步骤 3：Cholesky 分解```python
+```
+
+### 步骤 3：Cholesky 分解
+
+```python
 def cholesky(A):
     n = A.shape[0]
     L = np.zeros_like(A, dtype=float)
@@ -380,7 +468,11 @@ def cholesky(A):
                 L[i, j] = s / L[j, j]
 
     return L
-```### 步骤 4：通过正规方程进行最小二乘法```python
+```
+
+### 步骤 4：通过正规方程进行最小二乘法
+
+```python
 def least_squares_normal(A, b):
     AtA = A.T @ A
     Atb = A.T @ b
@@ -398,13 +490,21 @@ def ridge_regression(A, b, lam):
     for i in range(n - 1, -1, -1):
         x[i] = (y[i] - L.T[i, i+1:] @ x[i+1:]) / L.T[i, i]
     return x
-```### 步骤 5：条件数```python
+```
+
+### 步骤 5：条件数
+
+```python
 def condition_number(A):
     U, S, Vt = np.linalg.svd(A)
     return S[0] / S[-1]
-```## 使用它
+```
 
-将各部分组合起来，在真实数据上进行线性回归和岭回归：```python
+## 使用它
+
+将各部分组合起来，在真实数据上进行线性回归和岭回归：
+
+```python
 np.random.seed(42)
 X_raw = np.random.randn(100, 3)
 w_true = np.array([2.0, -1.0, 0.5])
@@ -426,7 +526,9 @@ from sklearn.linear_model import Ridge
 ridge_sk = Ridge(alpha=1.0, fit_intercept=False)
 ridge_sk.fit(X, y)
 print(f"Ridge weights (sklearn): {ridge_sk.coef_}")
-```## 发布它
+```
+
+## 发布它
 
 本课将产出：
 - `code/linear_systems.py` 包含从零开始实现的高斯消元法、LU分解、Cholesky分解、最小二乘法和岭回归

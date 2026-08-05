@@ -22,18 +22,24 @@
 
 ## 概念
 
-### 改变视觉的四个想法```mermaid
+### 改变视觉的四个想法
+
+```mermaid
 timeline
     title Four ideas, four families
     1998 : LeNet-5 : Conv + pool + FC for digits, trained on CPU, 60k params
     2012 : AlexNet : Deeper + ReLU + dropout + two GPUs, won ImageNet by 10 points
     2014 : VGG / Inception : 3x3 stacks (VGG), parallel filter sizes (Inception)
     2015 : ResNet : Identity skip connections unlock 100+ layer training
-```在经典视觉领域中，没有其他事情比这四个跳跃更重要。
+```
+
+在经典视觉领域中，没有其他事情比这四个跳跃更重要。
 
 ### LeNet-5 (1998)
 
-Yann LeCun 的数字识别器。60,000 个参数。两个卷积-池化模块，两个全连接层，tanh 激活函数。它定义了每个卷积神经网络继承的模板：```
+Yann LeCun 的数字识别器。60,000 个参数。两个卷积-池化模块，两个全连接层，tanh 激活函数。它定义了每个卷积神经网络继承的模板：
+
+```
 input (1, 32, 32)
   conv 5x5 -> (6, 28, 28)
   avg pool 2x2 -> (6, 14, 14)
@@ -43,7 +49,9 @@ input (1, 32, 32)
   dense -> 120
   dense -> 84
   dense -> 10
-```现代世界所称的 CNN —— 交替进行卷积和下采样，然后将结果输入一个小型分类器头部 —— 其实就是 LeNet，只不过层数更多、通道数更大、激活函数更好。
+```
+
+现代世界所称的 CNN —— 交替进行卷积和下采样，然后将结果输入一个小型分类器头部 —— 其实就是 LeNet，只不过层数更多、通道数更大、激活函数更好。
 
 ### AlexNet（2012）
 
@@ -57,16 +65,22 @@ input (1, 32, 32)
 
 ### VGG（2014）
 
-VGG 提出的问题是：如果我们只使用 3x3 卷积并增加深度，会发生什么呢？```
+VGG 提出的问题是：如果我们只使用 3x3 卷积并增加深度，会发生什么呢？
+
+```
 stack:   conv 3x3 -> conv 3x3 -> pool 2x2
 repeat:  16 or 19 conv layers
-```两个 3x3 卷积层看到相同的 5x5 输入区域，就像一个 5x5 卷积层，但参数更少（2*9*C² = 18C² vs 25*C²），并且中间还有一个额外的 ReLU。VGG 将这一观察转化为整个架构。这种简单性——一种模块类型，重复使用——使其成为之后所有架构的参考基准。
+```
+
+两个 3x3 卷积层看到相同的 5x5 输入区域，就像一个 5x5 卷积层，但参数更少（2*9*C² = 18C² vs 25*C²），并且中间还有一个额外的 ReLU。VGG 将这一观察转化为整个架构。这种简单性——一种模块类型，重复使用——使其成为之后所有架构的参考基准。
 
 成本：1.38 亿个参数，训练速度慢，在推理时成本高。
 
 ### Inception（2014 年，同年）
 
-Google 对“我应该使用什么卷积核大小？”的回答是：全部使用，但并行进行。```mermaid
+Google 对“我应该使用什么卷积核大小？”的回答是：全部使用，但并行进行。
+
+```mermaid
 flowchart LR
     IN["Input feature map"] --> A["1x1 conv"]
     IN --> B["3x3 conv"]
@@ -81,11 +95,15 @@ flowchart LR
     style IN fill:#dbeafe,stroke:#2563eb
     style CAT fill:#fef3c7,stroke:#d97706
     style OUT fill:#dcfce7,stroke:#16a34a
-```每个分支都有其专门的功能 —— 1x1 用于通道混合，3x3 用于局部纹理，5x5 用于更大范围的模式，池化用于位移不变特征 —— 而 concat 操作可以让下一层选择对它有用的分支。Inception v1 在每个分支内部使用了 1x1 卷积作为瓶颈，以保持参数数量的合理。
+```
+
+每个分支都有其专门的功能 —— 1x1 用于通道混合，3x3 用于局部纹理，5x5 用于更大范围的模式，池化用于位移不变特征 —— 而 concat 操作可以让下一层选择对它有用的分支。Inception v1 在每个分支内部使用了 1x1 卷积作为瓶颈，以保持参数数量的合理。
 
 ### 退化问题
 
-到 2015 年，VGG-19 能够正常工作，而 VGG-32 却不行。深度本应有助于提升性能，但超过约 20 层后，训练和测试损失都变差了。这不是过拟合。这是优化器无法找到有用的权重，因为梯度在每一层中成倍缩小。```
+到 2015 年，VGG-19 能够正常工作，而 VGG-32 却不行。深度本应有助于提升性能，但超过约 20 层后，训练和测试损失都变差了。这不是过拟合。这是优化器无法找到有用的权重，因为梯度在每一层中成倍缩小。
+
+```
 Plain deep network:
   y = f_L( f_{L-1}( ... f_1(x) ... ) )
 
@@ -98,10 +116,16 @@ Stack 100 of them with gains < 1 and the gradient is effectively zero.
 
 ### ResNet (2015)
 
-He, Zhang, Ren, Sun 提出了一项改进，解决了所有问题：```
+He, Zhang, Ren, Sun 提出了一项改进，解决了所有问题：
+
+```
 standard block:   y = F(x)
 residual block:   y = F(x) + x
-````+ x` 表示该层可以通过将 `F(x)` 驱动为零来始终选择不做任何事情。现在，一个 1,000 层的 ResNet 最多只会和一个 1 层网络一样糟糕，因为每个额外的块都有一个简单的逃生通道。有了这个保证，优化器愿意让每个块都*稍微*有用一些——而稍微有用，堆叠 100 次，就是最先进的技术。```mermaid
+```
+
+`+ x` 表示该层可以通过将 `F(x)` 驱动为零来始终选择不做任何事情。现在，一个 1,000 层的 ResNet 最多只会和一个 1 层网络一样糟糕，因为每个额外的块都有一个简单的逃生通道。有了这个保证，优化器愿意让每个块都*稍微*有用一些——而稍微有用，堆叠 100 次，就是最先进的技术。
+
+```mermaid
 flowchart LR
     X["Input x"] --> F["F(x)<br/>conv + BN + ReLU<br/>conv + BN"]
     X -.->|identity skip| PLUS(["+"])
@@ -112,7 +136,9 @@ flowchart LR
     style X fill:#dbeafe,stroke:#2563eb
     style PLUS fill:#fef3c7,stroke:#d97706
     style OUT fill:#dcfce7,stroke:#16a34a
-```块的两种变体随处可见：
+```
+
+块的两种变体随处可见：
 
 - **BasicBlock**（ResNet-18，ResNet-34）：两个 3x3 卷积，跳过这两个卷积。
 - **Bottleneck**（ResNet-50，-101，-152）：1x1 降维，3x3 中间层，1x1 升维，跳过这三者。当通道数量较高时，这种结构更经济。
@@ -121,13 +147,19 @@ flowchart LR
 
 ### 为何残差连接在视觉以外的领域也很重要
 
-这个想法并不只是关于图像分类。它的目的是将深度网络从“祈祷并希望梯度能存活下来”的状态，转变为一种可靠且可扩展的工程工具。在下个阶段你将读到的每一个 Transformer，其每个块中都有完全相同的跳过连接。没有 ResNet，就不会有 GPT。```figure
+这个想法并不只是关于图像分类。它的目的是将深度网络从“祈祷并希望梯度能存活下来”的状态，转变为一种可靠且可扩展的工程工具。在下个阶段你将读到的每一个 Transformer，其每个块中都有完全相同的跳过连接。没有 ResNet，就不会有 GPT。
+
+```figure
 pooling
-```## 构建它
+```
+
+## 构建它
 
 ### 步骤 1：LeNet-5
 
-一个最小且忠实的 LeNet。使用 Tanh 激活函数，平均池化。唯一对现代性的妥协是，我们使用 `nn.CrossEntropyLoss` 而不是原始的高斯连接进行下游处理。```python
+一个最小且忠实的 LeNet。使用 Tanh 激活函数，平均池化。唯一对现代性的妥协是，我们使用 `nn.CrossEntropyLoss` 而不是原始的高斯连接进行下游处理。
+
+```python
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -154,11 +186,15 @@ net = LeNet5()
 x = torch.randn(1, 1, 32, 32)
 print(f"output: {net(x).shape}")
 print(f"params: {sum(p.numel() for p in net.parameters()):,}")
-```预期输出：`output: torch.Size([1, 10])`, `params: 61,706`。这就是启动现代视觉的完整数字分类器。
+```
+
+预期输出：`output: torch.Size([1, 10])`, `params: 61,706`。这就是启动现代视觉的完整数字分类器。
 
 ### 步骤 2：一个 VGG 模块
 
-一个可重复使用的模块：两个 3x3 卷积层，ReLU，批量归一化，最大池化。```python
+一个可重复使用的模块：两个 3x3 卷积层，ReLU，批量归一化，最大池化。
+
+```python
 class VGGBlock(nn.Module):
     def __init__(self, in_c, out_c):
         super().__init__()
@@ -194,11 +230,15 @@ net = MiniVGG()
 x = torch.randn(1, 3, 32, 32)
 print(f"output: {net(x).shape}")
 print(f"params: {sum(p.numel() for p in net.parameters()):,}")
-```在 CIFAR 尺寸输入上使用三个 VGG 块，一个自适应池化层，一个线性层。约 290,000 个参数。对于 CIFAR-10 来说绰绰有余。
+```
+
+在 CIFAR 尺寸输入上使用三个 VGG 块，一个自适应池化层，一个线性层。约 290,000 个参数。对于 CIFAR-10 来说绰绰有余。
 
 ### 步骤 3：ResNet 基本块
 
-ResNet-18 和 ResNet-34 的核心构建块。```python
+ResNet-18 和 ResNet-34 的核心构建块。
+
+```python
 class BasicBlock(nn.Module):
     def __init__(self, in_c, out_c, stride=1):
         super().__init__()
@@ -219,11 +259,15 @@ class BasicBlock(nn.Module):
         out = self.bn2(self.conv2(out))
         out = out + self.shortcut(x)
         return F.relu(out)
-````bias=False` 在卷积层中是一种批量归一化（batch-norm）的惯例 —— 批量归一化的 beta 参数已经处理了偏置，因此同时携带卷积偏置是浪费。只有当步长或通道数量变化时，`shortcut` 才需要真正的卷积；否则它是一个无操作（no-op）的恒等映射。
+```
+
+`bias=False` 在卷积层中是一种批量归一化（batch-norm）的惯例 —— 批量归一化的 beta 参数已经处理了偏置，因此同时携带卷积偏置是浪费。只有当步长或通道数量变化时，`shortcut` 才需要真正的卷积；否则它是一个无操作（no-op）的恒等映射。
 
 ### 步骤 4：一个微型 ResNet
 
-堆叠四组 BasicBlocks，以获得一个适用于 CIFAR 尺寸输入的可用 ResNet。```python
+堆叠四组 BasicBlocks，以获得一个适用于 CIFAR 尺寸输入的可用 ResNet。
+
+```python
 class TinyResNet(nn.Module):
     def __init__(self, num_classes=10):
         super().__init__()
@@ -260,11 +304,15 @@ net = TinyResNet()
 x = torch.randn(1, 3, 32, 32)
 print(f"output: {net(x).shape}")
 print(f"params: {sum(p.numel() for p in net.parameters()):,}")
-```每组两个模块，共四组。在第2、3、4组开始时，步长为2。每次下采样后通道数翻倍。大约2.8M参数。这就是可以干净地扩展到ResNet-152的标准配方。
+```
+
+每组两个模块，共四组。在第2、3、4组开始时，步长为2。每次下采样后通道数翻倍。大约2.8M参数。这就是可以干净地扩展到ResNet-152的标准配方。
 
 ### 步骤5：比较参数与特征的效率
 
-将相同的输入通过所有三个网络，并比较参数数量。```python
+将相同的输入通过所有三个网络，并比较参数数量。
+
+```python
 def summary(name, net, x):
     y = net(x)
     params = sum(p.numel() for p in net.parameters())
@@ -274,11 +322,15 @@ x = torch.randn(1, 3, 32, 32)
 summary("LeNet5",     LeNet5(),       torch.randn(1, 1, 32, 32))
 summary("MiniVGG",    MiniVGG(),      x)
 summary("TinyResNet", TinyResNet(),   x)
-```三个模型，三个时代，参数数量相差三个数量级。对于 CIFAR-10 准确率，你需要大致：LeNet 60%，MiniVGG 89%，TinyResNet 在训练几个周期后达到 93%。
+```
+
+三个模型，三个时代，参数数量相差三个数量级。对于 CIFAR-10 准确率，你需要大致：LeNet 60%，MiniVGG 89%，TinyResNet 在训练几个周期后达到 93%。
 
 ## 使用方法
 
-`torchvision.models` 为上述所有模型提供了预训练版本。所有家族的调用签名都相同，这正是骨干抽象的核心理念。```python
+`torchvision.models` 为上述所有模型提供了预训练版本。所有家族的调用签名都相同，这正是骨干抽象的核心理念。
+
+```python
 from torchvision.models import resnet18, ResNet18_Weights, vgg16, VGG16_Weights
 
 r18 = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
@@ -293,11 +345,15 @@ v16.eval()
 print(f"VGG-16   params: {sum(p.numel() for p in v16.parameters()):,}")
 ```ResNet-18 有 11.7M 个参数。VGG-16 有 138M 个参数。相似的 ImageNet top-1 准确率（69.8% 对 71.6%）。残差连接让你获得 12 倍的参数效率优势。这就是为什么从 2016 年到 ViT 在 2021 年出现之前，ResNet 的变体一直占据主导地位 —— 而且在计算资源是限制因素的现实世界部署中，仍然占据主导地位。
 
-对于迁移学习，配方始终是相同的：加载预训练模型，冻结主干网络，替换分类器头部。```python
+对于迁移学习，配方始终是相同的：加载预训练模型，冻结主干网络，替换分类器头部。
+
+```python
 for p in r18.parameters():
     p.requires_grad = False
 r18.fc = nn.Linear(r18.fc.in_features, 10)
-```三行代码。你现在拥有了一个继承 ImageNet 所训练出的表示的 10 类 CIFAR 分类器。
+```
+
+三行代码。你现在拥有了一个继承 ImageNet 所训练出的表示的 10 类 CIFAR 分类器。
 
 ## 发布它
 

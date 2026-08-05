@@ -24,7 +24,9 @@
 
 ## 概念
 
-### 训练集、验证集、测试集```mermaid
+### 训练集、验证集、测试集
+
+```mermaid
 flowchart LR
     A[Full Dataset] --> B[Train Set 60-70%]
     A --> C[Validation Set 15-20%]
@@ -36,7 +38,9 @@ flowchart LR
     F --> G[Final Model]
     G --> D
     D --> H[Report Performance]
-```三个数据集，三个用途：
+```
+
+三个数据集，三个用途：
 
 - **训练集**：模型从这些数据中学习。在训练过程中，模型会看到这些示例。
 - **验证集**：用于调整超参数和在多个模型之间进行选择。模型从不在这部分数据上进行训练，但你的决策会受到它的影响。
@@ -46,7 +50,9 @@ flowchart LR
 
 ### K折交叉验证
 
-在数据集较小时，单一的训练/验证划分会浪费数据并产生噪声估计。K折交叉验证会将所有数据都用于训练和验证：```mermaid
+在数据集较小时，单一的训练/验证划分会浪费数据并产生噪声估计。K折交叉验证会将所有数据都用于训练和验证：
+
+```mermaid
 flowchart TB
     subgraph Fold1["Fold 1"]
         direction LR
@@ -132,11 +138,17 @@ K=5 或 K=10 是标准选择。每个数据点恰好被用于一次验证。平�
 
 **未使用分层划分**：在类别不平衡的数据中，随机划分可能在验证折中放入非常少的少数类别样本，导致估计不稳定。
 
-**测试过于频繁**：每次查看测试性能并进行调整，都会导致对测试集过拟合。测试集只能使用一次。```figure
-precision-recall-threshold
-```## 构建它
+**测试过于频繁**：每次查看测试性能并进行调整，都会导致对测试集过拟合。测试集只能使用一次。
 
-### 第一步：训练/验证/测试划分```python
+```figure
+precision-recall-threshold
+```
+
+## 构建它
+
+### 第一步：训练/验证/测试划分
+
+```python
 import random
 import math
 
@@ -162,7 +174,11 @@ def train_val_test_split(X, y, train_ratio=0.6, val_ratio=0.2, seed=42):
     y_test = [y[i] for i in test_idx]
 
     return X_train, y_train, X_val, y_val, X_test, y_test
-```### 步骤 2：K 折和分层 K 折交叉验证```python
+```
+
+### 步骤 2：K 折和分层 K 折交叉验证
+
+```python
 def kfold_split(n, k=5, seed=42):
     random.seed(seed)
     indices = list(range(n))
@@ -232,7 +248,11 @@ def cross_validate(X, y, model_fn, k=5, metric_fn=None, stratified=False):
         scores.append(score)
 
     return scores
-```### 步骤 3：混淆矩阵和分类指标```python
+```
+
+### 步骤 3：混淆矩阵和分类指标
+
+```python
 def confusion_matrix(y_true, y_pred):
     tp = sum(1 for yt, yp in zip(y_true, y_pred) if yt == 1 and yp == 1)
     tn = sum(1 for yt, yp in zip(y_true, y_pred) if yt == 0 and yp == 0)
@@ -299,7 +319,11 @@ def auc_roc(y_true, y_scores):
         area += width * height
 
     return area
-```### 步骤 4：回归指标```python
+```
+
+### 步骤 4：回归指标
+
+```python
 def mse(y_true, y_pred):
     n = len(y_true)
     return sum((yt - yp) ** 2 for yt, yp in zip(y_true, y_pred)) / n
@@ -321,7 +345,11 @@ def r_squared(y_true, y_pred):
     if ss_tot == 0:
         return 0.0
     return 1.0 - ss_res / ss_tot
-```### 步骤 5：学习曲线```python
+```
+
+### 步骤 5：学习曲线
+
+```python
 def learning_curve(X, y, model_fn, metric_fn, train_sizes=None, val_ratio=0.2, seed=42):
     random.seed(seed)
     n = len(X)
@@ -356,7 +384,11 @@ def learning_curve(X, y, model_fn, metric_fn, train_sizes=None, val_ratio=0.2, s
         val_scores.append(metric_fn(y_val, val_pred))
 
     return train_sizes, train_scores, val_scores
-```### 步骤 6：用于测试的简单分类器，以及完整的演示```python
+```
+
+### 步骤 6：用于测试的简单分类器，以及完整的演示
+
+```python
 class SimpleLogistic:
     def __init__(self, lr=0.1, epochs=100):
         self.lr = lr
@@ -593,9 +625,13 @@ if __name__ == "__main__":
     print(f"  Mean difference: {mean_diff:.4f}")
     print(f"  Paired t-statistic: {t_stat:.4f}")
     print(f"  (|t| > 2.78 for significance at p<0.05 with df=4)")
-```## 使用它
+```
 
-使用 scikit-learn，评估是工作流程的一部分：```python
+## 使用它
+
+使用 scikit-learn，评估是工作流程的一部分：
+
+```python
 from sklearn.model_selection import cross_val_score, StratifiedKFold, learning_curve
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
@@ -605,7 +641,9 @@ from sklearn.linear_model import LogisticRegression
 
 model = LogisticRegression()
 scores = cross_val_score(model, X, y, cv=StratifiedKFold(5), scoring="f1")
-```从零开始的版本展示了交叉验证的确切过程（没有魔法，只是 for 循环和索引跟踪），如何计算每个指标（只是统计 TP/FP/TN/FN），以及为什么分层很重要（在每个折叠中保留类别比例）。库版本增加了并行性、更多的评分选项和与管道的集成。
+```
+
+从零开始的版本展示了交叉验证的确切过程（没有魔法，只是 for 循环和索引跟踪），如何计算每个指标（只是统计 TP/FP/TN/FN），以及为什么分层很重要（在每个折叠中保留类别比例）。库版本增加了并行性、更多的评分选项和与管道的集成。
 
 ## 发布它
 

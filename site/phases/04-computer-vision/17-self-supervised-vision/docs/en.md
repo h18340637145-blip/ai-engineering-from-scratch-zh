@@ -24,7 +24,9 @@
 
 ## 概念
 
-### 三个家族```mermaid
+### 三个家族
+
+```mermaid
 flowchart LR
     A["Contrastive<br/>SimCLR, MoCo, CLIP"] --> AT["positive pairs<br/>(same image, 2 augs)<br/>pulled together,<br/>negatives pushed apart"]
     B["Teacher-student<br/>DINO, BYOL, iBOT"] --> BT["student predicts<br/>teacher's output;<br/>teacher is EMA of student"]
@@ -33,35 +35,49 @@ flowchart LR
     style A fill:#dbeafe,stroke:#2563eb
     style B fill:#fef3c7,stroke:#d97706
     style C fill:#dcfce7,stroke:#16a34a
-```### 对比学习（SimCLR）
+```
 
-取一张图像，应用两种随机增强，得到两个视图。将两者输入相同的编码器加上一个投影头。最小化一个损失函数，该损失函数表示“这两个嵌入应该接近”以及“这个嵌入应该与批次中其他所有图像的嵌入相距甚远”。```
+### 对比学习（SimCLR）
+
+取一张图像，应用两种随机增强，得到两个视图。将两者输入相同的编码器加上一个投影头。最小化一个损失函数，该损失函数表示“这两个嵌入应该接近”以及“这个嵌入应该与批次中其他所有图像的嵌入相距甚远”。
+
+```
 Loss for positive pair (z_i, z_j) among 2N views per batch:
 
    L_ij = -log( exp(sim(z_i, z_j) / tau) / sum_k in batch \ {i} exp(sim(z_i, z_k) / tau) )
 
 sim = cosine similarity
 tau = temperature (0.1 standard)
-```这是 InfoNCE 损失。它要求每个正样本对应许多负样本，因此批次大小很重要 —— SimCLR 需要 512-8192。MoCo 引入了一个动量队列来保存过去批次的信息，以将负样本数量与批次大小解耦。
+```
+
+这是 InfoNCE 损失。它要求每个正样本对应许多负样本，因此批次大小很重要 —— SimCLR 需要 512-8192。MoCo 引入了一个动量队列来保存过去批次的信息，以将负样本数量与批次大小解耦。
 
 ### 教师-学生（DINO）
 
-两个具有相同架构的网络：学生和教师。教师是学生权重的指数移动平均（EMA）。两者都看到图像的增强视图。学生的输出被训练以匹配教师的输出 —— 没有显式的负样本。```
+两个具有相同架构的网络：学生和教师。教师是学生权重的指数移动平均（EMA）。两者都看到图像的增强视图。学生的输出被训练以匹配教师的输出 —— 没有显式的负样本。
+
+```
 loss = CE( student_output(view_1),  teacher_output(view_2) )
      + CE( student_output(view_2),  teacher_output(view_1) )
 
 teacher_weights = m * teacher_weights + (1 - m) * student_weights   (m ≈ 0.996)
-```为什么它不会退化为“预测一个常数”：教师的输出是居中的（按维度减去均值）并且被锐化（除以一个小的温度参数）。居中可以防止某一维度占据主导地位；锐化可以防止输出退化为均匀分布。
+```
+
+为什么它不会退化为“预测一个常数”：教师的输出是居中的（按维度减去均值）并且被锐化（除以一个小的温度参数）。居中可以防止某一维度占据主导地位；锐化可以防止输出退化为均匀分布。
 
 DINOv2 是 DINO 的扩展，使用了 1.42 亿张精心挑选的图像。由此得到的特征目前在零样本视觉检索和密集预测任务中是 SOTA（最先进）的。
 
 ### 掩码重建（MAE）
 
-对 ViT 输入的图像块（patches）中 75% 的部分进行掩码处理。只将可见的 25% 的图像块输入编码器。一个小的解码器接收编码器的输出，并在被掩码的位置添加掩码标记（mask tokens），然后训练该解码器以重建被掩码图像块的像素。```
+对 ViT 输入的图像块（patches）中 75% 的部分进行掩码处理。只将可见的 25% 的图像块输入编码器。一个小的解码器接收编码器的输出，并在被掩码的位置添加掩码标记（mask tokens），然后训练该解码器以重建被掩码图像块的像素。
+
+```
 Encoder:  visible 25% of patches -> features
 Decoder:  features + mask tokens at masked positions -> reconstructed pixels
 Loss:     MSE between reconstructed and original pixels on masked patches only
-```使 MAE 起作用的关键设计选择：
+```
+
+使 MAE 起作用的关键设计选择：
 
 - **75% 的掩码比例** —— 高。迫使编码器学习语义特征；重建 25% 的内容几乎微不足道（相邻像素高度相关，CNN 轻松完成）。
 - **不对称的编码器/解码器** —— 大型 ViT 编码器仅看到可见的图像块；小解码器（8 层，512 维）负责重建。预训练速度是 BEiT 的 3 倍。
@@ -97,7 +113,9 @@ BERT 掩码 15% 的词。MAE 掩码 75%。差异在于信息密度。
 
 <>
 
-### 第一步：双视图增强管道```python
+### 第一步：双视图增强管道
+
+```python
 import torch
 import torchvision.transforms as T
 
@@ -123,9 +141,13 @@ class TwoViewDataset(torch.utils.data.Dataset):
         v1 = self.aug(img)
         v2 = self.aug(img)
         return v1, v2
-```每个 __getitem__ 返回同一张图像的两个增强视图；不需要标签。
+```
 
-### 步骤 2：InfoNCE 损失```python
+每个 __getitem__ 返回同一张图像的两个增强视图；不需要标签。
+
+### 步骤 2：InfoNCE 损失
+
+```python
 import torch.nn.functional as F
 
 def info_nce(z1, z2, tau=0.1):
@@ -141,9 +163,13 @@ def info_nce(z1, z2, tau=0.1):
 
     targets = torch.cat([torch.arange(N, 2 * N), torch.arange(0, N)]).to(z.device)
     return F.cross_entropy(sim, targets)
-```在调用之前对嵌入进行 L2 归一化。`tau=0.1` 是 SimCLR 的默认值；较低的值会使损失更尖锐，并需要更多的负样本。
+```
 
-### 步骤 3：对 InfoNCE 进行合理性检查```python
+在调用之前对嵌入进行 L2 归一化。`tau=0.1` 是 SimCLR 的默认值；较低的值会使损失更尖锐，并需要更多的负样本。
+
+### 步骤 3：对 InfoNCE 进行合理性检查
+
+```python
 z1 = F.normalize(torch.randn(16, 32), dim=-1)
 z2 = z1.clone()
 loss_same = info_nce(z1, z2, tau=0.1).item()
@@ -151,9 +177,13 @@ z2_random = F.normalize(torch.randn(16, 32), dim=-1)
 loss_random = info_nce(z1, z2_random, tau=0.1).item()
 print(f"InfoNCE with identical pairs:  {loss_same:.3f}")
 print(f"InfoNCE with random pairs:     {loss_random:.3f}")
-```相同的配对应该产生较低的损失（对于大批量和低温，接近于 0）。随机配对应该产生 log(2N-1) = ~log(31) = ~3.4 的损失，当批次为 16 对时。
+```
 
-### 步骤 4：MAE 风格的掩码```python
+相同的配对应该产生较低的损失（对于大批量和低温，接近于 0）。随机配对应该产生 log(2N-1) = ~log(31) = ~3.4 的损失，当批次为 16 对时。
+
+### 步骤 4：MAE 风格的掩码
+
+```python
 def random_mask_indices(num_patches, mask_ratio=0.75, seed=0):
     g = torch.Generator().manual_seed(seed)
     n_keep = int(num_patches * (1 - mask_ratio))
@@ -167,11 +197,15 @@ num_patches = 196
 visible, masked = random_mask_indices(num_patches, mask_ratio=0.75)
 print(f"visible: {len(visible)} / {num_patches}")
 print(f"masked:  {len(masked)} / {num_patches}")
-```简单、快速，并且对于给定的种子是确定性的。真实的 MAE 实现会批量处理此操作并保留每个样本的掩码。
+```
+
+简单、快速，并且对于给定的种子是确定性的。真实的 MAE 实现会批量处理此操作并保留每个样本的掩码。
 
 ## 使用它
 
-DINOv2 是 2026 年的生产标准：```python
+DINOv2 是 2026 年的生产标准：
+
+```python
 import torch
 from transformers import AutoImageProcessor, AutoModel
 
@@ -184,7 +218,9 @@ with torch.no_grad():
     inputs = processor(images=[pil_image], return_tensors="pt")
     outputs = model(**inputs)
     embedding = outputs.last_hidden_state[:, 0]  # CLS token
-```生成的 768 维嵌入是现代图像检索、密集对应和零样本迁移流水线的核心。在下游任务上进行微调时，通常只需要一个线性头。
+```
+
+生成的 768 维嵌入是现代图像检索、密集对应和零样本迁移流水线的核心。在下游任务上进行微调时，通常只需要一个线性头。
 
 对于图像-文本嵌入，SigLIP 或 OpenCLIP 是等效的；对于 MAE 风格的微调，`timm` 仓库包含了每一个 MAE 的检查点。
 

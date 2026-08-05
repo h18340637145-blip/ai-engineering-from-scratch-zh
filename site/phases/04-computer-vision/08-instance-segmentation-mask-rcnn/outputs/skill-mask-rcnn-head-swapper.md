@@ -61,16 +61,24 @@ Where `{FREEZE_BLOCK}` is:
 
 - `none` -> empty
 - `backbone` ->
-  ```python
+  
+
+```python
   for p in model.backbone.parameters():
       p.requires_grad = False
-  ```
+  
+
+```
 - `backbone_fpn` ->
-  ```python
+  
+
+```python
   for p in model.backbone.parameters():
       p.requires_grad = False
   # FPN parameters live inside backbone.fpn
-  ```
+  
+
+```
 
 ## Report
 

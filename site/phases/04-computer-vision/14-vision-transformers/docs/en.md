@@ -24,7 +24,9 @@
 
 ## 概念
 
-### 流程图```mermaid
+### 流程图
+
+```mermaid
 flowchart LR
     IMG["Image<br/>(3, 224, 224)"] --> PATCH["Patch embedding<br/>conv 16x16 s=16<br/>-> (768, 14, 14)"]
     PATCH --> FLAT["Flatten to<br/>(196, 768) tokens"]
@@ -37,11 +39,15 @@ flowchart LR
     style PATCH fill:#dbeafe,stroke:#2563eb
     style ENC fill:#fef3c7,stroke:#d97706
     style HEAD fill:#dcfce7,stroke:#16a34a
-```七个步骤。补丁 -> 令牌 -> 注意力 -> 分类器。每一个变体（DeiT、Swin、ConvNeXt、MAE预训练）都会改变其中一到两个步骤，而其余步骤保持不变。
+```
+
+七个步骤。补丁 -> 令牌 -> 注意力 -> 分类器。每一个变体（DeiT、Swin、ConvNeXt、MAE预训练）都会改变其中一到两个步骤，而其余步骤保持不变。
 
 ### 补丁嵌入
 
-第一个卷积是关键。卷积核大小为16，步长为16，因此一个224x224的图像会被转换成一个14x14的网格，每个网格由16x16的补丁组成，每个补丁被投影到一个768维的嵌入向量中。这一个卷积层同时完成了补丁化和线性投影。```
+第一个卷积是关键。卷积核大小为16，步长为16，因此一个224x224的图像会被转换成一个14x14的网格，每个网格由16x16的补丁组成，每个补丁被投影到一个768维的嵌入向量中。这一个卷积层同时完成了补丁化和线性投影。
+
+```
 Input:  (3, 224, 224)
 Conv (3 -> 768, k=16, s=16, no padding):
 Output: (768, 14, 14)
@@ -50,19 +56,29 @@ Flatten spatial: (196, 768)
 
 ### 类别标记
 
-一个可学习的向量，添加到序列的最前面：```
+一个可学习的向量，添加到序列的最前面：
+
+```
 tokens = [CLS; patch_1; patch_2; ...; patch_196]   shape (197, 768)
-```经过 N 个 Transformer 模块后，`[CLS]` 的输出即为全局图像表示。分类头仅读取这个向量。
+```
+
+经过 N 个 Transformer 模块后，`[CLS]` 的输出即为全局图像表示。分类头仅读取这个向量。
 
 ### 位置嵌入
 
-Transformer 本身没有内置的空间位置概念。为每个 token 添加一个学习得到的向量：```
+Transformer 本身没有内置的空间位置概念。为每个 token 添加一个学习得到的向量：
+
+```
 tokens = tokens + learned_pos_embedding   (also shape (197, 768))
-```嵌入是模型的一个参数；基于梯度的训练使其适应二维图像结构。存在正弦二维替代方案，但在实践中很少使用。
+```
+
+嵌入是模型的一个参数；基于梯度的训练使其适应二维图像结构。存在正弦二维替代方案，但在实践中很少使用。
 
 ### Transformer 编码器块
 
-标准。多头自注意力，MLP，残差连接，预层归一化。```
+标准。多头自注意力，MLP，残差连接，预层归一化。
+
+```
 x = x + MSA(LN(x))
 x = x + MLP(LN(x))
 
@@ -107,7 +123,9 @@ MAE使ViT仅在ImageNet-1k上即可训练，达到SOTA，并且是当前默认�
 
 ## 构建它
 
-### 第一步：补丁嵌入```python
+### 第一步：补丁嵌入
+
+```python
 import torch
 import torch.nn as nn
 
@@ -122,11 +140,15 @@ class PatchEmbedding(nn.Module):
     def forward(self, x):
         x = self.proj(x)
         return x.flatten(2).transpose(1, 2)
-```一个卷积层，一个展平层，一个转置层。这就是整个图像到标记的步骤。
+```
+
+一个卷积层，一个展平层，一个转置层。这就是整个图像到标记的步骤。
 
 ### 步骤 2：Transformer 块
 
-预归一化（Pre-LN），多头自注意力，带有 GELU 的 MLP，残差连接。```python
+预归一化（Pre-LN），多头自注意力，带有 GELU 的 MLP，残差连接。
+
+```python
 class Block(nn.Module):
     def __init__(self, dim, num_heads, mlp_ratio=4, dropout=0.0):
         super().__init__()
@@ -146,9 +168,13 @@ class Block(nn.Module):
         x = x + a
         x = x + self.mlp(self.ln2(x))
         return x
-````nn.MultiheadAttention` 负责处理头的拆分、缩放点积以及输出投影。`batch_first=True` 所以形状是 `(N, seq, dim)`。
+```
 
-### 第三步：ViT```python
+`nn.MultiheadAttention` 负责处理头的拆分、缩放点积以及输出投影。`batch_first=True` 所以形状是 `(N, seq, dim)`。
+
+### 第三步：ViT
+
+```python
 class ViT(nn.Module):
     def __init__(self, image_size=64, patch_size=16, in_channels=3,
                  num_classes=10, dim=192, depth=6, num_heads=3, mlp_ratio=4):
@@ -179,13 +205,19 @@ vit = ViT(image_size=64, patch_size=16, num_classes=10, dim=192, depth=6, num_he
 x = torch.randn(2, 3, 64, 64)
 print(f"output: {vit(x).shape}")
 print(f"params: {sum(p.numel() for p in vit.parameters()):,}")
-```约 2.8M 参数 —— 一个可以在 CPU 上运行的小型 ViT。真正的 ViT-B 是 86M；与 `dim=768, depth=12, num_heads=12` 使用相同的类别定义。
+```
 
-### 步骤 4：合理性检查 —— 单张图像推理```python
+约 2.8M 参数 —— 一个可以在 CPU 上运行的小型 ViT。真正的 ViT-B 是 86M；与 `dim=768, depth=12, num_heads=12` 使用相同的类别定义。
+
+### 步骤 4：合理性检查 —— 单张图像推理
+
+```python
 logits = vit(torch.randn(1, 3, 64, 64))
 print(f"logits: {logits}")
 print(f"probs:  {logits.softmax(-1)}")
-```应无错误。概率总和为 1。
+```
+
+应无错误。概率总和为 1。
 
 ## 使用方法
 
@@ -201,11 +233,15 @@ print(f"probs:  {logits.softmax(-1)}")
 
 `timm` 为每种 ViT 变体都提供了 ImageNet 预训练权重。一行代码即可：
 
- /no_think```python
+ /no_think
+
+```python
 import timm
 
 model = timm.create_model("vit_base_patch16_224", pretrained=True, num_classes=10)
-````timm` 是 2026 年视觉变换器的生产默认设置。支持 ViT、DeiT、Swin、Swin-V2、ConvNeXt、ConvNeXt-V2、MaxViT、MViT、EfficientFormer，以及在同一 API 下的数十种其他模型。
+```
+
+`timm` 是 2026 年视觉变换器的生产默认设置。支持 ViT、DeiT、Swin、Swin-V2、ConvNeXt、ConvNeXt-V2、MaxViT、MViT、EfficientFormer，以及在同一 API 下的数十种其他模型。
 
 对于多模态工作（图像 + 文本），`transformers` 提供 CLIP、SigLIP、BLIP-2、LLaVA。所有这些模型中的图像编码器都是 ViT 的变体。
 

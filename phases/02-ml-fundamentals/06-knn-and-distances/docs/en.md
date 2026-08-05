@@ -34,7 +34,9 @@ K近邻在现代AI中无处不在，只是名称不同而已。向量数据库�
 2. 按距离排序
 3. 取出K个最近的点
 4. 对于分类：对K个邻居进行多数投票
-5. 对于回归：对K个邻居的值进行平均（或加权平均）```mermaid
+5. 对于回归：对K个邻居的值进行平均（或加权平均）
+
+```mermaid
 graph TD
     Q["Query point ?"] --> D["Compute distances<br>to all training points"]
     D --> S["Sort by distance"]
@@ -44,7 +46,9 @@ graph TD
     C -->|Regression| A["Average values"]
     V --> P["Prediction"]
     A --> P
-```这就是整个算法。没有任何拟合。没有任何梯度下降。没有任何训练轮次。
+```
+
+这就是整个算法。没有任何拟合。没有任何梯度下降。没有任何训练轮次。
 
 ### 选择 K
 
@@ -57,7 +61,9 @@ K 是唯一的超参数。它控制偏差-方差的权衡：
 | 大 K | 边界更平滑。对噪声更鲁棒。可能会欠拟合 |
 | K = N | 对每一个点都预测多数类。最大偏差 |
 
-一个常见的起点是对于包含 N 个点的数据集，K = sqrt(N)。在二分类中使用奇数的 K 以避免平票。```mermaid
+一个常见的起点是对于包含 N 个点的数据集，K = sqrt(N)。在二分类中使用奇数的 K 以避免平票。
+
+```mermaid
 graph LR
     subgraph "K=1 (overfitting)"
         A["Jagged boundary<br>follows every point"]
@@ -69,25 +75,39 @@ graph LR
         C["Flat boundary<br>predicts majority class"]
     end
     A -->|"increase K"| B -->|"increase K"| C
-```### 距离度量
+```
+
+### 距离度量
 
 距离函数定义了“近”的含义。不同的度量方式会产生不同的邻居，不同的预测结果。
 
-**L2（欧几里得）** 是默认的。直线距离。```
-d(a, b) = sqrt(sum((a_i - b_i)^2))
-```对特征尺度敏感。在使用 L2 与 KNN 时，始终要对特征进行标准化。
+**L2（欧几里得）** 是默认的。直线距离。
 
-**L1（曼哈顿）** 计算绝对差异之和。与 L2 相比，对异常值更鲁棒，因为它不会对差异进行平方。```
+```
+d(a, b) = sqrt(sum((a_i - b_i)^2))
+```
+
+对特征尺度敏感。在使用 L2 与 KNN 时，始终要对特征进行标准化。
+
+**L1（曼哈顿）** 计算绝对差异之和。与 L2 相比，对异常值更鲁棒，因为它不会对差异进行平方。
+
+```
 d(a, b) = sum(|a_i - b_i|)
-```**余弦距离** 测量向量之间的角度，忽略幅度。对于文本和嵌入数据至关重要。```
+```**余弦距离** 测量向量之间的角度，忽略幅度。对于文本和嵌入数据至关重要。
+
+```
 d(a, b) = 1 - (a . b) / (||a|| * ||b||)
-```**Minkowski** 用参数 p 一般化了 L1 和 L2。```
+```**Minkowski** 用参数 p 一般化了 L1 和 L2。
+
+```
 d(a, b) = (sum(|a_i - b_i|^p))^(1/p)
 
 p=1: Manhattan
 p=2: Euclidean
 p->inf: Chebyshev (max absolute difference)
-```使用哪种度量标准取决于数据：
+```
+
+使用哪种度量标准取决于数据：
 
 | 数据类型 | 最佳度量标准 | 原因 |
 |---------|--------------|------|
@@ -101,7 +121,9 @@ p->inf: Chebyshev (max absolute difference)
 
 标准KNN给所有K个邻居赋予相同的权重。但距离为0.1的邻居应该比距离为5.0的邻居更重要。
 
-**距离加权KNN** 按距离的倒数对每个邻居进行加权：```
+**距离加权KNN** 按距离的倒数对每个邻居进行加权：
+
+```
 weight_i = 1 / (distance_i + epsilon)
 
 For classification: weighted vote
@@ -114,7 +136,9 @@ For regression:     weighted average = sum(w_i * y_i) / sum(w_i)
 
 KNN 在高维空间中的性能会下降。这不是一个模糊的担忧，而是一个数学事实。
 
-**问题 1：距离趋于收敛。** 随着维度的增加，最大距离与最小距离的比值趋于 1。所有点都变得与查询点一样“远”。```
+**问题 1：距离趋于收敛。** 随着维度的增加，最大距离与最小距离的比值趋于 1。所有点都变得与查询点一样“远”。
+
+```
 In d dimensions, for random uniform points:
 
 d=2:    max_dist / min_dist = varies widely
@@ -132,7 +156,9 @@ When all distances are nearly equal, "nearest" is meaningless.
 
 暴力 KNN 计算查询点到每个训练点的距离。每次查询的复杂度为 O(n * d)。对于大型数据集，这种方法太慢。
 
-KD 树沿特征轴递归地划分空间。在每一层，它沿着一个维度在中位数处进行划分。```mermaid
+KD 树沿特征轴递归地划分空间。在每一层，它沿着一个维度在中位数处进行划分。
+
+```mermaid
 graph TD
     R["Split on x1 at 5.0"] -->|"x1 <= 5.0"| L["Split on x2 at 3.0"]
     R -->|"x1 > 5.0"| RR["Split on x2 at 7.0"]
@@ -140,7 +166,9 @@ graph TD
     L -->|"x2 > 3.0"| LR["Leaf: 4 points"]
     RR -->|"x2 <= 7.0"| RL["Leaf: 2 points"]
     RR -->|"x2 > 7.0"| RRR["Leaf: 5 points"]
-```要找到最近邻，遍历树直到包含查询点的叶节点，然后回溯并仅检查可能包含更近点的邻近区域。
+```
+
+要找到最近邻，遍历树直到包含查询点的叶节点，然后回溯并仅检查可能包含更近点的邻近区域。
 
 平均查询时间：低维情况下为 O(log n)。但是，KD-树在高维情况下（d > 20）会退化到 O(n)，因为回溯过程消除的分支越来越少。
 
@@ -175,19 +203,27 @@ KNN 是一个懒惰学习者：在训练时不做任何工作，所有工作都�
 
 ### 回归中的 KNN
 
-与多数投票不同，回归中的 KNN 对 K 个邻居的目标值取平均。```
+与多数投票不同，回归中的 KNN 对 K 个邻居的目标值取平均。
+
+```
 prediction = (1/K) * sum(y_i for i in K nearest neighbors)
 
 Or with distance weighting:
 prediction = sum(w_i * y_i) / sum(w_i)
 where w_i = 1 / distance_i
-```KNN回归生成分段常数（或通过加权生成分段平滑）的预测。它无法对训练数据范围之外的数据进行外推。如果训练目标都在0到100之间，KNN将永远不会预测200。```figure
+```KNN回归生成分段常数（或通过加权生成分段平滑）的预测。它无法对训练数据范围之外的数据进行外推。如果训练目标都在0到100之间，KNN将永远不会预测200。
+
+```figure
 knn-smoothness
-```## 构建它
+```
+
+## 构建它
 
 ### 第一步：距离函数
 
-实现 L1、L2、余弦和 Minkowski 距离。这些内容直接连接到第一阶段第十四课。```python
+实现 L1、L2、余弦和 Minkowski 距离。这些内容直接连接到第一阶段第十四课。
+
+```python
 import math
 
 def l2_distance(a, b):
@@ -208,9 +244,13 @@ def minkowski_distance(a, b, p=2):
     if p == float('inf'):
         return max(abs(ai - bi) for ai, bi in zip(a, b))
     return sum(abs(ai - bi) ** p for ai, bi in zip(a, b)) ** (1 / p)
-```### 步骤 2：KNN 分类器和回归器
+```
 
-构建完整的 KNN，支持可配置的 K 值、距离度量方式以及可选的距离加权。```python
+### 步骤 2：KNN 分类器和回归器
+
+构建完整的 KNN，支持可配置的 K 值、距离度量方式以及可选的距离加权。
+
+```python
 class KNN:
     def __init__(self, k=5, distance_fn=l2_distance, weighted=False,
                  task="classification"):
@@ -227,9 +267,13 @@ class KNN:
 
     def predict(self, X):
         return [self._predict_one(x) for x in X]
-```### 步骤 3：KD-tree 用于高效搜索
+```
 
-从零开始构建一个 KD-tree，该树递归地根据每个维度的中位数进行分割。```python
+### 步骤 3：KD-tree 用于高效搜索
+
+从零开始构建一个 KD-tree，该树递归地根据每个维度的中位数进行分割。
+
+```python
 class KDTree:
     def __init__(self, X, indices=None, depth=0):
         # Recursively partition the data
@@ -240,11 +284,15 @@ class KDTree:
     def query(self, point, k=1):
         # Traverse to leaf, then backtrack
         ...
-```请参见 `code/knn.py` 以查看包含所有辅助方法和演示的完整实现。
+```
+
+请参见 `code/knn.py` 以查看包含所有辅助方法和演示的完整实现。
 
 ### 步骤 4：特征缩放
 
-KNN 需要特征缩放，因为距离对特征的幅度敏感。范围从 0 到 1000 的特征将主导范围从 0 到 1 的特征。```python
+KNN 需要特征缩放，因为距离对特征的幅度敏感。范围从 0 到 1000 的特征将主导范围从 0 到 1 的特征。
+
+```python
 def standardize(X):
     n = len(X)
     d = len(X[0])
@@ -254,9 +302,13 @@ def standardize(X):
         for j in range(d)
     ]
     return [[((X[i][j] - means[j]) / stds[j]) for j in range(d)] for i in range(n)], means, stds
-```## 使用它
+```
 
-使用 scikit-learn:```python
+## 使用它
+
+使用 scikit-learn:
+
+```python
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
@@ -269,13 +321,17 @@ clf.fit(X_train, y_train)
 print(f"Accuracy: {clf.score(X_test, y_test):.4f}")
 ```Scikit-learn 在数据集足够大且维度足够低时，会自动使用 KD 树或球树。对于高维数据，它会退回到暴力搜索。你可以通过 `algorithm` 参数来控制这一点。
 
-对于大规模最近邻搜索（数百万个向量），请使用 FAISS、Annoy 或向量数据库：```python
+对于大规模最近邻搜索（数百万个向量），请使用 FAISS、Annoy 或向量数据库：
+
+```python
 import faiss
 
 index = faiss.IndexFlatL2(dimension)
 index.add(embeddings)
 distances, indices = index.search(query_vectors, k=5)
-```## 练习
+```
+
+## 练习
 
 1. 在一个具有3个类别的2D数据集上实现KNN分类。绘制K=1、K=5、K=15和K=N的决策边界。观察从过拟合到欠拟合的转变。
 

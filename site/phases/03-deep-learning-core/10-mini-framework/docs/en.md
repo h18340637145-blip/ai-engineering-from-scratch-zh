@@ -54,7 +54,9 @@ Dropout在训练过程中随机将神经元置零，但在评估过程中将所�
 
 ### 框架架构
 
- /no_output```mermaid
+ /no_output
+
+```mermaid
 graph TD
     subgraph "Modules"
         Linear["Linear<br/>W*x + b"]
@@ -87,7 +89,11 @@ graph TD
     Sequential --> |"forward/backward"| MSE
     SGD --> |"updates"| Sequential
     DataLoader --> |"feeds"| Sequential
-```### 训练循环```mermaid
+```
+
+### 训练循环
+
+```mermaid
 sequenceDiagram
     participant DL as DataLoader
     participant M as Model
@@ -104,7 +110,11 @@ sequenceDiagram
         O->>M: updated parameters
         O->>O: zero gradients
     end
-```### 模块层次结构```mermaid
+```
+
+### 模块层次结构
+
+```mermaid
 classDiagram
     class Module {
         +forward(x)
@@ -141,11 +151,15 @@ classDiagram
 
 ```figure
 gradient-clipping
-```## 构建它
+```
+
+## 构建它
 
 ### 步骤 1：模块基类
 
-每一层都实现的抽象接口。```python
+每一层都实现的抽象接口。
+
+```python
 class Module:
     def __init__(self):
         self.training = True
@@ -164,9 +178,13 @@ class Module:
 
     def eval(self):
         self.training = False
-```### 步骤 2：线性层
+```
 
-基本的构建模块。存储权重和偏置，向前计算 Wx + b，向后计算权重/输入梯度。```python
+### 步骤 2：线性层
+
+基本的构建模块。存储权重和偏置，向前计算 Wx + b，向后计算权重/输入梯度。
+
+```python
 import math
 import random
 
@@ -209,9 +227,13 @@ class Linear(Module):
                 params.append((self.weights, i, j, self.weight_grads))
             params.append((self.biases, i, None, self.bias_grads))
         return params
-```### 第三步：激活模块
+```
 
-ReLU、Sigmoid 和 Tanh 作为模块。每个模块都会缓存反向传播所需的内容。```python
+### 第三步：激活模块
+
+ReLU、Sigmoid 和 Tanh 作为模块。每个模块都会缓存反向传播所需的内容。
+
+```python
 class ReLU(Module):
     def __init__(self):
         super().__init__()
@@ -252,9 +274,13 @@ class Tanh(Module):
 
     def backward(self, grad):
         return [g * (1 - o * o) for g, o in zip(grad, self.output)]
-```### 步骤 4：Dropout 模块
+```
 
-在训练期间随机将某些元素设为零。通过将剩余元素乘以 1/(1-p) 来保持期望值不变。在评估期间不执行任何操作。```python
+### 步骤 4：Dropout 模块
+
+在训练期间随机将某些元素设为零。通过将剩余元素乘以 1/(1-p) 来保持期望值不变。在评估期间不执行任何操作。
+
+```python
 class Dropout(Module):
     def __init__(self, p=0.5):
         super().__init__()
@@ -271,9 +297,13 @@ class Dropout(Module):
         if self.mask is None:
             return grad
         return [g * m for g, m in zip(grad, self.mask)]
-```### 步骤 5：BatchNorm 模块
+```
 
-对每个特征在批次中进行归一化，使其均值为零，方差为单位。在评估模式下维护运行时统计信息。```python
+### 步骤 5：BatchNorm 模块
+
+对每个特征在批次中进行归一化，使其均值为零，方差为单位。在评估模式下维护运行时统计信息。
+
+```python
 class BatchNorm(Module):
     def __init__(self, size, momentum=0.1, eps=1e-5):
         super().__init__()
@@ -347,9 +377,13 @@ class BatchNorm(Module):
             params.append((self.gamma, j, None, self.gamma_grads))
             params.append((self.beta, j, None, self.beta_grads))
         return params
-```### 步骤 6：顺序容器
+```
 
-串联模块。前向传播从左到右，反向传播从右到左。```python
+### 步骤 6：顺序容器
+
+串联模块。前向传播从左到右，反向传播从右到左。
+
+```python
 class Sequential(Module):
     def __init__(self, *modules):
         super().__init__()
@@ -380,9 +414,13 @@ class Sequential(Module):
         self.training = False
         for module in self.modules:
             module.eval()
-```### 第7步：损失函数
+```
 
-MSE 和二元交叉熵。每种都返回损失值，并提供一个 backward() 方法用于返回梯度。```python
+### 第7步：损失函数
+
+MSE 和二元交叉熵。每种都返回损失值，并提供一个 backward() 方法用于返回梯度。
+
+```python
 class MSELoss:
     def __call__(self, predicted, target):
         self.predicted = predicted
@@ -417,9 +455,13 @@ class BCELoss:
             p = max(eps, min(1 - eps, p))
             grads.append((-t / p + (1 - t) / (1 - p)) / n)
         return grads
-```### 步骤 8：SGD 和 Adam 优化器
+```
 
-两者都接受一个参数列表，并使用梯度来更新权重。```python
+### 步骤 8：SGD 和 Adam 优化器
+
+两者都接受一个参数列表，并使用梯度来更新权重。
+
+```python
 class SGD:
     def __init__(self, parameters, lr=0.01):
         self.params = parameters
@@ -478,9 +520,13 @@ class Adam:
                 grad_container[i][j] = 0.0
             else:
                 grad_container[i] = 0.0
-```### 步骤 9: DataLoader
+```
 
-将数据拆分为批次，可选择在每个 epoch 中打乱数据。```python
+### 步骤 9: DataLoader
+
+将数据拆分为批次，可选择在每个 epoch 中打乱数据。
+
+```python
 class DataLoader:
     def __init__(self, data, batch_size=32, shuffle=True):
         self.data = data
@@ -500,9 +546,13 @@ class DataLoader:
 
     def __len__(self):
         return (len(self.data) + self.batch_size - 1) // self.batch_size
-```### 步骤 10：在圆分类任务上训练一个 4 层网络
+```
 
-将所有部分连接起来。定义一个模型，选择一个损失函数，选择一个优化器，运行训练循环。```python
+### 步骤 10：在圆分类任务上训练一个 4 层网络
+
+将所有部分连接起来。定义一个模型，选择一个损失函数，选择一个优化器，运行训练循环。
+
+```python
 def make_circle_data(n=500, seed=42):
     random.seed(seed)
     data = []
@@ -581,9 +631,13 @@ def train():
     print(f"\nTest Accuracy: {test_accuracy:.1f}% ({correct}/{len(test_data)})")
 
     return model, test_accuracy
-```## 使用它
+```
 
-这是你刚刚构建内容的 PyTorch 等效实现：```python
+## 使用它
+
+这是你刚刚构建内容的 PyTorch 等效实现：
+
+```python
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
@@ -614,7 +668,9 @@ for epoch in range(100):
     model.eval()
     with torch.no_grad():
         test_predictions = model(test_inputs)
-```结构是相同的。`Sequential`, `Linear`, `ReLU`, `Sigmoid`, `BCELoss`, `Adam`, `zero_grad`, `backward`, `step`, `train`, `eval`。每个概念都是一一对应的。区别在于 PyTorch 自动处理 autograd（不需要在每个模块中实现 backward()），可以在 GPU 上运行，并且多年来一直在进行优化。但其基本结构是相同的。
+```
+
+结构是相同的。`Sequential`, `Linear`, `ReLU`, `Sigmoid`, `BCELoss`, `Adam`, `zero_grad`, `backward`, `step`, `train`, `eval`。每个概念都是一一对应的。区别在于 PyTorch 自动处理 autograd（不需要在每个模块中实现 backward()），可以在 GPU 上运行，并且多年来一直在进行优化。但其基本结构是相同的。
 
 现在当你看到 PyTorch 代码时，你就能确切地知道每一行发生了什么。这种理解就是全部重点。
 

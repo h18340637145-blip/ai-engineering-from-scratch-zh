@@ -27,7 +27,9 @@
 
 解决方案：每个项目都拥有自己的隔离环境和专属包。
 
-## The Concept```mermaid
+## The Concept
+
+```mermaid
 graph TD
     subgraph without["Without virtual environments"]
         SP[System Python] --> T24["torch 2.4.0 (CUDA 12.4)\nProject A needs this"]
@@ -41,11 +43,15 @@ graph TD
         PB["Project B (.venv/)"] --> PB1["torch 2.1.0 (CUDA 11.8)"]
         PB --> PB2["diffusers 0.28"]
     end
-```## 构建它
+```
+
+## 构建它
 
 ### 选项 1: uv venv（推荐）
 
-`uv` 是最快的 Python 包管理器（比 pip 快 10-100 倍）。它在一个工具中处理虚拟环境、Python 版本和依赖解析。```bash
+`uv` 是最快的 Python 包管理器（比 pip 快 10-100 倍）。它在一个工具中处理虚拟环境、Python 版本和依赖解析。
+
+```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 uv python install 3.12
@@ -53,21 +59,35 @@ uv python install 3.12
 cd your-project
 uv venv
 source .venv/bin/activate
-```安装软件包：```bash
+```
+
+安装软件包：
+
+```bash
 uv pip install torch numpy
-```使用 `pyproject.toml` 一步创建项目：```bash
+```
+
+使用 `pyproject.toml` 一步创建项目：
+
+```bash
 uv init my-ai-project
 cd my-ai-project
 uv add torch numpy matplotlib
-```### 选项 2: venv (内置)
+```
 
-如果你无法安装 `uv`，Python 自带了 `venv`:```bash
+### 选项 2: venv (内置)
+
+如果你无法安装 `uv`，Python 自带了 `venv`:
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate  # Linux/macOS
 .venv\Scripts\activate     # Windows
 
 pip install torch numpy
-```比 `uv` 慢，但可以在所有安装了 Python 的地方运行。
+```
+
+比 `uv` 慢，但可以在所有安装了 Python 的地方运行。
 
 ### 选项3：conda（当您需要时）
 
@@ -75,7 +95,9 @@ Conda 管理非 Python 依赖项，如 CUDA 工具包、cuDNN 和 C 库。在以
 
 - 您需要特定版本的 CUDA 工具包，而无需在系统范围内安装
 - 您在共享集群上，无法安装系统包
-- 某个库的安装说明中提到 "use conda"```bash
+- 某个库的安装说明中提到 "use conda"
+
+```bash
 # Install miniconda (not the full Anaconda)
 curl -LsSf https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
 bash miniconda.sh -b
@@ -84,13 +106,17 @@ conda create -n myproject python=3.12
 conda activate myproject
 
 conda install pytorch torchvision torchaudio pytorch-cuda=12.4 -c pytorch -c nvidia
-```一个规则：如果你使用 conda 来管理一个环境，那么该环境中的所有包都必须使用 conda 来安装。将 `pip install` 混入 conda 环境中会导致难以调试的依赖冲突。
+```
+
+一个规则：如果你使用 conda 来管理一个环境，那么该环境中的所有包都必须使用 conda 来安装。将 `pip install` 混入 conda 环境中会导致难以调试的依赖冲突。
 
 ### 本课程策略：分阶段策略
 
 你可以为整个课程创建一个环境。不要这样做。不同的阶段需要不同的（有时是冲突的）依赖项。
 
-策略：```
+策略：
+
+```
 ai-engineering-from-scratch/
 ├── .venv/                    <-- shared lightweight env for phases 0-3
 ├── phases/
@@ -102,11 +128,15 @@ ai-engineering-from-scratch/
 │   │   └── .venv/            <-- might need different transformer versions
 │   └── 11-llm-apis/
 │       └── .venv/            <-- API SDKs, no torch needed
-````code/env_setup.sh` 中的脚本为本课程创建了基础环境。
+```
+
+`code/env_setup.sh` 中的脚本为本课程创建了基础环境。
 
 ## pyproject.toml 基础
 
-每个 Python 项目都应该有一个 `pyproject.toml`。它在一个文件中替换了 `setup.py`、`setup.cfg` 和 `requirements.txt`。```toml
+每个 Python 项目都应该有一个 `pyproject.toml`。它在一个文件中替换了 `setup.py`、`setup.cfg` 和 `requirements.txt`。
+
+```toml
 [project]
 name = "ai-engineering-from-scratch"
 version = "0.1.0"
@@ -121,20 +151,30 @@ dependencies = [
 [project.optional-dependencies]
 torch = ["torch>=2.3", "torchvision>=0.18"]
 llm = ["anthropic>=0.39", "openai>=1.50"]
-```然后安装：```bash
+```
+
+然后安装：
+
+```bash
 uv pip install -e ".[torch]"    # base + PyTorch
 uv pip install -e ".[llm]"     # base + LLM SDKs
 uv pip install -e ".[torch,llm]" # everything
-```## 锁定文件
+```
 
-锁定文件将每个依赖项（包括传递依赖）固定到确切的版本。这保证了可重复性：从锁定文件安装的任何人都会获得完全相同的软件包。```bash
+## 锁定文件
+
+锁定文件将每个依赖项（包括传递依赖）固定到确切的版本。这保证了可重复性：从锁定文件安装的任何人都会获得完全相同的软件包。
+
+```bash
 # uv generates uv.lock automatically when using uv add
 uv add numpy
 
 # pip-tools approach
 uv pip compile pyproject.toml -o requirements.lock
 uv pip install -r requirements.lock
-```将 lockfile 提交到 git。当有人克隆仓库时，他们会从 lockfile 安装并获取相同的版本。
+```
+
+将 lockfile 提交到 git。当有人克隆仓库时，他们会从 lockfile 安装并获取相同的版本。
 
 ## 常见错误
 
@@ -146,12 +186,16 @@ uv pip install -r requirements.lock
 
 ## 常见错误
 
-### 1. 全局安装```bash
+### 1. 全局安装
+
+```bash
 pip install torch  # BAD: installs to system Python
 
 source .venv/bin/activate
 pip install torch  # GOOD: installs to virtual environment
-```检查你的软件包去向：
+```
+
+检查你的软件包去向：
 
  /no_think
 
@@ -159,16 +203,24 @@ pip install torch  # GOOD: installs to virtual environment
 
 检查你的软件包去向：
 
- /no_think```bash
+ /no_think
+
+```bash
 which python       # should show .venv/bin/python, not /usr/bin/python
 which pip           # should show .venv/bin/pip
-```### 2. 混合使用 pip 和 conda```bash
+```
+
+### 2. 混合使用 pip 和 conda
+
+```bash
 conda create -n myenv python=3.12
 conda activate myenv
 conda install pytorch -c pytorch
 pip install some-other-package   # BAD: can break conda's dependency tracking
 conda install some-other-package # GOOD: let conda manage everything
-```如果必须在 conda 中使用 pip（某些包只能通过 pip 安装），请先安装所有 conda 包，最后再安装 pip 包。
+```
+
+如果必须在 conda 中使用 pip（某些包只能通过 pip 安装），请先安装所有 conda 包，最后再安装 pip 包。
 
 ### 3. 忘记激活环境 /no_think
 
@@ -176,23 +228,39 @@ conda install some-other-package # GOOD: let conda manage everything
 
 如果必须在 conda 中使用 pip（某些包只能通过 pip 安装），请先安装所有 conda 包，最后再安装 pip 包。
 
-### 3. 忘记激活环境```bash
+### 3. 忘记激活环境
+
+```bash
 python train.py           # uses system Python, missing packages
 source .venv/bin/activate
 python train.py           # uses project Python, packages found
-```你的 shell 提示符应该显示环境名称：```
-(.venv) $ python train.py
-```### 4. 将 .venv 提交到 git```bash
-echo ".venv/" >> .gitignore
-```虚拟环境的大小为200MB至2GB。它们是本地的，无法在不同机器之间传输。请提交 `pyproject.toml` 和锁文件（lockfile）。
+```
 
-### 5. CUDA版本不匹配```bash
+你的 shell 提示符应该显示环境名称：
+
+```
+(.venv) $ python train.py
+```
+
+### 4. 将 .venv 提交到 git
+
+```bash
+echo ".venv/" >> .gitignore
+```
+
+虚拟环境的大小为200MB至2GB。它们是本地的，无法在不同机器之间传输。请提交 `pyproject.toml` 和锁文件（lockfile）。
+
+### 5. CUDA版本不匹配
+
+```bash
 nvidia-smi                # shows driver CUDA version (e.g., 12.4)
 python -c "import torch; print(torch.version.cuda)"  # shows PyTorch CUDA version
 
 # These must be compatible.
 # PyTorch CUDA version must be <= driver CUDA version.
-```## 使用它
+```
+
+## 使用它
 
 运行设置脚本以创建你的课程环境：
 
@@ -204,9 +272,13 @@ python -c "import torch; print(torch.version.cuda)"  # shows PyTorch CUDA versio
 
 运行设置脚本来创建你的课程环境：
 
- /no_think```bash
+ /no_think
+
+```bash
 bash phases/00-setup-and-tooling/06-python-environments/code/env_setup.sh
-```这会在仓库根目录下创建一个 `.venv`，其中已安装并验证了核心依赖项。
+```
+
+这会在仓库根目录下创建一个 `.venv`，其中已安装并验证了核心依赖项。
 
 ## 练习
 

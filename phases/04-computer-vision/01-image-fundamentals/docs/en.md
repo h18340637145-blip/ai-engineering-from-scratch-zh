@@ -26,7 +26,9 @@
 
 ### 整个预处理流程一览
 
-每个生产级的视觉系统都是相同的可逆变换序列。如果某一步出错，模型看到的输入就与它训练时的输入不同。```mermaid
+每个生产级的视觉系统都是相同的可逆变换序列。如果某一步出错，模型看到的输入就与它训练时的输入不同。
+
+```mermaid
 flowchart LR
     A["Image file<br/>(JPEG/PNG)"] --> B["Decode<br/>uint8 HWC"]
     B --> C["Convert<br/>colorspace<br/>(RGB/BGR/YCbCr)"]
@@ -42,11 +44,15 @@ flowchart LR
     style J fill:#ddd6fe,stroke:#7c3aed
     style G fill:#fecaca,stroke:#dc2626
     style H fill:#bfdbfe,stroke:#2563eb
-```两个红色和蓝色的框是80%的静默故障所在：缺少标准化和错误的布局。
+```
+
+两个红色和蓝色的框是80%的静默故障所在：缺少标准化和错误的布局。
 
 ### 一个像素是一个样本，而不是一个方块
 
-相机传感器计算落在微小探测器网格上的光子数量。每个探测器在极短的时间内整合光线，并发出与击中它的光子数量成比例的电压。然后传感器将该电压离散化为一个整数。一个探测器对应一个像素。```
+相机传感器计算落在微小探测器网格上的光子数量。每个探测器在极短的时间内整合光线，并发出与击中它的光子数量成比例的电压。然后传感器将该电压离散化为一个整数。一个探测器对应一个像素。
+
+```
 Continuous scene                 Sensor grid                     Digital image
 (infinite detail)                (H x W detectors)               (H x W integers)
 
@@ -55,7 +61,9 @@ Continuous scene                 Sensor grid                     Digital image
   ~ light ~      ---->           +--+--+--+--+--+     ---->       200 190 175 150 115
    ~~~~~                         |  |  |  |  |  |                 195 185 170 148 112
                                  +--+--+--+--+--+                 188 180 165 145 108
-```在这个步骤中会发生两个选择，它们决定了后续所有处理的上限：
+```
+
+在这个步骤中会发生两个选择，它们决定了后续所有处理的上限：
 
 - **空间采样**决定了场景每度有多少个探测器。太少的话，边缘会出现锯齿（混叠现象）。太多的话，存储和计算需求将急剧增加。
 - **强度量化**决定了电压被分组的精细程度。8 位提供 256 个等级，是显示的标准。10、12、16 位可以提供更平滑的渐变，在医学成像、HDR 和原始传感器流水线中非常重要。
@@ -64,7 +72,9 @@ Continuous scene                 Sensor grid                     Digital image
 
 ### 为什么是三个通道
 
-一个探测器会统计整个可见光谱范围内的光子数量——也就是灰度图像。为了获得颜色，传感器会用红、绿、蓝三种滤光片的马赛克覆盖整个网格。经过去马赛克处理后，每个空间位置都有三个整数：红滤光片探测器的响应值、绿滤光片探测器的响应值和蓝滤光片探测器的响应值。这三个整数构成了像素的 RGB 三元组。```
+一个探测器会统计整个可见光谱范围内的光子数量——也就是灰度图像。为了获得颜色，传感器会用红、绿、蓝三种滤光片的马赛克覆盖整个网格。经过去马赛克处理后，每个空间位置都有三个整数：红滤光片探测器的响应值、绿滤光片探测器的响应值和蓝滤光片探测器的响应值。这三个整数构成了像素的 RGB 三元组。
+
+```
 One pixel in memory:
 
     (R, G, B) = (210, 140, 30)   <- reddish-orange
@@ -73,11 +83,15 @@ An H x W RGB image:
 
     shape (H, W, 3)     stored as   H rows of W pixels of 3 values
                                     each in [0, 255] for uint8
-```三并不是魔法。深度相机增加了一个 Z 通道。卫星增加了红外和紫外波段。医学扫描通常有一个通道（X 光、CT）或许多（高光谱）。通道的数量是最后一个轴；卷积层学会在该轴上进行混合。
+```
+
+三并不是魔法。深度相机增加了一个 Z 通道。卫星增加了红外和紫外波段。医学扫描通常有一个通道（X 光、CT）或许多（高光谱）。通道的数量是最后一个轴；卷积层学会在该轴上进行混合。
 
 ### 两种布局惯例：HWC 和 CHW
 
-相同的张量，两种排列方式。每个库都会选择其中一种。```
+相同的张量，两种排列方式。每个库都会选择其中一种。
+
+```
 HWC (height, width, channels)           CHW (channels, height, width)
 
    W ->                                    H ->
@@ -93,10 +107,16 @@ v |R G B|R G B|R G B|                   v |G G G G G G|
    almost every image file on disk       frameworks, cuDNN kernels
 ```CHW 的存在是因为卷积核在 H 和 W 上滑动。将通道轴放在前面意味着每个核可以看见每个通道的连续 2D 平面，这可以很好地向量化。磁盘格式保留 HWC，因为这与传感器输出的扫描线方式一致。
 
-你将无数次输入的一行转换：```
+你将无数次输入的一行转换：
+
+```
 img_chw = img_hwc.transpose(2, 0, 1)      # NumPy
 img_chw = img_hwc.permute(2, 0, 1)        # PyTorch tensor
-```内存布局，可视化：```mermaid
+```
+
+内存布局，可视化：
+
+```mermaid
 flowchart TB
     subgraph HWC["HWC — pixels stored interleaved (PIL, OpenCV, JPEG)"]
         H1["row 0: R G B | R G B | R G B ..."]
@@ -110,7 +130,9 @@ flowchart TB
     end
     HWC -->|"transpose(2, 0, 1)"| CHW
     CHW -->|"transpose(1, 2, 0)"| HWC
-```### 字节范围和数据类型
+```
+
+### 字节范围和数据类型
 
 三种惯例占主导地位：
 
@@ -124,7 +146,9 @@ flowchart TB
 
 ### 颜色空间及其存在的原因
 
-RGB是捕获格式，但它不总是模型最有用的表示方式。```
+RGB是捕获格式，但它不总是模型最有用的表示方式。
+
+```
  RGB               HSV                       YCbCr / YUV
 
  R red             H hue (angle 0-360)       Y luminance (brightness)
@@ -137,7 +161,9 @@ RGB是捕获格式，但它不总是模型最有用的表示方式。```
                    sliders, simple filters   channels harder because the
                                              human eye is less sensitive
                                              to chroma detail than to Y.
-```对于大多数现代的卷积神经网络（CNN），你输入的是RGB。你遇到其他颜色空间的情况包括：
+```
+
+对于大多数现代的卷积神经网络（CNN），你输入的是RGB。你遇到其他颜色空间的情况包括：
 
 - **HSV** — 经典的计算机视觉代码，基于颜色的分割，白平衡。
 - **YCbCr** — 阅读JPEG内部结构，视频处理流程，仅在Y通道上运行的超分辨率模型。
@@ -505,9 +531,13 @@ RGB是捕获格式，但它不总是模型最有用的表示方式。```
 
 从RGB转换为灰度是加权求和，而不是平均，因为人眼对绿色比对红色或蓝色更敏感：
 
- /no_think```
+ /no_think
+
+```
 Y = 0.299 R + 0.587 G + 0.114 B       (ITU-R BT.601, the classic weights)
-```### 宽高比、调整大小和插值
+```
+
+### 宽高比、调整大小和插值
 
 每个模型都有一个固定的输入尺寸（大多数ImageNet分类器为224x224，现代检测器为384x384或512x512）。你的图像很少会匹配这个尺寸。有三个重要的调整大小选项：
 
@@ -515,18 +545,28 @@ Y = 0.299 R + 0.587 G + 0.114 B       (ITU-R BT.601, the classic weights)
 - **调整大小并填充** —— 保留宽高比和所有像素，添加黑色条带。检测和OCR的标准方法。
 - **直接调整到目标尺寸** —— 拉伸图像。成本低，会扭曲几何形状，适合许多分类任务。
 
-插值方法决定了当新网格与旧网格不一致时，如何计算中间像素：```
+插值方法决定了当新网格与旧网格不一致时，如何计算中间像素：
+
+```
 Nearest neighbour     fastest, blocky, only choice for masks/labels
 Bilinear              fast, smooth, default for most image resizing
 Bicubic               slower, sharper on upscaling
 Lanczos               slowest, best quality, used for final display
-```经验法则：训练时使用双线性，查看的资源使用双三次或兰佐斯插值，包含整数类别 ID 的任何内容使用最近邻插值。```figure
+```
+
+经验法则：训练时使用双线性，查看的资源使用双三次或兰佐斯插值，包含整数类别 ID 的任何内容使用最近邻插值。
+
+```figure
 conv-output-size
-```## 构建它
+```
+
+## 构建它
 
 ### 步骤 1：加载图像并检查其形状
 
-使用 Pillow 加载任何 JPEG 或 PNG 图像，将其转换为 NumPy 数组，并打印你得到的结果。为了有一个可以离线运行的确定性示例，可以合成一个图像。```python
+使用 Pillow 加载任何 JPEG 或 PNG 图像，将其转换为 NumPy 数组，并打印你得到的结果。为了有一个可以离线运行的确定性示例，可以合成一个图像。
+
+```python
 import numpy as np
 from PIL import Image
 
@@ -549,11 +589,15 @@ print(f"shape:  {arr.shape}     # (H, W, C)")
 print(f"min:    {arr.min()}")
 print(f"max:    {arr.max()}")
 print(f"pixel at (0, 0): {arr[0, 0]}")
-```预期输出：`shape: (H, W, 3)`, `dtype: uint8`, 范围 `[0, 255]`。无论字节来自摄像头、JPEG 解码器还是合成生成器，这都是其在磁盘上的标准表示形式。
+```
+
+预期输出：`shape: (H, W, 3)`, `dtype: uint8`, 范围 `[0, 255]`。无论字节来自摄像头、JPEG 解码器还是合成生成器，这都是其在磁盘上的标准表示形式。
 
 ### 步骤 2：分离通道并重新排列布局
 
-分别提取 R、G、B 通道，然后将格式从 HWC 转换为 CHW 以用于 PyTorch。```python
+分别提取 R、G、B 通道，然后将格式从 HWC 转换为 CHW 以用于 PyTorch。
+
+```python
 R = arr[:, :, 0]
 G = arr[:, :, 1]
 B = arr[:, :, 2]
@@ -564,11 +608,15 @@ print(f"B shape: {B.shape}, mean: {B.mean():.1f}")
 arr_chw = arr.transpose(2, 0, 1)
 print(f"\nHWC shape: {arr.shape}")
 print(f"CHW shape: {arr_chw.shape}")
-```三个灰度平面，每个通道一个。CHW只是重新排列轴的顺序；当内存布局允许时，严格来说不需要复制数据。
+```
+
+三个灰度平面，每个通道一个。CHW只是重新排列轴的顺序；当内存布局允许时，严格来说不需要复制数据。
 
 ### 步骤3：灰度和HSV转换
 
-加权求和的灰度，然后手动进行RGB到HSV的转换。```python
+加权求和的灰度，然后手动进行RGB到HSV的转换。
+
+```python
 def rgb_to_grayscale(rgb):
     weights = np.array([0.299, 0.587, 0.114], dtype=np.float32)
     return (rgb.astype(np.float32) @ weights).astype(np.uint8)
@@ -605,7 +653,9 @@ print(f"val range: [{hsv[..., 2].min():.2f}, {hsv[..., 2].max():.2f}]")
 
 ### 第 4 步：归一化、标准化并反转它
 
-从原始字节转换为预训练 ImageNet 模型所期望的精确张量，然后再转换回来。```python
+从原始字节转换为预训练 ImageNet 模型所期望的精确张量，然后再转换回来。
+
+```python
 mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
@@ -630,11 +680,15 @@ print(f"preprocessed std  per channel:  {x.std(axis=(1, 2)).round(3)}")
 roundtrip = deprocess_imagenet(x)
 max_diff = np.abs(roundtrip.astype(int) - arr.astype(int)).max()
 print(f"roundtrip max pixel diff: {max_diff}    # should be 0 or 1")
-```每个通道的均值应接近于零，标准差应接近于一。预处理/去预处理对就是每个 torchvision `transforms.Normalize` 调用在内部实际执行的操作。
+```
+
+每个通道的均值应接近于零，标准差应接近于一。预处理/去预处理对就是每个 torchvision `transforms.Normalize` 调用在内部实际执行的操作。
 
 ### 步骤 5：使用三种插值方法进行调整大小
 
-在放大时比较最近邻、双线性以及双三次插值方法，以便能够观察到差异。```python
+在放大时比较最近邻、双线性以及双三次插值方法，以便能够观察到差异。
+
+```python
 target = (arr.shape[0] * 3, arr.shape[1] * 3)
 
 nearest = np.asarray(Image.fromarray(arr).resize(target[::-1], Image.NEAREST))
@@ -652,7 +706,9 @@ for name, out in [("nearest", nearest), ("bilinear", bilinear), ("bicubic", bicu
 
 ## 使用它
 
-`torchvision.transforms` 将以上所有内容整合到一个可组合的管道中。下面的代码完全重现了 `preprocess_imagenet` 的功能，同时还包括调整大小和裁剪。```python
+`torchvision.transforms` 将以上所有内容整合到一个可组合的管道中。下面的代码完全重现了 `preprocess_imagenet` 的功能，同时还包括调整大小和裁剪。
+
+```python
 import torch
 from torchvision import transforms
 from PIL import Image
@@ -675,7 +731,9 @@ print(f"per-channel std:  {x.std(dim=(1, 2)).tolist()}")
 
 batch = x.unsqueeze(0)
 print(f"\nbatched shape: {tuple(batch.shape)}   # (N, C, H, W) — ready for a model")
-```四个步骤，严格按照以下顺序：`Resize(256)` 将较短的边缩放至 256；`CenterCrop(224)` 从中间截取一个 224x224 的区域；`ToTensor()` 除以 255 并将 HWC 转换为 CHW；`Normalize` 减去 ImageNet 的均值并除以标准差。反转这个顺序会悄无声息地改变传入模型的内容。
+```
+
+四个步骤，严格按照以下顺序：`Resize(256)` 将较短的边缩放至 256；`CenterCrop(224)` 从中间截取一个 224x224 的区域；`ToTensor()` 除以 255 并将 HWC 转换为 CHW；`Normalize` 减去 ImageNet 的均值并除以标准差。反转这个顺序会悄无声息地改变传入模型的内容。
 
 ## 发布它
 

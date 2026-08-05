@@ -22,17 +22,25 @@
 
 ## 概念
 
-Notebook 是一个单元格列表。每个单元格要么是代码，要么是文本。```mermaid
+Notebook 是一个单元格列表。每个单元格要么是代码，要么是文本。
+
+```mermaid
 graph TD
     A["**Markdown Cell**\n# My Experiment\nTesting learning rate 0.01"] --> B["**Code Cell** ► Run\nmodel.fit(X, y, lr=0.01)\n---\nOutput: loss = 0.342"]
     B --> C["**Code Cell** ► Run\nplt.plot(losses)\n---\nOutput: inline plot"]
-```内核是一个在后台运行的 Python 进程。当你运行一个单元格时，它会将代码发送给内核，内核执行代码并将结果返回。所有单元格共享同一个内核，因此变量在单元格之间是持久的。```mermaid
+```
+
+内核是一个在后台运行的 Python 进程。当你运行一个单元格时，它会将代码发送给内核，内核执行代码并将结果返回。所有单元格共享同一个内核，因此变量在单元格之间是持久的。
+
+```mermaid
 graph LR
     A[Notebook UI] <--> B[Kernel\nPython process]
     B --> C[Keeps variables in memory]
     B --> D[Runs cells in whatever order you click]
     B --> E[Dies when you restart it]
-```“无论你点击什么顺序”的部分既是超能力，也是脚枪。
+```
+
+“无论你点击什么顺序”的部分既是超能力，也是脚枪。
 
 ## 构建它
 
@@ -46,10 +54,14 @@ graph LR
 | Jupyter Notebook | `pip install notebook` 然后 `jupyter notebook` | 简单，轻量，一次一个笔记本 |
 | VS Code | 安装 "Jupyter" 扩展 | 已经在你的编辑器中，Git 集成，调试 |
 
-所有三个界面都读写相同的 `.ipynb` 文件。选择你喜欢的即可。在人工智能工作中，JupyterLab 是最常用的。```bash
+所有三个界面都读写相同的 `.ipynb` 文件。选择你喜欢的即可。在人工智能工作中，JupyterLab 是最常用的。
+
+```bash
 pip install jupyterlab
 jupyter lab
-```### 步骤 2：重要的键盘快捷键
+```
+
+### 步骤 2：重要的键盘快捷键
 
 你有这两种模式。按下 `Escape` 进入命令模式（左侧蓝色条），按下 `Enter` 进入编辑模式（绿色条）。
 
@@ -78,11 +90,15 @@ jupyter lab
 
 ### 步骤 3：单元格类型
 
-**代码单元格** 运行 Python 并显示输出：```python
+**代码单元格** 运行 Python 并显示输出：
+
+```python
 import numpy as np
 data = np.random.randn(1000)
 data.mean(), data.std()
-```输出：`(0.0032, 0.9987)`
+```
+
+输出：`(0.0032, 0.9987)`
 
 **Markdown单元格**渲染格式化文本。使用它们来记录你正在做什么以及原因。支持标题、加粗、斜体、LaTeX数学公式（`$E = mc^2$`）、表格和图片。
 
@@ -104,28 +120,48 @@ data.mean(), data.std()
 
 这些不是Python。它们是Jupyter特定的命令，以`%`（行魔术）或`%%`（单元格魔术）开头。
 
-**计时你的代码：**```python
+**计时你的代码：**
+
+```python
 %timeit np.random.randn(10000)
-```Output: `45.2 us +/- 1.3 us per loop````python
+```Output: `45.2 us +/- 1.3 us per loop`
+
+```python
 %%time
 model.fit(X_train, y_train, epochs=10)
-```输出：`Wall time: 2.34 s`
+```
+
+输出：`Wall time: 2.34 s`
 
 `%timeit` 运行代码多次并取平均值。`%%time` 运行一次。对微基准测试使用 `%timeit`，对训练运行使用 `%%time`。
 
-**启用内联图表：**```python
+**启用内联图表：**
+
+```python
 %matplotlib inline
-```每个 `plt.plot()` 或 `plt.show()` 现在都可以直接在笔记本中渲染。
+```
 
-**无需离开笔记本即可安装包：**```python
+每个 `plt.plot()` 或 `plt.show()` 现在都可以直接在笔记本中渲染。
+
+**无需离开笔记本即可安装包：**
+
+```python
 !pip install scikit-learn
-````!` 前缀可以运行任何 shell 命令。
+```
 
-**检查环境变量：**```python
+`!` 前缀可以运行任何 shell 命令。
+
+**检查环境变量：**
+
+```python
 %env CUDA_VISIBLE_DEVICES
-```### 步骤 5：内联显示丰富的输出
+```
 
-Notebook 会自动显示单元格中的最后一个表达式。但你可以进行控制：```python
+### 步骤 5：内联显示丰富的输出
+
+Notebook 会自动显示单元格中的最后一个表达式。但你可以进行控制：
+
+```python
 import pandas as pd
 
 df = pd.DataFrame({
@@ -134,19 +170,29 @@ df = pd.DataFrame({
     "training_time": [0.1, 2.3, 45.6]
 })
 df
-```这会生成一个格式化的 HTML 表格，而不是文本转储。图表也是如此：```python
+```
+
+这会生成一个格式化的 HTML 表格，而不是文本转储。图表也是如此：
+
+```python
 import matplotlib.pyplot as plt
 
 plt.figure(figsize=(8, 4))
 plt.plot([1, 2, 3, 4], [1, 4, 2, 3])
 plt.title("Inline Plot")
 plt.show()
-```图表显示在单元格的正下方。这就是为什么笔记本在人工智能工作中占主导地位。你可以同时看到数据、图表和代码。
+```
 
-对于图像：```python
+图表显示在单元格的正下方。这就是为什么笔记本在人工智能工作中占主导地位。你可以同时看到数据、图表和代码。
+
+对于图像：
+
+```python
 from IPython.display import Image, display
 display(Image(filename="architecture.png"))
-```### 第6步：Google Colab
+```
+
+### 第6步：Google Colab
 
 Colab 是一个免费的云端 Jupyter 笔记本。它为你提供 GPU、预安装的库以及 Google Drive 集成。无需任何设置。
 

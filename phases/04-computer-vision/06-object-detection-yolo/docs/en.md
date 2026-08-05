@@ -26,7 +26,9 @@ YOLO（You Only Look Once，Redmon 等，2016）是通过卷积网络一次前�
 
 ### 作为密集预测的检测
 
-分类器每张图像输出 C 个数字。YOLO 风格的检测器每张图像输出 `(S x S x (5 + C))` 个数字，其中 S 是空间网格的大小。```mermaid
+分类器每张图像输出 C 个数字。YOLO 风格的检测器每张图像输出 `(S x S x (5 + C))` 个数字，其中 S 是空间网格的大小。
+
+```mermaid
 flowchart LR
     IMG["Input 416x416 RGB"] --> BB["Backbone<br/>(ResNet, DarkNet, ...)"]
     BB --> FM["Feature map<br/>(C_feat, 13, 13)"]
@@ -40,7 +42,9 @@ flowchart LR
     style HEAD fill:#fef3c7,stroke:#d97706
     style NMS fill:#fecaca,stroke:#dc2626
     style RESULT fill:#dcfce7,stroke:#16a34a
-```每个 `S * S` 网格单元预测 `B` 个边界框。对于每个边界框：
+```
+
+每个 `S * S` 网格单元预测 `B` 个边界框。对于每个边界框：
 
 - 4 个数字描述几何形状：`tx, ty, tw, th`。
 - 1 个数字是目标得分：“这个单元格中是否有目标？”
@@ -52,7 +56,9 @@ flowchart LR
 
 普通的回归方法会为每个对象预测 `(x, y, w, h)` 作为绝对坐标。这对卷积网络来说很难，因为图像的平移不应该导致所有预测都以相同的量平移——每个对象都有空间锚点。网格通过将每个真实框分配给其中心所在的网格单元来解决这个问题；只有该单元负责该对象。
 
-锚点解决了第二个问题。一个 3x3 的卷积层很难从 16 像素的感受野特征单元中回归出一个 500 像素宽的框。相反，我们为每个单元预先定义了 `B` 个先验框形状（锚点），并从每个锚点预测小的增量。模型学习选择正确的锚点并进行微调，而不是从零开始进行回归。```
+锚点解决了第二个问题。一个 3x3 的卷积层很难从 16 像素的感受野特征单元中回归出一个 500 像素宽的框。相反，我们为每个单元预先定义了 `B` 个先验框形状（锚点），并从每个锚点预测小的增量。模型学习选择正确的锚点并进行微调，而不是从零开始进行回归。
+
+```
 Anchor box priors (example for 416x416 input):
 
   small:   (30,  60)
@@ -60,26 +66,36 @@ Anchor box priors (example for 416x416 input):
   large:   (200, 380)
 
 At each grid cell, every anchor emits (tx, ty, tw, th, obj, c_1, ..., c_C).
-```现代检测器通常在不同分辨率下使用 FPN 并采用不同的锚点集 —— 在浅层高分辨率图上使用小锚点，在深层低分辨率图上使用大锚点。同样的思路，更多的尺度。
+```
+
+现代检测器通常在不同分辨率下使用 FPN 并采用不同的锚点集 —— 在浅层高分辨率图上使用小锚点，在深层低分辨率图上使用大锚点。同样的思路，更多的尺度。
 
 ### 解码预测
 
-原始的 `tx, ty, tw, th` 并不是框坐标；它们是需要在绘图前进行转换的回归目标：```
+原始的 `tx, ty, tw, th` 并不是框坐标；它们是需要在绘图前进行转换的回归目标：
+
+```
 centre x  = (sigmoid(tx) + cell_x) * stride
 centre y  = (sigmoid(ty) + cell_y) * stride
 width     = anchor_w * exp(tw)
 height    = anchor_h * exp(th)
-````sigmoid` 保持单元格内的中心偏移量。`exp` 允许宽度从锚点自由缩放，而不会发生符号翻转。`stride` 将网格坐标重新缩放为像素。自 v2 版本以来，所有 YOLO 版本的解码步骤都是相同的。
+```
+
+`sigmoid` 保持单元格内的中心偏移量。`exp` 允许宽度从锚点自由缩放，而不会发生符号翻转。`stride` 将网格坐标重新缩放为像素。自 v2 版本以来，所有 YOLO 版本的解码步骤都是相同的。
 
 ### IoU
 
-检测中两个框之间的通用相似度度量：```
+检测中两个框之间的通用相似度度量：
+
+```
 IoU(A, B) = area(A intersect B) / area(A union B)
 ```IoU = 1 表示完全重合；IoU = 0 表示没有重叠。预测框与真实框之间的 IoU 决定了该预测是否被计为真正例（通常 IoU >= 0.5）。两个预测框之间的 IoU 是 NMS 用于去重的依据。
 
 ### 非极大值抑制
 
-在一个针对相邻锚点进行训练的卷积网络中，常常会对同一物体预测出重叠的框。NMS 会保留置信度最高的预测，并删除任何与之 IoU 超过阈值的其他预测。```
+在一个针对相邻锚点进行训练的卷积网络中，常常会对同一物体预测出重叠的框。NMS 会保留置信度最高的预测，并删除任何与之 IoU 超过阈值的其他预测。
+
+```
 NMS(boxes, scores, iou_threshold):
     sort boxes by score descending
     keep = []
@@ -87,16 +103,22 @@ NMS(boxes, scores, iou_threshold):
         pick the top-scoring box, add to keep
         remove every box with IoU > iou_threshold to the picked box
     return keep
-```典型阈值：目标检测为 0.45。近期的检测器用 `soft-NMS`、`DIoU-NMS` 替代了标准的 NMS，或者直接学习抑制（如 RT-DETR），但结构目的相同。
+```
+
+典型阈值：目标检测为 0.45。近期的检测器用 `soft-NMS`、`DIoU-NMS` 替代了标准的 NMS，或者直接学习抑制（如 RT-DETR），但结构目的相同。
 
 ### 损失函数
 
-YOLO 损失是三个损失加权相加：```
+YOLO 损失是三个损失加权相加：
+
+```
 L = lambda_coord * L_box(pred, target, where obj=1)
   + lambda_obj   * L_obj(pred, 1,     where obj=1)
   + lambda_noobj * L_obj(pred, 0,     where obj=0)
   + lambda_cls   * L_cls(pred, target, where obj=1)
-```只有包含对象的单元格才会对框回归和分类损失做出贡献。不包含对象的单元格仅对对象性损失做出贡献（教导模型保持沉默）。`lambda_noobj` 通常很小（~0.5），因为绝大多数单元格都是空的，否则会主导总损失。
+```
+
+只有包含对象的单元格才会对框回归和分类损失做出贡献。不包含对象的单元格仅对对象性损失做出贡献（教导模型保持沉默）。`lambda_noobj` 通常很小（~0.5），因为绝大多数单元格都是空的，否则会主导总损失。
 
 现代变体用 CIoU / DIoU 替代 MSE 框损失（直接优化 IoU），使用焦点损失处理类别不平衡，并用质量焦点损失平衡对象性。三部分结构保持不变。
 
@@ -115,7 +137,9 @@ L = lambda_coord * L_box(pred, target, where obj=1)
 
 ### 第一步：IoU
 
-整个课程中最重要的工具。适用于两个以 `(x1, y1, x2, y2)` 格式表示的框数组。```python
+整个课程中最重要的工具。适用于两个以 `(x1, y1, x2, y2)` 格式表示的框数组。
+
+```python
 import numpy as np
 
 def box_iou(boxes_a, boxes_b):
@@ -135,9 +159,13 @@ def box_iou(boxes_a, boxes_b):
     area_b = (bx2 - bx1) * (by2 - by1)
     union = area_a[:, None] + area_b[None, :] - inter
     return inter / np.clip(union, 1e-8, None)
-```返回一个 `(N_a, N_b)` 的成对 IoU 矩阵。通过使其中一个数组的形状为 `(1, 4)`，可以将其用于单个真实框。
+```
 
-### 步骤 2：非极大值抑制```python
+返回一个 `(N_a, N_b)` 的成对 IoU 矩阵。通过使其中一个数组的形状为 `(1, 4)`，可以将其用于单个真实框。
+
+### 步骤 2：非极大值抑制
+
+```python
 def nms(boxes, scores, iou_threshold=0.45):
     order = np.argsort(-scores)
     keep = []
@@ -150,11 +178,15 @@ def nms(boxes, scores, iou_threshold=0.45):
         ious = box_iou(boxes[[i]], boxes[rest])[0]
         order = rest[ious <= iou_threshold]
     return np.array(keep, dtype=np.int64)
-```确定性，`O(N log N)` 来自该类别，并且在相同输入下与 `torchvision.ops.nms` 的行为一致。
+```
+
+确定性，`O(N log N)` 来自该类别，并且在相同输入下与 `torchvision.ops.nms` 的行为一致。
 
 ### 步骤 3：Box 编码和解码
 
-在像素坐标和网络实际回归的 `(tx, ty, tw, th)` 目标之间进行转换。```python
+在像素坐标和网络实际回归的 `(tx, ty, tw, th)` 目标之间进行转换。
+
+```python
 def encode(box_xyxy, cell_x, cell_y, stride, anchor_wh):
     x1, y1, x2, y2 = box_xyxy
     cx = 0.5 * (x1 + x2)
@@ -179,11 +211,15 @@ def decode(tx_ty_tw_th, cell_x, cell_y, stride, anchor_wh):
 
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
-```测试：对一个框进行编码然后解码 —— 你应该得到一个非常接近原始结果的输出（当 `tx` 不在 sigmoid 之后的范围内时，由于 sigmoid 的反函数并非完全可逆，因此可能存在一些误差）。
+```
+
+测试：对一个框进行编码然后解码 —— 你应该得到一个非常接近原始结果的输出（当 `tx` 不在 sigmoid 之后的范围内时，由于 sigmoid 的反函数并非完全可逆，因此可能存在一些误差）。
 
 ### 步骤 4：一个最小的 YOLO 头
 
-在特征图上使用一个 1x1 的卷积，将其重塑为 `(B, S, S, num_anchors, 5 + C)`。```python
+在特征图上使用一个 1x1 的卷积，将其重塑为 `(B, S, S, num_anchors, 5 + C)`。
+
+```python
 import torch
 import torch.nn as nn
 
@@ -200,11 +236,15 @@ class YOLOHead(nn.Module):
         y = y.view(n, self.num_anchors, 5 + self.num_classes, h, w)
         y = y.permute(0, 3, 4, 1, 2).contiguous()
         return y
-```输出形状：`(N, H, W, num_anchors, 5 + C)`。最后一个维度保存 `[tx, ty, tw, th, obj, cls_0, ..., cls_{C-1}]`。
+```
+
+输出形状：`(N, H, W, num_anchors, 5 + C)`。最后一个维度保存 `[tx, ty, tw, th, obj, cls_0, ..., cls_{C-1}]`。
 
 ### 步骤 5：真实值分配
 
-对于每一个真实值边界框，决定哪个 `(cell, anchor)` 负责。```python
+对于每一个真实值边界框，决定哪个 `(cell, anchor)` 负责。
+
+```python
 def assign_targets(boxes_xyxy, classes, anchors, stride, grid_size, num_classes):
     num_anchors = len(anchors)
     target = np.zeros((grid_size, grid_size, num_anchors, 5 + num_classes), dtype=np.float32)
@@ -231,9 +271,13 @@ def assign_targets(boxes_xyxy, classes, anchors, stride, grid_size, num_classes)
         target[gy, gx, best, 5 + cls] = 1.0
         has_obj[gy, gx, best] = True
     return target, has_obj
-```锚点选择是“与真实值具有最佳形状IoU”——一种廉价的代理方法，与YOLOv2/v3的分配方式相匹配。v5及以后版本使用更复杂的策略（任务对齐匹配、动态k）来完善这一想法。
+```
 
-### 第六步：三种损失```python
+锚点选择是“与真实值具有最佳形状IoU”——一种廉价的代理方法，与YOLOv2/v3的分配方式相匹配。v5及以后版本使用更复杂的策略（任务对齐匹配、动态k）来完善这一想法。
+
+### 第六步：三种损失
+
+```python
 def yolo_loss(pred, target, has_obj, lambda_coord=5.0, lambda_obj=1.0, lambda_noobj=0.5, lambda_cls=1.0):
     has_obj_t = torch.from_numpy(has_obj).bool()
     target_t = torch.from_numpy(target).float()
@@ -263,11 +307,15 @@ def yolo_loss(pred, target, has_obj, lambda_coord=5.0, lambda_obj=1.0, lambda_no
              + lambda_cls * loss_cls)
     return total, {"box": loss_box.item(), "obj_pos": loss_obj_pos.item(),
                    "obj_neg": loss_obj_neg.item(), "cls": loss_cls.item()}
-```每个 YOLO 教程都会硬编码或扫描的五个超参数。比例很重要：`lambda_coord=5, lambda_noobj=0.5` 镜像原始 YOLOv1 论文，仍然可以作为合理的默认值。
+```
+
+每个 YOLO 教程都会硬编码或扫描的五个超参数。比例很重要：`lambda_coord=5, lambda_noobj=0.5` 镜像原始 YOLOv1 论文，仍然可以作为合理的默认值。
 
 ### 第 7 步：推理流程
 
-解码原始头部输出，应用 sigmoid/exp，对置信度进行阈值处理，然后进行 NMS。```python
+解码原始头部输出，应用 sigmoid/exp，对置信度进行阈值处理，然后进行 NMS。
+
+```python
 def postprocess(pred_tensor, anchors, stride, img_size, conf_threshold=0.25, iou_threshold=0.45):
     pred = pred_tensor.detach().cpu().numpy()
     grid_h, grid_w = pred.shape[1], pred.shape[2]
@@ -297,11 +345,15 @@ def postprocess(pred_tensor, anchors, stride, img_size, conf_threshold=0.25, iou
     classes = np.array(classes)
     keep = nms(boxes, scores, iou_threshold)
     return boxes[keep], scores[keep], classes[keep]
-```这就是完整的评估路径：head -> decode -> threshold -> NMS。
+```
+
+这就是完整的评估路径：head -> decode -> threshold -> NMS。
 
 ## 使用方法
 
-`torchvision.models.detection` 为生产检测器提供了相同的概念结构。加载一个预训练模型只需要三行代码。```python
+`torchvision.models.detection` 为生产检测器提供了相同的概念结构。加载一个预训练模型只需要三行代码。
+
+```python
 import torch
 from torchvision.models.detection import fasterrcnn_resnet50_fpn_v2
 
@@ -313,7 +365,9 @@ print(predictions[0].keys())
 print(f"boxes:  {predictions[0]['boxes'].shape}")
 print(f"scores: {predictions[0]['scores'].shape}")
 print(f"labels: {predictions[0]['labels'].shape}")
-```对于实时推理流水线，`ultralytics`（YOLOv8/v9）是标准：`from ultralytics import YOLO; model = YOLO('yolov8n.pt'); model(img)`。该模型内部处理解码和NMS，并返回你上面构建的相同`boxes / scores / labels`三元组。
+```
+
+对于实时推理流水线，`ultralytics`（YOLOv8/v9）是标准：`from ultralytics import YOLO; model = YOLO('yolov8n.pt'); model(img)`。该模型内部处理解码和NMS，并返回你上面构建的相同`boxes / scores / labels`三元组。
 
 ## 发布它
 

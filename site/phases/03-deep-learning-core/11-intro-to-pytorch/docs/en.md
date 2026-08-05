@@ -40,7 +40,9 @@ PyTorch 填补了所有这些差距。同时，它保持了你已经构建的相
 
 ### 张量
 
-张量是一个具有三个关键属性的多维数组：形状、数据类型和设备。```python
+张量是一个具有三个关键属性的多维数组：形状、数据类型和设备。
+
+```python
 import torch
 
 x = torch.zeros(3, 4)           # shape: (3, 4), dtype: float32, device: cpu
@@ -57,23 +59,33 @@ x = torch.tensor([1, 2, 3])     # from a Python list
 | bfloat16 | 16 | 与 float32 相同的范围，但精度较低 | 大型语言模型训练 |
 | int8 | 8 | -128 到 127 | 量化推理 |
 
-**Device** 确定计算发生的位置。```python
+**Device** 确定计算发生的位置。
+
+```python
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 x = torch.randn(3, 4, device=device)
 x = x.to("cuda")
 x = x.cpu()
-```每个操作都需要所有张量位于同一设备上。这是新手最常遇到的 #1 PyTorch 错误：`RuntimeError: Expected all tensors to be on the same device`。在计算之前，通过将所有内容移动到同一设备上来解决这个问题。
+```
 
-**重塑**是常数时间操作 -- 它改变的是元数据，而不是数据本身。```python
+每个操作都需要所有张量位于同一设备上。这是新手最常遇到的 #1 PyTorch 错误：`RuntimeError: Expected all tensors to be on the same device`。在计算之前，通过将所有内容移动到同一设备上来解决这个问题。
+
+**重塑**是常数时间操作 -- 它改变的是元数据，而不是数据本身。
+
+```python
 x = torch.randn(2, 3, 4)
 x.view(2, 12)      # reshape to (2, 12) -- must be contiguous
 x.reshape(6, 4)    # reshape to (6, 4) -- works always
 x.permute(2, 0, 1) # reorder dimensions
 x.unsqueeze(0)     # add dimension: (1, 2, 3, 4)
 x.squeeze()        # remove size-1 dimensions
-```### 自动求导
+```
 
-你的小框架要求你为每个模块实现 backward()。PyTorch 不需要。它将对张量的每个操作记录到一个有向无环图中（计算图），然后通过反向遍历该图来自动计算梯度。```mermaid
+### 自动求导
+
+你的小框架要求你为每个模块实现 backward()。PyTorch 不需要。它将对张量的每个操作记录到一个有向无环图中（计算图），然后通过反向遍历该图来自动计算梯度。
+
+```mermaid
 graph LR
     x["x (leaf)"] --> mul["*"]
     w["w (leaf, requires_grad)"] --> mul
@@ -84,13 +96,19 @@ graph LR
     add --> |"grad"| b
     add --> |"grad"| mul
     mul --> |"grad"| w
-```与你的框架的关键区别在于：PyTorch 使用基于磁带（tape-based）的自动微分。在前向传播过程中，每个操作都会追加到一个“磁带”上。调用 `.backward()` 会以相反的顺序重放这个磁带。```python
+```
+
+与你的框架的关键区别在于：PyTorch 使用基于磁带（tape-based）的自动微分。在前向传播过程中，每个操作都会追加到一个“磁带”上。调用 `.backward()` 会以相反的顺序重放这个磁带。
+
+```python
 x = torch.randn(3, requires_grad=True)
 y = x ** 2 + 3 * x
 z = y.sum()
 z.backward()
 print(x.grad)  # dz/dx = 2x + 3
-```自动梯度（autograd）的三条规则：
+```
+
+自动梯度（autograd）的三条规则：
 
 1. 仅带有 `requires_grad=True` 的叶张量会累积梯度
 2. 梯度默认会累积 -- 在每次反向传播之前调用 `optimizer.zero_grad()`
@@ -98,7 +116,9 @@ print(x.grad)  # dz/dx = 2x + 3
 
 ### nn.Module
 
-`nn.Module` 是 PyTorch 中每个神经网络组件的基类。你在第 10 课已经构建了这个抽象。PyTorch 的版本增加了自动参数注册、递归模块发现、设备管理和状态字典序列化。```python
+`nn.Module` 是 PyTorch 中每个神经网络组件的基类。你在第 10 课已经构建了这个抽象。PyTorch 的版本增加了自动参数注册、递归模块发现、设备管理和状态字典序列化。
+
+```python
 import torch.nn as nn
 
 class MLP(nn.Module):
@@ -113,7 +133,9 @@ class MLP(nn.Module):
         x = self.relu(x)
         x = self.layer2(x)
         return x
-```当你在 `__init__` 中将 `nn.Module` 或 `nn.Parameter` 作为属性进行赋值时，PyTorch 会自动进行注册。`model.parameters()` 会递归地收集每一个已注册的参数。这就是你无需像在小型框架中那样手动收集权重的原因。
+```
+
+当你在 `__init__` 中将 `nn.Module` 或 `nn.Parameter` 作为属性进行赋值时，PyTorch 会自动进行注册。`model.parameters()` 会递归地收集每一个已注册的参数。这就是你无需像在小型框架中那样手动收集权重的原因。
 
 关键构建模块：
 
@@ -155,7 +177,9 @@ PyTorch 提供了你所构建的所有内容的生产就绪版本。
 
 ### 训练循环
 
-每一个 PyTorch 训练循环都遵循相同的五步模式。你已经在第10课中了解过这一点。```mermaid
+每一个 PyTorch 训练循环都遵循相同的五步模式。你已经在第10课中了解过这一点。
+
+```mermaid
 sequenceDiagram
     participant D as DataLoader
     participant M as Model
@@ -170,7 +194,9 @@ sequenceDiagram
         O->>M: optimizer.step()
         O->>O: optimizer.zero_grad()
     end
-```规范模式：
+```
+
+规范模式：
 
  /no_think
 
@@ -178,7 +204,9 @@ sequenceDiagram
 
 规范模式：
 
- /no_think```python
+ /no_think
+
+```python
 for epoch in range(num_epochs):
     model.train()
     for inputs, targets in train_loader:
@@ -188,11 +216,15 @@ for epoch in range(num_epochs):
         loss = criterion(outputs, targets)
         loss.backward()
         optimizer.step()
-```批处理循环中的五行代码。这五行代码训练了 GPT-4、Stable Diffusion 和 LLaMA。架构改变了，数据改变了，这五行代码没有改变。
+```
+
+批处理循环中的五行代码。这五行代码训练了 GPT-4、Stable Diffusion 和 LLaMA。架构改变了，数据改变了，这五行代码没有改变。
 
 ### 数据集和数据加载器
 
-PyTorch 的 `Dataset` 是一个抽象类，包含两个方法：`__len__` 和 `__getitem__`。`DataLoader` 用批处理、洗牌和多进程数据加载来包装它。```python
+PyTorch 的 `Dataset` 是一个抽象类，包含两个方法：`__len__` 和 `__getitem__`。`DataLoader` 用批处理、洗牌和多进程数据加载来包装它。
+
+```python
 from torch.utils.data import Dataset, DataLoader
 
 class MNISTDataset(Dataset):
@@ -207,16 +239,26 @@ class MNISTDataset(Dataset):
         return self.images[idx], self.labels[idx]
 
 loader = DataLoader(dataset, batch_size=64, shuffle=True, num_workers=4)
-````num_workers=4` 启动 4 个进程以并行加载数据，而 GPU 则在当前批次上进行训练。在磁盘受限的工作负载（大图像、音频）中，仅此一项就可将训练速度提高一倍。
+```
+
+`num_workers=4` 启动 4 个进程以并行加载数据，而 GPU 则在当前批次上进行训练。在磁盘受限的工作负载（大图像、音频）中，仅此一项就可将训练速度提高一倍。
 
 ### GPU 训练
 
-将模型移动到 GPU：```python
+将模型移动到 GPU：
+
+```python
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
-```这会递归地将每个参数和缓冲区移动到 GPU。然后在训练期间移动每个批次：```python
+```
+
+这会递归地将每个参数和缓冲区移动到 GPU。然后在训练期间移动每个批次：
+
+```python
 inputs, targets = inputs.to(device), targets.to(device)
-```**混合精度**通过在现代 GPU（A100、H100、RTX 4090）上使用 float16 运行前向/反向传播，同时将主权重保持在 float32 中，从而将内存使用量减半并使吞吐量翻倍：```python
+```**混合精度**通过在现代 GPU（A100、H100、RTX 4090）上使用 float16 运行前向/反向传播，同时将主权重保持在 float32 中，从而将内存使用量减半并使吞吐量翻倍：
+
+```python
 from torch.amp import autocast, GradScaler
 
 scaler = GradScaler()
@@ -228,7 +270,9 @@ for inputs, targets in loader:
     scaler.step(optimizer)
     scaler.update()
     optimizer.zero_grad()
-```### 对比：Mini Framework vs PyTorch vs JAX
+```
+
+### 对比：Mini Framework vs PyTorch vs JAX
 
 | 特性 | Mini Framework (L10) | PyTorch | JAX |
 |-----|---------------------|--------|-----|
@@ -240,15 +284,21 @@ for inputs, targets in loader:
 | 调试 | print() | print(), pdb, breakpoint() | 更困难（JIT 跟踪会中断 print） |
 | 生态系统 | 无 | Hugging Face, Lightning, timm | Flax, Optax, Orbax |
 | 学习曲线 | 你亲手构建它 | 中等 | 陡峭（函数式范式） |
-| 生产使用 | 玩具问题 | Meta, OpenAI, Anthropic, HF | Google DeepMind, Midjourney |```figure
+| 生产使用 | 玩具问题 | Meta, OpenAI, Anthropic, HF | Google DeepMind, Midjourney |
+
+```figure
 dropout-mask
-```## 构建它
+```
+
+## 构建它
 
 一个使用仅 PyTorch 原语训练的 3 层 MLP，用于 MNIST。不使用高级封装器。不使用 `torchvision.datasets`。我们自行下载并解析原始数据。
 
 ### 步骤 1：从原始文件加载 MNIST
 
-MNIST 以 4 个压缩文件的形式提供：训练图像（60,000 x 28 x 28）、训练标签、测试图像（10,000 x 28 x 28）、测试标签。我们下载它们并解析二进制格式。```python
+MNIST 以 4 个压缩文件的形式提供：训练图像（60,000 x 28 x 28）、训练标签、测试图像（10,000 x 28 x 28）、测试标签。我们下载它们并解析二进制格式。
+
+```python
 import torch
 import torch.nn as nn
 import struct
@@ -284,9 +334,13 @@ def load_labels(filepath):
         data = f.read()
         labels = torch.frombuffer(bytearray(data), dtype=torch.uint8).long()
     return labels
-```### 步骤 2：定义模型
+```
 
-一个 3 层的 MLP：784 -> 256 -> 128 -> 10。使用 ReLU 激活函数。使用 Dropout 进行正则化。为了保持简单，不使用批量归一化。```python
+### 步骤 2：定义模型
+
+一个 3 层的 MLP：784 -> 256 -> 128 -> 10。使用 ReLU 激活函数。使用 Dropout 进行正则化。为了保持简单，不使用批量归一化。
+
+```python
 class MNISTModel(nn.Module):
     def __init__(self):
         super().__init__()
@@ -302,13 +356,17 @@ class MNISTModel(nn.Module):
 
     def forward(self, x):
         return self.net(x)
-```输出层生成 10 个原始 logit（每个数字对应一个）。不需要 softmax -- `CrossEntropyLoss` 会内部处理。
+```
+
+输出层生成 10 个原始 logit（每个数字对应一个）。不需要 softmax -- `CrossEntropyLoss` 会内部处理。
 
 参数数量：784*256 + 256 + 256*128 + 128 + 128*10 + 10 = 235,146。按现代标准来看非常小。GPT-2 小型模型有 124M。这可以在几秒钟内训练完成。
 
 ### 步骤 3：训练循环
 
-经典的前向-损失-反向-步骤模式。```python
+经典的前向-损失-反向-步骤模式。
+
+```python
 def train_one_epoch(model, loader, criterion, optimizer, device):
     model.train()
     total_loss = 0
@@ -343,9 +401,13 @@ def evaluate(model, loader, criterion, device):
             correct += predicted.eq(labels).sum().item()
             total += labels.size(0)
     return total_loss / total, correct / total
-```在评估期间注意使用 `torch.no_grad()`。这会禁用自动求导，减少内存使用并加快推理速度。如果不使用它，PyTorch 会构建一个你从未使用的计算图。
+```
 
-### 步骤 4：将所有部分连接起来```python
+在评估期间注意使用 `torch.no_grad()`。这会禁用自动求导，减少内存使用并加快推理速度。如果不使用它，PyTorch 会构建一个你从未使用的计算图。
+
+### 步骤 4：将所有部分连接起来
+
+```python
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -409,15 +471,21 @@ def main():
 
 接口几乎相同。区别在于内部实现。
 
-### 保存和加载模型```python
+### 保存和加载模型
+
+```python
 torch.save(model.state_dict(), "model.pt")
 
 model = MNISTModel()
 model.load_state_dict(torch.load("model.pt", weights_only=True))
 model.eval()
-```始终保存 `state_dict()`（参数字典），而不是模型对象。保存模型对象会使用 pickle，当你重构代码时会出错。状态字典是可移植的。
+```
 
-### 学习率调度```python
+始终保存 `state_dict()`（参数字典），而不是模型对象。保存模型对象会使用 pickle，当你重构代码时会出错。状态字典是可移植的。
+
+### 学习率调度
+
+```python
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
     optimizer, T_max=10
 )

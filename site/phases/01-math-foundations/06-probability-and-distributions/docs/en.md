@@ -24,7 +24,9 @@
 
 ### 事件、样本空间和概率
 
-样本空间 S 是所有可能结果的集合。事件是样本空间的一个子集。概率将事件映射到 0 到 1 之间的数字。```
+样本空间 S 是所有可能结果的集合。事件是样本空间的一个子集。概率将事件映射到 0 到 1 之间的数字。
+
+```
 Coin flip:
   S = {H, T}
   P(H) = 0.5,  P(T) = 0.5
@@ -32,7 +34,9 @@ Coin flip:
 Single die roll:
   S = {1, 2, 3, 4, 5, 6}
   P(even) = P({2, 4, 6}) = 3/6 = 0.5
-```定义概率的三个公理如下：
+```
+
+定义概率的三个公理如下：
 1. 对于任何事件 A，P(A) >= 0
 2. P(S) = 1（必然发生某事）
 3. 当 A 和 B 不能同时发生时，P(A 或 B) = P(A) + P(B)
@@ -41,21 +45,31 @@ Single die roll:
 
 ### 条件概率与独立性
 
-P(A|B) 是在 B 发生的情况下 A 发生的概率。```
+P(A|B) 是在 B 发生的情况下 A 发生的概率。
+
+```
 P(A|B) = P(A and B) / P(B)
 
 Example: deck of cards
   P(King | Face card) = P(King and Face card) / P(Face card)
                       = (4/52) / (12/52)
                       = 4/12 = 1/3
-```当知道其中一个事件时，对另一个事件没有任何信息，这两个事件是独立的：```
+```
+
+当知道其中一个事件时，对另一个事件没有任何信息，这两个事件是独立的：
+
+```
 Independent:   P(A|B) = P(A)
 Equivalent to: P(A and B) = P(A) * P(B)
-```抛硬币是独立的。不放回地抽牌则不是。
+```
+
+抛硬币是独立的。不放回地抽牌则不是。
 
 ### 概率质量函数 vs 概率密度函数
 
-离散型随机变量具有概率质量函数（PMF）。每个结果都有一个特定的概率，可以直接读取。```
+离散型随机变量具有概率质量函数（PMF）。每个结果都有一个特定的概率，可以直接读取。
+
+```
 PMF: P(X = k)
 
 Fair die:
@@ -65,46 +79,72 @@ Fair die:
   P(X = 6) = 1/6
 
   Sum of all probabilities = 1
-```连续随机变量具有概率密度函数（PDF）。单个点的密度不是一个概率。概率来自于在区间上对密度进行积分。```
+```
+
+连续随机变量具有概率密度函数（PDF）。单个点的密度不是一个概率。概率来自于在区间上对密度进行积分。
+
+```
 PDF: f(x)
 
 P(a <= X <= b) = integral of f(x) from a to b
 
 f(x) can be greater than 1 (density, not probability)
 integral from -inf to +inf of f(x) dx = 1
-```这个区别在机器学习中很重要。分类输出是PMF（离散选择），而VAE潜在空间使用PDF（连续分布）。
+```
+
+这个区别在机器学习中很重要。分类输出是PMF（离散选择），而VAE潜在空间使用PDF（连续分布）。
 
 ### 常见分布
 
-**伯努利分布：** 一次试验，两种结果。用于建模二分类。```
+**伯努利分布：** 一次试验，两种结果。用于建模二分类。
+
+```
 P(X = 1) = p
 P(X = 0) = 1 - p
 Mean = p,  Variance = p(1-p)
-```**分类任务:** 一次试验，k 个结果。模型用于多类分类（softmax 输出）。```
+```**分类任务:** 一次试验，k 个结果。模型用于多类分类（softmax 输出）。
+
+```
 P(X = i) = p_i,  where sum of p_i = 1
 Example: P(cat) = 0.7,  P(dog) = 0.2,  P(bird) = 0.1
-```**Uniform:** 所有可能的结果概率相等。用于随机初始化。```
+```**Uniform:** 所有可能的结果概率相等。用于随机初始化。
+
+```
 Discrete: P(X = k) = 1/n for k in {1, ..., n}
 Continuous: f(x) = 1/(b-a) for x in [a, b]
-```**常规（高斯）:** 钟形曲线。由均值（mu）和方差（sigma^2）参数化。```
+```**常规（高斯）:** 钟形曲线。由均值（mu）和方差（sigma^2）参数化。
+
+```
 f(x) = (1 / sqrt(2*pi*sigma^2)) * exp(-(x - mu)^2 / (2*sigma^2))
 
 Standard normal: mu = 0, sigma = 1
   68% of data within 1 sigma
   95% within 2 sigma
   99.7% within 3 sigma
-```**泊松分布:** 固定区间内稀有事件的发生次数。模型事件发生率。```
+```**泊松分布:** 固定区间内稀有事件的发生次数。模型事件发生率。
+
+```
 P(X = k) = (lambda^k * e^(-lambda)) / k!
 Mean = lambda,  Variance = lambda
-```### 期望值和方差
+```
 
-期望值是加权平均结果。```
+### 期望值和方差
+
+期望值是加权平均结果。
+
+```
 Discrete:   E[X] = sum of x_i * P(X = x_i)
 Continuous: E[X] = integral of x * f(x) dx
-```方差衡量围绕均值的离散程度。```
+```
+
+方差衡量围绕均值的离散程度。
+
+```
 Var(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2
 Standard deviation = sqrt(Var(X))
-```在机器学习中，期望值表现为损失函数（数据分布上的平均损失）。方差告诉你模型的稳定性。梯度的高方差意味着训练过程存在噪声。
+```
+
+在机器学习中，期望值表现为损失函数（数据分布上的平均损失）。方差告诉你模型的稳定性。梯度的高方差意味着训练过程存在噪声。
 
 ### 联合分布与边缘分布
 
@@ -118,19 +158,27 @@ Standard deviation = sqrt(Var(X))
 | X=1（下雨） | 0.05 | 0.45 | P(X=1) = 0.50 |
 | **边缘 P(Y)** | P(Y=0) = 0.45 | P(Y=1) = 0.55 | 1.00 |
 
-边缘分布通过将其他变量求和来得到：```
+边缘分布通过将其他变量求和来得到：
+
+```
 P(X = x) = sum over all y of P(X = x, Y = y)
-```上表中的行和列总计是边缘值。
+```
+
+上表中的行和列总计是边缘值。
 
 ### 为什么正态分布无处不在
 
-中心极限定理：许多独立随机变量的和（或平均值）会收敛到正态分布，无论原始分布是什么。```
+中心极限定理：许多独立随机变量的和（或平均值）会收敛到正态分布，无论原始分布是什么。
+
+```
 Roll 1 die:  uniform distribution (flat)
 Average of 2 dice:  triangular (peaked)
 Average of 30 dice: nearly perfect bell curve
 
 This works for ANY starting distribution.
-```这就是原因：
+```
+
+这就是原因：
 - 测量误差近似服从正态分布（许多小的独立来源）
 - 神经网络中的权重初始化使用正态分布
 - 随机梯度下降中的梯度噪声近似服从正态分布（许多样本梯度的总和）
@@ -138,15 +186,23 @@ This works for ANY starting distribution.
 
 ### 对数概率
 
-原始概率会导致数值问题。许多小概率相乘会迅速下溢到零。```
+原始概率会导致数值问题。许多小概率相乘会迅速下溢到零。
+
+```
 P(sentence) = P(word1) * P(word2) * ... * P(word_n)
             = 0.01 * 0.003 * 0.02 * ...
             -> 0.0 (underflow after ~30 terms)
-```对数概率解决了这个问题。乘法变成了加法。```
+```
+
+对数概率解决了这个问题。乘法变成了加法。
+
+```
 log P(sentence) = log P(word1) + log P(word2) + ... + log P(word_n)
                 = -4.6 + -5.8 + -3.9 + ...
                 -> finite number (no underflow)
-```规则：
+```
+
+规则：
 - log(a * b) = log(a) + log(b)
 - 对数概率总是 <= 0（因为 0 < P <= 1）
 - 更负 = 更不可能
@@ -154,7 +210,9 @@ log P(sentence) = log P(word1) + log P(word2) + ... + log P(word_n)
 
 ### Softmax 作为概率分布
 
-神经网络输出原始分数（logits）。Softmax 将它们转换为有效的概率分布。```
+神经网络输出原始分数（logits）。Softmax 将它们转换为有效的概率分布。
+
+```
 softmax(z_i) = exp(z_i) / sum(exp(z_j) for all j)
 
 Properties:
@@ -162,7 +220,9 @@ Properties:
   - All outputs sum to 1
   - Preserves relative ordering of inputs
   - exp() amplifies differences between logits
-```softmax 技巧：在指数化之前减去最大 logit，以防止溢出。```
+```softmax 技巧：在指数化之前减去最大 logit，以防止溢出。
+
+```
 z = [100, 101, 102]
 exp(102) = overflow
 
@@ -180,11 +240,17 @@ Same result, no overflow.
 - 语言模型从预测的分布中采样下一个 token
 - 扩散模型采样噪声并逐步去噪
 
-从任意分布中进行采样需要使用一些技术，例如逆变换采样、拒绝采样或重参数化技巧（用于 VAE）。```figure
-gaussian-pdf
-```## 构建它
+从任意分布中进行采样需要使用一些技术，例如逆变换采样、拒绝采样或重参数化技巧（用于 VAE）。
 
-### 第一步：概率基础```python
+```figure
+gaussian-pdf
+```
+
+## 构建它
+
+### 第一步：概率基础
+
+```python
 import math
 import random
 
@@ -202,7 +268,11 @@ def conditional_probability(p_a_and_b, p_b):
 
 p_king_given_face = conditional_probability(4/52, 12/52)
 print(f"P(King | Face card) = {p_king_given_face:.4f}")
-```### 步骤 2：从零开始构建 PMF 和 PDF```python
+```
+
+### 步骤 2：从零开始构建 PMF 和 PDF
+
+```python
 def bernoulli_pmf(k, p):
     return p if k == 1 else (1 - p)
 
@@ -221,7 +291,11 @@ def normal_pdf(x, mu, sigma):
     coeff = 1.0 / (sigma * math.sqrt(2 * math.pi))
     exponent = -0.5 * ((x - mu) / sigma) ** 2
     return coeff * math.exp(exponent)
-```### 步骤 3：期望值和方差```python
+```
+
+### 步骤 3：期望值和方差
+
+```python
 def expected_value(values, probabilities):
     return sum(v * p for v, p in zip(values, probabilities))
 
@@ -234,7 +308,11 @@ die_probs = [1/6] * 6
 mu = expected_value(die_values, die_probs)
 var = variance(die_values, die_probs)
 print(f"Die: E[X] = {mu:.4f}, Var(X) = {var:.4f}, SD = {var**0.5:.4f}")
-```### 步骤 4：从分布中采样```python
+```
+
+### 步骤 4：从分布中采样
+
+```python
 def sample_bernoulli(p, n=1):
     return [1 if random.random() < p else 0 for _ in range(n)]
 
@@ -261,7 +339,11 @@ def sample_normal_box_muller(mu, sigma, n=1):
         z = math.sqrt(-2 * math.log(u1)) * math.cos(2 * math.pi * u2)
         samples.append(mu + sigma * z)
     return samples
-```### 步骤 5：Softmax 和对数概率```python
+```
+
+### 步骤 5：Softmax 和对数概率
+
+```python
 def softmax(logits):
     max_logit = max(logits)
     shifted = [z - max_logit for z in logits]
@@ -278,24 +360,36 @@ def log_softmax(logits):
 def cross_entropy_loss(logits, target_index):
     log_probs = log_softmax(logits)
     return -log_probs[target_index]
-```### 第6步：中心极限定理演示```python
+```
+
+### 第6步：中心极限定理演示
+
+```python
 def demonstrate_clt(dist_fn, n_samples, n_averages):
     averages = []
     for _ in range(n_averages):
         samples = [dist_fn() for _ in range(n_samples)]
         averages.append(sum(samples) / len(samples))
     return averages
-```### 步骤 7：可视化```python
+```
+
+### 步骤 7：可视化
+
+```python
 import matplotlib.pyplot as plt
 
 xs = [mu + sigma * (i - 500) / 100 for i in range(1001)]
 ys = [normal_pdf(x, mu, sigma) for x, mu, sigma in ...]
 plt.plot(xs, ys)
-```完整实现及所有可视化内容都在 `code/probability.py` 中。
+```
+
+完整实现及所有可视化内容都在 `code/probability.py` 中。
 
 ## 使用方法
 
-使用 NumPy 和 SciPy，以上所有内容都可以用一行代码实现：```python
+使用 NumPy 和 SciPy，以上所有内容都可以用一行代码实现：
+
+```python
 import numpy as np
 from scipy import stats
 
@@ -310,7 +404,9 @@ probs = softmax(logits)
 log_probs = log_softmax(logits)
 print(f"Softmax: {probs}")
 print(f"Log-softmax: {log_probs}")
-```你从零开始构建了这些内容。现在你知道库调用在做什么了。
+```
+
+你从零开始构建了这些内容。现在你知道库调用在做什么了。
 
 ## 练习
 

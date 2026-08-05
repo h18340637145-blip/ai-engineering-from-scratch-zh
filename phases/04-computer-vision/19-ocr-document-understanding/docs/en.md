@@ -28,7 +28,9 @@
 
 ## 概念
 
-### 经典流程```mermaid
+### 经典流程
+
+```mermaid
 flowchart LR
     IMG["Image"] --> DET["Text detection<br/>(DB, EAST, CRAFT)"]
     DET --> BOX["Word/line<br/>bounding boxes"]
@@ -47,7 +49,9 @@ flowchart LR
 
 ### 一段话中的 CTC
 
-OCR 识别从固定长度的特征图中生成一个可变长度的序列。CTC（Graves 等，2006）允许你在没有字符级对齐的情况下训练这个模型。模型在每个时间步输出（词汇表 + 空格）的分布；CTC 损失对所有在合并重复项并删除空格后还原为目标文本的对齐方式进行边际化处理。```
+OCR 识别从固定长度的特征图中生成一个可变长度的序列。CTC（Graves 等，2006）允许你在没有字符级对齐的情况下训练这个模型。模型在每个时间步输出（词汇表 + 空格）的分布；CTC 损失对所有在合并重复项并删除空格后还原为目标文本的对齐方式进行边际化处理。
+
+```
 raw output: "h h h _ _ e e l l _ l l o _ _"
 after merge repeats and remove blanks: "hello"
 ```CTC 是 CRNN 在 2015 年取得成功并在 2026 年仍然训练大多数生产 OCR 模型的原因。
@@ -76,7 +80,9 @@ after merge repeats and remove blanks: "hello"
 
 ## 构建它
 
-### 第一步：CTC 损失 + 贪婪解码器```python
+### 第一步：CTC 损失 + 贪婪解码器
+
+```python
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -109,11 +115,15 @@ def greedy_ctc_decode(log_probs, blank=0):
             prev = idx
         out.append(decoded)
     return out
-````F.ctc_loss` 在可用时使用高效的 CuDNN 实现。贪婪解码器比束搜索更简单，通常其字符错误率（CER）与后者相差在 1% 以内。
+```
+
+`F.ctc_loss` 在可用时使用高效的 CuDNN 实现。贪婪解码器比束搜索更简单，通常其字符错误率（CER）与后者相差在 1% 以内。
 
 ### 步骤 2：Tiny CRNN 识别器
 
-用于行 OCR 的最小 CNN + BiLSTM。```python
+用于行 OCR 的最小 CNN + BiLSTM。
+
+```python
 class TinyCRNN(nn.Module):
     def __init__(self, vocab_size=40, hidden=128, feat=32):
         super().__init__()
@@ -136,11 +146,15 @@ class TinyCRNN(nn.Module):
         f = f.mean(dim=2).transpose(1, 2)  # (N, W', C)
         h, _ = self.rnn(f)
         return F.log_softmax(self.head(h).transpose(0, 1), dim=-1)  # (W', N, vocab)
-```固定高度输入（CNN将高度最大池化为1）。宽度是CTC的时间维度。
+```
+
+固定高度输入（CNN将高度最大池化为1）。宽度是CTC的时间维度。
 
 ### 步骤3：合成OCR
 
-为端到端的烟雾测试生成黑白数字字符串。```python
+为端到端的烟雾测试生成黑白数字字符串。
+
+```python
 import numpy as np
 
 def synthetic_line(text, height=32, char_width=16):
@@ -170,9 +184,13 @@ def build_batch(strings, vocab):
 vocab = ["_"] + list("0123456789abcdefghijklmnopqrstuvwxyz")
 imgs, targets, lengths = build_batch(["hello", "world"], vocab)
 print(f"images: {imgs.shape}   targets: {targets.shape}   lengths: {lengths.tolist()}")
-```一个真实的OCR数据集会添加字体、噪声、旋转、模糊和颜色。上面的流程是相同的。
+```
 
-### 步骤4：训练草图```python
+一个真实的OCR数据集会添加字体、噪声、旋转、模糊和颜色。上面的流程是相同的。
+
+### 步骤4：训练草图
+
+```python
 model = TinyCRNN(vocab_size=len(vocab))
 opt = torch.optim.Adam(model.parameters(), lr=1e-3)
 
@@ -183,7 +201,9 @@ for step in range(200):
     input_lens = torch.full((8,), log_probs.size(0), dtype=torch.long)
     loss = ctc_loss(log_probs, targets, input_lens, target_lens, blank=0)
     opt.zero_grad(); loss.backward(); opt.step()
-```损失应该在 200 步内从约 3 降到约 0.2，这是在这些简单的合成数据上。
+```
+
+损失应该在 200 步内从约 3 降到约 0.2，这是在这些简单的合成数据上。
 
 ## 使用它
 
@@ -193,12 +213,16 @@ for step in range(200):
 - **EasyOCR** — Python 原生、多语言、基于 PyTorch。
 - **Tesseract** — 经典；当模型难以处理时，仍适用于旧的扫描文档。
 
-对于端到端的文档解析，使用 Donut 或 VLM：```python
+对于端到端的文档解析，使用 Donut 或 VLM：
+
+```python
 from transformers import DonutProcessor, VisionEncoderDecoderModel
 
 processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base-finetuned-cord-v2")
 model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base-finetuned-cord-v2")
-```对于具有可重复结构的收据、发票和表单，对 Donut 进行微调。对于任意文档或需要推理的 OCR，当前默认使用类似 Qwen-VL-OCR 的 VLM。
+```
+
+对于具有可重复结构的收据、发票和表单，对 Donut 进行微调。对于任意文档或需要推理的 OCR，当前默认使用类似 Qwen-VL-OCR 的 VLM。
 
 ## 发布它
 

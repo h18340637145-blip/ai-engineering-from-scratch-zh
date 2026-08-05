@@ -20,7 +20,9 @@
 
 本课程涵盖对 AI 工作至关重要的终端技能。无需 Unix 历史。无需深入 Bash 脚本。只需你需要的内容。
 
-## The Concept```mermaid
+## The Concept
+
+```mermaid
 graph TD
     subgraph tmux["tmux session: training"]
         subgraph top["Top row"]
@@ -29,7 +31,9 @@ graph TD
         end
         P3["Pane 3: Logs + experiments<br/>tail -f logs/train.log | grep loss"]
     end
-```同时运行三件事。一个终端。你可以分离，回家，通过SSH重新连接，并重新附加。训练会继续运行。
+```
+
+同时运行三件事。一个终端。你可以分离，回家，通过SSH重新连接，并重新附加。训练会继续运行。
 
 ## 构建它
 
@@ -38,11 +42,17 @@ graph TD
 检查你正在运行的shell：
 
 ```bash
-``````bash
-echo $SHELL
-```大多数系统使用 `bash` 或 `zsh`。两者都能正常工作。本课程中的命令在两者中均可使用。
+```
 
-关键知识点：```bash
+```bash
+echo $SHELL
+```
+
+大多数系统使用 `bash` 或 `zsh`。两者都能正常工作。本课程中的命令在两者中均可使用。
+
+关键知识点：
+
+```bash
 # Move around
 cd ~/projects/ai-engineering-from-scratch
 pwd
@@ -60,9 +70,13 @@ clear   # or Ctrl+L
 
 # Suspend a running command (resume with fg)
 # Ctrl+Z
-```### 第2步：管道和重定向
+```
 
-管道将命令连接在一起。这是处理日志、过滤输出和串联工具的方法。你将频繁使用这一功能。```bash
+### 第2步：管道和重定向
+
+管道将命令连接在一起。这是处理日志、过滤输出和串联工具的方法。你将频繁使用这一功能。
+
+```bash
 # Count how many times "loss" appears in a log
 cat train.log | grep "loss" | wc -l
 
@@ -80,7 +94,9 @@ python train.py > output.log 2> errors.log
 
 # Redirect both to the same file
 python train.py > train_full.log 2>&1
-```你需要的三个重定向：
+```
+
+你需要的三个重定向：
 
 | 符号 | 作用 |
 |------|------|
@@ -92,7 +108,9 @@ python train.py > train_full.log 2>&1
 
 ### 步骤3：后台进程
 
-训练运行需要数小时。你不想一直保持终端打开。```bash
+训练运行需要数小时。你不想一直保持终端打开。
+
+```bash
 # Run in background (output still goes to terminal)
 python train.py &
 
@@ -110,7 +128,9 @@ fg %1
 kill %1
 # or find its PID and kill that
 kill $(pgrep -f "train.py")
-````&`、`nohup` 和 `screen`/`tmux` 的区别：
+```
+
+`&`、`nohup` 和 `screen`/`tmux` 的区别：
 
 | 方法 | 是否在关闭终端后继续运行？ | 是否能重新连接？ |
 |------|--------------------------|------------------|
@@ -122,7 +142,9 @@ kill $(pgrep -f "train.py")
 
 ### 第4步：tmux
 
-tmux 可让你创建带有多个窗格的持久化终端会话。这是管理训练运行过程中最实用的工具。```bash
+tmux 可让你创建带有多个窗格的持久化终端会话。这是管理训练运行过程中最实用的工具。
+
+```bash
 # Install
 # macOS
 brew install tmux
@@ -152,7 +174,11 @@ tmux ls
 
 # Kill a session
 tmux kill-session -t training
-```一个典型的 AI 工作流程会话：```bash
+```
+
+一个典型的 AI 工作流程会话：
+
+```bash
 tmux new -s train
 
 # Pane 1: start training
@@ -167,7 +193,11 @@ tail -f logs/experiment.log
 # Now detach with Ctrl+B, d
 # SSH out, go get coffee, come back
 # tmux attach -t train
-```### 步骤 5：使用 htop 和 nvtop 进行监控```bash
+```
+
+### 步骤 5：使用 htop 和 nvtop 进行监控
+
+```bash
 # System processes (better than top)
 htop
 
@@ -183,7 +213,9 @@ watch -n1 nvidia-smi
 
 # See which processes are using the GPU
 nvidia-smi --query-compute-apps=pid,name,used_memory --format=csv
-````htop` 快捷键使用说明：
+```
+
+`htop` 快捷键使用说明：
 - `F6` 或 `>` 按列排序（按内存排序以查找内存泄漏）
 - `F5` 切换树状视图（查看子进程）
 - `F9` 终止进程
@@ -191,7 +223,9 @@ nvidia-smi --query-compute-apps=pid,name,used_memory --format=csv
 
 ### 步骤6：使用SSH连接远程GPU服务器
 
-当您租用云GPU（Lambda, RunPod, Vast.ai）时，需要通过SSH进行连接。```bash
+当您租用云GPU（Lambda, RunPod, Vast.ai）时，需要通过SSH进行连接。
+
+```bash
 # Basic connection
 ssh user@gpu-box-ip
 
@@ -220,7 +254,9 @@ ssh -L 8888:localhost:8888 user@gpu-box-ip
 #
 # Then just:
 # ssh gpu
-```### 第7步：AI工作的有用别名
+```
+
+### 第7步：AI工作的有用别名
 
 将这些添加到你的 `~/.bashrc` 或 `~/.zshrc` 中：
 
@@ -232,9 +268,13 @@ ssh -L 8888:localhost:8888 user@gpu-box-ip
 
 将这些添加到你的 `~/.bashrc` 或 `~/.zshrc` 中：
 
- /no_think```bash
+ /no_think
+
+```bash
 source phases/00-setup-and-tooling/10-terminal-and-shell/code/shell_aliases.sh
-```或者复制你想要的那些。关键别名：
+```
+
+或者复制你想要的那些。关键别名：
 
  /no_think
 
@@ -242,7 +282,9 @@ source phases/00-setup-and-tooling/10-terminal-and-shell/code/shell_aliases.sh
 
 或者复制你想要的那些。关键别名：
 
- /no_think```bash
+ /no_think
+
+```bash
 # GPU status at a glance
 alias gpu='nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv,noheader'
 
@@ -254,11 +296,15 @@ alias ae='source .venv/bin/activate'
 
 # Watch training loss
 alias watchloss='tail -f logs/*.log | grep --line-buffered "loss"'
-```在 `code/shell_aliases.sh` 中查看完整集合。
+```
+
+在 `code/shell_aliases.sh` 中查看完整集合。
 
 ### 步骤8: 常见AI终端模式
 
-在实际应用中，这些模式会反复出现：```bash
+在实际应用中，这些模式会反复出现：
+
+```bash
 # Run training, log everything, notify when done
 python train.py 2>&1 | tee train.log; echo "DONE" | mail -s "Training complete" you@email.com
 
@@ -284,7 +330,9 @@ du -sh ./data/*
 # Environment variable check before training
 env | grep -i cuda
 env | grep -i torch
-```## 使用场景
+```
+
+## 使用场景
 
 以下是本课程中每个工具的使用时机：
 

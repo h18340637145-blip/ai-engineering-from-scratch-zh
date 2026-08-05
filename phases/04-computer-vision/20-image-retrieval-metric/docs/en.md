@@ -24,7 +24,9 @@
 
 ## 概念
 
-### 一瞥检索```mermaid
+### 一瞥检索
+
+```mermaid
 flowchart LR
     Q["Query image<br/>or text"] --> ENC["Encoder"]
     ENC --> EMB["Query embedding"]
@@ -37,7 +39,9 @@ flowchart LR
     style ENC fill:#dbeafe,stroke:#2563eb
     style IDX fill:#fef3c7,stroke:#d97706
     style OUT fill:#dcfce7,stroke:#16a34a
-```### 四种损失函数家族
+```
+
+### 四种损失函数家族
 
 | 损失函数 | 需要 | 优点 | 缺点 |
 |---------|------|------|-----|
@@ -48,9 +52,13 @@ flowchart LR
 
 对于大多数生产使用场景，建议从预训练的骨干网络开始，仅当现成的嵌入在测试集上表现不佳时，再添加度量学习的微调。
 
-### 正式定义三元组损失```
+### 正式定义三元组损失
+
+```
 L = max(0, ||f(a) - f(p)||^2 - ||f(a) - f(n)||^2 + margin)
-```将锚点 `a` 拉近至正样本 `p`，推远至负样本 `n`，并使用一个 `margin` 来确保间隔。三图结构可以推广到任何相似性排序。
+```
+
+将锚点 `a` 拉近至正样本 `p`，推远至负样本 `n`，并使用一个 `margin` 来确保间隔。三图结构可以推广到任何相似性排序。
 
 挖掘重要性：容易的三元组（`n` 已经远离 `a`）贡献零损失；只有困难的三元组才能训练网络。半困难挖掘（`n` 比 `p` 远，但仍在边界内）是 2016 年 FaceNet 的配方，至今仍占主导地位。
 
@@ -65,9 +73,13 @@ L = max(0, ||f(a) - f(p)||^2 - ||f(a) - f(n)||^2 + margin)
 
 ### Recall@K
 
-标准的检索指标：```
+标准的检索指标：
+
+```
 recall@K = fraction of queries where at least one correct match is in the top K results
-```并排报告 recall@1、@5、@10 的结果。如果 recall@10 高于 0.95，但 recall@1 低于 0.5，这意味着嵌入空间结构正确，但排序存在噪声 —— 尝试更长的微调过程或添加重新排序步骤。
+```
+
+并排报告 recall@1、@5、@10 的结果。如果 recall@10 高于 0.95，但 recall@1 低于 0.5，这意味着嵌入空间结构正确，但排序存在噪声 —— 尝试更长的微调过程或添加重新排序步骤。
 
 对于重复检测，precision@K 更加重要，因为每一个误报都会成为用户可见的错误。对于视觉搜索，recall@K 是产品信号。
 
@@ -92,7 +104,9 @@ Facebook AI Similarity Search。最近邻搜索的默认库。三种索引选择
 
 ## 构建它
 
-### 步骤 1：三元组损失```python
+### 步骤 1：三元组损失
+
+```python
 import torch
 import torch.nn.functional as F
 
@@ -100,11 +114,15 @@ def triplet_loss(anchor, positive, negative, margin=0.2):
     d_ap = F.pairwise_distance(anchor, positive, p=2)
     d_an = F.pairwise_distance(anchor, negative, p=2)
     return F.relu(d_ap - d_an + margin).mean()
-```一行。适用于 L2 归一化或原始嵌入。
+```
+
+一行。适用于 L2 归一化或原始嵌入。
 
 ### 步骤 2：半硬挖掘
 
-给定一组嵌入和标签，为每个锚点找到最难的半硬负样本。```python
+给定一组嵌入和标签，为每个锚点找到最难的半硬负样本。
+
+```python
 def semi_hard_negatives(emb, labels, margin=0.2):
     dist = torch.cdist(emb, emb)
     same_class = labels[:, None] == labels[None, :]
@@ -128,17 +146,25 @@ def semi_hard_negatives(emb, labels, margin=0.2):
         hardest[same_class] = float("inf")
         neg_idx = torch.where(fallback_mask, hardest.argmin(dim=1), neg_idx)
     return pos_idx, neg_idx
-```每个锚点会获得最难的同类正样本和一个半硬负样本，该负样本距离正样本更远，但仍在边界内。
+```
 
-### 步骤 3：Recall@K```python
+每个锚点会获得最难的同类正样本和一个半硬负样本，该负样本距离正样本更远，但仍在边界内。
+
+### 步骤 3：Recall@K
+
+```python
 def recall_at_k(query_emb, gallery_emb, query_labels, gallery_labels, k=1):
     sim = query_emb @ gallery_emb.T
     _, top_k = sim.topk(k, dim=-1)
     matches = (gallery_labels[top_k] == query_labels[:, None]).any(dim=-1)
     return matches.float().mean().item()
-```在 L2 归一化嵌入上通过内积进行 top-k 检索等同于通过余弦相似度进行 top-k 检索。报告至少有一个正确邻居的查询的平均比例。
+```
 
-### 步骤 4：整合起来```python
+在 L2 归一化嵌入上通过内积进行 top-k 检索等同于通过余弦相似度进行 top-k 检索。报告至少有一个正确邻居的查询的平均比例。
+
+### 步骤 4：整合起来
+
+```python
 import torch
 import torch.nn as nn
 from torch.optim import Adam
@@ -172,7 +198,9 @@ for step in range(200):
     pos_idx, neg_idx = semi_hard_negatives(emb, y)
     loss = triplet_loss(emb, emb[pos_idx], emb[neg_idx])
     opt.zero_grad(); loss.backward(); opt.step()
-```经过几百步训练后，嵌入向量的聚类会形成每个类别一个聚类。
+```
+
+经过几百步训练后，嵌入向量的聚类会形成每个类别一个聚类。
 
 ## 使用它
 

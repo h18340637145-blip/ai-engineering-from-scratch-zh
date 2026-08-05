@@ -40,7 +40,9 @@ MCMC 采样——贝叶斯推断的支柱——构建一个平稳分布为你要
 
 经过 n 步后，你的位置是 n 个随机的 +/-1 值的总和。期望位置是 0（行走是无偏的）。但期望的与原点的距离随着 sqrt(n) 增长。
 
-这是反直觉的。行走是公平的——在任何方向都没有漂移。但随着时间的推移，它会越来越远离起点。n 步后的标准差是 sqrt(n)。```
+这是反直觉的。行走是公平的——在任何方向都没有漂移。但随着时间的推移，它会越来越远离起点。n 步后的标准差是 sqrt(n)。
+
+```
 Step 0:  Position = 0
 Step 1:  Position = +1 or -1
 Step 2:  Position = +2, 0, or -2
@@ -61,21 +63,33 @@ Step 10000: Expected distance from origin ~ 100 (sqrt(10000))
 
 ### 马尔可夫链
 
-马尔可夫链是一个根据固定概率在状态之间转换的系统。其关键属性：下一个状态仅取决于当前状态，而不取决于历史。```
+马尔可夫链是一个根据固定概率在状态之间转换的系统。其关键属性：下一个状态仅取决于当前状态，而不取决于历史。
+
+```
 P(X_{t+1} = j | X_t = i, X_{t-1} = ...) = P(X_{t+1} = j | X_t = i)
-```这就是马尔可夫性质。它意味着你可以用一个转移矩阵 P 来描述整个动态过程：```
+```
+
+这就是马尔可夫性质。它意味着你可以用一个转移矩阵 P 来描述整个动态过程：
+
+```
 P[i][j] = probability of going from state i to state j
 ```P 的每一行加起来都等于 1（你必须去某个地方）。
 
-**示例 -- 天气：**```
+**示例 -- 天气：**
+
+```
 States: Sunny (0), Rainy (1), Cloudy (2)
 
 P = [[0.7, 0.1, 0.2],    (if sunny: 70% sunny, 10% rainy, 20% cloudy)
      [0.3, 0.4, 0.3],    (if rainy: 30% sunny, 40% rainy, 30% cloudy)
      [0.4, 0.2, 0.4]]    (if cloudy: 40% sunny, 20% rainy, 40% cloudy)
-```从任意状态开始。经过许多次转移后，状态的分布会收敛到平稳分布 pi，其中 pi * P = pi。这是 P 的特征值为 1 的左特征向量。
+```
 
-对于天气链，平稳分布是 [0.55, 0.18, 0.27] —— 从长远来看，无论起始状态如何，有 55% 的时间是晴天。```mermaid
+从任意状态开始。经过许多次转移后，状态的分布会收敛到平稳分布 pi，其中 pi * P = pi。这是 P 的特征值为 1 的左特征向量。
+
+对于天气链，平稳分布是 [0.55, 0.18, 0.27] —— 从长远来看，无论起始状态如何，有 55% 的时间是晴天。
+
+```mermaid
 graph LR
     S["Sunny"] -->|0.7| S
     S -->|0.1| R["Rainy"]
@@ -105,7 +119,9 @@ graph LR
 
 ### 与语言模型的联系
 
-语言模型中的标记生成近似于马尔可夫过程。给定当前上下文，模型会输出下一个标记的分布。温度控制分布的锐度：```
+语言模型中的标记生成近似于马尔可夫过程。给定当前上下文，模型会输出下一个标记的分布。温度控制分布的锐度：
+
+```
 P(token_i) = exp(logit_i / temperature) / sum(exp(logit_j / temperature))
 ```- Temperature = 1.0：标准分布
 - Temperature < 1.0：更尖锐（更确定性）
@@ -123,15 +139,21 @@ Top-k 采样将概率截断为前 k 个概率最高的 token。Top-p（核）采
 
 布朗运动是连续的但处处不可微的——在每个尺度上它都会抖动。路径在平面上的分形维数为 2。
 
-在离散模拟中，你通过以下方式近似布朗运动：```
+在离散模拟中，你通过以下方式近似布朗运动：
+
+```
 B(t + dt) = B(t) + sqrt(dt) * z,    where z ~ N(0, 1)
 ```sqrt(dt) 的缩放是重要的。它来自于对随机游走应用中心极限定理。
 
 ### Langevin 动力学
 
-梯度下降法寻找函数的最小值。Langevin 动力学寻找与 exp(-U(x)/T) 成比例的概率分布，其中 U 是能量函数，T 是温度。```
+梯度下降法寻找函数的最小值。Langevin 动力学寻找与 exp(-U(x)/T) 成比例的概率分布，其中 U 是能量函数，T 是温度。
+
+```
 x_{t+1} = x_t - dt * gradient(U(x_t)) + sqrt(2 * T * dt) * z_t
-```有两个力作用于粒子：
+```
+
+有两个力作用于粒子：
 1. **梯度力** (-dt * gradient(U))：向低能量区域推动（类似于梯度下降）
 2. **随机力** (sqrt(2*T*dt) * z)：向随机方向推动（探索）
 
@@ -158,11 +180,17 @@ def forward(x, t):
     # apply gradient
     x = x - dt * gradient(U)
     return x
-``````
-x_t = sqrt(alpha_t) * x_{t-1} + sqrt(1 - alpha_t) * noise
-```这是一个逐渐将数据与噪声混合的马尔可夫链。经过足够多的步骤后，x_T 就变成了纯高斯噪声。
+```
 
-反向过程——从噪声回到数据——也是一个马尔可夫链，但它的转移概率是由神经网络学习得到的。该网络学习预测每一步添加的噪声，然后将其减去。```mermaid
+```
+x_t = sqrt(alpha_t) * x_{t-1} + sqrt(1 - alpha_t) * noise
+```
+
+这是一个逐渐将数据与噪声混合的马尔可夫链。经过足够多的步骤后，x_T 就变成了纯高斯噪声。
+
+反向过程——从噪声回到数据——也是一个马尔可夫链，但它的转移概率是由神经网络学习得到的。该网络学习预测每一步添加的噪声，然后将其减去。
+
+```mermaid
 graph LR
     subgraph "Forward Process (add noise)"
         X0["x_0 (data)"] -->|"+ noise"| X1["x_1"]
@@ -174,7 +202,9 @@ graph LR
         XR2 -->|"neural net"| XR1["x_{T-2}"]
         XR1 -->|"..."| XR0["x_0 (generated data)"]
     end
-```### MCMC：马尔可夫链蒙特卡洛方法
+```
+
+### MCMC：马尔可夫链蒙特卡洛方法
 
 有时你需要从一个分布 p(x) 中抽样，这个分布你可以计算（最多到一个常数），但不能直接抽样。贝叶斯后验分布就是经典的例子——你知道似然乘以先验，但归一化常数是难以计算的。
 
@@ -207,11 +237,17 @@ graph LR
 | 布朗运动 | 扩散模型（正向过程） |
 | 朗之万动力学 | 基于分数的生成模型，SGLD |
 | 马尔可夫决策过程 | 强化学习 |
-| Metropolis-Hastings | 贝叶斯推理，后验抽样 |```figure
-random-walk-diffusion
-```## 构建它
+| Metropolis-Hastings | 贝叶斯推理，后验抽样 |
 
-### 步骤 1：随机行走模拟器```python
+```figure
+random-walk-diffusion
+```
+
+## 构建它
+
+### 步骤 1：随机行走模拟器
+
+```python
 import numpy as np
 
 def random_walk_1d(n_steps, seed=None):
@@ -233,9 +269,13 @@ def random_walk_2d(n_steps, seed=None):
     x = np.concatenate([[0], np.cumsum(dx)])
     y = np.concatenate([[0], np.cumsum(dy)])
     return x, y
-```一维随机游走存储累积和。每一步是 +1 或 -1。经过 n 步后，位置就是这个和。方差随着 n 线性增长，因此标准差与 sqrt(n) 成正比。
+```
 
-### 步骤 2：马尔可夫链```python
+一维随机游走存储累积和。每一步是 +1 或 -1。经过 n 步后，位置就是这个和。方差随着 n 线性增长，因此标准差与 sqrt(n) 成正比。
+
+### 步骤 2：马尔可夫链
+
+```python
 class MarkovChain:
     def __init__(self, transition_matrix, state_names=None):
         self.P = np.array(transition_matrix, dtype=float)
@@ -263,9 +303,13 @@ class MarkovChain:
         stationary = np.real(eigenvectors[:, idx])
         stationary = stationary / stationary.sum()
         return np.abs(stationary)
-```平稳分布是矩阵 P 的特征值为 1 的左特征向量。我们通过计算 P^T 的特征向量来找到它（转置将左特征向量转换为右特征向量）。
+```
 
-### 步骤 3：朗之万动力学```python
+平稳分布是矩阵 P 的特征值为 1 的左特征向量。我们通过计算 P^T 的特征向量来找到它（转置将左特征向量转换为右特征向量）。
+
+### 步骤 3：朗之万动力学
+
+```python
 def langevin_dynamics(grad_U, x0, dt, temperature, n_steps, seed=None):
     rng = np.random.RandomState(seed)
     x = np.array(x0, dtype=float)
@@ -275,9 +319,13 @@ def langevin_dynamics(grad_U, x0, dt, temperature, n_steps, seed=None):
         x = x - dt * grad_U(x) + np.sqrt(2 * temperature * dt) * noise
         trajectory.append(x.copy())
     return np.array(trajectory)
-```梯度将 x 推向低能量区域。噪声防止其陷入局部极小值。在平衡状态下，样本的分布与 exp(-U(x)/温度) 成正比。
+```
 
-### 步骤 4：Metropolis-Hastings```python
+梯度将 x 推向低能量区域。噪声防止其陷入局部极小值。在平衡状态下，样本的分布与 exp(-U(x)/温度) 成正比。
+
+### 步骤 4：Metropolis-Hastings
+
+```python
 def metropolis_hastings(target_log_prob, proposal_std, x0, n_samples, seed=None):
     rng = np.random.RandomState(seed)
     x = np.array(x0, dtype=float)
@@ -292,11 +340,15 @@ def metropolis_hastings(target_log_prob, proposal_std, x0, n_samples, seed=None)
         samples.append(x.copy())
     acceptance_rate = accepted / (n_samples - 1)
     return np.array(samples), acceptance_rate
-```该算法提出一个新的点，检查其是否具有更高的概率（或按比例接受），然后重复这一过程。对于良好的混合效果，接受率应在23-50%之间。
+```
+
+该算法提出一个新的点，检查其是否具有更高的概率（或按比例接受），然后重复这一过程。对于良好的混合效果，接受率应在23-50%之间。
 
 ## 使用它
 
-在实际应用中，你通常会使用已有的库来实现这些算法。但理解其原理对于调试和调优非常重要。```python
+在实际应用中，你通常会使用已有的库来实现这些算法。但理解其原理对于调试和调优非常重要。
+
+```python
 import numpy as np
 
 rng = np.random.RandomState(42)
@@ -304,7 +356,11 @@ walk = np.cumsum(rng.choice([-1, 1], size=10000))
 print(f"Final position: {walk[-1]}")
 print(f"Expected distance: {np.sqrt(10000):.1f}")
 print(f"Actual distance: {abs(walk[-1])}")
-```### numpy 用于转移矩阵```python
+```
+
+### numpy 用于转移矩阵
+
+```python
 import numpy as np
 
 P = np.array([[0.7, 0.1, 0.2],
@@ -316,7 +372,9 @@ for _ in range(100):
     distribution = distribution @ P
 
 print(f"Stationary distribution: {np.round(distribution, 4)}")
-```重复将初始分布乘以 P。经过足够多次迭代后，无论从哪里开始，它都会收敛到平稳分布。这就是用于寻找主左特征向量的幂法。
+```
+
+重复将初始分布乘以 P。经过足够多次迭代后，无论从哪里开始，它都会收敛到平稳分布。这就是用于寻找主左特征向量的幂法。
 
 ### 与实际框架的联系
 
@@ -324,7 +382,9 @@ print(f"Stationary distribution: {np.round(distribution, 4)}")
 - **NumPyro / PyMC：** 使用 MCMC（NUTS 采样器，改进了 Metropolis-Hastings）进行贝叶斯推断
 - **Gymnasium（强化学习）：** 环境的 step 函数定义了一个马尔可夫决策过程
 
-### 验证马尔可夫链的收敛性```python
+### 验证马尔可夫链的收敛性
+
+```python
 import numpy as np
 
 P = np.array([[0.9, 0.1], [0.3, 0.7]])
@@ -334,7 +394,9 @@ spectral_gap = 1 - sorted(np.abs(eigenvalues))[-2]
 print(f"Eigenvalues: {eigenvalues}")
 print(f"Spectral gap: {spectral_gap:.4f}")
 print(f"Approximate mixing time: {1/spectral_gap:.1f} steps")
-```谱隙告诉你链忘记其初始状态的速度。谱隙为 0.2 表示大约需要 5 步才能达到混合。谱隙为 0.01 表示大约需要 100 步。在运行长时间模拟之前，始终要检查这一点 —— 混合缓慢的链会浪费计算资源。
+```
+
+谱隙告诉你链忘记其初始状态的速度。谱隙为 0.2 表示大约需要 5 步才能达到混合。谱隙为 0.01 表示大约需要 100 步。在运行长时间模拟之前，始终要检查这一点 —— 混合缓慢的链会浪费计算资源。
 
 ## 发布它
 
@@ -356,11 +418,19 @@ print(f"Approximate mixing time: {1/spectral_gap:.1f} steps")
 | 吸收态 | 序列结束 Token，在强化学习中的终止状态 |
 | 详细平衡 | MCMC 抽样器的正确性保证 |
 
-扩散模型需要特别关注。DDPM（Ho 等，2020）定义了一个前向马尔可夫链：```
+扩散模型需要特别关注。DDPM（Ho 等，2020）定义了一个前向马尔可夫链：
+
+```
 q(x_t | x_{t-1}) = N(x_t; sqrt(1-beta_t) * x_{t-1}, beta_t * I)
-```其中 beta_t 是一个噪声计划。经过 T 步之后，x_T 近似服从 N(0, I) 分布。反向过程由一个神经网络参数化，该网络预测噪声：```
+```
+
+其中 beta_t 是一个噪声计划。经过 T 步之后，x_T 近似服从 N(0, I) 分布。反向过程由一个神经网络参数化，该网络预测噪声：
+
+```
 p_theta(x_{t-1} | x_t) = N(x_{t-1}; mu_theta(x_t, t), sigma_t^2 * I)
-```生成过程的每一步都是一个学习到的马尔可夫链中的步骤。理解马尔可夫链意味着理解扩散模型是如何以及为何生成数据的。
+```
+
+生成过程的每一步都是一个学习到的马尔可夫链中的步骤。理解马尔可夫链意味着理解扩散模型是如何以及为何生成数据的。
 
 SGLD（随机梯度朗之万动力学）将小批量梯度下降与朗之万噪声相结合。你不是计算完整的梯度，而是使用一个随机估计，并添加校准的噪声。随着学习率的衰减，SGLD从优化转换为采样——你可以免费获得近似的贝叶斯后验样本。这是从神经网络中获取不确定性估计的最简单方法之一。
 

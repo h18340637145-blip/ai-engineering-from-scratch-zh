@@ -26,7 +26,9 @@
 
 ### 过拟合光谱
 
-每个模型都位于一个从欠拟合（太简单，无法捕捉模式）到过拟合（太复杂，捕捉了噪声）的光谱中的某个位置。最佳点位于中间，正则化则从过拟合的一侧推动模型向这个最佳点靠近。```mermaid
+每个模型都位于一个从欠拟合（太简单，无法捕捉模式）到过拟合（太复杂，捕捉了噪声）的光谱中的某个位置。最佳点位于中间，正则化则从过拟合的一侧推动模型向这个最佳点靠近。
+
+```mermaid
 graph LR
     Under["Underfitting<br/>Train: 60%<br/>Test: 58%<br/>Model too simple"] --> Good["Good Fit<br/>Train: 95%<br/>Test: 92%<br/>Generalizes well"]
     Good --> Over["Overfitting<br/>Train: 99.9%<br/>Test: 65%<br/>Memorized noise"]
@@ -35,26 +37,40 @@ graph LR
     WD["Weight Decay"] -->|"Pushes left"| Over
     BN["BatchNorm"] -->|"Pushes left"| Over
     Aug["Data Augmentation"] -->|"Pushes left"| Over
-```### Dropout
+```
 
-最简单且解释最优雅的正则化技术。在训练过程中，以概率 p 随机将每个神经元的输出设为零。```
+### Dropout
+
+最简单且解释最优雅的正则化技术。在训练过程中，以概率 p 随机将每个神经元的输出设为零。
+
+```
 output = activation(z) * mask    where mask[i] ~ Bernoulli(1 - p)
-```当 p = 0.5 时，每次前向传播时有一半的神经元被置零。网络必须学习冗余的表示，因为它无法预测哪些神经元会可用。这防止了共适应（co-adaptation）——神经元学习依赖于其他特定神经元的存在。
+```
+
+当 p = 0.5 时，每次前向传播时有一半的神经元被置零。网络必须学习冗余的表示，因为它无法预测哪些神经元会可用。这防止了共适应（co-adaptation）——神经元学习依赖于其他特定神经元的存在。
 
 集成解释：一个拥有 N 个神经元的网络，使用 dropout 会创建 2^N 个可能的子网络（所有神经元开或关的组合）。使用 dropout 进行训练时，大约同时训练了所有 2^N 个子网络，每个子网络使用不同的小批量数据。在测试时，使用所有神经元（无 dropout），并按 (1 - p) 的比例缩放输出，以匹配训练时的期望值。这等价于对 2^N 个子网络的预测结果进行平均——即从单个模型中获得一个巨大的集成模型。
 
-在实践中，缩放是在训练时进行，而不是测试时（称为倒置 dropout）：```
+在实践中，缩放是在训练时进行，而不是测试时（称为倒置 dropout）：
+
+```
 During training:  output = activation(z) * mask / (1 - p)
 During testing:   output = activation(z)   (no change needed)
-```这样更简洁，因为测试代码根本不需要了解dropout。
+```
+
+这样更简洁，因为测试代码根本不需要了解dropout。
 
 默认比率：transformers中p = 0.1，MLPs中p = 0.5，CNNs中p = 0.2-0.3。更高的dropout意味着更强的正则化，也意味着更大的欠拟合风险。
 
 ### 权重衰减（L2正则化）
 
-将所有权重的平方幅度加到损失中：```
+将所有权重的平方幅度加到损失中：
+
+```
 total_loss = task_loss + (lambda / 2) * sum(w_i^2)
-```正则化项的梯度是 lambda * w。这意味着在每一步中，每个权重都会按其大小成比例地向零收缩。较大的权重受到的惩罚更多。模型被推向没有单一权重占主导地位的解。
+```
+
+正则化项的梯度是 lambda * w。这意味着在每一步中，每个权重都会按其大小成比例地向零收缩。较大的权重受到的惩罚更多。模型被推向没有单一权重占主导地位的解。
 
 这有助于泛化的原因：过拟合的模型往往具有较大的权重，这些权重会放大训练数据中的噪声。权重衰减保持权重较小，这限制了模型的有效容量，并迫使模型依赖于稳健、可泛化的特征，而不是记忆中的特殊现象。
 
@@ -73,7 +89,9 @@ total_loss = task_loss + (lambda / 2) * sum(w_i^2)
 对于某一层的激活值的小批量：
 
 ```markdown
-``````
+```
+
+```
 mu = (1/B) * sum(x_i)           (batch mean)
 sigma^2 = (1/B) * sum((x_i - mu)^2)   (batch variance)
 x_hat = (x_i - mu) / sqrt(sigma^2 + eps)   (normalize)
@@ -88,7 +106,9 @@ BatchNorm 存在一个根本性的限制：它依赖于批量统计信息。当�
 
 ### 层归一化
 
-不是在批量上进行归一化，而是在特征上进行归一化。对于单个样本：```
+不是在批量上进行归一化，而是在特征上进行归一化。对于单个样本：
+
+```
 mu = (1/D) * sum(x_j)           (feature mean)
 sigma^2 = (1/D) * sum((x_j - mu)^2)   (feature variance)
 x_hat = (x_j - mu) / sqrt(sigma^2 + eps)
@@ -99,14 +119,20 @@ y = gamma * x_hat + beta
 
 ### RMSNorm
 
-不进行均值减法的 LayerNorm。由 Zhang & Sennrich（2019）提出。```
+不进行均值减法的 LayerNorm。由 Zhang & Sennrich（2019）提出。
+
+```
 rms = sqrt((1/D) * sum(x_j^2))
 y = gamma * x / rms
-```就是这样。没有均值计算，也没有 beta 参数。观察结果：LayerNorm 中的重新中心化（均值减法）对模型性能的贡献非常小，但却消耗计算资源。去除它可以在带来约 10% 计算开销减少的同时保持相同的准确率。
+```
+
+就是这样。没有均值计算，也没有 beta 参数。观察结果：LayerNorm 中的重新中心化（均值减法）对模型性能的贡献非常小，但却消耗计算资源。去除它可以在带来约 10% 计算开销减少的同时保持相同的准确率。
 
 LLaMA、LLaMA 2、LLaMA 3、Mistral 以及大多数现代大型语言模型使用 RMSNorm 而非 LayerNorm。在数十亿参数和数万亿 token 的规模下，这 10% 的节省具有重要意义。
 
-### 归一化比较```mermaid
+### 归一化比较
+
+```mermaid
 graph TD
     subgraph "Batch Normalization"
         BN_D["Normalize across BATCH<br/>for each feature"]
@@ -123,7 +149,9 @@ graph TD
         RN_S["Just divide by RMS<br/>No centering"]
         RN_P["10% faster than LayerNorm<br/>Same accuracy<br/>Used in LLaMA, Mistral"]
     end
-```### 数据增强作为正则化
+```
+
+### 数据增强作为正则化
 
 不是模型修改，而是数据修改。在保留标签的同时转换训练输入：
 
@@ -137,7 +165,9 @@ graph TD
 
 最简单的正则化方法：当验证损失开始增加时停止训练。此时模型尚未过拟合。在实践中，你每个训练周期都跟踪验证损失，保存最佳模型，并继续训练一个“耐心”窗口（通常为5到20个训练周期）。如果在耐心窗口内验证损失没有改善，你将停止训练并加载之前保存的最佳模型。
 
-### 何时应用什么```mermaid
+### 何时应用什么
+
+```mermaid
 flowchart TD
     Gap{"Train-test<br/>accuracy gap?"} -->|"> 10%"| Heavy["Heavy regularization"]
     Gap -->|"5-10%"| Medium["Moderate regularization"]
@@ -158,9 +188,13 @@ flowchart TD
 
 ```figure
 l2-regularization
-```## 构建它
+```
 
-### 第一步：Dropout（训练和评估模式）```python
+## 构建它
+
+### 第一步：Dropout（训练和评估模式）
+
+```python
 import random
 import math
 
@@ -193,7 +227,11 @@ class Dropout:
             else:
                 grads.append(g / (1 - self.p))
         return grads
-```### 步骤 2：L2 权重衰减```python
+```
+
+### 步骤 2：L2 权重衰减
+
+```python
 def l2_regularization(weights, lambda_reg):
     penalty = 0.0
     for w in weights:
@@ -202,7 +240,11 @@ def l2_regularization(weights, lambda_reg):
 
 def l2_gradient(weights, lambda_reg):
     return [lambda_reg * w for w in weights]
-```### 步骤 3：批量归一化```python
+```
+
+### 步骤 3：批量归一化
+
+```python
 class BatchNorm:
     def __init__(self, num_features, momentum=0.1, eps=1e-5):
         self.gamma = [1.0] * num_features
@@ -248,7 +290,11 @@ class BatchNorm:
             self.x_hat.append(normalized)
             output.append(out_sample)
         return output
-```### 步骤 4：层归一化```python
+```
+
+### 步骤 4：层归一化
+
+```python
 class LayerNorm:
     def __init__(self, num_features, eps=1e-5):
         self.gamma = [1.0] * num_features
@@ -267,7 +313,11 @@ class LayerNorm:
             self.x_hat.append(x_h)
             output.append(self.gamma[j] * x_h + self.beta[j])
         return output
-```### 步骤 5：RMSNorm```python
+```
+
+### 步骤 5：RMSNorm
+
+```python
 class RMSNorm:
     def __init__(self, num_features, eps=1e-6):
         self.gamma = [1.0] * num_features
@@ -280,7 +330,11 @@ class RMSNorm:
         for j in range(self.num_features):
             output.append(self.gamma[j] * x[j] / rms)
         return output
-```### 步骤 6：有正则化和无正则化的训练```python
+```
+
+### 步骤 6：有正则化和无正则化的训练
+
+```python
 def sigmoid(x):
     x = max(-500, min(500, x))
     return 1.0 / (1.0 + math.exp(-x))
@@ -380,7 +434,9 @@ class RegularizedNetwork:
                 gap = train_acc - test_acc
                 print(f"    Epoch {epoch:3d}: train_acc={train_acc:.1f}%, test_acc={test_acc:.1f}%, gap={gap:.1f}%")
         return history
-```## 使用它
+```
+
+## 使用它
 
 PyTorch 将所有归一化和正则化作为模块提供：
 
@@ -390,7 +446,9 @@ PyTorch 将所有归一化和正则化作为模块提供：
 
 ## 使用它
 
-PyTorch 将所有归一化和正则化作为模块提供：```python
+PyTorch 将所有归一化和正则化作为模块提供：
+
+```python
 import torch
 import torch.nn as nn
 
@@ -411,9 +469,13 @@ out_train = model(torch.randn(32, 784))
 
 model.eval()
 out_test = model(torch.randn(1, 784))
-````model.train()` / `model.eval()` 切换是至关重要的。它用于开启或关闭 dropout，并告诉 BatchNorm 使用批量统计还是运行时统计。在推理之前忘记关闭 `model.eval()` 是深度学习中最常见的错误之一。由于 dropout 仍然处于激活状态且 BatchNorm 使用的是小批量统计，您的测试准确率将会随机波动。
+```
 
-对于 transformers，模式是不同的：```python
+`model.train()` / `model.eval()` 切换是至关重要的。它用于开启或关闭 dropout，并告诉 BatchNorm 使用批量统计还是运行时统计。在推理之前忘记关闭 `model.eval()` 是深度学习中最常见的错误之一。由于 dropout 仍然处于激活状态且 BatchNorm 使用的是小批量统计，您的测试准确率将会随机波动。
+
+对于 transformers，模式是不同的：
+
+```python
 class TransformerBlock(nn.Module):
     def __init__(self, d_model=512, nhead=8, dropout=0.1):
         super().__init__()
@@ -433,7 +495,9 @@ class TransformerBlock(nn.Module):
         x = self.norm1(x + self.dropout(attended))
         x = self.norm2(x + self.ff(x))
         return x
-```使用 LayerNorm，而不是 BatchNorm。Dropout 的 p=0.1，而不是 p=0.5。这些都是 Transformer 的默认设置。
+```
+
+使用 LayerNorm，而不是 BatchNorm。Dropout 的 p=0.1，而不是 p=0.5。这些都是 Transformer 的默认设置。
 
 ## 发布它
 

@@ -24,12 +24,16 @@
 
 AI 工程环境有四层：
 
- /think```mermaid
+ /think
+
+```mermaid
 graph TD
     A["4. AI/ML Libraries\nPyTorch, JAX, transformers, etc."] --> B["3. Language Runtimes\nPython 3.11+, Node 20+, Rust, Julia"]
     B --> C["2. Package Managers\nuv, pnpm, cargo, juliaup"]
     C --> D["1. System Foundation\nOS, shell, git, editor, GPU drivers"]
-```我们采用自底向上的方式安装。每一层都依赖于它下面的那一层。
+```
+
+我们采用自底向上的方式安装。每一层都依赖于它下面的那一层。
 
 ## 构建它
 
@@ -37,7 +41,9 @@ graph TD
 
 检查您的系统并安装基础知识。
 
- /think```bash
+ /think
+
+```bash
 # macOS
 xcode-select --install
 brew install git curl wget
@@ -47,9 +53,13 @@ sudo apt update && sudo apt install -y build-essential git curl wget
 
 # Windows (use WSL2)
 wsl --install -d Ubuntu-24.04
-```### 步骤2：使用 uv 的 Python
+```
 
-我们使用 `uv` —— 它比 pip 快 10-100 倍，并且可以自动处理虚拟环境。```bash
+### 步骤2：使用 uv 的 Python
+
+我们使用 `uv` —— 它比 pip 快 10-100 倍，并且可以自动处理虚拟环境。
+
+```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 uv python install 3.12
@@ -86,7 +96,9 @@ npm install -g pnpm
 node -e "console.log('Node', process.version)"
 ```**macOS / Apple Silicon (M1/M2/M3/M4):** 如果安装器在 `Error: Cannot install under Rosetta 2 in ARM default prefix (/opt/homebrew)` 处停止，表示你的终端正在 Rosetta 2 下运行（`arch` 输出 `i386`），而 Homebrew 是原生的 arm64 构建版本。请强制安装 arm64 版本的 fnm，将其集成到你的 shell 中，然后从 `fnm install 22` 重新运行上面的命令：
 
- /opt/homebrew/bin/fnm install 22```bash
+ /opt/homebrew/bin/fnm install 22
+
+```bash
 arch -arm64 brew install fnm
 echo 'eval "$(fnm env --use-on-cd)"' >> ~/.zshrc
 source ~/.zshrc
@@ -124,7 +136,9 @@ nvidia-smi
 uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 ```**macOS / Apple Silicon (M1/M2/M3/M4):** 在 Mac 上没有 CUDA —— 这是预期的结果，而不是故障。**不要**传递 `--index-url .../cuXXX`（这些 wheel 仅适用于 Linux/Windows，因此安装会失败）。安装普通版本的构建，其中包含 Apple 的 MPS (Metal) GPU 后端：
 
- /usr/local/bin```bash
+ /usr/local/bin
+
+```bash
 uv pip install torch torchvision torchaudio
 ```
 
@@ -136,15 +150,21 @@ print(f"CUDA available: {torch.cuda.is_available()}")           # False on macOS
 print(f"MPS available:  {torch.backends.mps.is_available()}")   # True on Apple Silicon
 if torch.cuda.is_available():
     print(f"GPU: {torch.cuda.get_device_name(0)}")
-```没有 GPU？没问题。大部分课程可以在 CPU 上运行。对于需要大量训练的课程，请使用 Google Colab 或云 GPU。
+```
+
+没有 GPU？没问题。大部分课程可以在 CPU 上运行。对于需要大量训练的课程，请使用 Google Colab 或云 GPU。
 
 ### 第7步：验证所有内容
 
 运行验证脚本：
 
- /think```bash
+ /think
+
+```bash
 python phases/00-setup-and-tooling/01-dev-environment/code/verify.py
-```## 使用它
+```
+
+## 使用它
 
 你的环境现在已准备好用于本课程的每一节课。以下是使用方式：
 

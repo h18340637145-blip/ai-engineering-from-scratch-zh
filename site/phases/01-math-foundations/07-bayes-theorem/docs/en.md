@@ -28,20 +28,32 @@
 
 ### 从联合概率到贝叶斯
 
-你已经在第6课中了解到条件概率是：```
+你已经在第6课中了解到条件概率是：
+
+```
 P(A|B) = P(A and B) / P(B)
-```对称地：
+```
+
+对称地：
 
 ```python
-``````
+```
+
+```
 P(B|A) = P(A and B) / P(A)
-```这两个表达式有相同的分子：P(A 和 B)。将它们设为相等并重新排列：```
+```
+
+这两个表达式有相同的分子：P(A 和 B)。将它们设为相等并重新排列：
+
+```
 P(A and B) = P(A|B) * P(B) = P(B|A) * P(A)
 
 Therefore:
 
 P(A|B) = P(B|A) * P(A) / P(B)
-```这就是贝叶斯定理。四个量，一个方程。
+```
+
+这就是贝叶斯定理。四个量，一个方程。
 
 ### 四个部分
 
@@ -52,11 +64,17 @@ P(A|B) = P(B|A) * P(A) / P(B)
 | P(A) | 先验概率 | 在看到任何证据之前，对 A 的信念 |
 | P(B) | 证据 | 在所有可能性下观察到 B 的总概率 |
 
-证据项 P(B) 起着归一化因子的作用。你可以使用全概率定律来展开它：```
-P(B) = P(B|A) * P(A) + P(B|not A) * P(not A)
-```### 医疗测试示例
+证据项 P(B) 起着归一化因子的作用。你可以使用全概率定律来展开它：
 
-一种疾病影响 10,000 人中的 1 人。该测试的准确率为 99%（能检测出 99% 的患病者，1% 的时间出现假阳性）。```
+```
+P(B) = P(B|A) * P(A) + P(B|not A) * P(not A)
+```
+
+### 医疗测试示例
+
+一种疾病影响 10,000 人中的 1 人。该测试的准确率为 99%（能检测出 99% 的患病者，1% 的时间出现假阳性）。
+
+```
 P(sick)          = 0.0001     (prior: disease is rare)
 P(positive|sick) = 0.99       (likelihood: test catches it)
 P(positive|healthy) = 0.01    (false positive rate)
@@ -70,11 +88,15 @@ P(sick|positive) = P(positive|sick) * P(sick) / P(positive)
                  = 0.99 * 0.0001 / 0.010098
                  = 0.0098
                  = 0.98%
-```少于 1%。先验概率占主导地位。当某种条件罕见时，即使测试准确，也会产生大量的假阳性结果。这就是为什么医生会要求进行确认测试的原因。
+```
+
+少于 1%。先验概率占主导地位。当某种条件罕见时，即使测试准确，也会产生大量的假阳性结果。这就是为什么医生会要求进行确认测试的原因。
 
 ### 垃圾邮件过滤器示例
 
-你收到一封包含“lottery”这个词的电子邮件。它是垃圾邮件吗？```
+你收到一封包含“lottery”这个词的电子邮件。它是垃圾邮件吗？
+
+```
 P(spam)                = 0.3      (30% of email is spam)
 P("lottery"|spam)      = 0.05     (5% of spam emails contain "lottery")
 P("lottery"|not spam)  = 0.001    (0.1% of legitimate emails contain "lottery")
@@ -86,29 +108,47 @@ P("lottery") = 0.05 * 0.3 + 0.001 * 0.7
 P(spam|"lottery") = 0.05 * 0.3 / 0.0157
                   = 0.955
                   = 95.5%
-```一个词将概率从 30% 提高到 95.5%。一个真正的垃圾邮件过滤器会同时在数百个词上应用贝叶斯定理。
+```
+
+一个词将概率从 30% 提高到 95.5%。一个真正的垃圾邮件过滤器会同时在数百个词上应用贝叶斯定理。
 
 ### 朴素贝叶斯：独立性假设
 
-朴素贝叶斯通过假设在给定类别的情况下所有特征都是条件独立的，将这一方法扩展到多个特征：```
+朴素贝叶斯通过假设在给定类别的情况下所有特征都是条件独立的，将这一方法扩展到多个特征：
+
+```
 P(class | feature_1, feature_2, ..., feature_n)
   = P(class) * P(feature_1|class) * P(feature_2|class) * ... * P(feature_n|class)
     / P(feature_1, feature_2, ..., feature_n)
-```“naive”的部分是指独立性假设。在文本中，词的出现并不是独立的（“New”和“York”是相关的）。但是，这个假设在实践中出人意料地有效，因为分类器只需要对类别进行排序，而不需要产生校准后的概率。
+```
 
-由于所有类别的分母都是一样的，你可以忽略它，只比较分子：```
+“naive”的部分是指独立性假设。在文本中，词的出现并不是独立的（“New”和“York”是相关的）。但是，这个假设在实践中出人意料地有效，因为分类器只需要对类别进行排序，而不需要产生校准后的概率。
+
+由于所有类别的分母都是一样的，你可以忽略它，只比较分子：
+
+```
 score(class) = P(class) * product of P(feature_i | class)
-```选择得分最高的类别。
+```
+
+选择得分最高的类别。
 
 ### 最大似然估计（MLE）
 
-如何从训练数据中得到 P(特征|类别)？计数。```
-P("free"|spam) = (number of spam emails containing "free") / (total spam emails)
-```这是 MLE：选择使观测数据最可能的参数值。你是在最大化似然函数，对于离散计数来说，这等价于相对频率。
+如何从训练数据中得到 P(特征|类别)？计数。
 
-问题：如果某个词在训练期间从未出现在垃圾邮件中，MLE 会赋予它概率零。一个未见过的词会使整个乘积归零。用拉普拉斯平滑来解决这个问题：```
+```
+P("free"|spam) = (number of spam emails containing "free") / (total spam emails)
+```
+
+这是 MLE：选择使观测数据最可能的参数值。你是在最大化似然函数，对于离散计数来说，这等价于相对频率。
+
+问题：如果某个词在训练期间从未出现在垃圾邮件中，MLE 会赋予它概率零。一个未见过的词会使整个乘积归零。用拉普拉斯平滑来解决这个问题：
+
+```
 P(word|class) = (count(word, class) + 1) / (total_words_in_class + vocabulary_size)
-```将每个计数加 1 可以确保任何概率都不会为零。
+```
+
+将每个计数加 1 可以确保任何概率都不会为零。
 
 ### 最大后验概率（MAP）
 
@@ -116,7 +156,9 @@ P(word|class) = (count(word, class) + 1) / (total_words_in_class + vocabulary_si
 
 MAP 问：什么参数可以最大化 P(parameters|data)？
 
-根据贝叶斯定理：```
+根据贝叶斯定理：
+
+```
 P(parameters|data) proportional to P(data|parameters) * P(parameters)
 ```MAP 在参数本身上添加了一个先验。如果你认为参数应该较小，你可以将其编码为一个惩罚大值的先验。这与机器学习中的 L2 正则化完全相同。岭回归中的“岭”惩罚实际上是权重的高斯先验。
 
@@ -152,11 +194,17 @@ P(parameters|data) proportional to P(data|parameters) * P(parameters)
 
 **贝叶斯更新是在线学习。** 今天的后验变成明天的先验。当模型看到新数据时，它会逐步更新其信念，而不是从头开始重新训练。
 
-**模型比较是贝叶斯的。** 贝叶斯信息准则（BIC）、边缘似然和贝叶斯因子都使用贝叶斯推理在不发生过拟合的情况下选择模型。```figure
-bayes-update
-```## 构建它
+**模型比较是贝叶斯的。** 贝叶斯信息准则（BIC）、边缘似然和贝叶斯因子都使用贝叶斯推理在不发生过拟合的情况下选择模型。
 
-### 步骤 1：贝叶斯定理函数```python
+```figure
+bayes-update
+```
+
+## 构建它
+
+### 步骤 1：贝叶斯定理函数
+
+```python
 def bayes(prior, likelihood, false_positive_rate):
     evidence = likelihood * prior + false_positive_rate * (1 - prior)
     posterior = likelihood * prior / evidence
@@ -164,7 +212,11 @@ def bayes(prior, likelihood, false_positive_rate):
 
 result = bayes(prior=0.0001, likelihood=0.99, false_positive_rate=0.01)
 print(f"P(sick|positive) = {result:.4f}")
-```### 步骤 2：朴素贝叶斯分类器```python
+```
+
+### 步骤 2：朴素贝叶斯分类器
+
+```python
 import math
 from collections import defaultdict
 
@@ -201,9 +253,13 @@ class NaiveBayes:
                 best_score = score
                 best_class = cls
         return best_class
-```对数概率可以防止下溢。将许多小概率相乘会产生浮点数无法表示的极小数值。对数概率的求和在数值上是稳定的，并且在数学上是等价的。
+```
 
-### 步骤 3：在垃圾邮件数据上进行训练```python
+对数概率可以防止下溢。将许多小概率相乘会产生浮点数无法表示的极小数值。对数概率的求和在数值上是稳定的，并且在数学上是等价的。
+
+### 步骤 3：在垃圾邮件数据上进行训练
+
+```python
 train_docs = [
     "win free money now",
     "free lottery ticket winner",
@@ -236,7 +292,11 @@ test_messages = [
 
 for msg in test_messages:
     print(f"  '{msg}' -> {classifier.predict(msg)}")
-```### 步骤 4：检查学习到的概率```python
+```
+
+### 步骤 4：检查学习到的概率
+
+```python
 def show_top_words(classifier, cls, n=5):
     vocab_size = len(classifier.vocab)
     total = classifier.class_word_totals[cls]
@@ -252,9 +312,13 @@ print("\nTop spam words:")
 show_top_words(classifier, "spam")
 print("\nTop ham words:")
 show_top_words(classifier, "ham")
-```## 使用它
+```
 
-Scikit-learn 提供了生产就绪的朴素贝叶斯实现：```python
+## 使用它
+
+Scikit-learn 提供了生产就绪的朴素贝叶斯实现：
+
+```python
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report
@@ -268,7 +332,9 @@ X_test = vectorizer.transform(test_messages)
 predictions = clf.predict(X_test)
 for msg, pred in zip(test_messages, predictions):
     print(f"  '{msg}' -> {pred}")
-```相同算法。CountVectorizer 负责分词和词汇构建。MultinomialNB 内部处理平滑和对数概率。你的从零开始的版本在 40 行代码中完成了同样的事情。
+```
+
+相同算法。CountVectorizer 负责分词和词汇构建。MultinomialNB 内部处理平滑和对数概率。你的从零开始的版本在 40 行代码中完成了同样的事情。
 
 ## 发布它
 
@@ -294,11 +360,15 @@ Beta 先验的特殊情况：
 - Beta(10, 10) = 在 0.5 处尖峰。你强烈相信参数接近 0.5。
 - Beta(1, 10) = 偏向于 0。你相信参数很小。
 
-更新规则非常简单：```
+更新规则非常简单：
+
+```
 Prior:     Beta(a, b)
 Data:      s successes, f failures
 Posterior: Beta(a + s, b + f)
-```无需积分。无需抽样。只需加法。
+```
+
+无需积分。无需抽样。只需加法。
 
 ### 顺序贝叶斯更新
 
@@ -320,12 +390,16 @@ Posterior: Beta(a + s, b + f)
 使用昨天的后验分布作为今天的先验分布。
 后验分布 = Beta(8 + 5, 4 + 5) = Beta(13, 9)
 - 后验均值：13/22 = 0.591
-- 更加平衡的新数据将估计值拉回接近0.5```mermaid
+- 更加平衡的新数据将估计值拉回接近0.5
+
+```mermaid
 graph LR
     A["Prior<br/>Beta(1,1)<br/>mean = 0.50"] -->|"7H, 3T"| B["Posterior 1<br/>Beta(8,4)<br/>mean = 0.67"]
     B -->|"becomes prior"| C["Prior 2<br/>Beta(8,4)"]
     C -->|"5H, 5T"| D["Posterior 2<br/>Beta(13,9)<br/>mean = 0.59"]
-```观察的顺序无关紧要。一次用全部 12 次正面和 8 次反面更新 Beta(1,1) 会得到 Beta(13, 9) —— 与结果相同。顺序更新和批量更新在数学上是等价的。但顺序更新允许你在每一步做出决策，而无需存储原始数据。
+```
+
+观察的顺序无关紧要。一次用全部 12 次正面和 8 次反面更新 Beta(1,1) 会得到 Beta(13, 9) —— 与结果相同。顺序更新和批量更新在数学上是等价的。但顺序更新允许你在每一步做出决策，而无需存储原始数据。
 
 这是生产环境中在线学习的基础。老虎机的汤普森抽样、增量推荐系统和流式异常检测器都使用这种模式。
 
@@ -344,11 +418,15 @@ A/B 测试实际上是贝叶斯推断的伪装。
    - B：Beta(1 + 65, 1 + 935) = Beta(66, 936)。均值 = 0.066
 4. **决策。** 计算 P(B > A) —— B 的真实转化率高于 A 的概率。
 
-分析计算 P(B > A) 是困难的。但蒙特卡洛方法使它变得简单：```
+分析计算 P(B > A) 是困难的。但蒙特卡洛方法使它变得简单：
+
+```
 1. Draw 100,000 samples from Beta(51, 951)  -> samples_A
 2. Draw 100,000 samples from Beta(66, 936)  -> samples_B
 3. P(B > A) = fraction of samples where B > A
-```如果 P(B > A) > 0.95，你上线变体 B。如果它在 0.05 和 0.95 之间，你继续收集数据。如果 P(B > A) < 0.05，你上线变体 A。
+```
+
+如果 P(B > A) > 0.95，你上线变体 B。如果它在 0.05 和 0.95 之间，你继续收集数据。如果 P(B > A) < 0.05，你上线变体 A。
 
 与频率主义 A/B 测试相比的优势：
 - 你可以得到一个直接的概率陈述：“B 更好的概率是 97%”

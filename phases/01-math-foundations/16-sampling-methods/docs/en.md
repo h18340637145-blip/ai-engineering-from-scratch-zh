@@ -42,7 +42,9 @@
 
 ### 均匀随机采样
 
-每个采样方法都从这里开始。一个均匀随机数生成器生成 [0, 1) 范围内的值，其中每个长度相等的子区间具有相等的概率。```
+每个采样方法都从这里开始。一个均匀随机数生成器生成 [0, 1) 范围内的值，其中每个长度相等的子区间具有相等的概率。
+
+```
 U ~ Uniform(0, 1)
 
 P(a <= U <= b) = b - a    for 0 <= a <= b <= 1
@@ -50,13 +52,17 @@ P(a <= U <= b) = b - a    for 0 <= a <= b <= 1
 Properties:
   E[U] = 0.5
   Var(U) = 1/12
-```要从一个包含 n 个离散项目的集合中均匀采样，生成 U 并返回 floor(n * U)。要从连续区间 [a, b] 中采样，计算 a + (b - a) * U。
+```
+
+要从一个包含 n 个离散项目的集合中均匀采样，生成 U 并返回 floor(n * U)。要从连续区间 [a, b] 中采样，计算 a + (b - a) * U。
 
 关键见解：一个单一的均匀随机数包含恰好足够产生来自任何分布的一个样本的随机性。关键是找到正确的变换。
 
 ### 反向累积分布函数方法（反向变换采样）
 
-累积分布函数（CDF）将值映射到概率：```
+累积分布函数（CDF）将值映射到概率：
+
+```
 F(x) = P(X <= x)
 
 Properties:
@@ -64,14 +70,20 @@ Properties:
   F(-inf) = 0
   F(+inf) = 1
   F maps the real line to [0, 1]
-```逆累积分布函数（inverse CDF）将概率映射回对应的值。如果 U ~ Uniform(0, 1)，那么 X = F_inverse(U) 服从目标分布。```
+```
+
+逆累积分布函数（inverse CDF）将概率映射回对应的值。如果 U ~ Uniform(0, 1)，那么 X = F_inverse(U) 服从目标分布。
+
+```
 Algorithm:
   1. Generate u ~ Uniform(0, 1)
   2. Return F_inverse(u)
 
 Why it works:
   P(X <= x) = P(F_inverse(U) <= x) = P(U <= F(x)) = F(x)
-```**指数分布示例：**```
+```**指数分布示例：**
+
+```
 PDF: f(x) = lambda * exp(-lambda * x),   x >= 0
 CDF: F(x) = 1 - exp(-lambda * x)
 
@@ -82,13 +94,17 @@ Solve F(x) = u for x:
 
 Since (1 - U) and U have the same distribution:
   x = -ln(u) / lambda
-```当你可以将 F_inverse 以闭式形式写出时，这种方法非常有效。对于正态分布，没有闭式逆 CDF，因此我们使用其他方法（如 Box-Muller 方法或数值近似）。
+```
+
+当你可以将 F_inverse 以闭式形式写出时，这种方法非常有效。对于正态分布，没有闭式逆 CDF，因此我们使用其他方法（如 Box-Muller 方法或数值近似）。
 
 **离散版本：** 对于离散分布，构建 CDF 为累积和，生成 U，然后找到累积和首次超过 U 的索引。这就是 Lesson 06 中 `sample_categorical` 的工作原理。
 
 ### 拒绝抽样
 
-当你无法对 CDF 进行求逆，但可以评估目标 PDF（最多相差一个常数）时，拒绝抽样方法是有效的。```
+当你无法对 CDF 进行求逆，但可以评估目标 PDF（最多相差一个常数）时，拒绝抽样方法是有效的。
+
+```
 Target distribution: p(x)  (can evaluate, possibly unnormalized)
 Proposal distribution: q(x)  (can sample from)
 Bound: M such that p(x) <= M * q(x) for all x
@@ -100,7 +116,9 @@ Algorithm:
   4. Otherwise, reject and go to step 1
 
 Acceptance rate = 1/M
-```约束 M 越紧，接受率越高。在低维空间（1-3 维）中，拒绝采样效果很好。在高维空间中，接受率会呈指数级下降，因为大部分提议的体积都会被拒绝。这是拒绝采样所面临的维度诅咒问题。
+```
+
+约束 M 越紧，接受率越高。在低维空间（1-3 维）中，拒绝采样效果很好。在高维空间中，接受率会呈指数级下降，因为大部分提议的体积都会被拒绝。这是拒绝采样所面临的维度诅咒问题。
 
 **示例：从截断正态分布中采样。** 在截断范围内使用均匀提议分布。包络 M 是该范围内正态 PDF 的最大值。
 
@@ -108,7 +126,9 @@ Acceptance rate = 1/M
 
 ### 重要性采样
 
-有时候你并不需要从目标分布 p(x) 中获取样本。你只需要在 p(x) 下估计一个期望，并且你拥有来自另一个分布 q(x) 的样本。```
+有时候你并不需要从目标分布 p(x) 中获取样本。你只需要在 p(x) 下估计一个期望，并且你拥有来自另一个分布 q(x) 的样本。
+
+```
 Goal: estimate E_p[f(x)] = integral of f(x) * p(x) dx
 
 Rewrite:
@@ -119,13 +139,21 @@ where w(x) = p(x) / q(x)  are the importance weights.
 
 Estimator:
   E_p[f(x)] ~ (1/N) * sum(f(x_i) * w(x_i))    where x_i ~ q(x)
-```这在强化学习中是至关重要的。在PPO（近端策略优化）中，你是在旧策略pi_old下收集轨迹，但想要优化新策略pi_new。重要性权重是pi_new(a|s) / pi_old(a|s)。PPO通过截断这些权重来防止新策略偏离旧策略太远。
+```
 
-重要性抽样估计量的方差取决于q与p的相似程度。如果q与p相差很大，少数样本会获得非常大的权重，并主导估计结果。自归一化重要性抽样通过除以权重的总和来减少这个问题：```
+这在强化学习中是至关重要的。在PPO（近端策略优化）中，你是在旧策略pi_old下收集轨迹，但想要优化新策略pi_new。重要性权重是pi_new(a|s) / pi_old(a|s)。PPO通过截断这些权重来防止新策略偏离旧策略太远。
+
+重要性抽样估计量的方差取决于q与p的相似程度。如果q与p相差很大，少数样本会获得非常大的权重，并主导估计结果。自归一化重要性抽样通过除以权重的总和来减少这个问题：
+
+```
 E_p[f(x)] ~ sum(w_i * f(x_i)) / sum(w_i)
-```### 蒙特卡洛估计
+```
 
-蒙特卡洛估计通过平均随机样本来近似积分。大数定律保证了收敛性。```
+### 蒙特卡洛估计
+
+蒙特卡洛估计通过平均随机样本来近似积分。大数定律保证了收敛性。
+
+```
 Goal: estimate I = integral of g(x) dx over domain D
 
 Method:
@@ -133,20 +161,30 @@ Method:
   2. I ~ (Volume of D / N) * sum(g(x_i))
 
 Error: O(1 / sqrt(N))   regardless of dimension
-```错误率与维度无关。这就是为什么蒙特卡洛方法在高维空间中占主导地位，因为在高维空间中基于网格的积分是不可能的。
+```
 
-**估计圆周率：**```
+错误率与维度无关。这就是为什么蒙特卡洛方法在高维空间中占主导地位，因为在高维空间中基于网格的积分是不可能的。
+
+**估计圆周率：**
+
+```
 Sample (x, y) uniformly from [-1, 1] x [-1, 1]
 Count how many fall inside the unit circle: x^2 + y^2 <= 1
 pi ~ 4 * (count inside) / (total count)
-```**估计期望值：**```
+```**估计期望值：**
+
+```
 E[f(X)] ~ (1/N) * sum(f(x_i))    where x_i ~ p(x)
 
 The sample mean converges to the true expectation.
 Variance of the estimator = Var(f(X)) / N
-```### 马尔可夫链蒙特卡洛（MCMC）：Metropolis-Hastings 算法
+```
 
-MCMC 构造一个马尔可夫链，其平稳分布为目标分布 p(x)。经过足够多的步骤后，从链中采样的样本（近似地）就是从 p(x) 中采样的样本。```
+### 马尔可夫链蒙特卡洛（MCMC）：Metropolis-Hastings 算法
+
+MCMC 构造一个马尔可夫链，其平稳分布为目标分布 p(x)。经过足够多的步骤后，从链中采样的样本（近似地）就是从 p(x) 中采样的样本。
+
+```
 Target: p(x)  (known up to a normalizing constant)
 Proposal: q(x'|x)  (how to propose the next state given the current state)
 
@@ -161,7 +199,9 @@ Metropolis-Hastings algorithm:
         - Otherwise: x_{t+1} = x_t
   3. Discard first B samples (burn-in)
   4. Return remaining samples
-```对于对称性提议（q(x'|x) = q(x|x')），该比例简化为 p(x')/p(x)。这是原始的 Metropolis 算法。
+```
+
+对于对称性提议（q(x'|x) = q(x|x')），该比例简化为 p(x')/p(x)。这是原始的 Metropolis 算法。
 
 **为什么有效。** 接受规则确保了详细平衡：处于 x 并移动到 x' 的概率等于处于 x' 并移动到 x 的概率。详细平衡意味着 p(x) 是链的平稳分布。
 
@@ -173,7 +213,9 @@ Metropolis-Hastings algorithm:
 
 ### Gibbs 抽样
 
-Gibbs 抽样是用于多变量分布的 MCMC 的一种特例。它不是一次性在所有维度上提出移动，而是从条件分布中依次更新每个变量。```
+Gibbs 抽样是用于多变量分布的 MCMC 的一种特例。它不是一次性在所有维度上提出移动，而是从条件分布中依次更新每个变量。
+
+```
 Target: p(x_1, x_2, ..., x_d)
 
 Algorithm:
@@ -182,7 +224,9 @@ Algorithm:
     Sample x_2^{t+1} ~ p(x_2 | x_1^{t+1}, x_3^t, ..., x_d^t)
     ...
     Sample x_d^{t+1} ~ p(x_d | x_1^{t+1}, x_2^{t+1}, ..., x_{d-1}^{t+1})
-```吉布斯采样要求你可以从每个条件分布 p(x_i | x_{-i}) 中进行采样。这对于许多模型来说是直接的：
+```
+
+吉布斯采样要求你可以从每个条件分布 p(x_i | x_{-i}) 中进行采样。这对于许多模型来说是直接的：
 - 贝叶斯网络：条件分布由图结构决定
 - 高斯混合模型：条件分布是高斯分布
 - 伊辛模型：每个自旋的条件分布只依赖于其邻居
@@ -193,7 +237,9 @@ Algorithm:
 
 ### 温度采样（用于大语言模型）
 
-语言模型为词汇表中的每个标记输出对数几率 z_1, ..., z_V。Softmax 将这些转换为概率。温度在 Softmax 之前对对数几率进行重新缩放：```
+语言模型为词汇表中的每个标记输出对数几率 z_1, ..., z_V。Softmax 将这些转换为概率。温度在 Softmax 之前对对数几率进行重新缩放：
+
+```
 p_i = exp(z_i / T) / sum(exp(z_j / T))
 
 T = 1.0: standard softmax (original distribution)
@@ -214,7 +260,9 @@ T > 1.0: flattens the distribution (less confident, more diverse)
 
 ### Top-k 采样
 
-Top-k 采样将候选集限制为概率最高的k个标记，然后对这个受限集合进行重新归一化，并从中进行采样。```
+Top-k 采样将候选集限制为概率最高的k个标记，然后对这个受限集合进行重新归一化，并从中进行采样。
+
+```
 Algorithm:
   1. Compute softmax probabilities for all V tokens
   2. Sort tokens by probability (descending)
@@ -229,7 +277,9 @@ k = 40: typical setting, removes long tail of unlikely tokens
 
 ### Top-p（核）采样
 
-Top-p 采样会动态调整候选集合的大小。它不是保留固定数量的标记，而是保留累积概率超过 p 的最小标记集合。```
+Top-p 采样会动态调整候选集合的大小。它不是保留固定数量的标记，而是保留累积概率超过 p 的最小标记集合。
+
+```
 Algorithm:
   1. Compute softmax probabilities for all V tokens
   2. Sort tokens by probability (descending)
@@ -240,7 +290,9 @@ Algorithm:
 p = 0.9:  keeps tokens covering 90% of probability mass
 p = 1.0:  no filtering
 p = 0.1:  very restrictive, nearly greedy
-```当模型非常自信时，核采样（nucleus sampling）只保留少量的 token（可能为 2-3 个）。当模型不确定时，它会保留大量的 token（可能为 200 个）。这种自适应行为就是为什么核采样通常比 top-k 生成更高质量文本的原因。
+```
+
+当模型非常自信时，核采样（nucleus sampling）只保留少量的 token（可能为 2-3 个）。当模型不确定时，它会保留大量的 token（可能为 200 个）。这种自适应行为就是为什么核采样通常比 top-k 生成更高质量文本的原因。
 
 **常见组合：**
 - 温度 0.7 + top-p 0.9：良好的通用设置
@@ -251,13 +303,19 @@ top-k 和 top-p 可以结合使用。先应用 top-k，然后在剩余的集合�
 
 ### 重参数化技巧（用于 VAEs）
 
-变分自编码器（VAEs）通过将输入编码为潜在空间中的分布，从该分布中采样，然后将样本解码回原始空间来学习。问题在于：你无法通过采样操作进行反向传播。```
+变分自编码器（VAEs）通过将输入编码为潜在空间中的分布，从该分布中采样，然后将样本解码回原始空间来学习。问题在于：你无法通过采样操作进行反向传播。
+
+```
 Standard sampling (not differentiable):
   z ~ N(mu, sigma^2)
 
   The randomness blocks gradient flow.
   d/d_mu [sample from N(mu, sigma^2)] = ???
-```重参数化技巧将随机性与参数分离：```
+```
+
+重参数化技巧将随机性与参数分离：
+
+```
 Reparameterized sampling:
   epsilon ~ N(0, 1)          (fixed random noise, no parameters)
   z = mu + sigma * epsilon   (deterministic function of parameters)
@@ -267,7 +325,9 @@ Reparameterized sampling:
   d(z)/d(sigma) = epsilon
 
   Gradients flow through mu and sigma.
-```这之所以有效，是因为 N(mu, sigma^2) 的分布与 mu + sigma * N(0, 1) 的分布相同。关键的洞察是：将随机性转移到一个无参数的来源（epsilon），然后将样本表示为参数的可微分变换。
+```
+
+这之所以有效，是因为 N(mu, sigma^2) 的分布与 mu + sigma * N(0, 1) 的分布相同。关键的洞察是：将随机性转移到一个无参数的来源（epsilon），然后将样本表示为参数的可微分变换。
 
 **在 VAE 训练循环中：**
 1. 编码器为每个输入输出 mu 和 log(sigma^2)
@@ -282,14 +342,18 @@ Reparameterized sampling:
 
 重参数化技巧适用于连续分布（高斯分布）。对于离散分类分布，我们需要不同的方法。Gumbel-Softmax 提供了对分类采样的可微分近似。
 
-**Gumbel-Max 技巧（不可微分）：**```
+**Gumbel-Max 技巧（不可微分）：**
+
+```
 To sample from a categorical distribution with log-probabilities log(p_1), ..., log(p_k):
   1. Sample g_i ~ Gumbel(0, 1) for each category
      (g = -log(-log(u)), where u ~ Uniform(0, 1))
   2. Return argmax(log(p_i) + g_i)
 
 This produces exact categorical samples.
-```**Gumbel-Softmax（可微分近似）：**```
+```**Gumbel-Softmax（可微分近似）：**
+
+```
 Replace the hard argmax with a soft softmax:
   y_i = exp((log(p_i) + g_i) / tau) / sum(exp((log(p_j) + g_j) / tau))
 
@@ -307,7 +371,9 @@ tau (temperature) controls the approximation:
 
 ### 分层抽样
 
-标准的蒙特卡洛抽样可能会偶然在样本空间中留下空白。分层抽样通过将空间划分为若干层并从每一层进行抽样，强制实现均匀覆盖。```
+标准的蒙特卡洛抽样可能会偶然在样本空间中留下空白。分层抽样通过将空间划分为若干层并从每一层进行抽样，强制实现均匀覆盖。
+
+```
 Standard Monte Carlo:
   Sample N points uniformly from [0, 1]
   Some regions may have clusters, others gaps
@@ -316,7 +382,11 @@ Stratified sampling:
   Divide [0, 1] into N equal strata: [0, 1/N), [1/N, 2/N), ..., [(N-1)/N, 1)
   Sample one point uniformly within each stratum
   x_i = (i + u_i) / N   where u_i ~ Uniform(0, 1),  i = 0, ..., N-1
-```分层抽样总是具有比标准蒙特卡洛方法更低或相等的方差：```
+```
+
+分层抽样总是具有比标准蒙特卡洛方法更低或相等的方差：
+
+```
 Var(stratified) <= Var(standard Monte Carlo)
 
 The improvement is largest when f(x) varies smoothly.
@@ -329,7 +399,9 @@ For piecewise-constant functions, stratified sampling is exact.
 
 ### 与扩散模型的联系
 
-扩散模型通过采样过程生成图像。前向过程在T步中逐步向图像添加高斯噪声，直到图像变为纯噪声。反向过程学习去噪，逐步恢复原始图像。```
+扩散模型通过采样过程生成图像。前向过程在T步中逐步向图像添加高斯噪声，直到图像变为纯噪声。反向过程学习去噪，逐步恢复原始图像。
+
+```
 Forward process (known):
   x_t = sqrt(alpha_t) * x_{t-1} + sqrt(1 - alpha_t) * epsilon
   where epsilon ~ N(0, I)
@@ -341,17 +413,25 @@ Reverse process (learned):
   where z ~ N(0, I)
 
   Each denoising step is a sampling step.
-```本课内容与方法的联系：
+```
+
+本课内容与方法的联系：
 - 每个去噪步骤都使用重参数化技巧（采样噪声，应用确定性变换）
 - 噪声计划 {alpha_t} 控制一种温度退火方式
 - 训练使用蒙特卡洛估计来近似 ELBO（证据下界）
 - 扩散模型中的祖先采样是一个马尔可夫链（每一步只依赖于当前状态）
 
-整个图像生成过程是迭代采样：从噪声开始，每一步都根据学习到的去噪模型，采样一个略微更少噪声的版本。```figure
-monte-carlo-pi
-```## 构建它
+整个图像生成过程是迭代采样：从噪声开始，每一步都根据学习到的去噪模型，采样一个略微更少噪声的版本。
 
-### 步骤 1：均匀分布和逆累积分布函数采样```python
+```figure
+monte-carlo-pi
+```
+
+## 构建它
+
+### 步骤 1：均匀分布和逆累积分布函数采样
+
+```python
 import math
 import random
 
@@ -361,18 +441,26 @@ def sample_uniform(a, b):
 def sample_exponential_inverse_cdf(lam):
     u = random.random()
     return -math.log(u) / lam
-```生成 10,000 个指数分布样本，并验证其均值是否为 1/lambda。
+```
 
-### 步骤 2：拒绝采样```python
+生成 10,000 个指数分布样本，并验证其均值是否为 1/lambda。
+
+### 步骤 2：拒绝采样
+
+```python
 def rejection_sample(target_pdf, proposal_sample, proposal_pdf, M):
     while True:
         x = proposal_sample()
         u = random.random()
         if u < target_pdf(x) / (M * proposal_pdf(x)):
             return x
-```使用拒绝采样方法从截断正态分布中进行抽样。通过直方图验证样本的形状。
+```
 
-### 步骤 3：重要性采样```python
+使用拒绝采样方法从截断正态分布中进行抽样。通过直方图验证样本的形状。
+
+### 步骤 3：重要性采样
+
+```python
 def importance_sampling_estimate(f, target_pdf, proposal_pdf, proposal_sample, n):
     total = 0
     for _ in range(n):
@@ -380,9 +468,13 @@ def importance_sampling_estimate(f, target_pdf, proposal_pdf, proposal_sample, n
         w = target_pdf(x) / proposal_pdf(x)
         total += f(x) * w
     return total / n
-```使用均匀提议分布估计正态分布下 E[X^2]。与已知答案（mu^2 + sigma^2）进行比较。
+```
 
-### 步骤 4：蒙特卡洛方法估计 pi```python
+使用均匀提议分布估计正态分布下 E[X^2]。与已知答案（mu^2 + sigma^2）进行比较。
+
+### 步骤 4：蒙特卡洛方法估计 pi
+
+```python
 def monte_carlo_pi(n):
     inside = 0
     for _ in range(n):
@@ -391,7 +483,11 @@ def monte_carlo_pi(n):
         if x*x + y*y <= 1:
             inside += 1
     return 4 * inside / n
-```### 步骤 5：Metropolis-Hastings MCMC```python
+```
+
+### 步骤 5：Metropolis-Hastings MCMC
+
+```python
 def metropolis_hastings(target_log_pdf, proposal_sample, proposal_log_pdf, x0, n_samples, burn_in):
     samples = []
     x = x0
@@ -404,9 +500,13 @@ def metropolis_hastings(target_log_pdf, proposal_sample, proposal_log_pdf, x0, n
         if i >= burn_in:
             samples.append(x)
     return samples
-```来自双峰分布（两个高斯分布的混合）的样本。可视化链的轨迹。
+```
 
-### 步骤 6：Gibbs 采样```python
+来自双峰分布（两个高斯分布的混合）的样本。可视化链的轨迹。
+
+### 步骤 6：Gibbs 采样
+
+```python
 def gibbs_sampling_2d(conditional_x_given_y, conditional_y_given_x, x0, y0, n_samples, burn_in):
     x, y = x0, y0
     samples = []
@@ -416,7 +516,11 @@ def gibbs_sampling_2d(conditional_x_given_y, conditional_y_given_x, x0, y0, n_sa
         if i >= burn_in:
             samples.append((x, y))
     return samples
-```### 步骤 7：温度采样```python
+```
+
+### 步骤 7：温度采样
+
+```python
 def softmax(logits):
     max_l = max(logits)
     exps = [math.exp(z - max_l) for z in logits]
@@ -427,9 +531,13 @@ def temperature_sample(logits, temperature):
     scaled = [z / temperature for z in logits]
     probs = softmax(scaled)
     return sample_from_probs(probs)
-```展示温度如何改变一组 token logits 的输出分布。
+```
 
-### 第 8 步：Top-k 和 top-p 采样```python
+展示温度如何改变一组 token logits 的输出分布。
+
+### 第 8 步：Top-k 和 top-p 采样
+
+```python
 def top_k_sample(logits, k):
     indexed = sorted(enumerate(logits), key=lambda x: -x[1])
     top = indexed[:k]
@@ -453,7 +561,11 @@ def top_p_sample(logits, p):
     sel_probs = [pr / total for pr in sel_probs]
     idx = sample_from_probs(sel_probs)
     return selected[idx][0]
-```### 步骤 9：重参数化技巧```python
+```
+
+### 步骤 9：重参数化技巧
+
+```python
 def reparam_sample(mu, sigma):
     epsilon = random.gauss(0, 1)
     return mu + sigma * epsilon
@@ -462,9 +574,13 @@ def reparam_gradient(mu, sigma, epsilon):
     dz_dmu = 1.0
     dz_dsigma = epsilon
     return dz_dmu, dz_dsigma
-```证明梯度可以通过重参数化的样本流动，但不能通过直接采样流动。
+```
 
-### 第 10 步：Gumbel-Softmax```python
+证明梯度可以通过重参数化的样本流动，但不能通过直接采样流动。
+
+### 第 10 步：Gumbel-Softmax
+
+```python
 def gumbel_sample():
     u = random.random()
     return -math.log(-math.log(u))
@@ -472,13 +588,17 @@ def gumbel_sample():
 def gumbel_softmax(logits, temperature):
     gumbels = [math.log(p) + gumbel_sample() for p in logits]
     return softmax([g / temperature for g in gumbels])
-```展示温度降低如何使输出趋近于独热向量。
+```
+
+展示温度降低如何使输出趋近于独热向量。
 
 完整实现及所有可视化内容在 `code/sampling.py` 中。
 
 ## 使用方法
 
-使用 NumPy 和 SciPy 的生产版本：```python
+使用 NumPy 和 SciPy 的生产版本：
+
+```python
 import numpy as np
 
 rng = np.random.default_rng(42)
@@ -497,7 +617,9 @@ scaled = logits / temperature
 probs = np.exp(scaled - scaled.max()) / np.exp(scaled - scaled.max()).sum()
 token = rng.choice(len(logits), p=probs)
 print(f"Sampled token index: {token}")
-```对于大规模的 MCMC，使用专用库：
+```
+
+对于大规模的 MCMC，使用专用库：
 - PyMC：使用 NUTS（自适应 HMC）进行完整的贝叶斯建模
 - emcee：集成 MCMC 采样器
 - NumPyro/JAX：加速 GPU 的 MCMC

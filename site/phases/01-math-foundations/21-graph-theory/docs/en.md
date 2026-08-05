@@ -49,28 +49,40 @@
 
 ### 邻接矩阵
 
-邻接矩阵 $ A $ 是核心表示。对于有 $ n $ 个节点的图：```
+邻接矩阵 $ A $ 是核心表示。对于有 $ n $ 个节点的图：
+
+```
 A[i][j] = 1    if there is an edge from node i to node j
 A[i][j] = 0    otherwise
-```对于无向图，A 是对称的：A[i][j] = A[j][i]。对于有向图，A[i][j] = 边 (i, j) 的权重。
+```
 
-**示例 -- 一个三角形：**```
+对于无向图，A 是对称的：A[i][j] = A[j][i]。对于有向图，A[i][j] = 边 (i, j) 的权重。
+
+**示例 -- 一个三角形：**
+
+```
 Nodes: 0, 1, 2
 Edges: (0,1), (1,2), (0,2)
 
 A = [[0, 1, 1],
      [1, 0, 1],
      [1, 1, 0]]
-```邻接矩阵是每个图神经网络（GNN）的输入。对邻接矩阵 $ A $ 进行矩阵运算，对应于对图进行操作。
+```
+
+邻接矩阵是每个图神经网络（GNN）的输入。对邻接矩阵 $ A $ 进行矩阵运算，对应于对图进行操作。
 
 ### 度数
 
 节点的度数是指连接到该节点的边的数量。对于有向图，有入度（指向该节点的边）和出度（从该节点出发的边）。
 
-度数矩阵 $ D $ 是一个对角矩阵：```
+度数矩阵 $ D $ 是一个对角矩阵：
+
+```
 D[i][i] = degree of node i
 D[i][j] = 0    for i != j
-```对于三角形示例：D = diag(2, 2, 2)，因为每个节点都连接到另外两个节点。
+```
+
+对于三角形示例：D = diag(2, 2, 2)，因为每个节点都连接到另外两个节点。
 
 度数告诉你节点的重要性。高度数 = 集散节点。网络的度数分布揭示了其结构。社交网络遵循幂律分布（少数集散节点，多数叶子节点）。随机图的度数呈泊松分布。
 
@@ -78,7 +90,9 @@ D[i][j] = 0    for i != j
 
 两种基本的图遍历算法。你都需要它们。
 
-**广度优先搜索（BFS）：** 先探索所有邻居，然后是邻居的邻居。使用队列（先进先出）。```
+**广度优先搜索（BFS）：** 先探索所有邻居，然后是邻居的邻居。使用队列（先进先出）。
+
+```
 BFS from node 0:
   Visit 0
   Queue: [1, 2]        (neighbors of 0)
@@ -90,7 +104,9 @@ BFS from node 0:
   Queue: []            (done)
 ```BFS 在无权图中找到最短路径。从起点到任意节点的距离等于该节点首次被发现的 BFS 层级。这就是为什么 BFS 被用于社交网络中的跳数（hop-count）距离。
 
-**深度优先搜索（DFS）：** 尽可能深入搜索，然后再回溯。使用栈（LIFO）或递归。```
+**深度优先搜索（DFS）：** 尽可能深入搜索，然后再回溯。使用栈（LIFO）或递归。
+
+```
 DFS from node 0:
   Visit 0
   Stack: [1, 2]        (neighbors of 0)
@@ -114,11 +130,15 @@ DFS from node 0:
 
 L = D - A。谱图论中最重要的矩阵。
 
-对于三角形：```
+对于三角形：
+
+```
 D = [[2, 0, 0],    A = [[0, 1, 1],    L = [[2, -1, -1],
      [0, 2, 0],         [1, 0, 1],         [-1, 2, -1],
      [0, 0, 2]]         [1, 1, 0]]         [-1, -1,  2]]
-```拉普拉斯矩阵具有显著的特性：
+```
+
+拉普拉斯矩阵具有显著的特性：
 
 1. **L 是半正定矩阵。** 所有特征值都 >= 0。
 
@@ -126,7 +146,9 @@ D = [[2, 0, 0],    A = [[0, 1, 1],    L = [[2, -1, -1],
 
 3. **最小的非零特征值（Fiedler 值）衡量连通性。** 较大的 Fiedler 值意味着图的连通性较好。较小的 Fiedler 值意味着图存在较弱的连接点——瓶颈。
 
-4. **Fiedler 值的特征向量（Fiedler 向量）揭示了最佳分割方式。** 正值的节点归为一组，负值的节点归为另一组。这就是谱聚类。```mermaid
+4. **Fiedler 值的特征向量（Fiedler 向量）揭示了最佳分割方式。** 正值的节点归为一组，负值的节点归为另一组。这就是谱聚类。
+
+```mermaid
 graph TD
     subgraph "Graph to Matrices"
         G["Graph G"] --> A["Adjacency Matrix A"]
@@ -141,7 +163,9 @@ graph TD
         E --> F["Connectivity (Fiedler value)"]
         V --> S["Spectral clustering"]
     end
-```### 光谱特性
+```
+
+### 光谱特性
 
 邻接矩阵和拉普拉斯矩阵的特征值可以揭示结构特性，而无需任何遍历。
 
@@ -157,15 +181,29 @@ graph TD
 
 ### 消息传递
 
-图神经网络的核心操作。每个节点从其邻居收集消息，对它们进行聚合，并更新自己的状态。```
-h_v^(k+1) = UPDATE(h_v^(k), AGGREGATE({h_u^(k) : u in neighbors(v)}))
-```最简单的情况下，AGGREGATE = mean，且 UPDATE = 线性变换 + 激活函数：```
-h_v^(k+1) = sigma(W * mean({h_u^(k) : u in neighbors(v)}))
-```这是矩阵乘法的另一种表现形式。如果 H 是所有节点特征的矩阵，A 是邻接矩阵：```
-H^(k+1) = sigma(A_norm * H^(k) * W)
-```其中 A_norm 是归一化邻接矩阵（每行之和为 1）。
+图神经网络的核心操作。每个节点从其邻居收集消息，对它们进行聚合，并更新自己的状态。
 
-一轮消息传递使每个节点能够“看到”其直接邻居。两轮则让它看到邻居的邻居。K 轮可以让每个节点获取其 K 跳邻域内的信息。```mermaid
+```
+h_v^(k+1) = UPDATE(h_v^(k), AGGREGATE({h_u^(k) : u in neighbors(v)}))
+```
+
+最简单的情况下，AGGREGATE = mean，且 UPDATE = 线性变换 + 激活函数：
+
+```
+h_v^(k+1) = sigma(W * mean({h_u^(k) : u in neighbors(v)}))
+```
+
+这是矩阵乘法的另一种表现形式。如果 H 是所有节点特征的矩阵，A 是邻接矩阵：
+
+```
+H^(k+1) = sigma(A_norm * H^(k) * W)
+```
+
+其中 A_norm 是归一化邻接矩阵（每行之和为 1）。
+
+一轮消息传递使每个节点能够“看到”其直接邻居。两轮则让它看到邻居的邻居。K 轮可以让每个节点获取其 K 跳邻域内的信息。
+
+```mermaid
 graph LR
     subgraph "Round 0"
         A0["Node A: [1,0]"]
@@ -184,7 +222,9 @@ graph LR
     C0 --> B1
     A0 --> C1
     B0 --> C1
-```### 概念和机器学习应用
+```
+
+### 概念和机器学习应用
 
 | 概念 | 机器学习应用 |
 |---------|---------------|
@@ -195,11 +235,17 @@ graph LR
 | 消息传递 | 图神经网络层（GCN，GAT，GraphSAGE） |
 | L 的特征值 | 社区发现，图划分 |
 | 谱聚类 | 无监督节点分组 |
-| PageRank | 节点重要性，网页搜索 |```figure
-graph-degree-distribution
-```## 构建它
+| PageRank | 节点重要性，网页搜索 |
 
-### 步骤 1：从零开始编写图类```python
+```figure
+graph-degree-distribution
+```
+
+## 构建它
+
+### 步骤 1：从零开始编写图类
+
+```python
 class Graph:
     def __init__(self, n_nodes, directed=False):
         self.n = n_nodes
@@ -234,9 +280,13 @@ class Graph:
 
     def laplacian(self):
         return self.degree_matrix() - self.adjacency_matrix()
-```邻接表 (`self.adj`) 高效地存储了邻居信息。邻接矩阵转换使用 numpy，因为所有的谱操作都需要它。
+```
 
-### 步骤 2：BFS 和 DFS```python
+邻接表 (`self.adj`) 高效地存储了邻居信息。邻接矩阵转换使用 numpy，因为所有的谱操作都需要它。
+
+### 步骤 2：BFS 和 DFS
+
+```python
 from collections import deque
 
 def bfs(graph, start):
@@ -272,7 +322,9 @@ def dfs(graph, start):
     return order
 ```BFS 使用一个双端队列（deque）以实现 O(1) 的 popleft 操作。DFS 使用一个列表作为栈。两者都恰好访问每个节点一次 -- 时间复杂度为 O(V + E)。
 
-### 第三步：连通分量和拉普拉斯矩阵的特征值```python
+### 第三步：连通分量和拉普拉斯矩阵的特征值
+
+```python
 def connected_components(graph):
     visited = set()
     components = []
@@ -289,9 +341,13 @@ def laplacian_eigenvalues(graph):
     L = graph.laplacian()
     eigenvalues = np.linalg.eigvalsh(L)
     return eigenvalues
-````eigvalsh` 用于对称矩阵 -- 拉普拉斯矩阵对于无向图总是对称的。它按升序返回特征值。统计零的个数可以找到连通分量的数量。
+```
 
-### 步骤 4：谱聚类```python
+`eigvalsh` 用于对称矩阵 -- 拉普拉斯矩阵对于无向图总是对称的。它按升序返回特征值。统计零的个数可以找到连通分量的数量。
+
+### 步骤 4：谱聚类
+
+```python
 def spectral_clustering(graph, k=2):
     import numpy as np
     L = graph.laplacian()
@@ -305,9 +361,13 @@ def spectral_clustering(graph, k=2):
         else:
             labels[i] = 1
     return labels
-```对于 k=2，Fiedler 向量的符号将图分成两个簇。对于 k>2，你会对前 k 个特征向量（排除平凡的全 1 特征向量）运行 k-means 算法。
+```
 
-### 步骤 5：消息传递```python
+对于 k=2，Fiedler 向量的符号将图分成两个簇。对于 k>2，你会对前 k 个特征向量（排除平凡的全 1 特征向量）运行 k-means 算法。
+
+### 步骤 5：消息传递
+
+```python
 def message_passing(graph, features, weight_matrix):
     import numpy as np
     A = graph.adjacency_matrix()
@@ -317,11 +377,15 @@ def message_passing(graph, features, weight_matrix):
     aggregated = A_norm @ features
     output = aggregated @ weight_matrix
     return output
-```这是 GNN 消息传递的一轮。每个节点的新特征是其邻居特征的加权平均值，经过权重矩阵变换。堆叠多轮传递，可以进一步传播信息。
+```
+
+这是 GNN 消息传递的一轮。每个节点的新特征是其邻居特征的加权平均值，经过权重矩阵变换。堆叠多轮传递，可以进一步传播信息。
 
 ## 使用方法
 
-使用 networkx 和 numpy，相同的操作只需一行代码：```python
+使用 networkx 和 numpy，相同的操作只需一行代码：
+
+```python
 import networkx as nx
 import numpy as np
 
@@ -342,7 +406,9 @@ top_nodes = sorted(pr.items(), key=lambda x: x[1], reverse=True)[:5]
 print(f"Top 5 PageRank nodes: {top_nodes}")
 ```networkx 使用优化的 C 后端处理任意大小的图。可以在生产环境中使用它。使用你从零开始的实现来理解它是如何工作的。
 
-### numpy 谱分析```python
+### numpy 谱分析
+
+```python
 import numpy as np
 
 A = np.array([
@@ -386,9 +452,13 @@ print(f"Cluster B: {group_b}")
 | 连通组件 | 预处理，处理不连通图 |
 | PageRank | 节点重要性排序，注意力初始化 |
 
-GNNs 值得特别提及。GCN（Kipf & Welling，2017）中的图卷积操作使用带有自环的邻接矩阵，A_hat = A + I：```text
+GNNs 值得特别提及。GCN（Kipf & Welling，2017）中的图卷积操作使用带有自环的邻接矩阵，A_hat = A + I：
+
+```text
 H^(l+1) = sigma(D_hat^(-1/2) * A_hat * D_hat^(-1/2) * H^(l) * W^(l))
-```其中，A_hat = A + I（邻接矩阵加自环），而 D_hat 是 A_hat 的度矩阵。自环确保在聚合过程中每个节点都包含自身的特征。这正好是具有对称归一化的消息传递。D_hat^(-1/2) * A_hat * D_hat^(-1/2) 是归一化的邻接矩阵。拉普拉斯矩阵的出现是因为这种归一化与 L_sym = I - D^(-1/2) * A * D^(-1/2) 相关。理解拉普拉斯矩阵意味着理解为什么图卷积网络（GCNs）能起作用。
+```
+
+其中，A_hat = A + I（邻接矩阵加自环），而 D_hat 是 A_hat 的度矩阵。自环确保在聚合过程中每个节点都包含自身的特征。这正好是具有对称归一化的消息传递。D_hat^(-1/2) * A_hat * D_hat^(-1/2) 是归一化的邻接矩阵。拉普拉斯矩阵的出现是因为这种归一化与 L_sym = I - D^(-1/2) * A * D^(-1/2) 相关。理解拉普拉斯矩阵意味着理解为什么图卷积网络（GCNs）能起作用。
 
 ## 练习
 

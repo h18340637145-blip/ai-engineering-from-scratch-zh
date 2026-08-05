@@ -24,14 +24,18 @@
 
 AI 工程编辑器的配置需要以下五个要素：
 
- /think```mermaid
+ /think
+
+```mermaid
 graph TD
     L5["5. Remote Development<br/>SSH into GPU boxes, cloud VMs"] --> L4
     L4["4. Terminal Integration<br/>Run scripts, debug, monitor GPU"] --> L3
     L3["3. AI-Specific Settings<br/>Auto-format, type checking, rulers"] --> L2
     L2["2. Extensions<br/>Python, Jupyter, Pylance, GitLens"] --> L1
     L1["1. Base Editor<br/>VS Code — free, extensible, universal"]
-```## 构建它
+```
+
+## 构建它
 
 ### 步骤1：安装VS Code
 
@@ -41,15 +45,21 @@ VS Code是推荐的编辑器。它是免费的，可在所有操作系统上运�
 
 从终端验证：
 
- /think```bash
+ /think
+
+```bash
 code --version
-```如果在 macOS 上未找到 `code`，请打开 VS Code，按下 `Cmd+Shift+P`，输入 "Shell Command"，然后选择 "Install 'code' command in PATH"。
+```
+
+如果在 macOS 上未找到 `code`，请打开 VS Code，按下 `Cmd+Shift+P`，输入 "Shell Command"，然后选择 "Install 'code' command in PATH"。
 
 ### 步骤2：安装必要的扩展
 
 在 VS Code 中打开集成终端 (`` Ctrl+` `` 在所有平台上)，并安装对 AI 工作至关重要的扩展：
 
- /think```bash
+ /think
+
+```bash
 code --install-extension ms-python.python
 code --install-extension ms-python.vscode-pylance
 code --install-extension ms-toolsai.jupyter
@@ -58,7 +68,9 @@ code --install-extension ms-vscode-remote.remote-ssh
 code --install-extension ms-python.debugpy
 code --install-extension ms-python.black-formatter
 code --install-extension charliermarsh.ruff
-```每个扩展的功能：
+```
+
+每个扩展的功能：
 
 | 扩展 | 原因 |
 |------|-----|
@@ -77,7 +89,9 @@ code --install-extension charliermarsh.ruff
 
 从本课的 `code/.vscode/settings.json` 复制设置，或通过 `Settings > Open Settings (JSON)` 手动应用它们。
 
-AI 工作的关键设置：```jsonc
+AI 工作的关键设置：
+
+```jsonc
 {
     "python.analysis.typeCheckingMode": "basic",
     "editor.formatOnSave": true,
@@ -85,7 +99,9 @@ AI 工作的关键设置：```jsonc
     "notebook.output.scrolling": true,
     "files.autoSave": "afterDelay"
 }
-```为何这些事项重要：
+```
+
+为何这些事项重要：
 
 - **基本类型检查**：在运行之前捕获错误的参数类型。节省调试张量形状不匹配和错误API参数的时间。
 - **保存时格式化**：再也不用担心格式问题。Black会处理。
@@ -99,14 +115,18 @@ VS Code的集成终端是运行训练脚本、监控GPU和管理环境的地方�
 
 正确设置：
 
- /think```jsonc
+ /think
+
+```jsonc
 {
     "terminal.integrated.defaultProfile.osx": "zsh",
     "terminal.integrated.defaultProfile.linux": "bash",
     "terminal.integrated.fontSize": 13,
     "terminal.integrated.scrollback": 10000
 }
-```有用的快捷键：
+```
+
+有用的快捷键：
 
 | 操作 | macOS | Linux/Windows |
 |------|-------|--------------|
@@ -129,7 +149,9 @@ VS Code的集成终端是运行训练脚本、监控GPU和管理环境的地方�
 
 要实现无密码访问，请设置SSH密钥：
 
- /home/username/.ssh/id_rsa```bash
+ /home/username/.ssh/id_rsa
+
+```bash
 ssh-keygen -t ed25519 -C "your-email@example.com"
 ssh-copy-id user@your-gpu-box-ip
 ```
@@ -142,7 +164,9 @@ Host gpu-box
     User ubuntu
     IdentityFile ~/.ssh/id_ed25519
     ForwardAgent yes
-```现在 `Remote-SSH: Connect to Host > gpu-box` 可以立即连接。
+```
+
+现在 `Remote-SSH: Connect to Host > gpu-box` 可以立即连接。
 
 ## 替代方案
 

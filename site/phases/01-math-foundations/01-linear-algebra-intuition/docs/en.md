@@ -41,7 +41,9 @@
 
 ### 矩阵是变换
 
-矩阵将一个向量转换为另一个向量。它可以旋转、缩放、拉伸或投影。```mermaid
+矩阵将一个向量转换为另一个向量。它可以旋转、缩放、拉伸或投影。
+
+```mermaid
 graph LR
     subgraph Before
         A["Point A"]
@@ -58,20 +60,26 @@ graph LR
     B --> M
     M --> A2
     M --> B2
-```在人工智能中，矩阵就是模型：
+```
+
+在人工智能中，矩阵就是模型：
 - 神经网络权重 → 将输入转换为输出的矩阵
 - 注意力分数 → 决定关注什么的矩阵
 - 嵌入 → 将单词映射到向量的矩阵
 
 ### 点积衡量相似性
 
-两个向量的点积告诉你它们有多相似。```
+两个向量的点积告诉你它们有多相似。
+
+```
 a · b = a₁×b₁ + a₂×b₂ + ... + aₙ×bₙ
 
 Same direction:      a · b > 0  (similar)
 Perpendicular:       a · b = 0  (unrelated)
 Opposite direction:  a · b < 0  (dissimilar)
-```这实际上就是搜索引擎、推荐系统和 RAG 的工作原理——找到点积高的向量。
+```
+
+这实际上就是搜索引擎、推荐系统和 RAG 的工作原理——找到点积高的向量。
 
 ### 线性无关
 
@@ -79,7 +87,9 @@ Opposite direction:  a · b < 0  (dissimilar)
 
 对 AI 的重要性：你的特征矩阵应该具有线性无关的列。如果两个特征完全相关（线性相关），模型就无法区分它们的影响。这在回归中会导致多重共线性——权重矩阵变得不稳定，微小的输入变化会导致输出的剧烈波动。
 
-**具体例子：**```
+**具体例子：**
+
+```
 v1 = [1, 0, 0]
 v2 = [0, 1, 0]
 v3 = [2, 1, 0]   # v3 = 2*v1 + v2
@@ -107,14 +117,20 @@ v3 = [2, 1, 0]   # v3 = 2*v1 + v2
 
 ### 投影
 
-将向量 **a** 投影到向量 **b** 上，得到 **a** 在 **b** 方向上的分量：```
+将向量 **a** 投影到向量 **b** 上，得到 **a** 在 **b** 方向上的分量：
+
+```
 proj_b(a) = (a dot b / b dot b) * b
-```残差（a - proj_b(a)）与 b 垂直。这种正交分解是最小二乘拟合的基础。
+```
+
+残差（a - proj_b(a)）与 b 垂直。这种正交分解是最小二乘拟合的基础。
 
 投影在机器学习中无处不在：
 - 线性回归最小化观测值到列空间的距离 —— 解就是一种投影
 - 主成分分析（PCA）将数据投影到方差最大的方向上
-- 变压器中的注意力机制计算查询在键上的投影```mermaid
+- 变压器中的注意力机制计算查询在键上的投影
+
+```mermaid
 graph LR
     subgraph Projection["Projection of a onto b"]
         direction TB
@@ -137,7 +153,9 @@ proj_b(a) = (3*1 + 4*0) / (1*1 + 0*0) * [1, 0] = 3 * [1, 0] = [3, 0]
 1. 取第一个向量，将其归一化
 2. 取第二个向量，减去其在第一个向量上的投影，然后归一化
 3. 取第三个向量，减去其在所有先前向量上的投影，然后归一化
-4. 对剩余的向量重复上述步骤```
+4. 对剩余的向量重复上述步骤
+
+```
 Input:  v1, v2, v3, ... (linearly independent)
 
 u1 = v1 / |v1|
@@ -149,14 +167,22 @@ w3 = v3 - (v3 dot u1) * u1 - (v3 dot u2) * u2
 u3 = w3 / |w3|
 
 Output: u1, u2, u3, ... (orthonormal basis)
-```这是 QR 分解在内部的工作方式。Q 是正交基，R 捕获投影系数。QR 分解用于：
+```
+
+这是 QR 分解在内部的工作方式。Q 是正交基，R 捕获投影系数。QR 分解用于：
 - 解线性方程组（比高斯消元更稳定）
 - 计算特征值（QR 算法）
-- 最小二乘回归（标准数值方法）```figure
-eigen-directions
-```## 构建它
+- 最小二乘回归（标准数值方法）
 
-### 第一步：从零开始构建向量（Python）```python
+```figure
+eigen-directions
+```
+
+## 构建它
+
+### 第一步：从零开始构建向量（Python）
+
+```python
 class Vector:
     def __init__(self, components):
         self.components = list(components)
@@ -192,7 +218,11 @@ print(f"a + b = {a + b}")
 print(f"a · b = {a.dot(b)}")
 print(f"|a| = {a.magnitude():.4f}")
 print(f"cosine similarity = {a.cosine_similarity(b):.4f}")
-```### 步骤 2：从零开始创建矩阵（Python）```python
+```
+
+### 步骤 2：从零开始创建矩阵（Python）
+
+```python
 class Matrix:
     def __init__(self, rows):
         self.rows = [list(row) for row in rows]
@@ -231,7 +261,11 @@ point = Vector([3, 1])
 rotated = rotation_90 @ point
 print(f"Original: {point}")
 print(f"Rotated 90°: {rotated}")
-```### 步骤 3：这对 AI 的重要性```python
+```
+
+### 步骤 3：这对 AI 的重要性
+
+```python
 import random
 
 random.seed(42)
@@ -242,7 +276,11 @@ output = weights @ input_vector
 print(f"Input (3D): {input_vector}")
 print(f"Output (2D): {output}")
 print("This is what a neural network layer does -- matrix multiplication.")
-```### 步骤 4：Julia 版本```julia
+```
+
+### 步骤 4：Julia 版本
+
+```julia
 a = [1.0, 2.0, 3.0]
 b = [4.0, 5.0, 6.0]
 
@@ -256,7 +294,11 @@ W = [0.1 -0.2 0.3; 0.4 0.5 -0.1]
 x = [1.0, 0.5, -0.3]
 println("Wx = ", W * x)
 println("This is a neural network layer.")
-```### 步骤 5：从零开始的线性无关性与投影（Python）```python
+```
+
+### 步骤 5：从零开始的线性无关性与投影（Python）
+
+```python
 def is_linearly_independent(vectors):
     n = len(vectors)
     dim = len(vectors[0].components)
@@ -311,9 +353,13 @@ for i, u in enumerate(basis):
 print(f"u1 · u2 = {basis[0].dot(basis[1]):.6f}")
 print(f"u1 · u3 = {basis[0].dot(basis[2]):.6f}")
 print(f"u2 · u3 = {basis[1].dot(basis[2]):.6f}")
-```## 使用它
+```
 
-现在用 NumPy 来做同样的事情 -- 实际上你将会在实践中使用的方法：```python
+## 使用它
+
+现在用 NumPy 来做同样的事情 -- 实际上你将会在实践中使用的方法：
+
+```python
 import numpy as np
 
 a = np.array([1, 2, 3], dtype=float)
@@ -327,7 +373,11 @@ print(f"cosine = {np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)):.4f}")
 W = np.random.randn(2, 3) * 0.1
 x = np.array([1.0, 0.5, -0.3])
 print(f"Wx = {W @ x}")
-```### 排名、投影和 QR 分解（使用 NumPy）```python
+```
+
+### 排名、投影和 QR 分解（使用 NumPy）
+
+```python
 import numpy as np
 
 A = np.array([[1, 2], [2, 4]])
@@ -341,7 +391,11 @@ print(f"Projection of {a} onto {b}: {proj}")
 Q, R = np.linalg.qr(np.random.randn(3, 3))
 print(f"Q is orthogonal: {np.allclose(Q @ Q.T, np.eye(3))}")
 print(f"R is upper triangular: {np.allclose(R, np.triu(R))}")
-```### PyTorch -- 张量是带有自动微分的向量```python
+```
+
+### PyTorch -- 张量是带有自动微分的向量
+
+```python
 import torch
 
 x = torch.randn(3, requires_grad=True)
@@ -354,7 +408,9 @@ print(f"x = {x.data}")
 print(f"y = {y.data}")
 print(f"dot product = {similarity.item():.4f}")
 print(f"d(dot)/dx = {x.grad}")
-```点积关于x的梯度仅仅是y。PyTorch自动计算了这个梯度。神经网络中的每个操作都是由这样的操作构建而成的——矩阵乘法、点积、投影——而自动微分会追踪所有这些操作的梯度。
+```
+
+点积关于x的梯度仅仅是y。PyTorch自动计算了这个梯度。神经网络中的每个操作都是由这样的操作构建而成的——矩阵乘法、点积、投影——而自动微分会追踪所有这些操作的梯度。
 
 你刚刚从零开始实现了NumPy用一行代码完成的功能。现在你知道了幕后到底发生了什么。
 

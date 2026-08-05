@@ -39,26 +39,38 @@
 
 在 x=2 处，斜率为 4。如果你将 x 稍微向右移动一点，y 会增加大约 4 倍的量。在 x=0 处，斜率为 0。你位于碗的底部。
 
-正式定义：```
+正式定义：
+
+```
 f'(x) = lim   f(x + h) - f(x)
         h->0  -----------------
                      h
-```在代码中，你可以跳过这个限制，直接使用一个非常小的 h。这就是数值导数。
+```
+
+在代码中，你可以跳过这个限制，直接使用一个非常小的 h。这就是数值导数。
 
 ### 偏导数：一次一个变量
 
-实际的函数有很多输入。神经网络的损失函数依赖于成千上万的权重。偏导数将所有变量保持不变，除了一个变量，然后对这个变量求导。```
+实际的函数有很多输入。神经网络的损失函数依赖于成千上万的权重。偏导数将所有变量保持不变，除了一个变量，然后对这个变量求导。
+
+```
 f(x, y) = x^2 + 3xy + y^2
 
 df/dx = 2x + 3y     (treat y as a constant)
 df/dy = 3x + 2y     (treat x as a constant)
-```每个偏导数回答的问题是：如果我仅仅微调这个权重，损失会如何变化？
+```
+
+每个偏导数回答的问题是：如果我仅仅微调这个权重，损失会如何变化？
 
 ### 梯度：所有偏导数的向量
 
-梯度将每一个偏导数收集到一个向量中。对于一个函数 f(x, y, z)，梯度是：```
+梯度将每一个偏导数收集到一个向量中。对于一个函数 f(x, y, z)，梯度是：
+
+```
 grad f = [ df/dx, df/dy, df/dz ]
-```梯度指向最陡上升的方向。为了最小化一个函数，应朝相反方向前进。
+```
+
+梯度指向最陡上升的方向。为了最小化一个函数，应朝相反方向前进。
 
 **f(x,y) = x^2 + y^2 的等高线图：**
 
@@ -73,7 +85,9 @@ grad f = [ df/dx, df/dy, df/dz ]
 
 ### 与优化的联系
 
-训练神经网络是优化。你有一个损失函数 L(w1, w2, ..., wn)，用于衡量模型的错误程度。你希望将其最小化。```
+训练神经网络是优化。你有一个损失函数 L(w1, w2, ..., wn)，用于衡量模型的错误程度。你希望将其最小化。
+
+```
 Gradient descent update rule:
 
   w_new = w_old - learning_rate * dL/dw
@@ -82,7 +96,9 @@ For every weight:
   1. Compute the partial derivative of loss with respect to that weight
   2. Subtract a small multiple of it from the weight
   3. Repeat
-```学习率控制步长。太大了会过冲，太小了则会缓慢爬行。
+```
+
+学习率控制步长。太大了会过冲，太小了则会缓慢爬行。
 
 **损失景观（1D切片）：**
 
@@ -102,7 +118,9 @@ For every weight:
 
 解析：手动应用微积分规则。对于 f(x) = x^2，导数是 f'(x) = 2x。精确。快速。
 
-数值：使用定义进行近似。对于一个很小的 h，计算 f(x+h) 和 f(x-h)，然后使用差值。```
+数值：使用定义进行近似。对于一个很小的 h，计算 f(x+h) 和 f(x-h)，然后使用差值。
+
+```
 Numerical (central difference):
 
 f'(x) ~= f(x + h) - f(x - h)
@@ -110,11 +128,15 @@ f'(x) ~= f(x + h) - f(x - h)
                   2h
 
 h = 0.0001 works well in practice
-```数值导数速度较慢，但适用于任何函数。解析导数速度快，但需要你推导公式。神经网络框架使用第三种方法：自动微分，它能够机械地计算精确的导数。你将在第三阶段看到这一点。
+```
+
+数值导数速度较慢，但适用于任何函数。解析导数速度快，但需要你推导公式。神经网络框架使用第三种方法：自动微分，它能够机械地计算精确的导数。你将在第三阶段看到这一点。
 
 ### 手动计算简单函数的导数
 
-这些是你会在机器学习中反复看到的导数。```
+这些是你会在机器学习中反复看到的导数。
+
+```
 Function        Derivative       Used in
 --------        ----------       -------
 f(x) = x^2     f'(x) = 2x      Loss functions (MSE)
@@ -124,7 +146,11 @@ f(x) = wx + b  f'(w) = x        Linear layer (gradient w.r.t. weight)
 f(x) = e^x     f'(x) = e^x     Softmax, attention
 f(x) = ln(x)   f'(x) = 1/x     Cross-entropy loss
 f(x) = 1/(1+e^-x)  f'(x) = f(x)(1-f(x))   Sigmoid activation
-```对于 f(x) = x^2:```
+```
+
+对于 f(x) = x^2:
+
+```
 f(x) = x^2    f'(x) = 2x
 
   x    f(x)   f'(x)   meaning
@@ -133,29 +159,45 @@ f(x) = x^2    f'(x) = 2x
    0    0       0      flat (minimum!)
    1    1       2      slope tilts right (increasing)
    2    4       4      slope tilts right (increasing)
-```对于 f(w) = wx + b，其中 x=3，b=1：```
+```
+
+对于 f(w) = wx + b，其中 x=3，b=1：
+
+```
 f(w) = 3w + 1    f'(w) = 3
 
 The derivative with respect to w is just x.
 If x is big, a small change in w causes a big change in output.
-```### 链式法则
+```
 
-当函数被组合时，链式法则告诉你如何进行求导。```
+### 链式法则
+
+当函数被组合时，链式法则告诉你如何进行求导。
+
+```
 If y = f(g(x)), then dy/dx = f'(g(x)) * g'(x)
 
 Example: y = (3x + 1)^2
   outer: f(u) = u^2       f'(u) = 2u
   inner: g(x) = 3x + 1    g'(x) = 3
   dy/dx = 2(3x + 1) * 3 = 6(3x + 1)
-```神经网络是由一系列函数组成的链条：输入 -> 线性 -> 激活 -> 线性 -> 激活 -> 损失。反向传播是从输出到输入反复应用链式法则。这就是整个算法。
+```
+
+神经网络是由一系列函数组成的链条：输入 -> 线性 -> 激活 -> 线性 -> 激活 -> 损失。反向传播是从输出到输入反复应用链式法则。这就是整个算法。
 
 ### Hessian 矩阵
 
 梯度告诉你斜率。Hessian 矩阵告诉你曲率。
 
-Hessian 矩阵是二阶偏导数的矩阵。对于一个函数 f(x1, x2, ..., xn)，Hessian 矩阵的第 (i, j) 个元素是：```
+Hessian 矩阵是二阶偏导数的矩阵。对于一个函数 f(x1, x2, ..., xn)，Hessian 矩阵的第 (i, j) 个元素是：
+
+```
 H[i][j] = d^2f / (dx_i * dx_j)
-```对于一个二元函数 f(x, y):```
+```
+
+对于一个二元函数 f(x, y):
+
+```
 H = | d^2f/dx^2    d^2f/dxdy |
     | d^2f/dydx    d^2f/dy^2 |
 ```**Hessian 在临界点（梯度 = 0）处告诉你的信息：**
@@ -166,7 +208,9 @@ H = | d^2f/dx^2    d^2f/dxdy |
 | 负定（所有特征值 < 0） | 局部最大值 | 向下开口的碗 |
 | 不定（混合特征值） | 马鞍点 | 马鞍形状 |
 
-**示例：** f(x, y) = x^2 - y^2（一个马鞍函数）```
+**示例：** f(x, y) = x^2 - y^2（一个马鞍函数）
+
+```
 df/dx = 2x       df/dy = -2y
 d^2f/dx^2 = 2    d^2f/dy^2 = -2    d^2f/dxdy = 0
 
@@ -175,7 +219,11 @@ H = | 2   0 |
 
 Eigenvalues: 2 and -2 (one positive, one negative)
 --> Saddle point at (0, 0)
-```与 f(x, y) = x² + y²（一个碗）进行比较：```
+```
+
+与 f(x, y) = x² + y²（一个碗）进行比较：
+
+```
 H = | 2  0 |
     | 0  2 |
 
@@ -183,10 +231,14 @@ Eigenvalues: 2 and 2 (both positive)
 --> Local minimum at (0, 0)
 ```**为什么 Hessian 在机器学习中很重要：**
 
-牛顿法使用 Hessian 来进行比梯度下降更好的优化步骤。它不仅仅跟随斜率，还考虑了曲率：```
+牛顿法使用 Hessian 来进行比梯度下降更好的优化步骤。它不仅仅跟随斜率，还考虑了曲率：
+
+```
 Newton's update:    w_new = w_old - H^(-1) * gradient
 Gradient descent:   w_new = w_old - lr * gradient
-```牛顿法收敛得更快，因为海森矩阵对梯度进行了“重新缩放”——梯度陡峭的方向会取更小的步长，而梯度平缓的方向会取更大的步长。
+```
+
+牛顿法收敛得更快，因为海森矩阵对梯度进行了“重新缩放”——梯度陡峭的方向会取更小的步长，而梯度平缓的方向会取更大的步长。
 
 问题在于：对于一个有 N 个参数的神经网络，海森矩阵是 N x N 的。一个有 100 万个参数的模型将需要一个包含 1 万亿个元素的矩阵。这就是为什么我们要使用近似方法。
 
@@ -204,9 +256,13 @@ Gradient descent:   w_new = w_old - lr * gradient
 
 任何光滑函数都可以用多项式在局部进行近似：
 
-$$ f(x) \approx f(a) + f'(a)(x - a) + \frac{f''(a)}{2}(x - a)^2 + \cdots $$```
+$$ f(x) \approx f(a) + f'(a)(x - a) + \frac{f''(a)}{2}(x - a)^2 + \cdots $$
+
+```
 f(x + h) = f(x) + f'(x)*h + (1/2)*f''(x)*h^2 + (1/6)*f'''(x)*h^3 + ...
-```包含的项越多，近似效果越好 —— 但这种近似只在点 x 附近有效。
+```
+
+包含的项越多，近似效果越好 —— 但这种近似只在点 x 附近有效。
 
 **泰勒级数对机器学习的重要性：**
 
@@ -214,25 +270,16 @@ f(x + h) = f(x) + f'(x)*h + (1/2)*f''(x)*h^2 + (1/6)*f'''(x)*h^3 + ...
 
 - **二阶泰勒展开 = 牛顿法。** 使用 f(x + h) ~ f(x) + f'(x)*h + (1/2)*f''(x)*h^2 时，你会得到一个二次模型。最小化它得到 h = -f'(x)/f''(x) —— 这就是牛顿法的步长。
 
-- **损失函数设计。** 均方误差（MSE）和交叉熵是光滑的，这意味着它们的泰勒展开是良好行为的。这并非偶然。光滑的损失函数使优化过程变得可预测。```
+- **损失函数设计。** 均方误差（MSE）和交叉熵是光滑的，这意味着它们的泰勒展开是良好行为的。这并非偶然。光滑的损失函数使优化过程变得可预测。
+
+```
 Approximation order    What it captures    Optimization method
 -------------------    -----------------   -------------------
 0th order (constant)   Just the value      Random search
 1st order (linear)     Slope               Gradient descent
 2nd order (quadratic)  Curvature           Newton's method
 Higher orders          Finer structure     Rarely used in ML
-```关键见解：所有基于梯度的优化实际上都是在局部近似损失函数，并朝着该近似值的最小值进行更新。
-
-### 机器学习中的积分
-
-导数告诉你变化的速率。积分用于计算累积量——曲线下的面积。
-
-在机器学习中，你很少手动计算积分，但这个概念无处不在：
-
-**概率。** 对于具有密度 p(x) 的连续随机变量：
- /no_think
-
-<>
+```
 
 关键见解：所有基于梯度的优化实际上都是在局部近似损失函数，并朝着该近似值的最小值进行更新。
 
@@ -386,21 +433,50 @@ Higher orders          Finer structure     Rarely used in ML
 在机器学习中，你很少手动计算积分，但这个概念无处不在：
 
 **概率。** 对于具有密度 p(x) 的连续随机变量：
- /no_think```
+ /no_think
+
+<>
+
+关键见解：所有基于梯度的优化实际上都是在局部近似损失函数，并朝着该近似值的最小值进行更新。
+
+### 机器学习中的积分
+
+导数告诉你变化的速率。积分用于计算累积量——曲线下的面积。
+
+在机器学习中，你很少手动计算积分，但这个概念无处不在：
+
+**概率。** 对于具有密度 p(x) 的连续随机变量：
+ /no_think
+
+```
 P(a < X < b) = integral from a to b of p(x) dx
-```概率密度曲线在 a 和 b 之间的面积是落在该范围内的概率。
+```
 
-**期望值。** 概率加权的平均结果：```
+概率密度曲线在 a 和 b 之间的面积是落在该范围内的概率。
+
+**期望值。** 概率加权的平均结果：
+
+```
 E[f(X)] = integral of f(x) * p(x) dx
-```在数据分布上的预期损失是一个积分。训练过程最小化这个积分的经验近似。
+```
 
-**KL散度。** 衡量两个分布之间的差异：```
+在数据分布上的预期损失是一个积分。训练过程最小化这个积分的经验近似。
+
+**KL散度。** 衡量两个分布之间的差异：
+
+```
 KL(p || q) = integral of p(x) * log(p(x) / q(x)) dx
-```用于变分自编码器（VAEs）、知识蒸馏和贝叶斯推理。
+```
 
-**归一化常数。** 在贝叶斯推理中：```
+用于变分自编码器（VAEs）、知识蒸馏和贝叶斯推理。
+
+**归一化常数。** 在贝叶斯推理中：
+
+```
 p(w | data) = p(data | w) * p(w) / integral of p(data | w) * p(w) dw
-```分母是对所有可能参数值的积分。它通常难以直接计算，这就是我们使用诸如MCMC和变分推断等近似方法的原因。
+```
+
+分母是对所有可能参数值的积分。它通常难以直接计算，这就是我们使用诸如MCMC和变分推断等近似方法的原因。
 
 | 积分概念 | 在机器学习中的出现位置 |
 |------|----|
@@ -412,26 +488,34 @@ p(w | data) = p(data | w) * p(w) / integral of p(data | w) * p(w) dw
 
 ### 计算图中的多变量链式法则
 
-链式法则不仅适用于线性标量函数。在神经网络中，变量会发散和合并。这里展示的是导数如何通过一个简单的前向传播过程流动：```mermaid
+链式法则不仅适用于线性标量函数。在神经网络中，变量会发散和合并。这里展示的是导数如何通过一个简单的前向传播过程流动：
+
+```mermaid
 graph LR
     x["x (input)"] -->|"*w"| z1["z1 = w*x"]
     z1 -->|"+b"| z2["z2 = w*x + b"]
     z2 -->|"sigmoid"| a["a = sigmoid(z2)"]
     a -->|"loss fn"| L["L = -(y*log(a) + (1-y)*log(1-a))"]
-```反向传播从右到左计算梯度：
+```
+
+反向传播从右到左计算梯度：
 
 ```python
 # 示例代码
 def backward_pass():
     # 计算梯度的逻辑
     pass
-``````mermaid
+```
+
+```mermaid
 graph RL
     dL["dL/dL = 1"] -->|"dL/da"| da["dL/da = -y/a + (1-y)/(1-a)"]
     da -->|"da/dz2 = a(1-a)"| dz2["dL/dz2 = dL/da * a(1-a)"]
     dz2 -->|"dz2/dw = x"| dw["dL/dw = dL/dz2 * x"]
     dz2 -->|"dz2/db = 1"| db["dL/db = dL/dz2 * 1"]
-```每条箭头都乘以局部导数。任何参数的梯度是从损失到该参数路径上所有局部导数的乘积。当路径分支和合并时，你需要对贡献进行求和（多元链式法则）。
+```
+
+每条箭头都乘以局部导数。任何参数的梯度是从损失到该参数路径上所有局部导数的乘积。当路径分支和合并时，你需要对贡献进行求和（多元链式法则）。
 
 这就是反向传播的全部内容：系统地通过计算图应用链式法则，从输出到输入。
 
@@ -452,7 +536,9 @@ graph RL
 
 ### 为什么这对神经网络很重要
 
-神经网络中的每个权重都会得到一个梯度。梯度告诉你如何调整该权重以减少损失。```mermaid
+神经网络中的每个权重都会得到一个梯度。梯度告诉你如何调整该权重以减少损失。
+
+```mermaid
 graph LR
     subgraph Forward["Forward Pass"]
         I["input"] --> W1["W1"] --> R["relu"] --> W2["W2"] --> S["softmax"] --> L["loss"]
@@ -464,15 +550,23 @@ graph RL
     subgraph Backward["Backward Pass"]
         dL["dL/dloss"] --> dW2["dL/dW2"] --> d2["..."] --> dW1["dL/dW1"]
     end
-```每次权重更新：
+```
+
+每次权重更新：
 - `W1 = W1 - lr * dL/dW1`
 - `W2 = W2 - lr * dL/dW2`
 
-前向传播计算预测值和损失。反向传播计算损失相对于每个权重的梯度。然后每个权重都向下山的方向迈出一小步。重复数百万次这样的步骤。这就是深度学习。```figure
-derivative-tangent
-```## 构建它
+前向传播计算预测值和损失。反向传播计算损失相对于每个权重的梯度。然后每个权重都向下山的方向迈出一小步。重复数百万次这样的步骤。这就是深度学习。
 
-### 第一步：从零开始构建数值导数```python
+```figure
+derivative-tangent
+```
+
+## 构建它
+
+### 第一步：从零开始构建数值导数
+
+```python
 def numerical_derivative(f, x, h=1e-7):
     return (f(x + h) - f(x - h)) / (2 * h)
 
@@ -483,9 +577,13 @@ for x in [-2, -1, 0, 1, 2]:
     numerical = numerical_derivative(f, x)
     analytical = 2 * x
     print(f"x={x:2d}  f'(x) numerical={numerical:.6f}  analytical={analytical:.1f}")
-```数值导数与解析导数在许多小数位上一致。
+```
 
-### 步骤 2：偏导数和梯度```python
+数值导数与解析导数在许多小数位上一致。
+
+### 步骤 2：偏导数和梯度
+
+```python
 def numerical_gradient(f, point, h=1e-7):
     gradient = []
     for i in range(len(point)):
@@ -504,16 +602,24 @@ def f_multi(point):
 grad = numerical_gradient(f_multi, [1.0, 2.0])
 print(f"Numerical gradient at (1,2): {[f'{g:.4f}' for g in grad]}")
 print(f"Analytical gradient at (1,2): [2*1+3*2, 3*1+2*2] = [{2*1+3*2}, {3*1+2*2}]")
-```### 步骤 3：使用梯度下降法找到 f(x) = x^2 的最小值```python
+```
+
+### 步骤 3：使用梯度下降法找到 f(x) = x^2 的最小值
+
+```python
 x = 5.0
 lr = 0.1
 for step in range(20):
     grad = 2 * x
     x = x - lr * grad
     print(f"step {step:2d}  x={x:8.4f}  f(x)={x**2:10.6f}")
-```从 x=5 开始，每一步都更接近 x=0（最小值）。
+```
 
-### 步骤 4：在二维函数上进行梯度下降```python
+从 x=5 开始，每一步都更接近 x=0（最小值）。
+
+### 步骤 4：在二维函数上进行梯度下降
+
+```python
 def f_2d(point):
     x, y = point
     return x**2 + y**2
@@ -526,7 +632,11 @@ for step in range(30):
     loss = f_2d(point)
     if step % 5 == 0 or step == 29:
         print(f"step {step:2d}  point=({point[0]:7.4f}, {point[1]:7.4f})  f={loss:.6f}")
-```### 步骤 5：比较数值导数和解析导数```python
+```
+
+### 步骤 5：比较数值导数和解析导数
+
+```python
 import math
 
 test_functions = [
@@ -545,7 +655,11 @@ for name, f, df in test_functions:
     ana = df(x)
     err = abs(num - ana)
     print(f"{name:<12} {num:12.6f} {ana:12.6f} {err:12.2e}")
-```### 步骤 6：数值计算 Hessian 矩阵```python
+```
+
+### 步骤 6：数值计算 Hessian 矩阵
+
+```python
 def hessian_2d(f, x, y, h=1e-5):
     fxx = (f(x + h, y) - 2 * f(x, y) + f(x - h, y)) / (h ** 2)
     fyy = (f(x, y + h) - 2 * f(x, y) + f(x, y - h)) / (h ** 2)
@@ -562,9 +676,13 @@ H_saddle = hessian_2d(saddle, 0.0, 0.0)
 H_bowl = hessian_2d(bowl, 0.0, 0.0)
 print(f"Saddle Hessian: {H_saddle}")  # [[2, 0], [0, -2]] -- mixed signs
 print(f"Bowl Hessian:   {H_bowl}")    # [[2, 0], [0, 2]]  -- both positive
-```鞍函数的 Hessian 矩阵的特征值为 2 和 -2（符号混合，确认为鞍点）。碗状函数的特征值为 2 和 2（两者均为正，确认为最小值）。
+```
 
-### 步骤 7：泰勒近似的应用```python
+鞍函数的 Hessian 矩阵的特征值为 2 和 -2（符号混合，确认为鞍点）。碗状函数的特征值为 2 和 2（两者均为正，确认为最小值）。
+
+### 步骤 7：泰勒近似的应用
+
+```python
 import math
 
 def taylor_approx(f, f_prime, f_double_prime, x0, h, order=2):
@@ -581,9 +699,13 @@ for h in [0.1, 0.5, 1.0, 2.0]:
     t1 = taylor_approx(math.sin, math.cos, lambda x: -math.sin(x), x0, h, order=1)
     t2 = taylor_approx(math.sin, math.cos, lambda x: -math.sin(x), x0, h, order=2)
     print(f"h={h:.1f}  sin(h)={true_val:.4f}  order1={t1:.4f}  order2={t2:.4f}")
-```在 x₀=0 附近，sin(x) ~ x（一阶泰勒展开）。对于小的 h，这种近似非常精确，但对于大的 h，这种近似就不成立了。这就是为什么梯度下降在使用小的学习率时效果最好——每一步都假设线性近似是准确的。
+```
 
-### 步骤 8：这对神经网络的意义```python
+在 x₀=0 附近，sin(x) ~ x（一阶泰勒展开）。对于小的 h，这种近似非常精确，但对于大的 h，这种近似就不成立了。这就是为什么梯度下降在使用小的学习率时效果最好——每一步都假设线性近似是准确的。
+
+### 步骤 8：这对神经网络的意义
+
+```python
 import random
 
 random.seed(42)
@@ -615,11 +737,15 @@ for epoch in range(200):
 
 print(f"\nLearned: y = {w:.2f}x + {b:.2f}")
 print(f"Actual:  y = 2x + 1")
-```每个基于梯度的训练循环都遵循以下模式：预测，计算损失，计算梯度，更新权重。
+```
+
+每个基于梯度的训练循环都遵循以下模式：预测，计算损失，计算梯度，更新权重。
 
 ## 使用它
 
-使用 NumPy，相同的操作更快且更简洁：```python
+使用 NumPy，相同的操作更快且更简洁：
+
+```python
 import numpy as np
 
 x = np.array([1, 2, 3, 4, 5], dtype=float)
@@ -638,7 +764,9 @@ for epoch in range(200):
     b -= lr * db
 
 print(f"Learned: y = {w:.2f}x + {b:.2f}")
-```你刚刚从零开始构建了梯度下降。PyTorch 会自动计算梯度，但更新循环是相同的。
+```
+
+你刚刚从零开始构建了梯度下降。PyTorch 会自动计算梯度，但更新循环是相同的。
 
 ## 练习
 

@@ -24,7 +24,9 @@ GANs（Goodfellow 等人，2014）定义了这个框架。到 2018 年，StyleGA
 
 ## 概念
 
-### 两个网络```mermaid
+### 两个网络
+
+```mermaid
 flowchart LR
     Z["z ~ N(0, I)<br/>noise"] --> G["Generator<br/>transposed convs"]
     G --> FAKE["Fake image"]
@@ -35,22 +37,32 @@ flowchart LR
     style G fill:#dbeafe,stroke:#2563eb
     style D fill:#fef3c7,stroke:#d97706
     style OUT fill:#dcfce7,stroke:#16a34a
-```生成器 **G** 接收一个噪声向量 `z`，并输出一张图像。判别器 **D** 接收一张图像，并输出一个标量：图像为真实图像的概率。
+```
+
+生成器 **G** 接收一个噪声向量 `z`，并输出一张图像。判别器 **D** 接收一张图像，并输出一个标量：图像为真实图像的概率。
 
 ### 游戏
 
-G 希望 D 判断错误。D 希望判断正确。形式化地：```
+G 希望 D 判断错误。D 希望判断正确。形式化地：
+
+```
 min_G max_D  E_x[log D(x)] + E_z[log(1 - D(G(z)))]
-```从右到左看：D 正在最大化对真实（`log D(real)`）和伪造（`log (1 - D(fake))`）图像的准确率。G 正在最小化 D 对伪造图像的准确率——它希望 `D(G(z))` 要高。
+```
+
+从右到左看：D 正在最大化对真实（`log D(real)`）和伪造（`log (1 - D(fake))`）图像的准确率。G 正在最小化 D 对伪造图像的准确率——它希望 `D(G(z))` 要高。
 
 Goodfellow 证明了这个极小极大问题存在一个全局均衡点，此时 `p_G = p_data`，D 在所有地方都输出 0.5，生成分布与真实分布之间的 Jensen-Shannon 散度为零。困难的部分是如何到达这个均衡点。
 
 ### 非饱和损失
 
-上述形式在数值上是不稳定的。在训练初期，每个伪造样本的 `D(G(z))` 都接近于零，因此 `log(1 - D(G(z)))` 对 G 的梯度会消失。解决方法：反转 G 的损失。```
+上述形式在数值上是不稳定的。在训练初期，每个伪造样本的 `D(G(z))` 都接近于零，因此 `log(1 - D(G(z)))` 对 G 的梯度会消失。解决方法：反转 G 的损失。
+
+```
 L_D = -E_x[log D(x)] - E_z[log(1 - D(G(z)))]
 L_G = -E_z[log D(G(z))]                          # non-saturating
-```现在当 `D(G(z))` 接近零时，G 的损失很大，其梯度也具有信息量。每种现代 GAN 都使用这种变体进行训练。
+```
+
+现在当 `D(G(z))` 接近零时，G 的损失很大，其梯度也具有信息量。每种现代 GAN 都使用这种变体进行训练。
 
 ### DCGAN 架构规则
 
@@ -64,7 +76,9 @@ Radford, Metz, Chintala（2015）将多年失败的实验提炼成五条规则�
 
 每种现代基于卷积的 GAN（如 StyleGAN、BigGAN、GigaGAN）仍然从这些规则出发，逐个替换其中的部分。
 
-### 失败模式及其特征```mermaid
+### 失败模式及其特征
+
+```mermaid
 flowchart LR
     M1["Mode collapse<br/>G produces a narrow<br/>set of outputs"] --> S1["D loss low,<br/>G loss oscillating,<br/>sample variety drops"]
     M2["Vanishing gradients<br/>D wins completely"] --> S2["D accuracy ~100%,<br/>G loss huge and static"]
@@ -92,7 +106,9 @@ GAN 没有真实值，那如何判断它们是否有效？
 
 ### 步骤 1：生成器
 
-一个小型的 DCGAN 生成器，接受 64 维的噪声，并生成 32x32 的图像。```python
+一个小型的 DCGAN 生成器，接受 64 维的噪声，并生成 32x32 的图像。
+
+```python
 import torch
 import torch.nn as nn
 
@@ -115,11 +131,15 @@ class Generator(nn.Module):
 
     def forward(self, z):
         return self.net(z.view(z.size(0), -1, 1, 1))
-```四个转置卷积层，每个都使用 `kernel_size=4, stride=2, padding=1`，从而使空间尺寸干净地翻倍。通过 tanh 激活函数输出范围在 [-1, 1] 之间的值。
+```
+
+四个转置卷积层，每个都使用 `kernel_size=4, stride=2, padding=1`，从而使空间尺寸干净地翻倍。通过 tanh 激活函数输出范围在 [-1, 1] 之间的值。
 
 ### 步骤 2：判别器
 
-生成器的镜像。使用 LeakyReLU 和步长卷积，最终输出一个标量的 logit。```python
+生成器的镜像。使用 LeakyReLU 和步长卷积，最终输出一个标量的 logit。
+
+```python
 class Discriminator(nn.Module):
     def __init__(self, img_channels=3, feat=64):
         super().__init__()
@@ -137,11 +157,15 @@ class Discriminator(nn.Module):
 
     def forward(self, x):
         return self.net(x).view(-1)
-```最后一个卷积层将 `4x4` 特征图缩减为 `1x1`。每张图像的输出是一个标量；仅在计算损失时应用 sigmoid 函数。
+```
+
+最后一个卷积层将 `4x4` 特征图缩减为 `1x1`。每张图像的输出是一个标量；仅在计算损失时应用 sigmoid 函数。
 
 ### 步骤 3：训练步骤
 
-交替进行：每一批数据中，先更新 D 一次，然后更新 G 一次。```python
+交替进行：每一批数据中，先更新 D 一次，然后更新 G 一次。
+
+```python
 import torch.nn.functional as F
 
 def train_step(G, D, real, z, opt_g, opt_d, device):
@@ -167,7 +191,9 @@ def train_step(G, D, real, z, opt_g, opt_d, device):
     return loss_d.item(), loss_g.item()
 ```D 步骤中的 `G(z).detach()` 至关重要：我们不希望在更新 G 的过程中梯度流入 G。忘记这一点是经典的初学者错误。
 
-### 步骤 4：在合成形状上进行完整的训练循环```python
+### 步骤 4：在合成形状上进行完整的训练循环
+
+```python
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 
@@ -198,9 +224,13 @@ for epoch in range(10):
         z = torch.randn(batch.size(0), 64, device=device)
         ld, lg = train_step(G, D, batch, z, opt_g, opt_d, device)
     print(f"epoch {epoch}  D {ld:.3f}  G {lg:.3f}")
-````Adam(lr=2e-4, betas=(0.5, 0.999))` 是 DCGAN 的默认设置 —— 较低的 beta1 值会防止动量项过多地稳定对抗游戏。
+```
 
-### 第 5 步：采样```python
+`Adam(lr=2e-4, betas=(0.5, 0.999))` 是 DCGAN 的默认设置 —— 较低的 beta1 值会防止动量项过多地稳定对抗游戏。
+
+### 第 5 步：采样
+
+```python
 @torch.no_grad()
 def sample(G, n=16, z_dim=64, device="cpu"):
     G.eval()
@@ -208,11 +238,15 @@ def sample(G, n=16, z_dim=64, device="cpu"):
     imgs = G(z)
     imgs = (imgs + 1) / 2
     return imgs.clamp(0, 1)
-```在采样之前，始终切换到 eval 模式。对于 DCGAN 来说，这一点很重要，因为会使用 batch norm 的运行时统计信息，而不是当前 batch 的统计信息。
+```
+
+在采样之前，始终切换到 eval 模式。对于 DCGAN 来说，这一点很重要，因为会使用 batch norm 的运行时统计信息，而不是当前 batch 的统计信息。
 
 ### 步骤 6：谱归一化
 
-这是判别器中批量归一化（BN）的一个直接替换方案，可以保证网络是 1-Lipschitz 的。这可以修复大多数“D 太容易获胜”的失败情况。```python
+这是判别器中批量归一化（BN）的一个直接替换方案，可以保证网络是 1-Lipschitz 的。这可以修复大多数“D 太容易获胜”的失败情况。
+
+```python
 from torch.nn.utils import spectral_norm
 
 def build_sn_discriminator(img_channels=3, feat=64):
@@ -225,7 +259,9 @@ def build_sn_discriminator(img_channels=3, feat=64):
         nn.LeakyReLU(0.2, inplace=True),
         spectral_norm(nn.Conv2d(feat * 4, 1, 4, 1, 0)),
     )
-```用 `Discriminator` 交换 `build_sn_discriminator()`，通常不需要 TTUR 技巧。谱范数是你能应用的最简单的鲁棒性升级方式。
+```
+
+用 `Discriminator` 交换 `build_sn_discriminator()`，通常不需要 TTUR 技巧。谱范数是你能应用的最简单的鲁棒性升级方式。
 
 ## 使用它
 

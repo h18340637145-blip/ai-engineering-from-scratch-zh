@@ -28,25 +28,35 @@
 
 偏差衡量的是模型的平均预测值与真实值之间的差距。如果你在许多从相同分布中抽取的不同训练集上训练相同的模型，并对预测值取平均，偏差就是这个平均值与真实值之间的差距。
 
-高偏差意味着模型过于僵硬，无法捕捉真实模式。用一条直线拟合抛物线将始终无法捕捉到曲线，无论你提供多少数据。这就是欠拟合。```
+高偏差意味着模型过于僵硬，无法捕捉真实模式。用一条直线拟合抛物线将始终无法捕捉到曲线，无论你提供多少数据。这就是欠拟合。
+
+```
 High bias (underfitting):
   Model always predicts roughly the same wrong thing.
   Training error: HIGH
   Test error: HIGH
   Gap between them: SMALL
-```### 方差：对训练数据的敏感性
+```
+
+### 方差：对训练数据的敏感性
 
 方差衡量的是当你在不同的数据子集上训练时，你的预测会发生多大的变化。如果训练集的小变化导致模型的大幅变化，说明方差较高。
 
-高方差意味着模型在拟合训练数据中的噪声，而不是潜在的信号。一个20次多项式会穿过每一个训练点，但它们之间会剧烈震荡。这就是过拟合。```
+高方差意味着模型在拟合训练数据中的噪声，而不是潜在的信号。一个20次多项式会穿过每一个训练点，但它们之间会剧烈震荡。这就是过拟合。
+
+```
 High variance (overfitting):
   Model fits training data perfectly but fails on new data.
   Training error: LOW
   Test error: HIGH
   Gap between them: LARGE
-```### 分解
+```
 
-对于任何点 x，在平方损失下，期望预测误差可以精确地分解为：```
+### 分解
+
+对于任何点 x，在平方损失下，期望预测误差可以精确地分解为：
+
+```
 Expected Error = Bias^2 + Variance + Irreducible Noise
 
 where:
@@ -60,7 +70,9 @@ where:
 
 噪声项是不可约减的。在有噪声的数据上，没有模型可以做得比 sigma^2 更好。你的任务是在偏差的平方和方差之间找到合适的平衡。
 
-### 模型复杂度与误差```mermaid
+### 模型复杂度与误差
+
+```mermaid
 graph LR
     A[Simple Model] -->|increase complexity| B[Sweet Spot]
     B -->|increase complexity| C[Complex Model]
@@ -68,7 +80,9 @@ graph LR
     style A fill:#f9f,stroke:#333
     style B fill:#9f9,stroke:#333
     style C fill:#f99,stroke:#333
-```经典的U型曲线：
+```
+
+经典的U型曲线：
 
 | 复杂度 | 偏差 | 方差 | 总误差 |
 |------|---|----|---|
@@ -89,7 +103,9 @@ graph LR
 
 ### 双降：现代视角
 
-经典理论认为：在最佳点之后，更多的复杂度总是有害的。但自2019年以来的研究显示了一些意想不到的结果。如果你继续增加模型容量，远远超过插值阈值（模型具有足够参数以完美拟合训练数据），测试误差可能会再次降低。```mermaid
+经典理论认为：在最佳点之后，更多的复杂度总是有害的。但自2019年以来的研究显示了一些意想不到的结果。如果你继续增加模型容量，远远超过插值阈值（模型具有足够参数以完美拟合训练数据），测试误差可能会再次降低。
+
+```mermaid
 graph LR
     A[Underfit Zone] --> B[Classical Sweet Spot]
     B --> C[Interpolation Threshold]
@@ -99,7 +115,9 @@ graph LR
     style B fill:#dfd,stroke:#333
     style C fill:#fdd,stroke:#333
     style D fill:#dfd,stroke:#333
-```这种“双重下降”现象解释了为什么高度过参数化的神经网络（参数数量远多于训练样本数量）仍然能够很好地泛化。经典的偏差-方差权衡并没有错，但它对于现代的场景是不完整的。
+```
+
+这种“双重下降”现象解释了为什么高度过参数化的神经网络（参数数量远多于训练样本数量）仍然能够很好地泛化。经典的偏差-方差权衡并没有错，但它对于现代的场景是不完整的。
 
 关于双重下降的关键观察：
 - 它出现在线性模型、决策树和神经网络中
@@ -117,7 +135,9 @@ graph LR
 
 从实际应用的角度来看：如果你正在使用神经网络或大型树集成，不要在插值阈值处停止。要么保持远低于该阈值（使用显式正则化），要么远远超过该阈值。最糟糕的情况是正好处于阈值处。
 
-### 诊断你的模型```mermaid
+### 诊断你的模型
+
+```mermaid
 flowchart TD
     A[Compare train error vs test error] --> B{Large gap?}
     B -->|Yes| C[High variance - overfitting]
@@ -128,7 +148,9 @@ flowchart TD
     C --> G[More data / Regularize / Simpler model]
     E --> H[More features / Complex model / Less regularization]
     F --> I[Deploy]
-```| Symptom | Diagnosis | Fix |
+```
+
+| Symptom | Diagnosis | Fix |
 |---------|-----------|------|
 | 高训练误差，高测试误差 | 偏差 | 增加特征，更复杂的模型，减少正则化 |
 | 低训练误差，高测试误差 | 方差 | 更多数据，正则化，更简单的模型，dropout |
@@ -171,7 +193,9 @@ flowchart TD
 
 ### 学习曲线
 
-学习曲线将训练和验证误差绘制为训练集大小的函数。它们是你拥有的最实用的诊断工具。与单次训练/测试比较不同，学习曲线显示你的模型轨迹，并告诉你更多的数据是否会有帮助。```mermaid
+学习曲线将训练和验证误差绘制为训练集大小的函数。它们是你拥有的最实用的诊断工具。与单次训练/测试比较不同，学习曲线显示你的模型轨迹，并告诉你更多的数据是否会有帮助。
+
+```mermaid
 flowchart TD
     subgraph HB["High Bias Learning Curve"]
         direction LR
@@ -193,7 +217,9 @@ flowchart TD
         GF2["Large N: both converge to LOW error"]
         GF1 --> GF2
     end
-```如何解读它们：
+```
+
+如何解读它们：
 
 | 场景 | 训练误差 | 验证误差 | 差值 | 含义 | 做法 |
 |------|---------|---------|-----|-----|-----|
@@ -213,7 +239,9 @@ flowchart TD
 
 **方法2：改变模型复杂度，保持数据不变。** 保持数据不变。调整一个复杂度参数（多项式次数、树的深度、层数）。在每个复杂度上测量训练误差和验证误差。这就是验证曲线，可以直接显示偏差-方差权衡。
 
-两种方法相互补充。第一种方法告诉你更多数据是否有帮助。第二种方法告诉你不同模型是否有帮助。在做出下一步决策之前，两种方法都应该运行。```mermaid
+两种方法相互补充。第一种方法告诉你更多数据是否有帮助。第二种方法告诉你不同模型是否有帮助。在做出下一步决策之前，两种方法都应该运行。
+
+```mermaid
 flowchart TD
     A[Model underperforming] --> B[Generate learning curve]
     B --> C{Gap between train and val?}
@@ -226,13 +254,17 @@ flowchart TD
 
 ```figure
 bias-variance
-```## 构建它
+```
+
+## 构建它
 
 `code/bias_variance.py` 中的代码运行完整的偏差-方差分解实验。以下是逐步的方法。
 
 ### 步骤 1：从已知函数生成合成数据
 
-我们使用添加了高斯噪声的 `f(x) = sin(1.5x) + 0.5x`。知道真实函数使我们能够计算精确的偏差和方差。```python
+我们使用添加了高斯噪声的 `f(x) = sin(1.5x) + 0.5x`。知道真实函数使我们能够计算精确的偏差和方差。
+
+```python
 def true_function(x):
     return np.sin(1.5 * x) + 0.5 * x
 
@@ -241,9 +273,13 @@ def generate_data(n_samples=30, noise_std=0.5, x_range=(-3, 3), seed=None):
     x = rng.uniform(x_range[0], x_range[1], n_samples)
     y = true_function(x) + rng.normal(0, noise_std, n_samples)
     return x, y
-```### 步骤 2：引导抽样和多项式拟合
+```
 
-对于每个多项式次数，我们抽取许多引导训练集，拟合多项式，并在固定的测试网格上记录预测结果。这为我们提供了每个测试点处的预测分布。```python
+### 步骤 2：引导抽样和多项式拟合
+
+对于每个多项式次数，我们抽取许多引导训练集，拟合多项式，并在固定的测试网格上记录预测结果。这为我们提供了每个测试点处的预测分布。
+
+```python
 def fit_polynomial(x_train, y_train, degree, lam=0.0):
     X = np.column_stack([x_train ** d for d in range(degree + 1)])
     if lam > 0:
@@ -253,11 +289,15 @@ def fit_polynomial(x_train, y_train, degree, lam=0.0):
     else:
         w = np.linalg.lstsq(X, y_train, rcond=None)[0]
     return w
-```我们在 200 个不同的自助（bootstrap）样本上进行拟合。每个自助样本都来自相同的潜在分布，但包含不同的点。
+```
+
+我们在 200 个不同的自助（bootstrap）样本上进行拟合。每个自助样本都来自相同的潜在分布，但包含不同的点。
 
 ### 步骤 3：计算 Bias^2，方差分解
 
-在每个测试点上，我们有 200 组预测值，因此可以直接根据定义计算分解：```python
+在每个测试点上，我们有 200 组预测值，因此可以直接根据定义计算分解：
+
+```python
 mean_pred = predictions.mean(axis=0)
 bias_sq = np.mean((mean_pred - y_true) ** 2)
 variance = np.mean(predictions.var(axis=0))
@@ -269,7 +309,9 @@ total_error = np.mean(np.mean((predictions - y_true) ** 2, axis=1))
 
 ### 第 4 步：学习曲线
 
-学习曲线在保持模型复杂度不变的情况下，改变训练集的大小。它们可以显示你的模型是数据受限还是容量受限。```python
+学习曲线在保持模型复杂度不变的情况下，改变训练集的大小。它们可以显示你的模型是数据受限还是容量受限。
+
+```python
 def demo_learning_curves():
     sizes = [10, 15, 20, 30, 50, 75, 100, 150, 200, 300]
     degree = 5
@@ -287,7 +329,9 @@ def demo_learning_curves():
             train_errors.append(train_mse)
             test_errors.append(test_mse)
         # Average over runs gives the learning curve point
-```对于一个高方差模型（5次多项式且数据量小），你将看到：
+```
+
+对于一个高方差模型（5次多项式且数据量小），你将看到：
 - 训练误差开始较低，随着数据量增加，记忆难度加大，误差逐渐上升
 - 测试误差开始较高，随着模型接收到更多信号，误差逐渐下降
 - 随着数据量的增加，训练误差和测试误差之间的差距逐渐缩小
@@ -296,14 +340,18 @@ def demo_learning_curves():
 
 ### 步骤5：正则化扫描
 
-代码中还包含了 `demo_regularization_sweep()`，它固定了一个高次多项式（15次多项式），并扫描了岭回归正则化强度，范围从0.001到100。这展示了偏差-方差权衡的另一个角度：不是通过改变模型复杂度，而是通过改变约束强度。```python
+代码中还包含了 `demo_regularization_sweep()`，它固定了一个高次多项式（15次多项式），并扫描了岭回归正则化强度，范围从0.001到100。这展示了偏差-方差权衡的另一个角度：不是通过改变模型复杂度，而是通过改变约束强度。
+
+```python
 def demo_regularization_sweep():
     alphas = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0, 5.0, 10.0, 50.0, 100.0]
     for alpha in alphas:
         results = bias_variance_decomposition([15], lam=alpha)
         r = results[15]
         print(f"alpha={alpha:.3f}  bias={r['bias_sq']:.4f}  var={r['variance']:.4f}")
-```在 alpha 值较低时，15 次多项式几乎没有任何约束。方差占主导地位，因为模型在每次自助采样中追逐噪声。在 alpha 值较高时，惩罚非常强烈，模型实际上变成了一个近似常数的函数。此时偏差占主导地位。最佳的 alpha 值位于这两个极端之间。
+```
+
+在 alpha 值较低时，15 次多项式几乎没有任何约束。方差占主导地位，因为模型在每次自助采样中追逐噪声。在 alpha 值较高时，惩罚非常强烈，模型实际上变成了一个近似常数的函数。此时偏差占主导地位。最佳的 alpha 值位于这两个极端之间。
 
 这与通过改变多项式次数所得到的 U 型曲线相同，但这里是由一个连续的旋钮控制，而不是由一个离散的旋钮控制。在实践中，正则化是控制这种权衡的首选方法，因为它允许在不改变特征集的情况下进行精细的控制。
 
@@ -311,7 +359,9 @@ def demo_regularization_sweep():
 
 sklearn 提供了 `learning_curve` 和 `validation_curve`，用于在不编写自助采样循环的情况下自动执行这些诊断。
 
-### 验证曲线：扫过模型复杂度```python
+### 验证曲线：扫过模型复杂度
+
+```python
 from sklearn.model_selection import validation_curve
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
@@ -329,9 +379,13 @@ for d in degrees:
     )
     train_scores_all.append(-train_scores.mean())
     val_scores_all.append(-val_scores.mean())
-```这直接给出了偏差-方差权衡曲线。当验证得分相对于训练得分最差时，方差占主导地位。当两者都较差时，偏差占主导地位。
+```
 
-### 学习曲线：遍历训练集大小```python
+这直接给出了偏差-方差权衡曲线。当验证得分相对于训练得分最差时，方差占主导地位。当两者都较差时，偏差占主导地位。
+
+### 学习曲线：遍历训练集大小
+
+```python
 from sklearn.model_selection import learning_curve
 
 pipe = make_pipeline(PolynomialFeatures(5), Ridge(alpha=0.01))
@@ -341,9 +395,13 @@ train_sizes, train_scores, val_scores = learning_curve(
 )
 train_mse = -train_scores.mean(axis=1)
 val_mse = -val_scores.mean(axis=1)
-```将 `train_mse` 和 `val_mse` 以 `train_sizes` 为横轴绘制图形。图形的形状会告诉你关于你的模型的一切信息。
+```
 
-### 带正则化扫描的交叉验证```python
+将 `train_mse` 和 `val_mse` 以 `train_sizes` 为横轴绘制图形。图形的形状会告诉你关于你的模型的一切信息。
+
+### 带正则化扫描的交叉验证
+
+```python
 from sklearn.model_selection import cross_val_score
 
 alphas = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
@@ -351,7 +409,9 @@ for alpha in alphas:
     pipe = make_pipeline(PolynomialFeatures(10), Ridge(alpha=alpha))
     scores = cross_val_score(pipe, X, y, cv=5, scoring="neg_mean_squared_error")
     print(f"alpha={alpha:>7.3f}  MSE={-scores.mean():.4f} +/- {scores.std():.4f}")
-```这会针对固定模型复杂度调整正则化强度。你将看到同样的偏差-方差权衡：低 alpha 意味着高方差，高 alpha 意味着高偏差。
+```
+
+这会针对固定模型复杂度调整正则化强度。你将看到同样的偏差-方差权衡：低 alpha 意味着高方差，高 alpha 意味着高偏差。
 
 ### 综合应用：完整的诊断工作流程
 

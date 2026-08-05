@@ -24,7 +24,9 @@ Git 是工具。GitHub 是代码存放的地方。本课程涵盖你完成本课
 
 <>
 
-## 概念```mermaid
+## 概念
+
+```mermaid
 sequenceDiagram
     participant WD as Working Directory
     participant SA as Staging Area
@@ -35,18 +37,7 @@ sequenceDiagram
     LR->>R: git push
     R->>LR: git fetch
     LR->>WD: git pull
-```需要记住的三件事：
-1. 经常保存（`git commit`）
-2. 推送至远程仓库（`git push`）
-3. 使用分支进行实验（`git checkout -b experiment`）
-
-## 构建它
-
-### 步骤1：配置git
-
-  /no_think
-
-<>
+```
 
 需要记住的三件事：
 1. 经常保存（`git commit`）
@@ -421,31 +412,60 @@ sequenceDiagram
 
 ### 步骤1：配置git
 
-  /no_think```bash
+  /no_think
+
+<>
+
+需要记住的三件事：
+1. 经常保存（`git commit`）
+2. 推送至远程仓库（`git push`）
+3. 使用分支进行实验（`git checkout -b experiment`）
+
+## 构建它
+
+### 步骤1：配置git
+
+  /no_think
+
+```bash
 git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
-```### 步骤 2：日常流程```bash
+```
+
+### 步骤 2：日常流程
+
+```bash
 git status
 git add file.py
 git commit -m "Add perceptron implementation"
 git push origin main
-```### 步骤 3：为实验创建分支```bash
+```
+
+### 步骤 3：为实验创建分支
+
+```bash
 git checkout -b experiment/new-optimizer
 
 # ... make changes, commit ...
 
 git checkout main
 git merge experiment/new-optimizer
-```### 步骤4：使用该课程仓库
+```
 
-您无法直接向课程仓库推送代码——只有维护者拥有写入权限。首先在GitHub上对其进行 Fork（Fork 按钮，右上角），以便 `origin` 指向您自己的副本：```bash
+### 步骤4：使用该课程仓库
+
+您无法直接向课程仓库推送代码——只有维护者拥有写入权限。首先在GitHub上对其进行 Fork（Fork 按钮，右上角），以便 `origin` 指向您自己的副本：
+
+```bash
 git clone https://github.com/YOUR-USERNAME/ai-engineering-from-scratch.git
 cd ai-engineering-from-scratch
 
 git checkout -b my-progress
 # work through lessons, commit your code
 git push origin my-progress
-```## 使用方法
+```
+
+## 使用方法
 
 对于本课程，你需要使用以下命令：
 

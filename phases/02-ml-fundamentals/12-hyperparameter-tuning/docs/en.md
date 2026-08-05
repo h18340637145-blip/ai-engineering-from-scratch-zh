@@ -37,7 +37,9 @@
 
 ### 网格搜索
 
-网格搜索评估指定值的每一个组合。它虽然全面且易于理解，但随着超参数数量的增加，其计算量呈指数级增长。```
+网格搜索评估指定值的每一个组合。它虽然全面且易于理解，但随着超参数数量的增加，其计算量呈指数级增长。
+
+```
 Grid for 2 hyperparameters:
 
   learning_rate: [0.01, 0.1, 1.0]
@@ -48,11 +50,15 @@ Grid for 2 hyperparameters:
   (0.01, 3)  (0.01, 5)  (0.01, 7)
   (0.1,  3)  (0.1,  5)  (0.1,  7)
   (1.0,  3)  (1.0,  5)  (1.0,  7)
-```网格搜索有一个根本性的缺陷：如果一个超参数重要而另一个不重要，大多数评估都是浪费的。在9次评估中，你只能得到重要参数的3个唯一值。
+```
+
+网格搜索有一个根本性的缺陷：如果一个超参数重要而另一个不重要，大多数评估都是浪费的。在9次评估中，你只能得到重要参数的3个唯一值。
 
 ### 随机搜索
 
-随机搜索从分布中采样超参数，而不是从网格中采样。在相同的9次评估预算下，每个超参数都能得到9个唯一的值。```mermaid
+随机搜索从分布中采样超参数，而不是从网格中采样。在相同的9次评估预算下，每个超参数都能得到9个唯一的值。
+
+```mermaid
 flowchart LR
     subgraph Grid Search
         G1[3 unique learning rates]
@@ -65,7 +71,9 @@ flowchart LR
         R2[9 unique max depths]
         R3[9 total evaluations]
     end
-```为什么随机搜索优于网格搜索（Bergstra & Bengio, 2012）：
+```
+
+为什么随机搜索优于网格搜索（Bergstra & Bengio, 2012）：
 
 - 大多数超参数的有效维度较低。通常对于给定的问题，只有6个超参数中的1-2个是重要的。
 - 网格搜索在不重要的维度上浪费评估次数。
@@ -74,7 +82,9 @@ flowchart LR
 
 ### 贝叶斯优化
 
-随机搜索忽略结果。它不会学习到高学习率会导致发散，或者深度3始终优于深度10。贝叶斯优化利用过去的评估结果来决定下一步搜索的位置。```mermaid
+随机搜索忽略结果。它不会学习到高学习率会导致发散，或者深度3始终优于深度10。贝叶斯优化利用过去的评估结果来决定下一步搜索的位置。
+
+```mermaid
 flowchart TD
     A[Define search space] --> B[Evaluate initial random points]
     B --> C[Fit surrogate model to results]
@@ -83,7 +93,9 @@ flowchart TD
     E --> F{Budget exhausted?}
     F -->|No| C
     F -->|Yes| G[Return best hyperparameters found]
-```两个关键组件：
+```
+
+两个关键组件：
 
 **代理模型（Surrogate model）：** 一个易于评估的模型（通常是高斯过程），用于近似昂贵的目标函数。它在搜索空间的任何一点上都能提供预测值和不确定性估计。
 
@@ -139,14 +151,18 @@ Hyperband特别有效。它从81个配置开始，每个配置进行1个训练�
 
 优先调整重要的超参数，其余的保持默认值。
 
-### 实用策略```mermaid
+### 实用策略
+
+```mermaid
 flowchart TD
     A[Start with defaults] --> B[Coarse random search: 20-50 trials]
     B --> C[Identify important hyperparameters]
     C --> D[Fine random or Bayesian search: 50-100 trials in narrowed space]
     D --> E[Final model with best hyperparameters]
     E --> F[Retrain on full training data]
-```具体的工作流程：
+```
+
+具体的工作流程：
 
 1. **从库的默认值开始。** 它们由经验丰富的实践者选择，通常已经达到了80%的效果。
 2. **粗粒度随机搜索。** 使用广泛的范围，进行20-50次试验。使用提前停止机制快速终止表现差的运行。
@@ -159,7 +175,9 @@ flowchart TD
 仅在一个验证划分上调整超参数是具有风险的。最佳的超参数可能会对特定的验证划分过拟合。嵌套交叉验证通过使用两个循环来解决这个问题：
 
 - **外层循环**（评估）：将数据划分为训练+验证和测试。报告无偏的性能。
-- **内层循环**（调整）：将训练+验证划分为训练和验证。找到最佳的超参数。```mermaid
+- **内层循环**（调整）：将训练+验证划分为训练和验证。找到最佳的超参数。
+
+```mermaid
 flowchart TD
     D[Full Dataset] --> O1[Outer Fold 1: Test]
     D --> O2[Outer Fold 2: Test]
@@ -174,9 +192,13 @@ flowchart TD
     O2 --> I2[Inner 5-fold CV on remaining data]
     I2 --> T2[Best hyperparams for fold 2]
     T2 --> E2[Evaluate on outer test fold 2]
-```每个外部折叠独立地找到自己的最佳超参数。外部评分是对泛化性能的无偏估计。
+```
 
-使用 sklearn:```python
+每个外部折叠独立地找到自己的最佳超参数。外部评分是对泛化性能的无偏估计。
+
+使用 sklearn:
+
+```python
 from sklearn.model_selection import cross_val_score, GridSearchCV
 from sklearn.ensemble import GradientBoostingRegressor
 
@@ -196,7 +218,9 @@ outer_scores = cross_val_score(
 )
 
 print(f"Nested CV MSE: {-outer_scores.mean():.4f} +/- {outer_scores.std():.4f}")
-```这会很昂贵（5个外部折叠 × 5个内部折叠 × 27个网格点 = 675个模型拟合），但它能给你一个可信的性能估计。在论文中报告最终结果，或者当决策的风险很高时，使用它。
+```
+
+这会很昂贵（5个外部折叠 × 5个内部折叠 × 27个网格点 = 675个模型拟合），但它能给你一个可信的性能估计。在论文中报告最终结果，或者当决策的风险很高时，使用它。
 
 ### 实用技巧
 
@@ -219,13 +243,19 @@ print(f"Nested CV MSE: {-outer_scores.mean():.4f} +/- {outer_scores.std():.4f}")
 | Lasso/Ridge | alpha | 在对数尺度上进行1D搜索，20次试验 | 非常低 |
 | XGBoost | learning_rate, max_depth, subsample, colsample | 贝叶斯，100-200次试验 + 早停 | 中等 |
 
-**当不确定时：** 进行随机搜索，试验次数是超参数数量的两倍（例如，6个超参数 = 至少12次试验）。你将惊讶于随机搜索进行50次试验时，常常能击败精心设计的网格搜索。```figure
+**当不确定时：** 进行随机搜索，试验次数是超参数数量的两倍（例如，6个超参数 = 至少12次试验）。你将惊讶于随机搜索进行50次试验时，常常能击败精心设计的网格搜索。
+
+```figure
 k-fold-cv
-```## 构建它
+```
+
+## 构建它
 
 ### 第一步：从零开始实现网格搜索
 
-`code/tuning.py` 中的代码实现了从零开始的网格搜索、随机搜索和一个简单的贝叶斯优化器。```python
+`code/tuning.py` 中的代码实现了从零开始的网格搜索、随机搜索和一个简单的贝叶斯优化器。
+
+```python
 def grid_search(model_fn, param_grid, X_train, y_train, X_val, y_val):
     keys = list(param_grid.keys())
     values = list(param_grid.values())
@@ -245,7 +275,11 @@ def grid_search(model_fn, param_grid, X_train, y_train, X_val, y_val):
             best_params = params
 
     return best_params, best_score, n_evals
-```### 步骤 2：从零开始的随机搜索```python
+```
+
+### 步骤 2：从零开始的随机搜索
+
+```python
 def random_search(model_fn, param_distributions, X_train, y_train,
                   X_val, y_val, n_iter=50, seed=42):
     rng = np.random.RandomState(seed)
@@ -263,9 +297,13 @@ def random_search(model_fn, param_distributions, X_train, y_train,
             best_params = params
 
     return best_params, best_score, n_iter
-```### 步骤 3：贝叶斯优化（简化版）
+```
 
-核心思想：将高斯过程拟合到观察到的（超参数，得分）对上，然后使用获取函数来决定下一步要在哪里查找。```python
+### 步骤 3：贝叶斯优化（简化版）
+
+核心思想：将高斯过程拟合到观察到的（超参数，得分）对上，然后使用获取函数来决定下一步要在哪里查找。
+
+```python
 class SimpleBayesianOptimizer:
     def __init__(self, search_space, n_initial=5):
         self.search_space = search_space
@@ -319,7 +357,9 @@ class SimpleBayesianOptimizer:
 
 ### 第四步：比较所有方法
 
-在相同的合成目标函数上运行所有三种方法并进行比较。这个比较使用了一个简化的包装器，它直接用目标函数调用每个优化器（没有模型训练），因此 API 与上面基于模型的实现不同：```python
+在相同的合成目标函数上运行所有三种方法并进行比较。这个比较使用了一个简化的包装器，它直接用目标函数调用每个优化器（没有模型训练），因此 API 与上面基于模型的实现不同：
+
+```python
 def synthetic_objective(params):
     lr = params["learning_rate"]
     depth = params["max_depth"]
@@ -372,13 +412,17 @@ print("-" * 50)
 print(f"{'Grid Search':<20} {grid_score:>12.4f} {len(grid_history):>12}")
 print(f"{'Random Search':<20} {rand_score:>12.4f} {len(rand_history):>12}")
 print(f"{'Bayesian Opt':<20} {bayes_score:>12.4f} {len(bayes_history):>12}")
-```在相同的预算下，贝叶斯优化通常能最快找到最佳得分，因为它不会在明显较差的区域浪费评估。随机搜索覆盖的范围比网格搜索更广。只有在超参数非常少且可以承受穷举时，网格搜索才会占优。
+```
+
+在相同的预算下，贝叶斯优化通常能最快找到最佳得分，因为它不会在明显较差的区域浪费评估。随机搜索覆盖的范围比网格搜索更广。只有在超参数非常少且可以承受穷举时，网格搜索才会占优。
 
 ## 使用它
 
 ### 实践中的 Optuna
 
-Optuna 是用于严肃超参数调优的推荐库。它内置支持剪枝、分布式搜索和可视化功能。```python
+Optuna 是用于严肃超参数调优的推荐库。它内置支持剪枝、分布式搜索和可视化功能。
+
+```python
 import optuna
 
 def objective(trial):
@@ -408,7 +452,9 @@ print(f"Best MSE: {study.best_value:.4f}")
 
 ### 使用 Pruning 的 Optuna
 
-Pruning 会提前停止没有前景的试验，从而节省大量计算资源。以下是其使用模式：```python
+Pruning 会提前停止没有前景的试验，从而节省大量计算资源。以下是其使用模式：
+
+```python
 import optuna
 from sklearn.model_selection import cross_val_score
 
@@ -434,11 +480,15 @@ def objective(trial):
 pruner = optuna.pruners.MedianPruner(n_startup_trials=10, n_warmup_steps=5)
 study = optuna.create_study(direction="minimize", pruner=pruner)
 study.optimize(objective, n_trials=200)
-````MedianPruner` 如果其在相同步骤中的中间值比所有已完成试验的中位数更差，就会停止试验。剪枝需要调用 `trial.report()` 来报告中间指标，并调用 `trial.should_prune()` 来检查是否应停止试验。`n_startup_trials=10` 确保在开始剪枝之前至少有 10 个试验完全完成。这通常可以节省 40-60% 的总计算量。
+```
+
+`MedianPruner` 如果其在相同步骤中的中间值比所有已完成试验的中位数更差，就会停止试验。剪枝需要调用 `trial.report()` 来报告中间指标，并调用 `trial.should_prune()` 来检查是否应停止试验。`n_startup_trials=10` 确保在开始剪枝之前至少有 10 个试验完全完成。这通常可以节省 40-60% 的总计算量。
 
 ### sklearn 内置的调参器
 
-为了快速实验，sklearn 提供了 `GridSearchCV`、`RandomizedSearchCV` 和 `HalvingRandomSearchCV`：```python
+为了快速实验，sklearn 提供了 `GridSearchCV`、`RandomizedSearchCV` 和 `HalvingRandomSearchCV`：
+
+```python
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import loguniform, randint
 
@@ -460,7 +510,9 @@ search = RandomizedSearchCV(
 search.fit(X_train, y_train)
 print(f"Best params: {search.best_params_}")
 print(f"Best CV MSE: {-search.best_score_:.4f}")
-```使用 scipy 中的 `loguniform` 来设置学习率和正则化。使用 `randint` 来设置整数类型的超参数。使用 `n_jobs=-1` 标志可在所有 CPU 核心上进行并行处理。
+```
+
+使用 scipy 中的 `loguniform` 来设置学习率和正则化。使用 `randint` 来设置整数类型的超参数。使用 `n_jobs=-1` 标志可在所有 CPU 核心上进行并行处理。
 
 ### 超参数调优的常见错误
 

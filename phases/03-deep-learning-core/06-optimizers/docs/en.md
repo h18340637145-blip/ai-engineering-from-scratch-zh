@@ -32,15 +32,21 @@ Adam 解决了这三个问题。它为每个参数维护两个运行平均值—
 
 ### 随机梯度下降（SGD）
 
-最简单的优化器。在小批量上计算梯度，并向相反方向进行更新。```
+最简单的优化器。在小批量上计算梯度，并向相反方向进行更新。
+
+```
 w = w - lr * gradient
-```“stochastic” 的意思是，你使用数据的一个随机子集（小批量）来估计梯度，而不是使用整个数据集。这种噪声实际上是很有用的 —— 它有助于逃离尖锐的局部最小值。但这种噪声也会导致震荡。
+```
+
+“stochastic” 的意思是，你使用数据的一个随机子集（小批量）来估计梯度，而不是使用整个数据集。这种噪声实际上是很有用的 —— 它有助于逃离尖锐的局部最小值。但这种噪声也会导致震荡。
 
 学习率是唯一可以调节的参数。学习率太高：损失会发散。学习率太低：训练会耗费很长时间。最优值取决于网络结构、数据、批量大小以及训练的当前阶段。对于现代网络上的普通 SGD，典型的学习率范围从 0.01 到 0.1。但即使在单次训练运行中，理想的学习率也会发生变化。
 
 ### 动量
 
-虽然“滚球下山”的类比被过度使用，但它是准确的。你不再仅仅根据梯度进行步进，而是保持一个速度，该速度累积了过去的梯度。```
+虽然“滚球下山”的类比被过度使用，但它是准确的。你不再仅仅根据梯度进行步进，而是保持一个速度，该速度累积了过去的梯度。
+
+```
 m_t = beta * m_{t-1} + gradient
 w = w - lr * m_t
 ```Beta（通常为 0.9）控制保留多少历史信息。当 beta = 0.9 时，动量大致等于最后 10 个梯度的平均值（1 / (1 - 0.9) = 10）。
@@ -51,7 +57,9 @@ w = w - lr * m_t
 
 ### RMSProp
 
-第一个真正有效的每参数自适应学习率方法。由 Hinton 在 Coursera 课程中提出（从未正式发表过）。```
+第一个真正有效的每参数自适应学习率方法。由 Hinton 在 Coursera 课程中提出（从未正式发表过）。
+
+```
 s_t = beta * s_{t-1} + (1 - beta) * gradient^2
 w = w - lr * gradient / (sqrt(s_t) + epsilon)
 ```s_t 跟踪梯度平方的移动平均值。梯度持续较大的参数会被除以一个较大的数（有效学习率较小）。梯度较小的参数会被除以一个较小的数（有效学习率较大）。
@@ -62,15 +70,23 @@ Epsilon（通常为 1e-8）用于防止参数未被更新时出现除以零的�
 
 ### Adam：动量 + RMSProp
 
-Adam 结合了这两种方法。它为每个参数维护两个指数移动平均值：```
+Adam 结合了这两种方法。它为每个参数维护两个指数移动平均值：
+
+```
 m_t = beta1 * m_{t-1} + (1 - beta1) * gradient        (first moment: mean)
 v_t = beta2 * v_{t-1} + (1 - beta2) * gradient^2       (second moment: variance)
-```**偏差校正**是大多数解释中忽略的关键细节。在第1步，m_1 = (1 - beta1) * gradient。当beta1 = 0.9时，就是0.1 * gradient -- 比实际值小了十倍。移动平均值尚未预热。偏差校正进行补偿：```
+```**偏差校正**是大多数解释中忽略的关键细节。在第1步，m_1 = (1 - beta1) * gradient。当beta1 = 0.9时，就是0.1 * gradient -- 比实际值小了十倍。移动平均值尚未预热。偏差校正进行补偿：
+
+```
 m_hat = m_t / (1 - beta1^t)
 v_hat = v_t / (1 - beta2^t)
-```在步骤1，beta1 = 0.9时：m_hat = m_1 / (1 - 0.9) = m_1 / 0.1 = 实际梯度。在步骤100时：(1 - 0.9^100) 近似等于1.0，因此修正项消失。偏差修正对前约10步有影响，在约50步之后则无关紧要。
+```
 
-更新：```
+在步骤1，beta1 = 0.9时：m_hat = m_1 / (1 - 0.9) = m_1 / 0.1 = 实际梯度。在步骤100时：(1 - 0.9^100) 近似等于1.0，因此修正项消失。偏差修正对前约10步有影响，在约50步之后则无关紧要。
+
+更新：
+
+```
 w = w - lr * m_hat / (sqrt(v_hat) + epsilon)
 ```Adam 默认值：lr = 0.001, beta1 = 0.9, beta2 = 0.999, epsilon = 1e-8。这些默认值对 80% 的问题有效。当它们无效时，首先更改 lr。然后更改 beta2。几乎从不更改 beta1 或 epsilon。
 
@@ -80,13 +96,19 @@ L2 正则化将 lambda * w^2 添加到损失中。在普通的 SGD 中，这等�
 
 Loshchilov & Hutter 的洞察：当你将 L2 添加到损失中，然后 Adam 处理梯度时，自适应学习率也会对正则化项进行缩放。梯度方差大的参数会得到更少的正则化。梯度方差小的参数会得到更多的正则化。这不是你想要的——你希望无论梯度统计信息如何，都进行统一的正则化。
 
-AdamW 通过在 Adam 更新之后直接对权重应用权重衰减来解决这个问题：```
+AdamW 通过在 Adam 更新之后直接对权重应用权重衰减来解决这个问题：
+
+```
 w = w - lr * m_hat / (sqrt(v_hat) + epsilon) - lr * lambda * w
-```权重衰减项（lr * lambda * w）没有被 Adam 的自适应因子缩放。每个参数都会以相同的比例缩小。
+```
+
+权重衰减项（lr * lambda * w）没有被 Adam 的自适应因子缩放。每个参数都会以相同的比例缩小。
 
 这看起来像是一个微不足道的细节。但事实并非如此。在几乎所有任务中，AdamW 都会比 Adam 加 L2 正则化收敛到更好的解。它是 PyTorch 中用于训练 Transformer、扩散模型和大多数现代架构的默认优化器。BERT、GPT、LLaMA、Stable Diffusion —— 所有这些模型都是使用 AdamW 训练的。
 
-### 学习率：最重要的超参数```mermaid
+### 学习率：最重要的超参数
+
+```mermaid
 graph TD
     LR["Learning Rate"] --> TooHigh["Too high (lr > 0.01)"]
     LR --> JustRight["Just right"]
@@ -99,14 +121,18 @@ graph TD
     JustRight --> Schedule["Usually needs scheduling"]
     Schedule --> Warmup["Warmup: ramp from 0 to max<br/>First 1-10% of training"]
     Schedule --> Decay["Decay: reduce over time<br/>Cosine or linear"]
-```如果你要调整一个超参数，调整学习率。学习率变化 10 倍的影响比你将要做出的任何架构决策都更为重要。常见默认值：
+```
+
+如果你要调整一个超参数，调整学习率。学习率变化 10 倍的影响比你将要做出的任何架构决策都更为重要。常见默认值：
 
 - SGD：lr = 0.01 到 0.1
 - Adam/AdamW：lr = 1e-4 到 3e-4
 - 微调预训练模型：lr = 1e-5 到 5e-5
 - 学习率预热：在前 1-10% 的步骤上进行线性上升
 
-### 优化器对比```mermaid
+### 优化器对比
+
+```mermaid
 flowchart LR
     subgraph "Optimization Path"
         SGD_P["SGD<br/>Oscillates across valley<br/>Slow but finds flat minima"]
@@ -115,7 +141,11 @@ flowchart LR
         AdamW_P["AdamW<br/>Adam + proper decay<br/>Best generalization"]
     end
     SGD_P --> Mom_P --> Adam_P --> AdamW_P
-```### 每种优化器何时表现最佳```mermaid
+```
+
+### 每种优化器何时表现最佳
+
+```mermaid
 flowchart TD
     Task["What are you training?"] --> Type{"Model type?"}
 
@@ -128,9 +158,13 @@ flowchart TD
 
 ```figure
 optimizer-trajectory
-```## 构建它
+```
 
-### 第一步：普通 SGD```python
+## 构建它
+
+### 第一步：普通 SGD
+
+```python
 class SGD:
     def __init__(self, lr=0.01):
         self.lr = lr
@@ -138,7 +172,11 @@ class SGD:
     def step(self, params, grads):
         for i in range(len(params)):
             params[i] -= self.lr * grads[i]
-```### 步骤 2：带有动量的 SGD```python
+```
+
+### 步骤 2：带有动量的 SGD
+
+```python
 class SGDMomentum:
     def __init__(self, lr=0.01, beta=0.9):
         self.lr = lr
@@ -151,7 +189,11 @@ class SGDMomentum:
         for i in range(len(params)):
             self.velocities[i] = self.beta * self.velocities[i] + grads[i]
             params[i] -= self.lr * self.velocities[i]
-```### 第三步：Adam```python
+```
+
+### 第三步：Adam
+
+```python
 import math
 
 class Adam:
@@ -179,7 +221,11 @@ class Adam:
             v_hat = self.v[i] / (1 - self.beta2 ** self.t)
 
             params[i] -= self.lr * m_hat / (math.sqrt(v_hat) + self.epsilon)
-```### 步骤 4: AdamW```python
+```
+
+### 步骤 4: AdamW
+
+```python
 class AdamW:
     def __init__(self, lr=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8, weight_decay=0.01):
         self.lr = lr
@@ -207,9 +253,13 @@ class AdamW:
 
             params[i] -= self.lr * m_hat / (math.sqrt(v_hat) + self.epsilon)
             params[i] -= self.lr * self.weight_decay * params[i]
-```### 步骤 5：训练比较
+```
 
-使用所有四种优化器，在第 05 课的 circle 数据集上训练相同的两层网络。比较收敛情况。```python
+### 步骤 5：训练比较
+
+使用所有四种优化器，在第 05 课的 circle 数据集上训练相同的两层网络。比较收敛情况。
+
+```python
 import random
 
 def sigmoid(x):
@@ -325,9 +375,13 @@ class OptimizerTestNetwork:
             if epoch % 75 == 0 or epoch == epochs - 1:
                 print(f"    Epoch {epoch:3d}: loss={avg_loss:.4f}, accuracy={accuracy:.1f}%")
         return losses
-```## 使用它
+```
 
-PyTorch 优化器处理参数组、梯度裁剪和学习率调度：```python
+## 使用它
+
+PyTorch 优化器处理参数组、梯度裁剪和学习率调度：
+
+```python
 import torch
 import torch.optim as optim
 
@@ -349,7 +403,9 @@ for epoch in range(100):
     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
     optimizer.step()
     scheduler.step()
-```模式始终是：zero_grad、forward、loss、backward、（clip）、step、（schedule）。请记住这个顺序。出错（例如在调用optimizer.step()之前调用scheduler.step()）是导致细微错误的常见原因。
+```
+
+模式始终是：zero_grad、forward、loss、backward、（clip）、step、（schedule）。请记住这个顺序。出错（例如在调用optimizer.step()之前调用scheduler.step()）是导致细微错误的常见原因。
 
 对于卷积神经网络（CNNs），许多实践者仍然倾向于使用SGD + momentum（lr=0.1，momentum=0.9，weight_decay=1e-4）配合step或cosine schedule。SGD能找到更平坦的极小值，这通常具有更好的泛化能力。对于transformers和大型语言模型（LLMs），AdamW配合warmup + cosine decay是通用的默认选择。在没有充分理由的情况下，不要与共识对抗。
 

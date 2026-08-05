@@ -22,7 +22,9 @@ AI 项目是依赖的噩梦。一个典型的堆栈包括 Python、PyTorch、CUD
 
 ## The Concept
 
-Docker 将你的代码、运行时、库和系统工具封装到一个称为容器的隔离单元中。可以将其想象成一个轻量级的虚拟机，只不过它与主机操作系统共享内核，而不是运行自己的内核，因此它可以在几秒钟内启动，而不是几分钟。```mermaid
+Docker 将你的代码、运行时、库和系统工具封装到一个称为容器的隔离单元中。可以将其想象成一个轻量级的虚拟机，只不过它与主机操作系统共享内核，而不是运行自己的内核，因此它可以在几秒钟内启动，而不是几分钟。
+
+```mermaid
 graph TD
     subgraph without["Without Docker"]
         A1["Your machine<br/>Python 3.12<br/>CUDA 12.4<br/>PyTorch 2.3"] -->|crashes| X1["???"]
@@ -35,7 +37,9 @@ graph TD
         B2["Their machine<br/>Python 3.12 | CUDA 12.4<br/>PyTorch 2.3 | Your code"]
         B3["Server<br/>Python 3.12 | CUDA 12.4<br/>PyTorch 2.3 | Your code"]
     end
-```### 为什么AI项目比大多数项目更需要Docker
+```
+
+### 为什么AI项目比大多数项目更需要Docker
 
 1. **GPU驱动程序容易出错。** CUDA 12.4代码无法在CUDA 11.8上运行。Docker通过NVIDIA Container Toolkit在容器内部隔离CUDA工具包，同时共享主机的GPU驱动程序。
 
@@ -53,7 +57,9 @@ graph TD
 | Volume | 可持久化存储，可跨越容器重启。 |
 | docker-compose | 一个用YAML定义多容器应用的工具。 |
 
-### AI中常见的容器模式```
+### AI中常见的容器模式
+
+```
 Dev Container
   Full toolkit. Editor support. Jupyter. Debugging tools.
   Used during development and experimentation.
@@ -65,9 +71,13 @@ Training Container
 Inference Container
   Optimized for serving. Small image. Fast cold start.
   Runs behind a load balancer in production.
-```## 构建它
+```
 
-### 步骤 1：安装 Docker```bash
+## 构建它
+
+### 步骤 1：安装 Docker
+
+```bash
 # macOS
 brew install --cask docker
 open /Applications/Docker.app
@@ -76,12 +86,20 @@ open /Applications/Docker.app
 curl -fsSL https://get.docker.com | sh
 sudo usermod -aG docker $USER
 # Log out and back in for group change to take effect
-```验证：```bash
+```
+
+验证：
+
+```bash
 docker --version
 docker run hello-world
-```### 步骤 2：安装 NVIDIA Container Toolkit（适用于配备 NVIDIA GPU 的 Linux 系统）
+```
 
-这使 Docker 容器能够访问您的 GPU。macOS 和 Windows（WSL2）用户可以跳过此步骤；Docker Desktop 在这些平台上处理 GPU 直通的方式不同。```bash
+### 步骤 2：安装 NVIDIA Container Toolkit（适用于配备 NVIDIA GPU 的 Linux 系统）
+
+这使 Docker 容器能够访问您的 GPU。macOS 和 Windows（WSL2）用户可以跳过此步骤；Docker Desktop 在这些平台上处理 GPU 直通的方式不同。
+
+```bash
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
 curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
@@ -92,7 +110,9 @@ sudo apt-get update
 sudo apt-get install -y nvidia-container-toolkit
 sudo nvidia-ctk runtime configure --runtime=docker
 sudo systemctl restart docker
-```在容器内测试 GPU 访问：
+```
+
+在容器内测试 GPU 访问：
 
  /no_think
 
@@ -100,13 +120,19 @@ sudo systemctl restart docker
 
 在容器内测试 GPU 访问：
 
- /no_think```bash
+ /no_think
+
+```bash
 docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi
-```如果你能看到你的GPU信息，说明工具包正在正常工作。
+```
+
+如果你能看到你的GPU信息，说明工具包正在正常工作。
 
 ### 第3步：了解基础镜像
 
-选择合适的基础镜像可以节省数小时的调试时间。```
+选择合适的基础镜像可以节省数小时的调试时间。
+
+```
 nvidia/cuda:12.4.1-devel-ubuntu22.04
   Full CUDA toolkit. Compilers included.
   Use for: building packages that need nvcc (flash-attn, bitsandbytes)
@@ -126,9 +152,13 @@ python:3.12-slim
   No CUDA. CPU only.
   Use for: inference on CPU, lightweight tools
   Size: ~150 MB
-```### 第4步：为AI开发编写Dockerfile
+```
 
-这是位于 `code/Dockerfile` 的 Dockerfile。请逐步查看：```dockerfile
+### 第4步：为AI开发编写Dockerfile
+
+这是位于 `code/Dockerfile` 的 Dockerfile。请逐步查看：
+
+```dockerfile
 FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -180,21 +210,31 @@ VOLUME ["/workspace", "/models"]
 EXPOSE 8888
 
 CMD ["python"]
-```构建它：
+```
 
- /no_think```bash
+构建它：
+
+ /no_think
+
+```bash
 docker build -t ai-dev -f phases/00-setup-and-tooling/07-docker-for-ai/code/Dockerfile .
-```首次运行需要一些时间（下载 CUDA 基础镜像 + PyTorch）。后续构建将使用缓存层。
+```
+
+首次运行需要一些时间（下载 CUDA 基础镜像 + PyTorch）。后续构建将使用缓存层。
 
 运行它：
 
 ```bash
-``````bash
+```
+
+```bash
 docker run --rm -it --gpus all \
     -v $(pwd):/workspace \
     -v ~/models:/models \
     ai-dev python -c "import torch; print(f'PyTorch {torch.__version__}, CUDA: {torch.cuda.is_available()}')"
-```在容器内运行 Jupyter：
+```
+
+在容器内运行 Jupyter：
 
  /no_think
 
@@ -202,15 +242,21 @@ docker run --rm -it --gpus all \
 
 在容器内运行 Jupyter：
 
- /no_think```bash
+ /no_think
+
+```bash
 docker run --rm -it --gpus all \
     -v $(pwd):/workspace \
     -v ~/models:/models \
     -p 8888:8888 \
     ai-dev jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
-```### 步骤5：用于数据和模型的卷挂载
+```
 
-卷挂载对于AI工作至关重要。没有它们，当容器停止时，您的14 GB模型下载内容将消失。```bash
+### 步骤5：用于数据和模型的卷挂载
+
+卷挂载对于AI工作至关重要。没有它们，当容器停止时，您的14 GB模型下载内容将消失。
+
+```bash
 # Mount your code
 -v $(pwd):/workspace
 
@@ -219,7 +265,9 @@ docker run --rm -it --gpus all \
 
 # Mount datasets
 -v ~/datasets:/data
-```在您的训练脚本中，从挂载的路径加载：
+```
+
+在您的训练脚本中，从挂载的路径加载：
 
  /no_think
 
@@ -227,11 +275,15 @@ docker run --rm -it --gpus all \
 
 在您的训练脚本中，从挂载的路径加载：
 
- /no_think```python
+ /no_think
+
+```python
 from transformers import AutoModel
 
 model = AutoModel.from_pretrained("/models/llama-7b")
-```该模型位于你的主机文件系统中。根据需要频繁重建容器而无需重新下载。
+```
+
+该模型位于你的主机文件系统中。根据需要频繁重建容器而无需重新下载。
 
 ### 第6步：使用Docker Compose构建多服务AI应用
 
@@ -248,7 +300,9 @@ model = AutoModel.from_pretrained("/models/llama-7b")
 
 一个真正的RAG应用需要推理服务器和向量数据库。Docker Compose可以通过一个命令同时运行两者。
 
-查看 `code/docker-compose.yml`:```yaml
+查看 `code/docker-compose.yml`:
+
+```yaml
 services:
   ai-dev:
     build:
@@ -281,7 +335,9 @@ services:
 
 volumes:
   qdrant_data:
-```开始所有内容：
+```
+
+开始所有内容：
 
  /no_think
 
@@ -289,20 +345,28 @@ volumes:
 
 开始所有内容：
 
- /no_think```bash
+ /no_think
+
+```bash
 cd phases/00-setup-and-tooling/07-docker-for-ai/code
 docker compose up -d
-```现在你的AI开发容器可以通过服务名称访问向量数据库 `http://qdrant:6333`。Docker Compose 会自动创建共享网络。
+```
+
+现在你的AI开发容器可以通过服务名称访问向量数据库 `http://qdrant:6333`。Docker Compose 会自动创建共享网络。
 
 从AI容器内部测试连接：
 
 ```bash
-``````python
+```
+
+```python
 from qdrant_client import QdrantClient
 
 client = QdrantClient(host="qdrant", port=6333)
 print(client.get_collections())
-```停止一切：
+```
+
+停止一切：
 
  /no_think
 
@@ -310,14 +374,24 @@ print(client.get_collections())
 
 停止一切：
 
- /no_think```bash
-docker compose down
-```添加 `-v` 以同时删除 qdrant 卷：
+ /no_think
 
 ```bash
-``````bash
+docker compose down
+```
+
+添加 `-v` 以同时删除 qdrant 卷：
+
+```bash
+```
+
+```bash
 docker compose down -v
-```### 步骤 7：AI 工作中常用的 Docker 命令```bash
+```
+
+### 步骤 7：AI 工作中常用的 Docker 命令
+
+```bash
 # List running containers
 docker ps
 
@@ -335,7 +409,9 @@ docker cp <container_id>:/workspace/results.csv ./results.csv
 
 # View container logs
 docker logs -f <container_id>
-```## 使用它
+```
+
+## 使用它
 
 你现在拥有一个可复现的AI开发环境。在本课程的其余部分中：
 

@@ -20,7 +20,9 @@
 
 你有三个选择：本地 GPU、云 GPU 或 Google Colab（免费）。
 
-## The Concept```
+## The Concept
+
+```
 Your options:
 
 1. Local NVIDIA GPU
@@ -37,7 +39,9 @@ Your options:
    Cost: $0.20-2.00/hr
    Setup: SSH + install
    Best for: Serious training, large models
-```## 构建它
+```
+
+## 构建它
 
 ### 选项 1：本地 NVIDIA GPU
 
@@ -53,9 +57,15 @@ Your options:
 
 检查你是否拥有一个：
 
- /no_think```bash
+ /no_think
+
+```bash
 nvidia-smi
-```安装带 CUDA 的 PyTorch:```python
+```
+
+安装带 CUDA 的 PyTorch:
+
+```python
 import torch
 
 print(f"CUDA available: {torch.cuda.is_available()}")
@@ -63,7 +73,9 @@ print(f"CUDA version: {torch.version.cuda}")
 if torch.cuda.is_available():
     print(f"GPU: {torch.cuda.get_device_name(0)}")
     print(f"Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
-```### 选项 2：Google Colab
+```
+
+### 选项 2：Google Colab
 
 1. 访问 [colab.research.google.com](https://colab.research.google.com)
 2. 运行时 > 更改运行时类型 > T4 GPU
@@ -75,17 +87,27 @@ if torch.cuda.is_available():
 
 对于 Lambda Labs、RunPod 或 Vast.ai：
 
- /```bash
+ /
+
+```bash
 ssh user@your-gpu-instance
 
 pip install torch torchvision torchaudio
 python -c "import torch; print(torch.cuda.get_device_name(0))"
-```### 没有GPU？没问题。
+```
 
-大多数课程可以在CPU上运行。需要GPU的课程会明确说明并包含Colab链接。```python
+### 没有GPU？没问题。
+
+大多数课程可以在CPU上运行。需要GPU的课程会明确说明并包含Colab链接。
+
+```python
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using: {device}")
-```## 构建它：GPU 与 CPU 性能测试```python
+```
+
+## 构建它：GPU 与 CPU 性能测试
+
+```python
 import torch
 import time
 
@@ -110,7 +132,9 @@ if torch.cuda.is_available():
     gpu_time = time.time() - start
     print(f"GPU: {gpu_time:.3f}s")
     print(f"Speedup: {cpu_time / gpu_time:.0f}x")
-```## 练习
+```
+
+## 练习
 
 1. 运行上述基准测试并比较CPU与GPU的耗时
 2. 如果没有GPU，使用Google Colab运行并进行比较

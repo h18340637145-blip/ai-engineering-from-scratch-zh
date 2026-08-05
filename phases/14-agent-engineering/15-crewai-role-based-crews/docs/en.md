@@ -63,18 +63,24 @@ Three ways to give an Agent a tool. Pick the simplest one that fits.
 
 1. **`@tool` decorator.** Pure functions become tools. Signature is the schema; docstring is the description the LLM sees. Best for one-off helpers.
 
-   ```python
+   
+
+```python
    from crewai.tools import tool
 
    @tool("Search the web")
    def search(query: str) -> str:
        """Return top results for the query."""
        return run_search(query)
-   ```
+   
+
+```
 
 2. **`BaseTool` subclass.** Class-based tool with explicit args schema, async support, retries. Use when the tool has state (a client, a cache) or needs structured args.
 
-   ```python
+   
+
+```python
    from crewai.tools import BaseTool
    from pydantic import BaseModel
 
@@ -89,7 +95,9 @@ Three ways to give an Agent a tool. Pick the simplest one that fits.
 
        def _run(self, query: str, limit: int = 10) -> str:
            return self.client.search(query, limit=limit)
-   ```
+   
+
+```
 
 3. **Built-in toolkits.** CrewAI ships first-party adapters: `SerperDevTool`, `FileReadTool`, `DirectoryReadTool`, `CodeInterpreterTool`, `RagTool`, `WebsiteSearchTool`. Wired with one import.
 

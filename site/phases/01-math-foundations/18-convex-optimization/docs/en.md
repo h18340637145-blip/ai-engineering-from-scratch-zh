@@ -49,9 +49,13 @@
 
 ### 凸函数
 
-如果函数 f 的定义域是一个凸集，并且对于定义域中的任意两点 x、y 和任意 t ∈ [0, 1]：```
+如果函数 f 的定义域是一个凸集，并且对于定义域中的任意两点 x、y 和任意 t ∈ [0, 1]：
+
+```
 f(tx + (1-t)y) <= t*f(x) + (1-t)*f(y)
-```几何上：图像上任意两点之间的线段位于图像上方或与图像重合。
+```
+
+几何上：图像上任意两点之间的线段位于图像上方或与图像重合。
 
 | 属性 | 凸函数 | 非凸函数 |
 |---|---|---|
@@ -87,7 +91,9 @@ f(tx + (1-t)y) <= t*f(x) + (1-t)*f(y)
 
 **对于凸函数，每一个局部最小值都是全局最小值。**
 
-这意味着梯度下降不会陷入局部极小值。任何下坡路径都会导向相同的结果。算法保证可以收敛到最优解。```mermaid
+这意味着梯度下降不会陷入局部极小值。任何下坡路径都会导向相同的结果。算法保证可以收敛到最优解。
+
+```mermaid
 graph LR
     subgraph "Convex: ONE answer"
         direction TB
@@ -98,7 +104,9 @@ graph LR
         N1["Loss surface has multiple valleys and peaks"] --> N2["Gradient descent may get stuck in a local minimum"]
         N2 --> N3["Global minimum might be missed"]
     end
-```后果：
+```
+
+后果：
 - 不需要随机重启
 - 不需要复杂的学习率调度
 - 可以证明收敛性（收敛速度取决于函数的性质）
@@ -121,9 +129,15 @@ graph LR
 
 ### 海森矩阵
 
-函数 $ f: \mathbb{R}^n \to \mathbb{R} $ 的海森矩阵 $ H $ 是一个 $ n \times n $ 的矩阵，包含二阶偏导数。```
+函数 $ f: \mathbb{R}^n \to \mathbb{R} $ 的海森矩阵 $ H $ 是一个 $ n \times n $ 的矩阵，包含二阶偏导数。
+
+```
 H[i][j] = d^2 f / (dx_i dx_j)
-```对于 f(x, y) = x^2 + 3xy + y^2:```
+```
+
+对于 f(x, y) = x^2 + 3xy + y^2:
+
+```
 df/dx = 2x + 3y       d^2f/dx^2 = 2      d^2f/dxdy = 3
 df/dy = 3x + 2y       d^2f/dydx = 3      d^2f/dy^2 = 2
 
@@ -139,13 +153,19 @@ H = [ 2  3 ]
 
 ### 牛顿法
 
-梯度下降使用一阶信息（梯度）。牛顿法使用二阶信息（Hessian 矩阵）。它在当前点拟合一个二次近似，并直接跳转到该二次函数的最小值点。```
+梯度下降使用一阶信息（梯度）。牛顿法使用二阶信息（Hessian 矩阵）。它在当前点拟合一个二次近似，并直接跳转到该二次函数的最小值点。
+
+```
 Update rule:
   x_new = x - H^(-1) * gradient
 
 Compare to gradient descent:
   x_new = x - lr * gradient
-```牛顿法用海森矩阵的逆代替了标量学习率。这会根据局部曲率自动调整步长和方向。```mermaid
+```
+
+牛顿法用海森矩阵的逆代替了标量学习率。这会根据局部曲率自动调整步长和方向。
+
+```mermaid
 graph TD
     subgraph "Gradient Descent"
         GD1["Start"] --> GD2["Step 1"]
@@ -160,7 +180,9 @@ graph TD
         NM3 --> NM4["Step ~5: Converged"]
         NM_note["Uses curvature for optimal steps"]
     end
-```优点：
+```
+
+优点：
 - 在最小值附近具有二次收敛性（每次迭代误差平方减少）
 - 无需调整学习率
 - 尺度不变（无论问题如何参数化，都能正常工作）
@@ -175,7 +197,9 @@ graph TD
 无约束优化：在所有 x 上最小化 f(x)。
 有约束优化：在满足约束条件下最小化 f(x)。
 
-现实问题通常有约束。你希望最小化成本，但预算有限。你希望最小化误差，但模型复杂度有上限。```mermaid
+现实问题通常有约束。你希望最小化成本，但预算有限。你希望最小化误差，但模型复杂度有上限。
+
+```mermaid
 graph LR
     subgraph "Unconstrained"
         U1["Loss function"] --> U2["Free minimum: lowest point of the loss surface"]
@@ -184,23 +208,39 @@ graph LR
         C1["Loss function"] --> C2["Constrained minimum: lowest point within the feasible region"]
         C3["Constraint boundary limits the search space"]
     end
-```### 拉格朗日乘数法
+```
+
+### 拉格朗日乘数法
 
 拉格朗日乘数法将有约束的问题转化为无约束的问题。
 
 问题：在约束条件 g(x) = 0 下最小化 f(x)。
 
-解法：引入一个新的变量（拉格朗日乘数 lambda），并求解无约束问题：```
+解法：引入一个新的变量（拉格朗日乘数 lambda），并求解无约束问题：
+
+```
 L(x, lambda) = f(x) + lambda * g(x)
-```在解处，L 的梯度为零：```
+```
+
+在解处，L 的梯度为零：
+
+```
 dL/dx = df/dx + lambda * dg/dx = 0
 dL/dlambda = g(x) = 0
-```几何直觉：在约束最小值处，函数 $ f $ 的梯度必须与约束函数 $ g $ 的梯度平行。如果它们不平行，你可以沿着约束曲面移动，并进一步减小 $ f $。```mermaid
+```
+
+几何直觉：在约束最小值处，函数 $ f $ 的梯度必须与约束函数 $ g $ 的梯度平行。如果它们不平行，你可以沿着约束曲面移动，并进一步减小 $ f $。
+
+```mermaid
 graph LR
     A["Contours of f(x,y): concentric ellipses"] --- S["Solution point"]
     B["Constraint curve g(x,y) = 0"] --- S
     S --- C["At the solution, gradient of f is parallel to gradient of g"]
-```示例：在约束条件 $ x + y = 1 $ 下，最小化 $ f(x,y) = x^2 + y^2 $。```
+```
+
+示例：在约束条件 $ x + y = 1 $ 下，最小化 $ f(x,y) = x^2 + y^2 $。
+
+```
 L = x^2 + y^2 + lambda(x + y - 1)
 
 dL/dx = 2x + lambda = 0  =>  x = -lambda/2
@@ -209,7 +249,9 @@ dL/dlambda = x + y - 1 = 0
 
 From first two: x = y
 Substituting: 2x = 1, so x = y = 0.5, lambda = -1
-```直线 x + y = 1 上离原点最近的点是 (0.5, 0.5)。
+```
+
+直线 x + y = 1 上离原点最近的点是 (0.5, 0.5)。
 
 ### KKT 条件
 
@@ -217,12 +259,16 @@ Karush-Kuhn-Tucker 条件将拉格朗日乘数法扩展到不等式约束。
 
 问题：最小化 f(x)，满足 g_i(x) <= 0，其中 i = 1, ..., m。
 
-KKT 条件（最优性必要条件）：```
+KKT 条件（最优性必要条件）：
+
+```
 1. Stationarity:    df/dx + sum(lambda_i * dg_i/dx) = 0
 2. Primal feasibility:  g_i(x) <= 0  for all i
 3. Dual feasibility:    lambda_i >= 0  for all i
 4. Complementary slackness:  lambda_i * g_i(x) = 0  for all i
-```互补松弛性是关键的洞察：要么约束是活跃的（g_i = 0，解位于边界上），要么乘子为零（约束不重要）。不影响解的约束对应的 lambda 等于 0。
+```
+
+互补松弛性是关键的洞察：要么约束是活跃的（g_i = 0，解位于边界上），要么乘子为零（约束不重要）。不影响解的约束对应的 lambda 等于 0。
 
 KKT 条件对支持向量机（SVM）至关重要。支持向量是那些约束活跃（lambda > 0）的数据点。所有其他数据点的 lambda 等于 0，不影响决策边界。
 
@@ -230,19 +276,27 @@ KKT 条件对支持向量机（SVM）至关重要。支持向量是那些约束�
 
 L1 和 L2 正则化并不是随意的技巧。它们实际上是约束优化问题的伪装形式。
 
-**L2 正则化（岭回归）：**```
+**L2 正则化（岭回归）：**
+
+```
 minimize  Loss(w)  subject to  ||w||^2 <= t
 
 Equivalent unconstrained form:
 minimize  Loss(w) + lambda * ||w||^2
-```约束 ||w||² ≤ t 定义了一个球（在二维中是圆，在三维中是球）。解是损失轮廓第一次接触这个球的地方。
+```
 
-**L1 正则化（LASSO）：**```
+约束 ||w||² ≤ t 定义了一个球（在二维中是圆，在三维中是球）。解是损失轮廓第一次接触这个球的地方。
+
+**L1 正则化（LASSO）：**
+
+```
 minimize  Loss(w)  subject to  ||w||_1 <= t
 
 Equivalent unconstrained form:
 minimize  Loss(w) + lambda * ||w||_1
-```约束 ||w||_1 <= t 定义了一个钻石（在二维空间中是旋转的正方形）。
+```
+
+约束 ||w||_1 <= t 定义了一个钻石（在二维空间中是旋转的正方形）。
 
 | 特性 | L2 约束（圆） | L1 约束（钻石） |
 |---|---|---|
@@ -257,17 +311,23 @@ minimize  Loss(w) + lambda * ||w||_1
 
 每个有约束的优化问题（原问题）都有一个对应的对偶问题（对偶问题）。对于凸问题，原问题和对偶问题具有相同的最优值。这是强对偶性。
 
-拉格朗日对偶函数：```
+拉格朗日对偶函数：
+
+```
 Primal: minimize f(x) subject to g(x) <= 0
 Lagrangian: L(x, lambda) = f(x) + lambda * g(x)
 Dual function: d(lambda) = min_x L(x, lambda)
 Dual problem: maximize d(lambda) subject to lambda >= 0
-```为什么对偶性很重要：
+```
+
+为什么对偶性很重要：
 - 对偶问题有时比原问题更容易求解
 - 支持向量机（SVMs）以对偶形式求解，其中问题依赖于数据点之间的点积（从而实现核技巧）
 - 对偶问题为原问题的最优解提供了下界，可用于检查解的质量
 
-对于支持向量机（SVMs）来说：```
+对于支持向量机（SVMs）来说：
+
+```
 Primal: find w, b that maximize the margin 2/||w|| subject to
         y_i(w^T x_i + b) >= 1 for all i
 
@@ -276,7 +336,9 @@ Dual:   maximize sum(alpha_i) - 0.5 * sum_ij(alpha_i * alpha_j * y_i * y_j * x_i
 
 The dual only involves dot products x_i^T x_j.
 Replace x_i^T x_j with K(x_i, x_j) to get the kernel trick.
-```### 为什么深度学习在非凸性情况下仍然有效
+```
+
+### 为什么深度学习在非凸性情况下仍然有效
 
 神经网络损失函数高度非凸。从所有经典标准来看，优化它们应该会失败。然而，随机梯度下降法能够稳定地找到良好的解。有几个因素解释了这一点。
 
@@ -315,13 +377,19 @@ Replace x_i^T x_j with K(x_i, x_j) to get the kernel trick.
 | 牛顿法 | O(n²) | O(n³) | 小型凸问题 |
 | L-BFGS | O(mn) | O(mn) | 中等凸问题 |
 | Adam | O(n) | O(n) | 深度学习默认 |
-| K-FAC | O(n) | 每层O(n) | 研究，大批量训练 |```figure
+| K-FAC | O(n) | 每层O(n) | 研究，大批量训练 |
+
+```figure
 convex-vs-nonconvex
-```## 构建它
+```
+
+## 构建它
 
 ### 步骤 1：凸性检查器
 
-构建一个函数，通过采样点并检查定义来实证地测试凸性。```python
+构建一个函数，通过采样点并检查定义来实证地测试凸性。
+
+```python
 import random
 import math
 
@@ -337,9 +405,13 @@ def check_convexity(f, dim, bounds=(-5, 5), samples=1000):
         if lhs > rhs + 1e-10:
             violations += 1
     return violations == 0, violations
-```### 步骤 2：二维情况下的牛顿法
+```
 
-使用显式海森矩阵实现牛顿法。将收敛速度与梯度下降法进行比较。```python
+### 步骤 2：二维情况下的牛顿法
+
+使用显式海森矩阵实现牛顿法。将收敛速度与梯度下降法进行比较。
+
+```python
 def newtons_method(f, grad_f, hessian_f, x0, steps=50, tol=1e-12):
     x = list(x0)
     history = [x[:]]
@@ -362,9 +434,13 @@ def newtons_method(f, grad_f, hessian_f, x0, steps=50, tol=1e-12):
         if sum(gi ** 2 for gi in g) < tol:
             break
     return history
-```### 步骤 3：Lagrange 乘数求解器
+```
 
-使用 Lagrangian 上的梯度下降法求解带约束的优化问题。```python
+### 步骤 3：Lagrange 乘数求解器
+
+使用 Lagrangian 上的梯度下降法求解带约束的优化问题。
+
+```python
 def lagrange_solve(f_grad, g_val, g_grad, x0, lr=0.01,
                    lr_lambda=0.01, steps=5000):
     x = list(x0)
@@ -381,9 +457,13 @@ def lagrange_solve(f_grad, g_val, g_grad, x0, lr=0.01,
         lam = lam + lr_lambda * gv
         history.append((x[:], lam, gv))
     return history
-```### 步骤 4：比较一阶方法与二阶方法
+```
 
-在相同的二次函数上运行梯度下降法和牛顿法。统计收敛所需的步数。```python
+### 步骤 4：比较一阶方法与二阶方法
+
+在相同的二次函数上运行梯度下降法和牛顿法。统计收敛所需的步数。
+
+```python
 def quadratic(x):
     return 5 * x[0] ** 2 + x[1] ** 2
 
@@ -392,7 +472,9 @@ def quadratic_grad(x):
 
 def quadratic_hessian(x):
     return [[10, 0], [0, 2]]
-```牛顿法将在1步内收敛（它对二次函数是精确的）。梯度下降法需要数百步，因为海森矩阵的特征值之间相差5倍，从而形成了一个狭长的山谷。
+```
+
+牛顿法将在1步内收敛（它对二次函数是精确的）。梯度下降法需要数百步，因为海森矩阵的特征值之间相差5倍，从而形成了一个狭长的山谷。
 
 ## 使用场景
 
@@ -407,7 +489,9 @@ def quadratic_hessian(x):
 - 使用一阶方法（SGD、Adam）
 - 接受解依赖于初始化和随机性
 - 使用过参数化、噪声和学习率调度作为隐式正则化
-- 不要浪费时间寻找全局最小值。一个好的局部最小值就足够了。```python
+- 不要浪费时间寻找全局最小值。一个好的局部最小值就足够了。
+
+```python
 from scipy.optimize import minimize
 
 result = minimize(
@@ -416,13 +500,19 @@ result = minimize(
     method='L-BFGS-B',
     jac=lambda w: -2 * X.T @ (y - X @ w) + 0.2 * w,
 )
-```对于支持向量机（SVMs），对偶形式使你可以使用核技巧：```python
+```
+
+对于支持向量机（SVMs），对偶形式使你可以使用核技巧：
+
+```python
 from sklearn.svm import SVC
 
 svm = SVC(kernel='rbf', C=1.0)
 svm.fit(X_train, y_train)
 print(f"Support vectors: {svm.n_support_}")
-```## 练习
+```
+
+## 练习
 
 1. **凸性画廊。** 使用检查器测试这些函数的凸性：f(x) = x^4, f(x) = sin(x), f(x,y) = x^2 + y^2, f(x,y) = x*y, f(x) = max(x, 0)。解释为什么每个结果是有道理的。
 

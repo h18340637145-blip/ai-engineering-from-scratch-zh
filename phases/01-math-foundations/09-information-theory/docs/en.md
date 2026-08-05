@@ -28,72 +28,120 @@
 
 当不太可能发生的事情发生时，它携带更多的信息。硬币正面朝上？并不令人惊讶。中彩票？非常令人惊讶。
 
-概率为 p 的事件的信息量为：```
+概率为 p 的事件的信息量为：
+
+```
 I(x) = -log(p(x))
-```使用以 2 为底的对数会得到比特（bits）。使用自然对数会得到纳特（nats）。同样的概念，不同的单位。```
+```
+
+使用以 2 为底的对数会得到比特（bits）。使用自然对数会得到纳特（nats）。同样的概念，不同的单位。
+
+```
 Event              Probability    Surprise (bits)
 Fair coin heads    0.5            1.0
 Rolling a 6        0.167          2.58
 1-in-1000 event    0.001          9.97
 Certain event      1.0            0.0
-```某些事件携带零信息。你已经知道它们会发生。
+```
+
+某些事件携带零信息。你已经知道它们会发生。
 
 ### 熵（平均惊讶度）
 
-熵是分布中所有可能结果的预期惊讶度。```
+熵是分布中所有可能结果的预期惊讶度。
+
+```
 H(P) = -sum( p(x) * log(p(x)) )  for all x
-```一个公平的硬币对于一个二元变量具有最大熵：1 bit。一个有偏的硬币（正面概率为99%）具有较低的熵：0.08 bits。你已经知道会发生什么，因此每次抛硬币几乎不会给你提供任何新信息。```
+```
+
+一个公平的硬币对于一个二元变量具有最大熵：1 bit。一个有偏的硬币（正面概率为99%）具有较低的熵：0.08 bits。你已经知道会发生什么，因此每次抛硬币几乎不会给你提供任何新信息。
+
+```
 Fair coin:    H = -(0.5 * log2(0.5) + 0.5 * log2(0.5)) = 1.0 bit
 Biased coin:  H = -(0.99 * log2(0.99) + 0.01 * log2(0.01)) = 0.08 bits
-```熵衡量的是分布中不可约减的不确定性。你无法将其压缩到低于这个值。
+```
+
+熵衡量的是分布中不可约减的不确定性。你无法将其压缩到低于这个值。
 
 ### 交叉熵（你每天使用的损失函数）
 
-交叉熵衡量的是当你使用分布 Q 来对实际来自分布 P 的事件进行编码时的平均惊讶程度。```
+交叉熵衡量的是当你使用分布 Q 来对实际来自分布 P 的事件进行编码时的平均惊讶程度。
+
+```
 H(P, Q) = -sum( p(x) * log(q(x)) )  for all x
 ```P 是真实分布（即标签）。Q 是你的模型的预测。如果 Q 完全匹配 P，交叉熵等于熵。任何不匹配都会使其增大。
 
-在分类中，P 是一个 one-hot 向量（真实类别概率为 1，其余为 0）。这使得交叉熵简化为：```
+在分类中，P 是一个 one-hot 向量（真实类别概率为 1，其余为 0）。这使得交叉熵简化为：
+
+```
 H(P, Q) = -log(q(true_class))
-```这就是分类的完整交叉熵损失公式。最大化正确类别的预测概率。
+```
+
+这就是分类的完整交叉熵损失公式。最大化正确类别的预测概率。
 
 ### KL 散度（分布之间的距离）
 
-KL 散度衡量使用 Q 而不是 P 时，你所获得的额外惊讶程度。```
+KL 散度衡量使用 Q 而不是 P 时，你所获得的额外惊讶程度。
+
+```
 D_KL(P || Q) = sum( p(x) * log(p(x) / q(x)) )  for all x
              = H(P, Q) - H(P)
-```交叉熵等于熵加上KL散度。由于在训练过程中真实分布的熵是恒定的，因此最小化交叉熵等同于最小化KL散度。你正在将模型的分布推向真实分布。
+```
+
+交叉熵等于熵加上KL散度。由于在训练过程中真实分布的熵是恒定的，因此最小化交叉熵等同于最小化KL散度。你正在将模型的分布推向真实分布。
 
 KL散度不是对称的：D_KL(P || Q) != D_KL(Q || P)。它不是一个真正的距离度量。
 
 ### 互信息
 
-互信息衡量的是知道一个变量能告诉你另一个变量多少信息。```
+互信息衡量的是知道一个变量能告诉你另一个变量多少信息。
+
+```
 I(X; Y) = H(X) - H(X|Y)
         = H(X) + H(Y) - H(X, Y)
-```如果 X 和 Y 是独立的，互信息为零。知道其中一个变量，对另一个变量没有任何信息。如果它们完全相关，互信息等于任一变量的熵。
+```
+
+如果 X 和 Y 是独立的，互信息为零。知道其中一个变量，对另一个变量没有任何信息。如果它们完全相关，互信息等于任一变量的熵。
 
 在特征选择中，特征与目标之间具有高互信息意味着该特征是有用的。互信息低意味着它是噪声。
 
 ### 条件熵
 
-H(Y|X) 表示在观察到 X 之后，关于 Y 剩余的不确定性。```
+H(Y|X) 表示在观察到 X 之后，关于 Y 剩余的不确定性。
+
+```
 H(Y|X) = H(X,Y) - H(X)
-```两种极端情况：
+```
+
+两种极端情况：
 - 如果 X 完全决定了 Y，那么 H(Y|X) = 0。知道 X 就消除了关于 Y 的所有不确定性。例子：X = 摄氏温度，Y = 华氏温度。
 - 如果 X 对 Y 没有任何信息，那么 H(Y|X) = H(Y)。知道 X 完全不会减少你的不确定性。例子：X = 硬币抛掷，Y = 明天的天气。
 
-条件熵始终是非负的，并且永远不会超过 H(Y)：```
+条件熵始终是非负的，并且永远不会超过 H(Y)：
+
+```
 0 <= H(Y|X) <= H(Y)
-```在机器学习中，条件熵出现在决策树中。在每次划分时，算法会选择使 $ H(Y|X) $ 最小的特征 $ X $ —— 即能够最大程度消除对标签 $ Y $ 不确定性的特征。
+```
+
+在机器学习中，条件熵出现在决策树中。在每次划分时，算法会选择使 $ H(Y|X) $ 最小的特征 $ X $ —— 即能够最大程度消除对标签 $ Y $ 不确定性的特征。
 
 ### 联合熵
 
-$ H(X,Y) $ 是 $ X $ 和 $ Y $ 联合分布的熵。```
+$ H(X,Y) $ 是 $ X $ 和 $ Y $ 联合分布的熵。
+
+```
 H(X,Y) = -sum sum p(x,y) * log(p(x,y))   for all x, y
-```关键属性：```
+```
+
+关键属性：
+
+```
 H(X,Y) <= H(X) + H(Y)
-```当 X 和 Y 独立时，等式成立。如果它们共享信息，联合熵就小于各自熵的总和。缺失的熵正好是互信息。```mermaid
+```
+
+当 X 和 Y 独立时，等式成立。如果它们共享信息，联合熵就小于各自熵的总和。缺失的熵正好是互信息。
+
+```mermaid
 graph TD
     subgraph "Information Venn Diagram"
         direction LR
@@ -114,19 +162,25 @@ graph TD
     HXY -.- HXgY
     HXY -.- MI
     HXY -.- HYgX
-```关系如下：
+```
+
+关系如下：
 - H(X,Y) = H(X) + H(Y|X) = H(Y) + H(X|Y)
 - I(X;Y) = H(X) - H(X|Y) = H(Y) - H(Y|X)
 - H(X,Y) = H(X) + H(Y) - I(X;Y)
 
 ### 互信息量度（深入探讨）
 
-互信息 I(X;Y) 衡量了知道一个变量后，对另一个变量的不确定性减少的程度。```
+互信息 I(X;Y) 衡量了知道一个变量后，对另一个变量的不确定性减少的程度。
+
+```
 I(X;Y) = H(X) - H(X|Y)
        = H(Y) - H(Y|X)
        = H(X) + H(Y) - H(X,Y)
        = sum sum p(x,y) * log(p(x,y) / (p(x) * p(y)))
-```属性：
+```
+
+属性：
 - I(X;Y) 总是 >= 0。通过观察事物你永远不会丢失信息。
 - 当且仅当 X 和 Y 独立时，I(X;Y) = 0。
 - I(X;Y) = I(Y;X)。它对称，与 KL 散度不同。
@@ -148,9 +202,13 @@ I(X;Y) = H(X) - H(X|Y)
 
 ### 标签平滑和交叉熵
 
-标准分类使用硬目标：[0, 0, 1, 0]。真实类别获得概率 1，其余都获得 0。标签平滑将这些替换为软目标：```
+标准分类使用硬目标：[0, 0, 1, 0]。真实类别获得概率 1，其余都获得 0。标签平滑将这些替换为软目标：
+
+```
 soft_target = (1 - epsilon) * hard_target + epsilon / num_classes
-```使用 epsilon = 0.1 和 4 个类别时：
+```
+
+使用 epsilon = 0.1 和 4 个类别时：
 - 硬目标：[0, 0, 1, 0]
 - 软目标：[0.025, 0.025, 0.925, 0.025]
 
@@ -162,9 +220,13 @@ soft_target = (1 - epsilon) * hard_target + epsilon / num_classes
 - 改善校准：预测的概率更好地反映真实的不确定性
 - 减少训练和推理行为之间的差距
 
-使用标签平滑的交叉熵损失变为：```
+使用标签平滑的交叉熵损失变为：
+
+```
 L = (1 - epsilon) * CE(hard_target, prediction) + epsilon * H_uniform(prediction)
-```第二项惩罚那些远离均匀分布的预测——对置信度的直接正则化。
+```
+
+第二项惩罚那些远离均匀分布的预测——对置信度的直接正则化。
 
 ### 为什么交叉熵是分类损失
 
@@ -172,17 +234,23 @@ L = (1 - epsilon) * CE(hard_target, prediction) + epsilon * H_uniform(prediction
 
 **信息论视角。** 交叉熵衡量你使用模型分布而不是真实分布时浪费了多少比特。最小化它使你的模型成为现实最有效的编码器。
 
-**最大似然视角。** 对于N个训练样本，其真实类别为 $ y_i $:```
+**最大似然视角。** 对于N个训练样本，其真实类别为 $ y_i $:
+
+```
 Likelihood     = product( q(y_i) )
 Log-likelihood = sum( log(q(y_i)) )
 Negative log-likelihood = -sum( log(q(y_i)) )
-```最后一行是交叉熵损失。最小化交叉熵等于最大化模型下训练数据的可能性。
+```
+
+最后一行是交叉熵损失。最小化交叉熵等于最大化模型下训练数据的可能性。
 
 **梯度视角。** 交叉熵相对于logits的梯度仅仅是（预测值 - 真实值）。简洁、稳定且计算速度快。这就是为什么它与softmax完美搭配的原因。
 
 ### 位（Bits）与自然对数单位（Nats）
 
-唯一的区别是使用的对数底数。```
+唯一的区别是使用的对数底数。
+
+```
 log base 2   -> bits      (information theory tradition)
 log base e   -> nats      (machine learning convention)
 log base 10  -> hartleys  (rarely used)
@@ -190,16 +258,26 @@ log base 10  -> hartleys  (rarely used)
 
 ### 混淆度（Perplexity）
 
-混淆度是交叉熵的指数。它告诉你模型在不确定的情况下，相当于在多少个同样可能的选择之间进行判断。```
+混淆度是交叉熵的指数。它告诉你模型在不确定的情况下，相当于在多少个同样可能的选择之间进行判断。
+
+```
 Perplexity = 2^H(P,Q)   (if using bits)
 Perplexity = e^H(P,Q)   (if using nats)
-```困惑度（perplexity）为 50 的语言模型，平均来说，其困惑程度相当于必须从 50 个可能的下一个词元（token）中均匀随机选择。数值越低越好。
+```
 
-GPT-2 在常见基准测试中实现了约 30 的困惑度。现代模型在代表性良好的领域中，困惑度已降至个位数。```figure
+困惑度（perplexity）为 50 的语言模型，平均来说，其困惑程度相当于必须从 50 个可能的下一个词元（token）中均匀随机选择。数值越低越好。
+
+GPT-2 在常见基准测试中实现了约 30 的困惑度。现代模型在代表性良好的领域中，困惑度已降至个位数。
+
+```figure
 entropy-kl
-```## 构建它
+```
 
-### 第一步：信息内容和熵```python
+## 构建它
+
+### 第一步：信息内容和熵
+
+```python
 import math
 
 def information_content(p, base=2):
@@ -220,7 +298,11 @@ fair_die = [1/6] * 6
 print(f"Fair coin entropy:   {entropy(fair_coin):.4f} bits")
 print(f"Biased coin entropy: {entropy(biased_coin):.4f} bits")
 print(f"Fair die entropy:    {entropy(fair_die):.4f} bits")
-```### 步骤 2：交叉熵和 KL 散度```python
+```
+
+### 步骤 2：交叉熵和 KL 散度
+
+```python
 def cross_entropy(p, q, base=2):
     total = 0.0
     for pi, qi in zip(p, q):
@@ -242,7 +324,11 @@ print(f"CE (good model):          {cross_entropy(true_dist, good_model):.4f} bit
 print(f"CE (bad model):           {cross_entropy(true_dist, bad_model):.4f} bits")
 print(f"KL divergence (good):     {kl_divergence(true_dist, good_model):.4f} bits")
 print(f"KL divergence (bad):      {kl_divergence(true_dist, bad_model):.4f} bits")
-```### 步骤 3：交叉熵作为分类损失```python
+```
+
+### 步骤 3：交叉熵作为分类损失
+
+```python
 def softmax(logits):
     max_logit = max(logits)
     exps = [math.exp(z - max_logit) for z in logits]
@@ -264,7 +350,11 @@ print(f"Softmax:     {[f'{p:.4f}' for p in probs]}")
 print(f"True class:  {true_class}")
 print(f"Loss:        {loss:.4f} nats")
 print(f"Perplexity:  {math.exp(loss):.2f}")
-```### 步骤 4：交叉熵等于负对数似然```python
+```
+
+### 步骤 4：交叉熵等于负对数似然
+
+```python
 import random
 
 random.seed(42)
@@ -287,7 +377,11 @@ nll = -sum(
 print(f"Cross-entropy loss:      {ce_loss:.6f}")
 print(f"Negative log-likelihood: {nll:.6f}")
 print(f"Difference:              {abs(ce_loss - nll):.2e}")
-```### 步骤 5：互信息```python
+```
+
+### 步骤 5：互信息
+
+```python
 def mutual_information(joint_probs, base=2):
     rows = len(joint_probs)
     cols = len(joint_probs[0])
@@ -308,9 +402,13 @@ dependent = [[0.45, 0.05], [0.05, 0.45]]
 
 print(f"MI (independent): {mutual_information(independent):.4f} bits")
 print(f"MI (dependent):   {mutual_information(dependent):.4f} bits")
-```## 使用它
+```
 
-使用 NumPy 的相同概念，这将是你在实践中使用它们的方式：```python
+## 使用它
+
+使用 NumPy 的相同概念，这将是你在实践中使用它们的方式：
+
+```python
 import numpy as np
 
 def np_entropy(p):
@@ -333,7 +431,9 @@ pred = np.array([0.6, 0.25, 0.15])
 print(f"Entropy:    {np_entropy(true):.4f} nats")
 print(f"Cross-ent:  {np_cross_entropy(true, pred):.4f} nats")
 print(f"KL div:     {np_kl_divergence(true, pred):.4f} nats")
-```你从零开始构建了 `torch.nn.CrossEntropyLoss()` 内部的工作方式。现在你知道为什么在训练过程中损失会下降：你的模型预测的分布正在接近真实的分布，以浪费的信息量（单位为 nats）来衡量。
+```
+
+你从零开始构建了 `torch.nn.CrossEntropyLoss()` 内部的工作方式。现在你知道为什么在训练过程中损失会下降：你的模型预测的分布正在接近真实的分布，以浪费的信息量（单位为 nats）来衡量。
 
 ## 练习
 

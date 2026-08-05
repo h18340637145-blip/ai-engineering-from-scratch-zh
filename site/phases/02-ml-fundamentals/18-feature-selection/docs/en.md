@@ -28,7 +28,9 @@
 
 ### 特征选择的三类
 
-每个特征选择方法都属于以下三类中的一种：```mermaid
+每个特征选择方法都属于以下三类中的一种：
+
+```mermaid
 flowchart TD
     A[Feature Selection Methods] --> B[Filter Methods]
     A --> C[Wrapper Methods]
@@ -56,9 +58,13 @@ flowchart TD
 
 最简单的过滤方法。如果一个特征在样本之间几乎没有变化，那么它几乎不携带任何信息。
 
-考虑一个特征，在1000个样本中有999个样本的值为0.0。它的方差接近于零。没有任何模型可以利用它来区分类别。应该将其删除。```
+考虑一个特征，在1000个样本中有999个样本的值为0.0。它的方差接近于零。没有任何模型可以利用它来区分类别。应该将其删除。
+
+```
 variance(x) = mean((x - mean(x))^2)
-```设置一个阈值（例如，0.01）。删除所有方差低于该阈值的特征。这种方法无需查看目标变量，即可去除常数或接近常数的特征。
+```
+
+设置一个阈值（例如，0.01）。删除所有方差低于该阈值的特征。这种方法无需查看目标变量，即可去除常数或接近常数的特征。
 
 使用场景：作为其他方法之前的预处理步骤。它几乎不耗费成本，即可识别明显无用的特征。
 
@@ -66,27 +72,37 @@ variance(x) = mean((x - mean(x))^2)
 
 ### 互信息
 
-互信息衡量的是，已知特征 X 的值在多大程度上能减少对目标 Y 的不确定性。```
+互信息衡量的是，已知特征 X 的值在多大程度上能减少对目标 Y 的不确定性。
+
+```
 I(X; Y) = sum_x sum_y p(x, y) * log(p(x, y) / (p(x) * p(y)))
-```如果 X 和 Y 是独立的，那么 p(x, y) = p(x) * p(y)，所以对数项为零，I(X; Y) = 0。X 越能告诉你关于 Y 的信息，互信息就越高。
+```
+
+如果 X 和 Y 是独立的，那么 p(x, y) = p(x) * p(y)，所以对数项为零，I(X; Y) = 0。X 越能告诉你关于 Y 的信息，互信息就越高。
 
 与相关性相比的关键优势：互信息能够捕捉非线性关系。一个特征可能与目标变量的相关系数为零，但互信息很高，因为它们之间的关系可能是二次的或周期性的。
 
-对于连续特征，首先将其离散化为若干个区间（基于直方图的估计）。区间的数量会影响估计结果——区间太少会丢失信息，太多则会引入噪声。常用的选择方法：使用 sqrt(n) 个区间，或使用斯特格斯规则（Sturges' rule）：1 + log2(n)。```mermaid
+对于连续特征，首先将其离散化为若干个区间（基于直方图的估计）。区间的数量会影响估计结果——区间太少会丢失信息，太多则会引入噪声。常用的选择方法：使用 sqrt(n) 个区间，或使用斯特格斯规则（Sturges' rule）：1 + log2(n)。
+
+```mermaid
 flowchart LR
     A[Feature X] --> B[Discretize into Bins]
     B --> C["Compute Joint Distribution p(x,y)"]
     C --> D["Compute MI = sum p(x,y) * log(p(x,y) / p(x)p(y))"]
     D --> E["Rank Features by MI Score"]
     E --> F[Select Top K]
-```### 递归特征消除（RFE）
+```
+
+### 递归特征消除（RFE）
 
 RFE 是一种包装方法。它使用模型自身的特征重要性来迭代地修剪：
 
 1. 使用所有特征训练模型
 2. 按重要性对特征进行排序（线性模型使用系数，树模型使用不纯度减少量）
 3. 移除最不重要的特征
-4. 重复直到剩余所需数量的特征```mermaid
+4. 重复直到剩余所需数量的特征
+
+```mermaid
 flowchart TD
     A["Start: All N Features"] --> B["Train Model"]
     B --> C["Rank Feature Importances"]
@@ -100,7 +116,9 @@ flowchart TD
 
 ### L1（Lasso）正则化
 
-L1 正则化将权重的绝对值添加到损失函数中：```
+L1 正则化将权重的绝对值添加到损失函数中：
+
+```
 loss = prediction_error + alpha * sum(|w_i|)
 ```alpha 参数控制特征被剪枝的激进程度。alpha 值越高，意味着更多的权重会被精确地置零。
 
@@ -116,11 +134,15 @@ loss = prediction_error + alpha * sum(|w_i|)
 
 决策树及其集成方法（随机森林、梯度提升）自然地对特征进行排序。每一次分裂都会减少不纯度（分类使用基尼指数或熵，回归使用方差）。产生较大不纯度减少的特征更为重要。
 
-对于包含 T 棵树的随机森林：```
+对于包含 T 棵树的随机森林：
+
+```
 importance(feature_j) = (1/T) * sum over all trees of
     sum over all nodes splitting on feature_j of
         (n_samples * impurity_decrease)
-```这为每个特征提供了一个归一化的的重要性评分。它可以自动处理非线性关系和特征交互。
+```
+
+这为每个特征提供了一个归一化的的重要性评分。它可以自动处理非线性关系和特征交互。
 
 注意：基于树的重要性评分倾向于偏向具有许多唯一值（高基数）的特征。一个随机ID列会显得很重要，因为它可以完美地分割每一个样本。使用置换重要性作为合理性检查。
 
@@ -148,7 +170,9 @@ importance(feature_j) = (1/T) * sum over all trees of
 | 树重要性 | 嵌入 | 中等 | 是 | 是 |
 | 置换重要性 | 模型无关 | 慢 | 是 | 是 |
 
-### 决策流程图```mermaid
+### 决策流程图
+
+```mermaid
 flowchart TD
     A[Start: Feature Selection] --> B{How many features?}
     B -->|"< 50"| C["Start with variance threshold + mutual information"]
@@ -170,9 +194,13 @@ flowchart TD
     J --> K{Performance improved?}
     K -->|Yes| L["Ship with selected features"]
     K -->|No| M["Try different method or keep all features"]
-```## 构建它
+```
 
-### 步骤 1：生成具有已知特征结构的合成数据```python
+## 构建它
+
+### 步骤 1：生成具有已知特征结构的合成数据
+
+```python
 import numpy as np
 
 
@@ -207,14 +235,22 @@ def make_feature_selection_data(n_samples=500, seed=42):
     )
 
     return X, y, feature_names
-```我们知道真实情况：特征 0-4 是有信息的（其中 3 和 4 是 0 和 1 的相关副本），特征 5-9 与有信息的特征相关，特征 10-19 是纯粹的噪声。一个好的选择方法应该将 0-4 的排名最高，将 10-19 的排名最低。
+```
 
-### 步骤 2：方差阈值```python
+我们知道真实情况：特征 0-4 是有信息的（其中 3 和 4 是 0 和 1 的相关副本），特征 5-9 与有信息的特征相关，特征 10-19 是纯粹的噪声。一个好的选择方法应该将 0-4 的排名最高，将 10-19 的排名最低。
+
+### 步骤 2：方差阈值
+
+```python
 def variance_threshold(X, threshold=0.01):
     variances = np.var(X, axis=0)
     mask = variances > threshold
     return mask, variances
-```### 步骤 3：互信息（离散）```python
+```
+
+### 步骤 3：互信息（离散）
+
+```python
 def discretize(x, n_bins=10):
     min_val, max_val = x.min(), x.max()
     if max_val == min_val:
@@ -246,7 +282,11 @@ def mutual_information(X, y, n_bins=10):
         mi_scores[f] = mi
 
     return mi_scores
-```### 步骤 4：递归特征消除```python
+```
+
+### 步骤 4：递归特征消除
+
+```python
 def simple_logistic_importance(X, y, lr=0.1, epochs=100):
     n_samples, n_features = X.shape
     w = np.zeros(n_features)
@@ -284,7 +324,11 @@ def rfe(X, y, n_features_to_select=5, lr=0.1, epochs=100):
 
     selected_mask = rankings == 1
     return selected_mask, rankings
-```### 步骤 5：L1 特征选择```python
+```
+
+### 步骤 5：L1 特征选择
+
+```python
 def soft_threshold(w, alpha):
     return np.sign(w) * np.maximum(np.abs(w) - alpha, 0)
 
@@ -308,7 +352,11 @@ def l1_feature_selection(X, y, alpha=0.1, lr=0.01, epochs=500):
 
     selected_mask = np.abs(w) > 1e-6
     return selected_mask, w
-```### 第6步：基于树的重要性（简单决策树）```python
+```
+
+### 第6步：基于树的重要性（简单决策树）
+
+```python
 def gini_impurity(y):
     if len(y) == 0:
         return 0.0
@@ -399,13 +447,17 @@ def _build_tree_importance(X, y, feature_subset, max_depth, depth=0):
     importances += _build_tree_importance(X[right_mask], y[right_mask], feature_subset, max_depth, depth + 1)
 
     return importances
-```### 第7步：运行所有方法并进行比较
+```
+
+### 第7步：运行所有方法并进行比较
 
 该代码文件在相同的合成数据集上运行所有五种方法，并打印一个比较表，显示每种方法选择的特征。
 
 ## 使用方法
 
-使用scikit-learn，特征选择已集成到流程中：```python
+使用scikit-learn，特征选择已集成到流程中：
+
+```python
 from sklearn.feature_selection import (
     VarianceThreshold,
     mutual_info_classif,
@@ -432,7 +484,9 @@ X_lasso = lasso_selector.transform(X)
 rf = RandomForestClassifier(n_estimators=100)
 rf.fit(X, y)
 importances = rf.feature_importances_
-```从零开始的实现展示了每个方法内部发生的确切过程。方差阈值只是计算 `var(X, axis=0)` 并应用掩码。互信息是在列联表中计算联合频率和边缘频率。RFE 是一个循环，依次训练、排序和修剪。L1 是带有软阈值步骤的梯度下降。树重要性是跨分割累积不纯度的减少。没有魔法，只有统计和循环。
+```
+
+从零开始的实现展示了每个方法内部发生的确切过程。方差阈值只是计算 `var(X, axis=0)` 并应用掩码。互信息是在列联表中计算联合频率和边缘频率。RFE 是一个循环，依次训练、排序和修剪。L1 是带有软阈值步骤的梯度下降。树重要性是跨分割累积不纯度的减少。没有魔法，只有统计和循环。
 
 sklearn 的版本增加了鲁棒性（例如，mutual_info_classif 使用 k-NN 密度估计而不是分箱）、速度（C 实现）和管道集成。
 

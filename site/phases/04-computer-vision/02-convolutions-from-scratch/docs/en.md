@@ -26,7 +26,9 @@
 
 ### 一个核，滑动
 
-二维卷积采用一个称为核（或滤波器）的小权重矩阵，在输入上滑动，并在每个位置计算逐元素乘积的总和。这个总和变成一个输出像素。```mermaid
+二维卷积采用一个称为核（或滤波器）的小权重矩阵，在输入上滑动，并在每个位置计算逐元素乘积的总和。这个总和变成一个输出像素。
+
+```mermaid
 flowchart LR
     subgraph IN["Input (H x W)"]
         direction LR
@@ -44,7 +46,11 @@ flowchart LR
     style IN fill:#dbeafe,stroke:#2563eb
     style K fill:#fef3c7,stroke:#d97706
     style OUT fill:#dcfce7,stroke:#16a34a
-```一个具体的 3x3 示例，在 5x5 输入上（无填充，步长 1）：```
+```
+
+一个具体的 3x3 示例，在 5x5 输入上（无填充，步长 1）：
+
+```
 Input X (5 x 5):                Kernel W (3 x 3):
 
   1  2  0  1  2                   1  0 -1
@@ -60,13 +66,19 @@ The kernel slides across every valid 3 x 3 window. Output Y is 3 x 3:
  Y[0,2] = sum( W * X[0:3, 2:5] )
  Y[1,0] = sum( W * X[1:4, 0:3] )
  ... and so on
-```那个公式 —— **共享权重、局部性、滑动窗口** —— 就是全部的核心思想。其他的一切都是琐碎的细节。
+```
+
+那个公式 —— **共享权重、局部性、滑动窗口** —— 就是全部的核心思想。其他的一切都是琐碎的细节。
 
 ### 输出尺寸公式
 
-给定输入空间尺寸 `H`，核尺寸 `K`，填充 `P`，步长 `S`：```
+给定输入空间尺寸 `H`，核尺寸 `K`，填充 `P`，步长 `S`：
+
+```
 H_out = floor( (H - K + 2P) / S ) + 1
-```记住这一点。你将根据架构的不同，计算它数十次。
+```
+
+记住这一点。你将根据架构的不同，计算它数十次。
 
 | Scenario | H | K | P | S | H_out |
 |----------|---|- --|---|---|--- ----|
@@ -80,7 +92,9 @@ H_out = floor( (H - K + 2P) / S ) + 1
 
 ### Padding
 
-没有padding时，每个卷积都会缩小特征图。堆叠20个这样的卷积，你的224x224图像会变成184x184，这在边界上浪费了计算资源，并且使需要匹配形状的残差连接变得更加复杂。```
+没有padding时，每个卷积都会缩小特征图。堆叠20个这样的卷积，你的224x224图像会变成184x184，这在边界上浪费了计算资源，并且使需要匹配形状的残差连接变得更加复杂。
+
+```
 Zero padding (P = 1) on a 5 x 5 input:
 
   0  0  0  0  0  0  0
@@ -90,11 +104,15 @@ Zero padding (P = 1) on a 5 x 5 input:
   0  1  0  2  1  3  0       (0, 0) and still have three rows and
   0  2  1  1  0  1  0       three columns of values to multiply.
   0  0  0  0  0  0  0
-```实践中遇到的模式：`zero`（最常见），`reflect`（镜像边缘，避免生成模型中的硬边界），`replicate`（复制边缘），`circular`（环绕，用于环形问题）。
+```
+
+实践中遇到的模式：`zero`（最常见），`reflect`（镜像边缘，避免生成模型中的硬边界），`replicate`（复制边缘），`circular`（环绕，用于环形问题）。
 
 ### 步长
 
-步长是滑动的步长。`stride=1` 是默认值。`stride=2` 会将空间维度减半，是经典的方式在 CNN 中进行下采样而不使用单独的池化层——每个现代架构（ResNet、ConvNeXt、MobileNet）都会在某些地方用步长卷积代替最大池化。```
+步长是滑动的步长。`stride=1` 是默认值。`stride=2` 会将空间维度减半，是经典的方式在 CNN 中进行下采样而不使用单独的池化层——每个现代架构（ResNet、ConvNeXt、MobileNet）都会在某些地方用步长卷积代替最大池化。
+
+```
 Stride 1 on a 5 x 5 input, 3 x 3 kernel:
 
   starts: (0,0) (0,1) (0,2)        -> output row 0
@@ -109,9 +127,13 @@ Stride 2 on the same input:
           (2,0) (2,2)              -> output row 1
 
   Output: 2 x 2
-```### 多个输入通道
+```
 
-真实图像有三个通道。对RGB输入进行3x3卷积实际上是一个3x3x3的体积：每个输入通道一个3x3的切片。在每个空间位置，你将对所有三个切片进行乘法和求和操作，并加上一个偏置。```
+### 多个输入通道
+
+真实图像有三个通道。对RGB输入进行3x3卷积实际上是一个3x3x3的体积：每个输入通道一个3x3的切片。在每个空间位置，你将对所有三个切片进行乘法和求和操作，并加上一个偏置。
+
+```
 Input:   (C_in,  H,  W)        3 x 5 x 5
 Kernel:  (C_in,  K,  K)        3 x 3 x 3 (one kernel)
 Output:  (1,     H', W')       2D map
@@ -122,11 +144,15 @@ Weight:  (C_out, C_in, K, K)   e.g. 64 x 3 x 3 x 3
 Output:  (C_out, H', W')       64 x 3 x 3
 
 Parameter count: C_out * C_in * K * K + C_out   (the + C_out is biases)
-```最后一行是你在规划模型时将要计算的部分。一个针对三通道输入的 64 通道 3x3 卷积层有 `64 * 3 * 3 * 3 + 64 = 1,792` 个参数。很便宜。
+```
+
+最后一行是你在规划模型时将要计算的部分。一个针对三通道输入的 64 通道 3x3 卷积层有 `64 * 3 * 3 * 3 + 64 = 1,792` 个参数。很便宜。
 
 ### im2col 技巧
 
-嵌套循环虽然易于阅读，但速度很慢。GPU 希望进行大规模的矩阵乘法。技巧是：将输入中每个感受野窗口展平成一个大矩阵的一列，将核展平成一行，这样整个卷积就变成一次矩阵乘法。```mermaid
+嵌套循环虽然易于阅读，但速度很慢。GPU 希望进行大规模的矩阵乘法。技巧是：将输入中每个感受野窗口展平成一个大矩阵的一列，将核展平成一行，这样整个卷积就变成一次矩阵乘法。
+
+```mermaid
 flowchart LR
     X["Input<br/>(C_in, H, W)"] --> IM2COL["im2col<br/>(extract patches)"]
     IM2COL --> COLS["Cols matrix<br/>(C_in * K * K, H_out * W_out)"]
@@ -138,21 +164,33 @@ flowchart LR
     style X fill:#dbeafe,stroke:#2563eb
     style W fill:#fef3c7,stroke:#d97706
     style OUT fill:#dcfce7,stroke:#16a34a
-```每个生产环境中的卷积（conv）实现都是这种基本形式的某种变体，再加上缓存分块（cache-tiling）技巧（直接卷积、Winograd、大内核的FFT卷积）。理解im2col，你就理解了核心。
+```
+
+每个生产环境中的卷积（conv）实现都是这种基本形式的某种变体，再加上缓存分块（cache-tiling）技巧（直接卷积、Winograd、大内核的FFT卷积）。理解im2col，你就理解了核心。
 
 ### 接收域
 
-一个3x3的卷积层会查看9个输入像素。堆叠两个3x3的卷积层，第二层中的一个神经元会查看5x5的输入像素。三个3x3的卷积层会得到7x7的接收域。一般来说：```
+一个3x3的卷积层会查看9个输入像素。堆叠两个3x3的卷积层，第二层中的一个神经元会查看5x5的输入像素。三个3x3的卷积层会得到7x7的接收域。一般来说：
+
+```
 RF after L stacked K x K convs (stride 1) = 1 + L * (K - 1)
 
 With strides:   RF grows multiplicatively with stride along each layer.
-```“3x3 all the way down”之所以有效（如VGG、ResNet、ConvNeXt）的原因是，两个3x3的卷积层所看到的输入区域与一个5x5的卷积层相同，但参数更少，并且中间多了一个非线性变换。```figure
+```
+
+“3x3 all the way down”之所以有效（如VGG、ResNet、ConvNeXt）的原因是，两个3x3的卷积层所看到的输入区域与一个5x5的卷积层相同，但参数更少，并且中间多了一个非线性变换。
+
+```figure
 convolution-kernel
-```## 构建它
+```
+
+## 构建它
 
 ### 步骤 1：填充数组
 
-从最简单的原始操作开始：一个函数，用于在 H x W 的数组周围填充零。```python
+从最简单的原始操作开始：一个函数，用于在 H x W 的数组周围填充零。
+
+```python
 import numpy as np
 
 def pad2d(x, p):
@@ -167,11 +205,15 @@ x = np.arange(9).reshape(3, 3)
 print(x)
 print()
 print(pad2d(x, 1))
-```尾轴技巧 `x.shape[:-2]` 表示相同的函数可以在 `(H, W)`、`(C, H, W)` 或 `(N, C, H, W)` 上无修改地工作。
+```
+
+尾轴技巧 `x.shape[:-2]` 表示相同的函数可以在 `(H, W)`、`(C, H, W)` 或 `(N, C, H, W)` 上无修改地工作。
 
 ### 步骤 2：使用嵌套循环的二维卷积
 
-参考实现 —— 慢，但明确无误。这基本上就是 `torch.nn.functional.conv2d` 所做的事情。```python
+参考实现 —— 慢，但明确无误。这基本上就是 `torch.nn.functional.conv2d` 所做的事情。
+
+```python
 def conv2d_naive(x, w, b=None, stride=1, padding=0):
     c_in, h, w_in = x.shape
     c_out, c_in_w, kh, kw = w.shape
@@ -192,11 +234,15 @@ def conv2d_naive(x, w, b=None, stride=1, padding=0):
         if b is not None:
             out[oc] += b[oc]
     return out
-```四个嵌套循环（输出通道、行、列，加上对 C_in、kh、kw 的隐式求和）。这是你要检查每个更快实现的基准。
+```
+
+四个嵌套循环（输出通道、行、列，加上对 C_in、kh、kw 的隐式求和）。这是你要检查每个更快实现的基准。
 
 ### 步骤 3：使用手工设计的核进行验证
 
-构建一个垂直 Sobel 核，将其应用于一个合成的阶梯图像，观察垂直边缘被点亮。```python
+构建一个垂直 Sobel 核，将其应用于一个合成的阶梯图像，观察垂直边缘被点亮。
+
+```python
 def synthetic_step_image():
     img = np.zeros((1, 16, 16), dtype=np.float32)
     img[:, :, 8:] = 1.0
@@ -211,11 +257,15 @@ sobel_x = np.array([
 x = synthetic_step_image()
 y = conv2d_naive(x, sobel_x, padding=1)
 print(y[0].round(1))
-```在第7列（从左到右亮度增加）上期望出现较大的正值，其他位置应为零。这个单一的打印结果是你验证数学是否正确的依据。
+```
+
+在第7列（从左到右亮度增加）上期望出现较大的正值，其他位置应为零。这个单一的打印结果是你验证数学是否正确的依据。
 
 ### 第4步：im2col
 
-将输入中每个内核大小的窗口转换为矩阵中的一列。对于`C_in=3, K=3`，每一列包含27个数字。```python
+将输入中每个内核大小的窗口转换为矩阵中的一列。对于`C_in=3, K=3`，每一列包含27个数字。
+
+```python
 def im2col(x, kh, kw, stride=1, padding=0):
     c_in, h, w = x.shape
     x_pad = pad2d(x, padding)
@@ -232,11 +282,15 @@ def im2col(x, kh, kw, stride=1, padding=0):
             cols[:, col] = patch.reshape(-1)
             col += 1
     return cols, h_out, w_out
-```它仍然是一个 Python 循环，但现在繁重的计算将由一个向量化 matmul 来完成。
+```
+
+它仍然是一个 Python 循环，但现在繁重的计算将由一个向量化 matmul 来完成。
 
 ### 步骤 5：通过 im2col + matmul 实现快速卷积
 
-用一个矩阵乘法来替代四重循环。```python
+用一个矩阵乘法来替代四重循环。
+
+```python
 def conv2d_im2col(x, w, b=None, stride=1, padding=0):
     c_out, c_in, kh, kw = w.shape
     cols, h_out, w_out = im2col(x, kh, kw, stride, padding)
@@ -245,7 +299,11 @@ def conv2d_im2col(x, w, b=None, stride=1, padding=0):
     if b is not None:
         out += b[:, None]
     return out.reshape(c_out, h_out, w_out)
-```正确性检查：运行两种实现并进行比较。```python
+```
+
+正确性检查：运行两种实现并进行比较。
+
+```python
 rng = np.random.default_rng(0)
 x = rng.normal(0, 1, (3, 16, 16)).astype(np.float32)
 w = rng.normal(0, 1, (8, 3, 3, 3)).astype(np.float32)
@@ -255,11 +313,15 @@ y_naive = conv2d_naive(x, w, b, padding=1)
 y_im2col = conv2d_im2col(x, w, b, padding=1)
 
 print(f"max abs diff: {np.max(np.abs(y_naive - y_im2col)):.2e}")
-````max abs diff` 应该接近 `1e-5` —— 差异是浮点数累加顺序的问题，而不是错误。
+```
+
+`max abs diff` 应该接近 `1e-5` —— 差异是浮点数累加顺序的问题，而不是错误。
 
 ### 第6步：一组手工设计的内核
 
-五个滤波器展示了在任何训练之前，单个卷积层能够表达的内容。```python
+五个滤波器展示了在任何训练之前，单个卷积层能够表达的内容。
+
+```python
 KERNELS = {
     "identity": np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]], dtype=np.float32),
     "blur_3x3": np.ones((3, 3), dtype=np.float32) / 9.0,
@@ -272,11 +334,15 @@ def apply_kernel(img2d, kernel):
     x = img2d[None].astype(np.float32)
     w = kernel[None, None]
     return conv2d_im2col(x, w, padding=1)[0]
-```应用于任何灰度图像，模糊可以柔化图像，锐化可以增强边缘，Sobel-x 可以突出垂直边缘，Sobel-y 可以突出水平边缘。这些正是 AlexNet 和 VGG 中 *第一个* 训练好的卷积层最终学到的模式 —— 因为一个优秀的图像模型，无论后续任务是什么，都需要边缘和斑块检测器。
+```
+
+应用于任何灰度图像，模糊可以柔化图像，锐化可以增强边缘，Sobel-x 可以突出垂直边缘，Sobel-y 可以突出水平边缘。这些正是 AlexNet 和 VGG 中 *第一个* 训练好的卷积层最终学到的模式 —— 因为一个优秀的图像模型，无论后续任务是什么，都需要边缘和斑块检测器。
 
 ## 使用方法
 
-PyTorch 的 `nn.Conv2d` 用 autograd、CUDA 内核和 cuDNN 优化封装了同样的操作。形状语义完全一致。```python
+PyTorch 的 `nn.Conv2d` 用 autograd、CUDA 内核和 cuDNN 优化封装了同样的操作。形状语义完全一致。
+
+```python
 import torch
 import torch.nn as nn
 
@@ -290,7 +356,9 @@ x = torch.randn(8, 3, 224, 224)
 y = conv(x)
 print(f"\ninput  shape: {tuple(x.shape)}")
 print(f"output shape: {tuple(y.shape)}")
-```将 `padding=1` 换成 `padding=0`，输出变为 222x222。将 `stride=1` 换成 `stride=2`，输出变为 112x112。使用你上面记住的相同公式。
+```
+
+将 `padding=1` 换成 `padding=0`，输出变为 222x222。将 `stride=1` 换成 `stride=2`，输出变为 112x112。使用你上面记住的相同公式。
 
 ## 发布它
 

@@ -55,7 +55,9 @@
 
 对于上面的“总是预测为负”模型：精确率 = 0/0（未定义，通常设置为 0），召回率 = 0/10 = 0，F1 = 0，MCC = 0。这些指标正确地识别了模型毫无价值。
 
-### 不平衡数据管道```mermaid
+### 不平衡数据管道
+
+```mermaid
 flowchart TD
     A[Imbalanced Dataset] --> B{Imbalance Ratio?}
     B -->|Mild: 80/20| C[Class Weights]
@@ -69,7 +71,9 @@ flowchart TD
     H -->|No| I[Try Different Strategy]
     H -->|Yes| J[Deploy with Monitoring]
     I --> B
-```### SMOTE: 合成少数类过采样技术
+```
+
+### SMOTE: 合成少数类过采样技术
 
 随机过采样会复制现有的少数类样本。这虽然有效，但存在过拟合的风险，因为模型会反复看到相同的样本点。
 
@@ -81,7 +85,9 @@ SMOTE 会生成新的合成少数类样本，这些样本是合理的，但不�
 
 公式：`new_sample = x + random(0, 1) * (neighbor - x)`
 
-这在真实少数类点之间进行插值，生成特征空间中相同区域的样本，而不仅仅是复制现有数据。```mermaid
+这在真实少数类点之间进行插值，生成特征空间中相同区域的样本，而不仅仅是复制现有数据。
+
+```mermaid
 flowchart LR
     subgraph Original["Original Minority Points"]
         P1["x1 (1.0, 2.0)"]
@@ -104,7 +110,9 @@ flowchart LR
         R4["synthetic (1.2, 2.2)"]
     end
     SMOTE --> Result
-```### 采样策略比较
+```
+
+### 采样策略比较
 
 **随机过采样**：复制少数类样本以匹配多数类数量。
 - 优点：简单，不丢失信息
@@ -134,9 +142,13 @@ flowchart LR
 
 正类的权重是负类的19倍。将一个正类样本错误分类的成本相当于将19个负类样本错误分类的成本。模型被迫关注少数类。
 
-在逻辑回归中，这会修改损失函数：```
+在逻辑回归中，这会修改损失函数：
+
+```
 weighted_loss = -sum(w_i * [y_i * log(p_i) + (1-y_i) * log(1-p_i)])
-```其中 $ w_i $ 依赖于样本 $ i $ 的类别。
+```
+
+其中 $ w_i $ 依赖于样本 $ i $ 的类别。
 
 类别权重在数学上等价于期望意义上的过采样，但不会生成新的数据点。这使得它们更快，并避免了复制样本所带来的过拟合风险。
 
@@ -149,14 +161,18 @@ weighted_loss = -sum(w_i * [y_i * log(p_i) + (1-y_i) * log(1-p_i)])
 2. 在验证集上获取预测概率
 3. 从 0.0 到 1.0 扫描阈值
 4. 在每个阈值下计算 F1（或你选择的指标）
-5. 选择使你的指标最大化的阈值```mermaid
+5. 选择使你的指标最大化的阈值
+
+```mermaid
 flowchart LR
     A[Model] --> B[Predict Probabilities]
     B --> C[Sweep Thresholds 0.0 to 1.0]
     C --> D[Compute F1 at Each]
     D --> E[Pick Best Threshold]
     E --> F[Use in Production]
-```一个模型可能对一笔欺诈交易输出 P(fraud) = 0.15。在阈值为 0.5 时，该交易会被归类为非欺诈。而在阈值为 0.10 时，该交易会被正确识别。概率校准的重要性不如排序——只要欺诈交易的概率高于非欺诈交易的概率，就存在一个可以将它们区分开的阈值。
+```
+
+一个模型可能对一笔欺诈交易输出 P(fraud) = 0.15。在阈值为 0.5 时，该交易会被归类为非欺诈。而在阈值为 0.10 时，该交易会被正确识别。概率校准的重要性不如排序——只要欺诈交易的概率高于非欺诈交易的概率，就存在一个可以将它们区分开的阈值。
 
 ### 成本敏感学习
 
@@ -171,7 +187,9 @@ flowchart LR
 
 当你能够估算现实世界中的成本时，这是最合理的方法。漏诊癌症的成本与因误报而进行额外活检的成本有非常大的差异。明确这些成本可以促使做出正确的权衡。
 
-### 决策流程图```mermaid
+### 决策流程图
+
+```mermaid
 flowchart TD
     A[Start: Imbalanced Dataset] --> B{How imbalanced?}
     B -->|"< 70/30"| C["Mild: try class weights first"]
@@ -195,9 +213,13 @@ flowchart TD
 
 ```figure
 class-imbalance
-```## 构建它
+```
 
-### 步骤 1：生成一个不平衡的数据集```python
+## 构建它
+
+### 步骤 1：生成一个不平衡的数据集
+
+```python
 import numpy as np
 
 
@@ -212,7 +234,11 @@ def make_imbalanced_data(n_majority=950, n_minority=50, seed=42):
 
     shuffle_idx = rng.permutation(len(y))
     return X[shuffle_idx], y[shuffle_idx]
-```### 步骤 2：从零开始实现 SMOTE```python
+```
+
+### 步骤 2：从零开始实现 SMOTE
+
+```python
 def euclidean_distance(a, b):
     return np.sqrt(np.sum((a - b) ** 2))
 
@@ -243,7 +269,11 @@ def smote(X_minority, k=5, n_synthetic=100, seed=42):
         synthetic.append(new_point)
 
     return np.array(synthetic)
-```### 步骤 3：随机过采样和欠采样```python
+```
+
+### 步骤 3：随机过采样和欠采样
+
+```python
 def random_oversample(X, y, seed=42):
     rng = np.random.RandomState(seed)
     classes, counts = np.unique(y, return_counts=True)
@@ -284,7 +314,11 @@ def random_undersample(X, y, seed=42):
     y_out = np.array(y_resampled)
     shuffle = rng.permutation(len(y_out))
     return X_out[shuffle], y_out[shuffle]
-```### 步骤 4：带类别权重的逻辑回归```python
+```
+
+### 步骤 4：带类别权重的逻辑回归
+
+```python
 def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-np.clip(z, -500, 500)))
 
@@ -317,7 +351,11 @@ def compute_class_weights(y):
     for cls, count in zip(classes, counts):
         weight_map[cls] = n_samples / (n_classes * count)
     return np.array([weight_map[yi] for yi in y])
-```### 步骤 5：阈值调整```python
+```
+
+### 步骤 5：阈值调整
+
+```python
 def find_optimal_threshold(y_true, y_probs, metric="f1"):
     best_threshold = 0.5
     best_score = -1.0
@@ -342,7 +380,11 @@ def find_optimal_threshold(y_true, y_probs, metric="f1"):
             best_threshold = threshold
 
     return best_threshold, best_score
-```### 步骤 6：评估函数```python
+```
+
+### 步骤 6：评估函数
+
+```python
 def confusion_matrix_values(y_true, y_pred):
     tp = np.sum((y_pred == 1) & (y_true == 1))
     tn = np.sum((y_pred == 0) & (y_true == 0))
@@ -368,7 +410,11 @@ def compute_metrics(y_true, y_pred):
         "f1": f1,
         "mcc": mcc,
     }
-```### 步骤 7：比较所有方法```python
+```
+
+### 步骤 7：比较所有方法
+
+```python
 X, y = make_imbalanced_data(950, 50, seed=42)
 split = int(0.8 * len(y))
 X_train, X_test = X[:split], X[split:]
@@ -411,11 +457,15 @@ preds_cw = (probs_cw >= 0.5).astype(int)
 probs_val = sigmoid(X_val @ w_cw + b_cw)
 best_thresh, best_f1 = find_optimal_threshold(y_val, probs_val, metric="f1")
 preds_thresh = (probs_cw >= best_thresh).astype(int)
-```该代码文件在一个脚本中运行所有这些内容并打印结果。
+```
+
+该代码文件在一个脚本中运行所有这些内容并打印结果。
 
 ## 使用方法
 
-使用 scikit-learn 和 imbalanced-learn，这些技术都可以用一行代码实现：```python
+使用 scikit-learn 和 imbalanced-learn，这些技术都可以用一行代码实现：
+
+```python
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, f1_score
 from sklearn.model_selection import train_test_split
@@ -441,7 +491,9 @@ pipeline = Pipeline([
 ])
 pipeline.fit(X_train, y_train)
 print(classification_report(y_test, pipeline.predict(X_test)))
-```从零开始的实现展示了每种技术的确切作用。SMOTE只是对少数类进行k-NN插值。类别权重会乘以损失函数。阈值调整只是一个对截断值的循环。没有魔法。
+```
+
+从零开始的实现展示了每种技术的确切作用。SMOTE只是对少数类进行k-NN插值。类别权重会乘以损失函数。阈值调整只是一个对截断值的循环。没有魔法。
 
 ## 发布它
 

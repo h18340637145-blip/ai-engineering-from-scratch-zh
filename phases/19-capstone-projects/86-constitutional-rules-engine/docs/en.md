@@ -36,7 +36,9 @@ A rule has the shape
     contains_regex: '```python'
   must:
     any_of:
-      - ends_with_regex: '```\s*$'
+      - ends_with_regex: '```
+
+\s*$'
       - contains_regex: 'assumption:'
   explanation: "Code responses must end in either a closing fence or an explicit assumption."
   fix:

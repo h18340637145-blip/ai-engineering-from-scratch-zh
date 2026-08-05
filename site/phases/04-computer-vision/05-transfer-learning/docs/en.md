@@ -26,7 +26,9 @@
 
 ### 特征提取与微调
 
-两种模式，根据你对预训练特征的信任程度以及你拥有的数据量来选择。```mermaid
+两种模式，根据你对预训练特征的信任程度以及你拥有的数据量来选择。
+
+```mermaid
 flowchart TB
     subgraph FE["Feature extraction — backbone frozen"]
         FE1["Pretrained backbone<br/>(no gradient)"] --> FE2["New head<br/>(trained)"]
@@ -39,7 +41,9 @@ flowchart TB
     style FE2 fill:#dcfce7,stroke:#16a34a
     style FT1 fill:#fef3c7,stroke:#d97706
     style FT2 fill:#dcfce7,stroke:#16a34a
-```经验法则：
+```
+
+经验法则：
 
 | 数据集大小 | 领域距离 | 方案 |
 |--------------|-----------------|--------|
@@ -56,7 +60,9 @@ CNN 在 ImageNet 上学到的特征并不是专门针对 1000 个类别的。它
 
 ### 有区别的学习率
 
-当你解冻层时，早期层的学习速度应该比晚期层慢。早期层编码的是通用特征，你希望保留这些特征；晚期层编码的是任务特定的结构，你需要对它们进行大量调整。```
+当你解冻层时，早期层的学习速度应该比晚期层慢。早期层编码的是通用特征，你希望保留这些特征；晚期层编码的是任务特定的结构，你需要对它们进行大量调整。
+
+```
 Typical recipe:
 
   stage 0 (stem + first group): lr = base_lr / 100    (mostly fixed)
@@ -64,7 +70,9 @@ Typical recipe:
   stage 2:                       lr = base_lr / 3
   stage 3 (last backbone group): lr = base_lr
   head:                          lr = base_lr  (or slightly higher)
-```在 PyTorch 中，这只是一个传递给优化器的参数组列表。一个模型，五个学习率，不需要任何额外的代码。
+```
+
+在 PyTorch 中，这只是一个传递给优化器的参数组列表。一个模型，五个学习率，不需要任何额外的代码。
 
 ### BatchNorm 的问题
 
@@ -97,17 +105,25 @@ class MyClassifier(nn.Module):
 
     def forward(self, x):
         return self.head(x)
-``````
+```
+
+```
 backbone.fc = nn.Linear(backbone.fc.in_features, num_classes)          # ResNet
 backbone.classifier[1] = nn.Linear(..., num_classes)                    # EfficientNet, MobileNet
 backbone.heads.head = nn.Linear(..., num_classes)                       # torchvision ViT
-```对于小数据集，通常一个线性层就足够了。当任务分布与主干网络的训练分布差异较大时，添加一个隐藏层（Linear -> ReLU -> Dropout -> Linear）会有帮助。
+```
+
+对于小数据集，通常一个线性层就足够了。当任务分布与主干网络的训练分布差异较大时，添加一个隐藏层（Linear -> ReLU -> Dropout -> Linear）会有帮助。
 
 ### 按层衰减的学习率
 
-现代微调（如 BEiT、DINOv2、ViT-B 微调）中使用的一种更平滑的判别学习率版本。与将层分组为阶段的方式不同，给每一层比上一层稍小的学习率：```
+现代微调（如 BEiT、DINOv2、ViT-B 微调）中使用的一种更平滑的判别学习率版本。与将层分组为阶段的方式不同，给每一层比上一层稍小的学习率：
+
+```
 lr_layer_k = base_lr * decay^(L - k)
-```当 decay = 0.75 且 L = 12 个 transformer 块时，第一个块以 `0.75^11 ≈ 0.04x` 的头的 LR 进行训练。对于 transformer 的微调来说，这比 CNN 更重要，在 CNN 中通常分阶段的 LR 就足够了。
+```
+
+当 decay = 0.75 且 L = 12 个 transformer 块时，第一个块以 `0.75^11 ≈ 0.04x` 的头的 LR 进行训练。对于 transformer 的微调来说，这比 CNN 更重要，在 CNN 中通常分阶段的 LR 就足够了。
 
 ### 需要评估的内容
 
@@ -120,7 +136,9 @@ lr_layer_k = base_lr * decay^(L - k)
 
 ## 构建它
 
-### 步骤 1：加载预训练的主干网络并检查它```python
+### 步骤 1：加载预训练的主干网络并检查它
+
+```python
 import torch
 import torch.nn as nn
 from torchvision.models import resnet18, ResNet18_Weights
@@ -130,9 +148,13 @@ print(backbone)
 print()
 print("classifier head:", backbone.fc)
 print("feature dim:", backbone.fc.in_features)
-````ResNet18` 有四个阶段 (`layer1..layer4`) 加上一个茎部和一个 `fc` 头。每个 torchvision 分类主干结构都有类似的结构。
+```
 
-### 步骤 2：特征提取 — 冻结所有参数，替换头部分```python
+`ResNet18` 有四个阶段 (`layer1..layer4`) 加上一个茎部和一个 `fc` 头。每个 torchvision 分类主干结构都有类似的结构。
+
+### 步骤 2：特征提取 — 冻结所有参数，替换头部分
+
+```python
 def make_feature_extractor(num_classes=10):
     model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
     for p in model.parameters():
@@ -145,11 +167,15 @@ trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
 frozen = sum(p.numel() for p in model.parameters() if not p.requires_grad)
 print(f"trainable: {trainable:>10,}")
 print(f"frozen:    {frozen:>10,}")
-```仅 `model.fc` 可训练。主干网络是一个冻结的特征提取器。
+```
+
+仅 `model.fc` 可训练。主干网络是一个冻结的特征提取器。
 
 ### 步骤 3：判别式微调
 
-一个构建具有阶段特定学习率的参数组的工具。```python
+一个构建具有阶段特定学习率的参数组的工具。
+
+```python
 def discriminative_param_groups(model, base_lr=1e-3, decay=0.3):
     stages = [
         ["conv1", "bn1"],
@@ -176,11 +202,15 @@ for p in model.parameters():
 groups = discriminative_param_groups(model)
 for g in groups:
     print(f"{g['name']:>10s}  lr={g['lr']:.2e}  params={sum(p.numel() for p in g['params']):>8,}")
-````decay=0.3` 表示每个阶段的训练速度是下一阶段的 30%。`fc` 得到 `base_lr`，`layer4` 得到 `0.3 * base_lr`，`conv1` 得到 `0.3^5 * base_lr ≈ 0.00243 * base_lr`。听起来极端；但实证表明它是有效的。
+```
+
+`decay=0.3` 表示每个阶段的训练速度是下一阶段的 30%。`fc` 得到 `base_lr`，`layer4` 得到 `0.3 * base_lr`，`conv1` 得到 `0.3^5 * base_lr ≈ 0.00243 * base_lr`。听起来极端；但实证表明它是有效的。
 
 ### 第 4 步：BatchNorm 处理
 
-帮助在不冻结其权重的情况下，冻结 BN 的运行统计信息。```python
+帮助在不冻结其权重的情况下，冻结 BN 的运行统计信息。
+
+```python
 def freeze_bn_stats(model):
     for m in model.modules():
         if isinstance(m, (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d)):
@@ -188,9 +218,13 @@ def freeze_bn_stats(model):
             for p in m.parameters():
                 p.requires_grad = False
     return model
-```在每次 epoch 开始时设置 `model.train()` 后调用它。`model.train()` 将所有内容切换到训练模式；这仅对 BN 层进行反转。
+```
 
-### 步骤 5：一个最小的端到端微调循环```python
+在每次 epoch 开始时设置 `model.train()` 后调用它。`model.train()` 将所有内容切换到训练模式；这仅对 BN 层进行反转。
+
+### 步骤 5：一个最小的端到端微调循环
+
+```python
 from torch.optim import SGD
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
@@ -230,11 +264,15 @@ def fine_tune(model, train_loader, val_loader, device, epochs=5, base_lr=1e-3, f
         print(f"epoch {epoch}  train {tr_loss/tr_total:.3f}/{tr_correct/tr_total:.3f}  "
               f"val {va_correct/va_total:.3f}")
     return model
-```在 CIFAR-10 上使用上述配方进行五次训练周期，将 `ResNet18-IMAGENET1K_V1` 的零样本线性探针准确率从约 70% 提升到约 93% 的微调准确率。如果仅训练头部而不触碰主干网络，准确率将仅达到约 86% 并趋于平稳。
+```
+
+在 CIFAR-10 上使用上述配方进行五次训练周期，将 `ResNet18-IMAGENET1K_V1` 的零样本线性探针准确率从约 70% 提升到约 93% 的微调准确率。如果仅训练头部而不触碰主干网络，准确率将仅达到约 86% 并趋于平稳。
 
 ### 第 6 步：渐进解冻
 
-一种从末尾向开头每周期解冻一个阶段的计划。通过增加一些额外的训练周期来缓解特征漂移问题。```python
+一种从末尾向开头每周期解冻一个阶段的计划。通过增加一些额外的训练周期来缓解特征漂移问题。
+
+```python
 def progressive_unfreeze_schedule(model):
     stages = ["layer4", "layer3", "layer2", "layer1"]
     yielded = set()
@@ -256,17 +294,23 @@ def progressive_unfreeze_schedule(model):
         return None
 
     return start, unfreeze
-```在第一个 epoch 之前调用 `start()` 一次。在每个 epoch 开始时调用 `unfreeze(epoch)`。每当可训练参数的集合发生变化时，重新构建优化器，否则冻结的参数仍会保留缓存的动量，这会使其产生混淆。
+```
+
+在第一个 epoch 之前调用 `start()` 一次。在每个 epoch 开始时调用 `unfreeze(epoch)`。每当可训练参数的集合发生变化时，重新构建优化器，否则冻结的参数仍会保留缓存的动量，这会使其产生混淆。
 
 ## 使用方法
 
-对于大多数实际任务，使用 `torchvision.models` 加上三行代码就足够了。上述更复杂的机制只在遇到库默认设置无法解决的问题时才变得重要。```python
+对于大多数实际任务，使用 `torchvision.models` 加上三行代码就足够了。上述更复杂的机制只在遇到库默认设置无法解决的问题时才变得重要。
+
+```python
 from torchvision.models import resnet50, ResNet50_Weights
 
 model = resnet50(weights=ResNet50_Weights.IMAGENET1K_V2)
 model.fc = nn.Linear(model.fc.in_features, num_classes)
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-4)
-```另外两个生产级默认设置：
+```
+
+另外两个生产级默认设置：
 
 - `timm` 配备了约 800 个预训练视觉主干网络，具有统一的 API (`timm.create_model("resnet50", pretrained=True, num_classes=10)`)。对于任何超出 torchvision 动物园的微调任务，它都是标准做法。
 - 对于变压器模型，`transformers.AutoModelForImageClassification.from_pretrained(name, num_labels=N)` 提供了与文本模型相同的加载语义的 ViT / BEiT / DeiT。

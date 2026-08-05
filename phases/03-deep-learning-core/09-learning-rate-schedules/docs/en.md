@@ -28,23 +28,35 @@
 
 ### 常数学习率
 
-最简单的方法。选择一个数字，每一步都使用它。```
+最简单的方法。选择一个数字，每一步都使用它。
+
+```
 lr(t) = lr_0
-```很少达到最优。学习率要么在训练后期太高（在最小值附近震荡），要么在训练初期太低（在微小的步骤上浪费计算资源）。对于小型模型和调试来说工作良好。但对于任何训练时间超过一小时的任务来说，这是一个糟糕的选择。
+```
+
+很少达到最优。学习率要么在训练后期太高（在最小值附近震荡），要么在训练初期太低（在微小的步骤上浪费计算资源）。对于小型模型和调试来说工作良好。但对于任何训练时间超过一小时的任务来说，这是一个糟糕的选择。
 
 ### 步长衰减（Step Decay）
 
-来自ResNet时代的传统方法。在固定的一些epoch之后，将学习率按一个固定比例（通常是10倍）降低。```
+来自ResNet时代的传统方法。在固定的一些epoch之后，将学习率按一个固定比例（通常是10倍）降低。
+
+```
 lr(t) = lr_0 * gamma^(floor(epoch / step_size))
-```其中 gamma = 0.1 且 step_size = 30 表示：每 30 个 epoch，学习率（lr）下降为原来的 1/10。ResNet-50 使用了这个设置 -- 初始 lr=0.1，在第 30、60 和 90 个 epoch 时，学习率下降为原来的 1/10。
+```
+
+其中 gamma = 0.1 且 step_size = 30 表示：每 30 个 epoch，学习率（lr）下降为原来的 1/10。ResNet-50 使用了这个设置 -- 初始 lr=0.1，在第 30、60 和 90 个 epoch 时，学习率下降为原来的 1/10。
 
 问题在于：最优的衰减点取决于数据集和模型架构。当转移到不同的问题时，需要重新调整衰减的时间点。这些变化是突然的 -- 当学习率突然变化时，损失可能会出现尖峰。
 
 ### 余弦退火（Cosine Annealing）
 
-从最大学习率平滑地衰减到最小值，遵循余弦曲线：```
+从最大学习率平滑地衰减到最小值，遵循余弦曲线：
+
+```
 lr(t) = lr_min + 0.5 * (lr_max - lr_min) * (1 + cos(pi * t / T))
-```其中，t 是当前步骤，T 是总步骤数。
+```
+
+其中，t 是当前步骤，T 是总步骤数。
 
 在 t=0 时，余弦项为 1，因此 lr = lr_max。在 t=T 时，余弦项为 -1，因此 lr = lr_min。学习率的衰减在开始时较为平缓，中间阶段加速，接近结束时又变得平缓。
 
@@ -54,30 +66,42 @@ lr(t) = lr_min + 0.5 * (lr_max - lr_min) * (1 + cos(pi * t / T))
 
 Adam 和其他自适应优化器会维护梯度均值和方差的运行估计。在第 0 步时，这些估计值被初始化为零。前几步的梯度更新基于垃圾统计信息。如果在此期间学习率较大，模型会迈出巨大且方向不明确的步骤。
 
-预热可以解决这个问题。从一个极小的学习率（通常为 lr_max / warmup_steps，甚至为零）开始，然后在前 N 步内线性增加到 lr_max。当你达到完整的学习率时，Adam 的统计信息已经稳定。```
+预热可以解决这个问题。从一个极小的学习率（通常为 lr_max / warmup_steps，甚至为零）开始，然后在前 N 步内线性增加到 lr_max。当你达到完整的学习率时，Adam 的统计信息已经稳定。
+
+```
 lr(t) = lr_max * (t / warmup_steps)     for t < warmup_steps
-```典型的预热阶段：总训练步数的1-5%。Llama 3训练了约1.8万亿个token，并进行了2000步的预热。GPT-3预热了超过3.75亿个token。
+```
+
+典型的预热阶段：总训练步数的1-5%。Llama 3训练了约1.8万亿个token，并进行了2000步的预热。GPT-3预热了超过3.75亿个token。
 
 ### 线性预热 + 余弦衰减
 
-现代的默认方法。线性增加，然后使用余弦函数衰减：```
+现代的默认方法。线性增加，然后使用余弦函数衰减：
+
+```
 if t < warmup_steps:
     lr(t) = lr_max * (t / warmup_steps)
 else:
     progress = (t - warmup_steps) / (total_steps - warmup_steps)
     lr(t) = lr_min + 0.5 * (lr_max - lr_min) * (1 + cos(pi * progress))
-```这就是 Llama、GPT、PaLM 和大多数现代 transformer 模型所使用的方法。预热阶段可以防止早期的不稳定性。余弦衰减则使模型收敛到一个较好的最小值。
+```
+
+这就是 Llama、GPT、PaLM 和大多数现代 transformer 模型所使用的方法。预热阶段可以防止早期的不稳定性。余弦衰减则使模型收敛到一个较好的最小值。
 
 ### 1cycle 策略
 
 Leslie Smith 的发现（2018）：在训练的前半段，将学习率从一个低值增加到一个高值，然后在后半段再将其降低回来。这似乎违反直觉——为什么要在训练中途 *增加* 学习率？
 
-理论依据：较高的学习率通过向优化轨迹添加噪声，起到了正则化的作用。在学习率上升阶段，模型可以探索损失景观的更多区域，找到更优的盆地。随后的学习率下降阶段则会在找到的最佳盆地中进行精细化调整。```
+理论依据：较高的学习率通过向优化轨迹添加噪声，起到了正则化的作用。在学习率上升阶段，模型可以探索损失景观的更多区域，找到更优的盆地。随后的学习率下降阶段则会在找到的最佳盆地中进行精细化调整。
+
+```
 Phase 1 (0 to T/2):    lr ramps from lr_max/25 to lr_max
 Phase 2 (T/2 to T):    lr ramps from lr_max to lr_max/10000
 ```1cycle 通常在固定的计算预算下比余弦退火训练得更快。权衡：你必须提前知道总步数。
 
-### 调度形状```mermaid
+### 调度形状
+
+```mermaid
 graph LR
     subgraph "Constant"
         C1["lr"] --- C2["lr"] --- C3["lr"]
@@ -94,7 +118,11 @@ graph LR
     subgraph "Warmup + Cosine"
         WC1["0"] --> WC2["lr_max"] --> WC3["cosine"] --> WC4["lr_min"]
     end
-```### 决策流程图```mermaid
+```
+
+### 决策流程图
+
+```mermaid
 flowchart TD
     Start["Choosing a LR schedule"] --> Know{"Know total<br/>training steps?"}
 
@@ -108,7 +136,11 @@ flowchart TD
     WarmCos --> Warmup["Warmup = 1-5% of steps"]
     OneCycle --> FindLR["Find lr_max with LR range test"]
     Cosine --> MinLR["Set lr_min = lr_max / 10"]
-```### 从已发布模型中获取实数```mermaid
+```
+
+### 从已发布模型中获取实数
+
+```mermaid
 graph TD
     subgraph "Published LR Configs"
         L3["Llama 3 (405B)<br/>Peak: 3e-4<br/>Warmup: 2000 steps<br/>Schedule: Cosine to 3e-5"]
@@ -120,11 +152,15 @@ graph TD
 
 ```figure
 lr-schedule
-```## 构建它
+```
+
+## 构建它
 
 ### 第一步：安排函数
 
-每个函数接收当前步骤，并返回该步骤的学习率。```python
+每个函数接收当前步骤，并返回该步骤的学习率。
+
+```python
 import math
 
 
@@ -158,9 +194,13 @@ def one_cycle_schedule(step, lr=0.01, total_steps=1000, **kwargs):
     else:
         progress = (step - mid) / max(total_steps - mid, 1)
         return lr * (1 - progress) + (lr / 10000) * progress
-```### 步骤 2：可视化所有计划
+```
 
-打印一个基于文本的图表，显示每个计划在训练过程中的演变情况。```python
+### 步骤 2：可视化所有计划
+
+打印一个基于文本的图表，显示每个计划在训练过程中的演变情况。
+
+```python
 def visualize_schedule(name, schedule_fn, total_steps=500, **kwargs):
     steps = list(range(0, total_steps, total_steps // 20))
     if total_steps - 1 not in steps:
@@ -174,9 +214,13 @@ def visualize_schedule(name, schedule_fn, total_steps=500, **kwargs):
         bar_len = int(lr_val / max_lr * 40)
         bar = "#" * bar_len
         print(f"  Step {s:4d}: lr={lr_val:.6f} {bar}")
-```### 第三步：训练网络
+```
 
-在圆数据集上使用一个简单的两层网络，与之前的课程相同，但现在我们改变训练计划。```python
+### 第三步：训练网络
+
+在圆数据集上使用一个简单的两层网络，与之前的课程相同，但现在我们改变训练计划。
+
+```python
 import random
 
 
@@ -256,9 +300,13 @@ def train_with_schedule(schedule_fn, schedule_name, data, epochs=300, base_lr=0.
         epoch_losses.append(avg_loss)
 
     return epoch_losses
-```### 步骤 4：比较所有计划
+```
 
-使用每个计划训练相同的网络，并比较最终损失和收敛行为。```python
+### 步骤 4：比较所有计划
+
+使用每个计划训练相同的网络，并比较最终损失和收敛行为。
+
+```python
 def compare_schedules(data):
     configs = [
         ("Constant", constant_schedule, {}),
@@ -276,9 +324,13 @@ def compare_schedules(data):
         mid_idx = len(losses) // 2
         best = min(losses)
         print(f"{name:<20} {losses[0]:>12.6f} {losses[mid_idx]:>12.6f} {losses[-1]:>12.6f} {best:>12.6f}")
-```### 步骤 5：学习率过高 vs 过低
+```
 
-演示三种失败模式：过高（发散）、过低（缓慢收敛）和恰到好处。```python
+### 步骤 5：学习率过高 vs 过低
+
+演示三种失败模式：过高（发散）、过低（缓慢收敛）和恰到好处。
+
+```python
 def lr_sensitivity(data):
     learning_rates = [1.0, 0.1, 0.01, 0.001, 0.0001]
 
@@ -302,9 +354,13 @@ def lr_sensitivity(data):
 
         end_str = f"{end:.6f}" if not math.isnan(end) else "NaN"
         print(f"  {lr:>10.4f} {start:>12.6f} {end_str:>12} {status:>15}")
-```## 使用它
+```
 
-PyTorch 在 `torch.optim.lr_scheduler` 中提供了调度器：```python
+## 使用它
+
+PyTorch 在 `torch.optim.lr_scheduler` 中提供了调度器：
+
+```python
 import torch
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR, OneCycleLR, StepLR
@@ -317,7 +373,11 @@ scheduler = CosineAnnealingLR(optimizer, T_max=1000, eta_min=1e-5)
 for step in range(1000):
     loss = train_step(model, optimizer)
     scheduler.step()
-```对于 warmup + cosine，使用一个 lambda 调度器或来自 HuggingFace 的 `get_cosine_schedule_with_warmup`：```python
+```
+
+对于 warmup + cosine，使用一个 lambda 调度器或来自 HuggingFace 的 `get_cosine_schedule_with_warmup`：
+
+```python
 from transformers import get_cosine_schedule_with_warmup
 
 scheduler = get_cosine_schedule_with_warmup(

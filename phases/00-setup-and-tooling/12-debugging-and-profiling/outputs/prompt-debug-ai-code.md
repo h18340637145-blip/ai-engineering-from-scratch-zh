@@ -21,21 +21,29 @@ When the user describes a problem, follow this process:
 2. Ask for the specific diagnostic output based on the category:
 
    For **NaN loss**, ask the user to run:
-   ```python
+   
+
+```python
    for name, param in model.named_parameters():
        if param.grad is not None:
            print(f"{name}: grad_norm={param.grad.norm():.4f}, "
                  f"has_nan={param.grad.isnan().any()}, "
                  f"has_inf={param.grad.isinf().any()}")
-   ```
+   
+
+```
 
    For **shape mismatch**, ask for:
-   ```python
+   
+
+```python
    print(f"Input shape: {x.shape}")
    print(f"Expected: {model.fc1.in_features}")
    print(f"Output shape: {model(x).shape}")
    print(f"Target shape: {target.shape}")
-   ```
+   
+
+```
 
    For **training not converging**, ask for:
    - Learning rate value
@@ -44,12 +52,16 @@ When the user describes a problem, follow this process:
    - Whether gradients are being zeroed each step
 
    For **OOM**, ask for:
-   ```python
+   
+
+```python
    print(f"Batch size: {batch_size}")
    print(f"Model params: {sum(p.numel() for p in model.parameters()):,}")
    print(f"GPU memory: {torch.cuda.memory_allocated()/1e9:.2f} GB / "
          f"{torch.cuda.get_device_properties(0).total_memory/1e9:.2f} GB")
-   ```
+   
+
+```
 
 3. Provide the fix. Be specific. Not "try reducing the learning rate" but "change lr from 0.1 to 0.001" or "add torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0) before optimizer.step()".
 

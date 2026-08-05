@@ -26,14 +26,18 @@
 
 ### 管道是什么
 
-管道是一系列按顺序排列的数据转换，随后是一个模型。每一步都以前一步的输出作为输入。整个管道仅在训练数据上拟合一次。在推理时，相同的拟合管道转换新数据并生成预测。```mermaid
+管道是一系列按顺序排列的数据转换，随后是一个模型。每一步都以前一步的输出作为输入。整个管道仅在训练数据上拟合一次。在推理时，相同的拟合管道转换新数据并生成预测。
+
+```mermaid
 flowchart LR
     A[Raw Data] --> B[Impute Missing Values]
     B --> C[Scale Numeric Features]
     C --> D[Encode Categoricals]
     D --> E[Train Model]
     E --> F[Prediction]
-```该流程保证：
+```
+
+该流程保证：
 - 变换仅在训练数据上拟合（无信息泄露）
 - 推理时应用相同的变换
 - 整个对象可以序列化并部署为一个工件
@@ -914,7 +918,9 @@ The pipeline guarantees:
 Data leakage happens when information from the test set or future data contaminates training. Pipelines prevent the most common forms.
 
 **Leaky (wrong):**
- /no_think```python
+ /no_think
+
+```python
 X = df.drop("target", axis=1)
 y = df["target"]
 
@@ -923,19 +929,27 @@ X_scaled = scaler.fit_transform(X)
 
 X_train, X_test = X_scaled[:800], X_scaled[800:]
 y_train, y_test = y[:800], y[800:]
-```缩放器看到了测试数据。均值和标准差包含测试样本。这会夸大准确性估计。
+```
 
-**正确：**```python
+缩放器看到了测试数据。均值和标准差包含测试样本。这会夸大准确性估计。
+
+**正确：**
+
+```python
 X_train, X_test = X[:800], X[800:]
 
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
-```使用管道，你不需要考虑这些。管道会自动处理这些。
+```
+
+使用管道，你不需要考虑这些。管道会自动处理这些。
 
 ### sklearn 管道
 
-sklearn 的 `Pipeline` 链接转换器和一个估计器。它暴露了 `.fit()`、`.predict()` 和 `.score()`，它们按顺序应用所有步骤。```python
+sklearn 的 `Pipeline` 链接转换器和一个估计器。它暴露了 `.fit()`、`.predict()` 和 `.score()`，它们按顺序应用所有步骤。
+
+```python
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -947,7 +961,9 @@ pipe = Pipeline([
 
 pipe.fit(X_train, y_train)
 predictions = pipe.predict(X_test)
-```当你调用 `pipe.fit(X_train, y_train)` 时：
+```
+
+当你调用 `pipe.fit(X_train, y_train)` 时：
 1. Scaler 在 X_train 上调用 `fit_transform`
 2. Model 在缩放后的 X_train 上调用 `fit`
 
@@ -959,7 +975,9 @@ predictions = pipe.predict(X_test)
 
 ### ColumnTransformer：为不同列使用不同的管道
 
-真实的数据集包含需要不同预处理的数值列和分类列。`ColumnTransformer` 处理这种情况。```python
+真实的数据集包含需要不同预处理的数值列和分类列。`ColumnTransformer` 处理这种情况。
+
+```python
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
@@ -989,7 +1007,9 @@ full_pipeline = Pipeline([
 
 一个流水线可以使训练过程可重复，但你还需要跟踪不同实验中发生的情况：使用了哪些超参数，使用了哪个数据集版本，指标如何，运行了哪些代码。
 
-**MLflow** 是最常用的开源解决方案：```python
+**MLflow** 是最常用的开源解决方案：
+
+```python
 import mlflow
 
 with mlflow.start_run():
@@ -1002,7 +1022,9 @@ with mlflow.start_run():
 
     mlflow.log_metric("accuracy", accuracy)
     mlflow.sklearn.log_model(pipe, "model")
-```每次运行都会记录参数、指标、工件和完整的模型。你可以比较运行结果，重现任何实验，并部署任何模型版本。
+```
+
+每次运行都会记录参数、指标、工件和完整的模型。你可以比较运行结果，重现任何实验，并部署任何模型版本。
 
 **Weights & Biases (wandb)** 通过托管仪表板提供相同的功能：
 
@@ -1012,7 +1034,9 @@ with mlflow.start_run():
 
 每次运行都会记录参数、指标、工件和完整的模型。你可以比较运行结果，重现任何实验，并部署任何模型版本。
 
-**Weights & Biases (wandb)** 通过托管仪表板提供相同的功能：```python
+**Weights & Biases (wandb)** 通过托管仪表板提供相同的功能：
+
+```python
 import wandb
 
 wandb.init(project="my-pipeline")
@@ -1022,7 +1046,9 @@ pipe.fit(X_train, y_train)
 accuracy = pipe.score(X_test, y_test)
 
 wandb.log({"accuracy": accuracy})
-```### 模型版本管理
+```
+
+### 模型版本管理
 
 在实验跟踪之后，你需要管理模型版本。哪个模型正在生产环境中使用？哪个处于测试阶段？哪个是上周的？
 
@@ -1034,7 +1060,9 @@ MLflow 的模型注册表提供以下功能：
 
 ### 使用 DVC 进行数据版本管理
 
-代码使用 git 进行版本管理。数据也应该进行版本管理，但 git 无法处理大文件。DVC（数据版本控制）解决了这个问题。```
+代码使用 git 进行版本管理。数据也应该进行版本管理，但 git 无法处理大文件。DVC（数据版本控制）解决了这个问题。
+
+```
 dvc init
 dvc add data/training.csv
 git add data/training.csv.dvc data/.gitignore
@@ -1051,7 +1079,9 @@ dvc push
 1. **固定的随机种子：** 为 numpy、random 和框架（torch、sklearn）设置种子
 2. **固定的依赖项：** 用 requirements.txt 或 poetry.lock 并指定精确版本
 3. **版本化的数据：** 使用 DVC 或类似工具
-4. **配置文件：** 所有超参数放在配置文件中，而不是硬编码```python
+4. **配置文件：** 所有超参数放在配置文件中，而不是硬编码
+
+```python
 import numpy as np
 import random
 
@@ -1065,7 +1095,11 @@ def set_seed(seed=42):
         torch.backends.cudnn.deterministic = True
     except ImportError:
         pass
-```### 从笔记本到生产流水线```mermaid
+```
+
+### 从笔记本到生产流水线
+
+```mermaid
 flowchart TD
     A[Jupyter Notebook] --> B[Extract functions]
     B --> C[Build Pipeline object]
@@ -1077,7 +1111,9 @@ flowchart TD
 
     style A fill:#fdd,stroke:#333
     style H fill:#dfd,stroke:#333
-```典型的开发流程：
+```
+
+典型的开发流程：
 
 1. **笔记本探索：** 快速实验、可视化、特征想法
 2. **提取函数：** 将预处理、特征工程、评估移动到模块中
@@ -1103,7 +1139,9 @@ flowchart TD
 
 `code/pipeline.py` 中的代码从头开始构建了一个完整的 ML 管道：
 
-### 第一步：自定义转换器```python
+### 第一步：自定义转换器
+
+```python
 class CustomTransformer:
     def __init__(self):
         self.means = None
@@ -1120,7 +1158,11 @@ class CustomTransformer:
 
     def fit_transform(self, X):
         return self.fit(X).transform(X)
-```### 步骤 2：从零开始构建流水线```python
+```
+
+### 步骤 2：从零开始构建流水线
+
+```python
 class PipelineFromScratch:
     def __init__(self, steps):
         self.steps = steps
@@ -1139,7 +1181,9 @@ class PipelineFromScratch:
             X_current = step.transform(X_current)
         name, model = self.steps[-1]
         return model.predict(X_current)
-```### 步骤 3：使用流水线进行交叉验证
+```
+
+### 步骤 3：使用流水线进行交叉验证
 
 代码展示了如何使用流水线进行交叉验证以防止数据泄露：缩放器在每个折叠的训练数据上分别拟合。
 

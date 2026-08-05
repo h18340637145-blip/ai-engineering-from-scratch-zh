@@ -28,7 +28,9 @@
 
 高维空间是反直觉的。随着维度的增加，有三件事会失效。
 
-**距离变得没有意义。** 在高维空间中，任意两个随机点之间的距离会趋近于相同的值。如果每个点与其他点的距离大致相同，最近邻搜索就停止工作。```
+**距离变得没有意义。** 在高维空间中，任意两个随机点之间的距离会趋近于相同的值。如果每个点与其他点的距离大致相同，最近邻搜索就停止工作。
+
+```
 Dimension    Avg distance ratio (max/min between random points)
 2            ~5.0
 10           ~1.8
@@ -42,13 +44,19 @@ Dimension    Avg distance ratio (max/min between random points)
 
 主成分分析（PCA）寻找数据变化最大的方向。它旋转你的坐标系，使第一个轴捕捉到最大的方差，第二个轴捕捉到次大的方差，依此类推。
 
-算法：```
+算法：
+
+```
 1. Center the data        (subtract the mean from each feature)
 2. Compute covariance     (how features move together)
 3. Eigendecomposition     (find the principal directions)
 4. Sort by eigenvalue     (biggest variance first)
 5. Project               (keep top k eigenvectors, drop the rest)
-```为什么使用特征分解？协方差矩阵是对称且半正定的。它的特征向量是特征空间中正交的方向。特征值告诉你每个方向所捕捉的方差量。最大特征值对应的特征向量指向方差最大的方向。```mermaid
+```
+
+为什么使用特征分解？协方差矩阵是对称且半正定的。它的特征向量是特征空间中正交的方向。特征值告诉你每个方向所捕捉的方差量。最大特征值对应的特征向量指向方差最大的方向。
+
+```mermaid
 graph LR
     A["Original data (2D)\nData spread in both\nx and y directions"] -->|"PCA rotation"| B["After PCA\nPC1 captures the elongated spread\nPC2 captures the narrow spread\nDrop PC2 and you lose little info"]
 ```- **PCA 之前：** 数据云在 x 轴和 y 轴上呈对角分布  
@@ -57,14 +65,18 @@ graph LR
 
 ### 解释的方差比例  
 
-每个主成分捕获了总方差的一部分。解释的方差比例告诉你具体有多少。```
+每个主成分捕获了总方差的一部分。解释的方差比例告诉你具体有多少。
+
+```
 Component    Eigenvalue    Explained ratio    Cumulative
 PC1          4.73          0.473              0.473
 PC2          2.51          0.251              0.724
 PC3          1.12          0.112              0.836
 PC4          0.89          0.089              0.925
 ...
-```当累积解释方差达到 0.95 时，你知道许多成分已经捕获了 95% 的信息。之后的全部内容大多是噪声。
+```
+
+当累积解释方差达到 0.95 时，你知道许多成分已经捕获了 95% 的信息。之后的全部内容大多是噪声。
 
 ### 选择成分数量
 
@@ -153,22 +165,36 @@ UMAP 在高维空间中构建一个加权图（“模糊拓扑表示”），然
 2. 重建：X_hat = X_reduced @ W_k^T
 3. 计算 MSE：mean((X - X_hat)^2)
 
-对于 PCA，重建误差与解释方差之间有清晰的关系：```
+对于 PCA，重建误差与解释方差之间有清晰的关系：
+
+```
 Reconstruction error = sum of eigenvalues NOT included
 Total variance = sum of ALL eigenvalues
 Fraction lost = (sum of dropped eigenvalues) / (sum of all eigenvalues)
-```每个成分的解释方差比为：```
+```
+
+每个成分的解释方差比为：
+
+```
 explained_ratio_k = eigenvalue_k / sum(all eigenvalues)
-```将累计解释方差与组件数量绘制在一起，会得到“肘部”曲线。合适的组件数量是：
+```
+
+将累计解释方差与组件数量绘制在一起，会得到“肘部”曲线。合适的组件数量是：
 - 曲线趋于平缓（边际效益递减）
 - 累计方差超过你的阈值（通常为0.90或0.95）
 - 下游任务的性能趋于稳定
 
-重建误差在选择k之外也很有用。你可以用它来进行异常检测：重建误差高的样本是异常值，它们不符合学习到的子空间。这是生产系统中基于PCA的异常检测的基础。```figure
-pca-axes
-```## 构建它
+重建误差在选择k之外也很有用。你可以用它来进行异常检测：重建误差高的样本是异常值，它们不符合学习到的子空间。这是生产系统中基于PCA的异常检测的基础。
 
-### 步骤 1：从零开始实现 PCA```python
+```figure
+pca-axes
+```
+
+## 构建它
+
+### 步骤 1：从零开始实现 PCA
+
+```python
 import numpy as np
 
 class PCA:
@@ -205,7 +231,11 @@ class PCA:
     def fit_transform(self, X):
         self.fit(X)
         return self.transform(X)
-```### 步骤 2：在合成数据上进行测试```python
+```
+
+### 步骤 2：在合成数据上进行测试
+
+```python
 np.random.seed(42)
 n_samples = 500
 
@@ -223,7 +253,11 @@ print(f"Original shape: {X_synthetic.shape}")
 print(f"Reduced shape:  {X_reduced.shape}")
 print(f"Explained variance ratios: {pca.explained_variance_ratio_}")
 print(f"Total variance captured: {sum(pca.explained_variance_ratio_):.4f}")
-```### 步骤 3：二维中的 MNIST 数字```python
+```
+
+### 步骤 3：二维中的 MNIST 数字
+
+```python
 from sklearn.datasets import fetch_openml
 
 mnist = fetch_openml("mnist_784", version=1, as_frame=False, parser="auto")
@@ -237,7 +271,11 @@ print(f"50 components capture {sum(pca_mnist.explained_variance_ratio_):.2%} of 
 pca_2d = PCA(n_components=2)
 X_pca2d = pca_2d.fit_transform(X_mnist)
 print(f"2 components capture {sum(pca_2d.explained_variance_ratio_):.2%} of variance")
-```### 步骤 4：与 sklearn 进行比较```python
+```
+
+### 步骤 4：与 sklearn 进行比较
+
+```python
 from sklearn.decomposition import PCA as SklearnPCA
 from sklearn.manifold import TSNE
 
@@ -253,7 +291,11 @@ print(f"Max absolute difference: {diff.max():.10f}")
 tsne = TSNE(n_components=2, perplexity=30, random_state=42)
 X_tsne = tsne.fit_transform(X_mnist)
 print(f"\nt-SNE output shape: {X_tsne.shape}")
-```### 步骤 5：UMAP 对比```python
+```
+
+### 步骤 5：UMAP 对比
+
+```python
 try:
     from umap import UMAP
 
@@ -262,7 +304,9 @@ try:
     print(f"UMAP output shape: {X_umap.shape}")
 except ImportError:
     print("Install umap-learn: pip install umap-learn")
-```## 使用方法
+```
+
+## 使用方法
 
 作为分类器之前的预处理步骤使用PCA：
 
@@ -282,7 +326,9 @@ PCA as preprocessing before a classifier:
 
 作为分类器之前的预处理步骤使用PCA：
 
- /no_think```python
+ /no_think
+
+```python
 from sklearn.decomposition import PCA as SklearnPCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -304,7 +350,9 @@ for k in [10, 30, 50, 100, 200]:
     var_captured = sum(pca_k.explained_variance_ratio_)
     results[k] = (acc, var_captured)
     print(f"k={k:>3d}  accuracy={acc:.4f}  variance={var_captured:.4f}")
-```在达到 784 个维度之前，性能就已达到平台期。这个平台期就是你的工作点。
+```
+
+在达到 784 个维度之前，性能就已达到平台期。这个平台期就是你的工作点。
 
 ## 发布它
 

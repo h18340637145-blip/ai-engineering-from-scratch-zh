@@ -28,9 +28,13 @@
 
 ### 贝叶斯定理（快速回顾）
 
-贝叶斯定理可以翻转条件概率：```
+贝叶斯定理可以翻转条件概率：
+
+```
 P(class | features) = P(features | class) * P(class) / P(features)
-```我们想要 `P(class | features)` -- 给定文档中的词语，文档属于某一类的概率。我们可以从以下内容计算出这个概率：
+```
+
+我们想要 `P(class | features)` -- 给定文档中的词语，文档属于某一类的概率。我们可以从以下内容计算出这个概率：
 - `P(features | class)` -- 在这类文档中看到这些词语的可能性
 - `P(class)` -- 类的先验概率（垃圾邮件总体上有多普遍？）
 - `P(features)` -- 证据，对所有类都相同，因此在比较时可以忽略它
@@ -41,9 +45,13 @@ P(class | features) = P(features | class) * P(class) / P(features)
 
 精确计算 `P(features | class)` 需要估计所有特征一起出现的联合概率。如果词汇表有 10,000 个词，你需要估计 2^10,000 种可能组合的分布。这是不可能的。
 
-朴素假设：在给定类别的情况下，每个特征都是相互独立的。```
+朴素假设：在给定类别的情况下，每个特征都是相互独立的。
+
+```
 P(w1, w2, ..., wn | class) = P(w1 | class) * P(w2 | class) * ... * P(wn | class)
-```与其估计一个不可能的联合分布，你估计 n 个简单的每个特征的分布。每个分布只需要一个计数。
+```
+
+与其估计一个不可能的联合分布，你估计 n 个简单的每个特征的分布。每个分布只需要一个计数。
 
 这个假设显然是错误的。在任何文档中，“machine”和“learning”这两个词并不是独立的。但分类器并不需要正确的概率估计。它只需要正确的排序——哪个类别的概率最高。独立性假设引入了系统性误差，但这些误差对所有类别都影响相似，因此排序仍然正确。
 
@@ -68,7 +76,9 @@ P(w1, w2, ..., wn | class) = P(w1 | class) * P(w2 | class) * ... * P(wn | class)
 - Not-spam 电子邮件中，“free” 出现 5 次，“money” 出现 10 次，“meeting” 出现 100 次（总共 115 个词）
 - 40% 的电子邮件是 spam，60% 是 not-spam
 
-使用拉普拉斯平滑（alpha=1）：```
+使用拉普拉斯平滑（alpha=1）：
+
+```
 P(free | spam)    = (80 + 1) / (150 + 3) = 81/153 = 0.529
 P(money | spam)   = (60 + 1) / (150 + 3) = 61/153 = 0.399
 P(meeting | spam) = (10 + 1) / (150 + 3) = 11/153 = 0.072
@@ -76,7 +86,11 @@ P(meeting | spam) = (10 + 1) / (150 + 3) = 11/153 = 0.072
 P(free | not-spam)    = (5 + 1) / (115 + 3) = 6/118 = 0.051
 P(money | not-spam)   = (10 + 1) / (115 + 3) = 11/118 = 0.093
 P(meeting | not-spam) = (100 + 1) / (115 + 3) = 101/118 = 0.856
-```新邮件包含： "free"（2次），"money"（1次），"meeting"（0次）。```
+```
+
+新邮件包含： "free"（2次），"money"（1次），"meeting"（0次）。
+
+```
 log P(spam | email) = log(0.4) + 2*log(0.529) + 1*log(0.399) + 0*log(0.072)
                     = -0.916 + 2*(-0.637) + (-0.919) + 0
                     = -3.109
@@ -84,7 +98,9 @@ log P(spam | email) = log(0.4) + 2*log(0.529) + 1*log(0.399) + 0*log(0.072)
 log P(not-spam | email) = log(0.6) + 2*log(0.051) + 1*log(0.093) + 0*log(0.856)
                         = -0.511 + 2*(-2.976) + (-2.375) + 0
                         = -8.838
-```垃圾邮件以较大优势获胜。单词“免费”出现两次是垃圾邮件的有力证据。请注意，“会议”一词未出现对两个对数总和的贡献均为零（0 * log(P)）——在多项式朴素贝叶斯中，未出现的单词没有影响。是伯努利朴素贝叶斯明确地对单词的缺失进行了建模。
+```
+
+垃圾邮件以较大优势获胜。单词“免费”出现两次是垃圾邮件的有力证据。请注意，“会议”一词未出现对两个对数总和的贡献均为零（0 * log(P)）——在多项式朴素贝叶斯中，未出现的单词没有影响。是伯努利朴素贝叶斯明确地对单词的缺失进行了建模。
 
 ### 三种变体
 
@@ -92,21 +108,33 @@ log P(not-spam | email) = log(0.6) + 2*log(0.051) + 1*log(0.093) + 0*log(0.856)
 
 #### 多项式朴素贝叶斯
 
-将每个特征建模为计数。最适合文本数据，其中特征是单词频率或 TF-IDF 值。```
+将每个特征建模为计数。最适合文本数据，其中特征是单词频率或 TF-IDF 值。
+
+```
 P(word_i | class) = (count of word_i in class + alpha) / (total words in class + alpha * vocab_size)
-````alpha` 是拉普拉斯平滑（下文将进行解释）。这种变体是文本分类的主要方法。
+```
+
+`alpha` 是拉普拉斯平滑（下文将进行解释）。这种变体是文本分类的主要方法。
 
 #### 高斯朴素贝叶斯
 
-将每个特征建模为正态分布。最适合连续特征。```
+将每个特征建模为正态分布。最适合连续特征。
+
+```
 P(x_i | class) = (1 / sqrt(2 * pi * var)) * exp(-(x_i - mean)^2 / (2 * var))
-```每个类别在每个特征上都有自己的均值和方差。当每个类别中的特征确实遵循钟形曲线时，这种方法效果很好。
+```
+
+每个类别在每个特征上都有自己的均值和方差。当每个类别中的特征确实遵循钟形曲线时，这种方法效果很好。
 
 #### 伯努利朴素贝叶斯
 
-将每个特征建模为二元（存在或不存在）。最适合短文本或二元特征向量。```
+将每个特征建模为二元（存在或不存在）。最适合短文本或二元特征向量。
+
+```
 P(word_i | class) = (docs in class containing word_i + alpha) / (total docs in class + 2 * alpha)
-```与多项分布不同，伯努利分布明确惩罚某个词语的缺失。如果“免费”一词通常出现在垃圾邮件中，但在这封电子邮件中却缺失了，伯努利分布会将这种情况视为反对垃圾邮件的证据。
+```
+
+与多项分布不同，伯努利分布明确惩罚某个词语的缺失。如果“免费”一词通常出现在垃圾邮件中，但在这封电子邮件中却缺失了，伯努利分布会将这种情况视为反对垃圾邮件的证据。
 
 ### 何时使用每种变体
 
@@ -122,9 +150,13 @@ P(word_i | class) = (docs in class containing word_i + alpha) / (total docs in c
 
 不进行平滑处理时：`P(word | class) = 0/N = 0`。一个零乘以整个乘积会使`P(class | features) = 0`，不管其他所有证据如何。一个未见过的词会破坏整个预测，无论其他证据有多强。
 
-拉普拉斯平滑向每个特征计数中添加了一个小的计数 `alpha`（通常为1）：```
+拉普拉斯平滑向每个特征计数中添加了一个小的计数 `alpha`（通常为1）：
+
+```
 P(word_i | class) = (count(word_i, class) + alpha) / (total_words_in_class + alpha * vocab_size)
-```当 alpha=1 时，每个词至少会获得一个极小的概率。在测试邮件中出现的单词 "discombobulate" 不再会使垃圾邮件的概率归零。平滑处理具有贝叶斯解释：它等价于对词分布施加一个均匀的 Dirichlet 先验。
+```
+
+当 alpha=1 时，每个词至少会获得一个极小的概率。在测试邮件中出现的单词 "discombobulate" 不再会使垃圾邮件的概率归零。平滑处理具有贝叶斯解释：它等价于对词分布施加一个均匀的 Dirichlet 先验。
 
 更高的 alpha 值意味着更强的平滑处理（分布更均匀）。更低的 alpha 值意味着模型对数据的信任程度更高。alpha 是一个需要调节的超参数。
 
@@ -141,12 +173,20 @@ alpha 的影响：
 
 将数百个概率（每个都小于 1）相乘会导致浮点下溢。在浮点运算中，乘积会变成零，尽管其真实值是一个非常小的正数。
 
-解决方案：在对数空间中进行计算。不是将概率相乘，而是将它们的对数相加：```
+解决方案：在对数空间中进行计算。不是将概率相乘，而是将它们的对数相加：
+
+```
 log P(class | x1, x2, ..., xn) = log P(class) + sum_i log P(xi | class)
-```这将预测转化为点积：```
+```
+
+这将预测转化为点积：
+
+```
 log_scores = X @ log_feature_probs.T + log_class_priors
 prediction = argmax(log_scores)
-```矩阵乘法。这就是为什么朴素贝叶斯预测如此快速——它与单层线性模型执行的是相同的运算。
+```
+
+矩阵乘法。这就是为什么朴素贝叶斯预测如此快速——它与单层线性模型执行的是相同的运算。
 
 ### 朴素贝叶斯与逻辑回归
 
@@ -164,7 +204,9 @@ prediction = argmax(log_scores)
 
 经验法则：从朴素贝叶斯开始。如果你有足够的数据且朴素贝叶斯达到平台期，就切换到逻辑回归。
 
-### 分类流程```mermaid
+### 分类流程
+
+```mermaid
 flowchart LR
     A[Raw Text] --> B[Tokenize]
     B --> C[Build Vocabulary]
@@ -175,13 +217,19 @@ flowchart LR
 
     style A fill:#f9f,stroke:#333
     style G fill:#9f9,stroke:#333
-```实际上，为了避免浮点下溢，我们通常在对数空间中进行计算。我们不是将许多小概率相乘，而是将它们的对数相加：```
+```
+
+实际上，为了避免浮点下溢，我们通常在对数空间中进行计算。我们不是将许多小概率相乘，而是将它们的对数相加：
+
+```
 log P(class | features) = log P(class) + sum_i log P(feature_i | class)
 ```
 
 ```figure
 naive-bayes
-```## 构建它
+```
+
+## 构建它
 
 `code/naive_bayes.py` 中的代码从零开始实现了 MultinomialNB 和 GaussianNB。
 
@@ -193,7 +241,9 @@ naive-bayes
 
 2. **predict_log_proba(X)**: 对于每个样本，计算 log P(类别) + 所有类别中 log P(特征_i | 类别) 的总和。这是一个矩阵乘法：X @ log_probs.T + log_priors。
 
-3. **predict(X)**: 返回具有最高对数概率的类别。```python
+3. **predict(X)**: 返回具有最高对数概率的类别。
+
+```python
 class MultinomialNB:
     def __init__(self, alpha=1.0):
         self.alpha = alpha
@@ -214,11 +264,15 @@ class MultinomialNB:
             self.feature_log_prob_[i] = np.log(counts / counts.sum())
 
         return self
-```关键见解：拟合后，预测只是矩阵乘法加上一个偏置。这就是为什么朴素贝叶斯如此快速。
+```
+
+关键见解：拟合后，预测只是矩阵乘法加上一个偏置。这就是为什么朴素贝叶斯如此快速。
 
 ### GaussianNB
 
-对于连续特征，我们按每个特征每个类别估计均值和方差：```python
+对于连续特征，我们按每个特征每个类别估计均值和方差：
+
+```python
 class GaussianNB:
     def __init__(self):
         pass
@@ -237,7 +291,9 @@ class GaussianNB:
             self.priors_[i] = X_c.shape[0] / X.shape[0]
 
         return self
-```预测使用每个特征的高斯概率密度函数（PDF），并在特征之间相乘（在对数空间中相加）。
+```
+
+预测使用每个特征的高斯概率密度函数（PDF），并在特征之间相乘（在对数空间中相加）。
 
 ### 示例：文本分类
 
@@ -268,7 +324,9 @@ class GaussianNB:
 
 ```python
 from sklearn.naive_bayes import MultinomialNB, GaussianNB
-``````python
+```
+
+```python
 from sklearn.naive_bayes import GaussianNB, MultinomialNB
 
 gnb = GaussianNB()
@@ -278,7 +336,11 @@ print(f"GaussianNB accuracy: {gnb.score(X_test, y_test):.3f}")
 mnb = MultinomialNB(alpha=1.0)
 mnb.fit(X_train_counts, y_train)
 print(f"MultinomialNB accuracy: {mnb.score(X_test_counts, y_test):.3f}")
-```使用 sklearn 进行文本分类：```python
+```
+
+使用 sklearn 进行文本分类：
+
+```python
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
@@ -290,11 +352,15 @@ text_clf = Pipeline([
 
 text_clf.fit(train_texts, train_labels)
 accuracy = text_clf.score(test_texts, test_labels)
-````naive_bayes.py` 中的代码将从零开始的实现与 sklearn 在相同数据上的实现进行比较，以验证正确性。
+```
+
+`naive_bayes.py` 中的代码将从零开始的实现与 sklearn 在相同数据上的实现进行比较，以验证正确性。
 
 ### 使用朴素贝叶斯的 TF-IDF
 
-原始词频统计给每个词的每次出现赋予相同的权重。但是像 "the" 和 "is" 这样的常见词在每个类别中都会频繁出现，它们并不携带信息。TF-IDF（词频 - 逆文档频率）会降低常见词的权重，同时提升罕见且有区分性的词的权重。```python
+原始词频统计给每个词的每次出现赋予相同的权重。但是像 "the" 和 "is" 这样的常见词在每个类别中都会频繁出现，它们并不携带信息。TF-IDF（词频 - 逆文档频率）会降低常见词的权重，同时提升罕见且有区分性的词的权重。
+
+```python
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
@@ -307,7 +373,9 @@ text_clf = Pipeline([
 
 ### 短文本的 BernoulliNB
 
-对于短文本（如推文、短信、聊天消息），BernoulliNB 可能会优于 MultinomialNB。短文本的词汇量较低，因此 MultinomialNB 依赖的频率信息会变得嘈杂。BernoulliNB 仅关注词的出现或缺失，这在短文本中更为可靠。```python
+对于短文本（如推文、短信、聊天消息），BernoulliNB 可能会优于 MultinomialNB。短文本的词汇量较低，因此 MultinomialNB 依赖的频率信息会变得嘈杂。BernoulliNB 仅关注词的出现或缺失，这在短文本中更为可靠。
+
+```python
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -319,13 +387,17 @@ text_clf = Pipeline([
 
 ### 校准 NB 概率
 
-NB 概率的校准效果较差。当 NB 说 P(垃圾邮件) = 0.95 时，实际概率可能是 0.7。如果你需要可靠的概率估计（例如，设置阈值或与其他模型结合使用），请使用 sklearn 的 CalibratedClassifierCV：```python
+NB 概率的校准效果较差。当 NB 说 P(垃圾邮件) = 0.95 时，实际概率可能是 0.7。如果你需要可靠的概率估计（例如，设置阈值或与其他模型结合使用），请使用 sklearn 的 CalibratedClassifierCV：
+
+```python
 from sklearn.calibration import CalibratedClassifierCV
 
 calibrated_nb = CalibratedClassifierCV(MultinomialNB(), cv=5, method="sigmoid")
 calibrated_nb.fit(X_train, y_train)
 proba = calibrated_nb.predict_proba(X_test)
-```这在 NB 的原始得分上拟合了一个逻辑回归，使用交叉验证。得到的概率更接近真实的类别频率。
+```
+
+这在 NB 的原始得分上拟合了一个逻辑回归，使用交叉验证。得到的概率更接近真实的类别频率。
 
 ### 常见陷阱
 

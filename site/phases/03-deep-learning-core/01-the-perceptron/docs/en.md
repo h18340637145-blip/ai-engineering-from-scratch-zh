@@ -26,7 +26,9 @@
 
 ### 一个神经元，一个决策
 
-感知机接受 n 个输入，将每个输入乘以一个权重，将它们相加，加上一个偏置，然后将结果传递给一个激活函数。```mermaid
+感知机接受 n 个输入，将每个输入乘以一个权重，将它们相加，加上一个偏置，然后将结果传递给一个激活函数。
+
+```mermaid
 graph LR
     x1["x1"] -- "w1" --> sum["Σ(wi*xi) + b"]
     x2["x2"] -- "w2" --> sum
@@ -34,11 +36,17 @@ graph LR
     bias["bias"] --> sum
     sum --> step["step(z)"]
     step --> out["output (0 or 1)"]
-```阶跃函数是残酷的：如果加权和加上偏置 >= 0，输出 1。否则，输出 0。```
+```
+
+阶跃函数是残酷的：如果加权和加上偏置 >= 0，输出 1。否则，输出 0。
+
+```
 step(z) = 1  if z >= 0
            0  if z < 0
-```这是一个线性分类器。权重和偏置定义了一条线（或在更高维空间中的超平面），将输入空间分成两个区域。
+```
 
+这是一个线性分类器。权重和偏置定义了一条线（或在更高维空间中的超平面），将输入空间分成两个区域。
+
 ### 决策边界
 
 对于两个输入，感知机在二维空间中绘制一条线：
@@ -722,8 +730,10 @@ step(z) = 1  if z >= 0
 ### 决策边界
 
 对于两个输入，感知机在二维空间中绘制一条线：
+
+ /no_think
 
- /no_think```
+```
   x2
   ┤
   │  Class 1        /
@@ -734,11 +744,15 @@ step(z) = 1  if z >= 0
   │             /     Class 2
   │            /        (1)
   ┼───────────/──────────── x1
-```线一侧的所有内容输出 0，另一侧的所有内容输出 1。训练过程会移动这条线，直到它能正确地将类别分开。
+```
+
+线一侧的所有内容输出 0，另一侧的所有内容输出 1。训练过程会移动这条线，直到它能正确地将类别分开。
 
 ### 学习规则
 
-感知器学习规则很简单：```
+感知器学习规则很简单：
+
+```
 For each training example (x, y_true):
     y_pred = predict(x)
     error = y_true - y_pred
@@ -746,18 +760,24 @@ For each training example (x, y_true):
     For each weight:
         w_i = w_i + learning_rate * error * x_i
     bias = bias + learning_rate * error
-```如果预测正确，误差为 0，没有任何变化。如果预测为 0 但实际应为 1，权重会增加。如果预测为 1 但实际应为 0，权重会减少。学习率控制每次调整的幅度。
+```
+
+如果预测正确，误差为 0，没有任何变化。如果预测为 0 但实际应为 1，权重会增加。如果预测为 1 但实际应为 0，权重会减少。学习率控制每次调整的幅度。
 
 ### XOR 问题
 
-这就是它失效的地方。看看这些逻辑门：```
+这就是它失效的地方。看看这些逻辑门：
+
+```
 AND gate:           OR gate:            XOR gate:
 x1  x2  out         x1  x2  out         x1  x2  out
 0   0   0           0   0   0           0   0   0
 0   1   0           0   1   1           0   1   1
 1   0   0           1   0   1           1   0   1
 1   1   1           1   1   1           1   1   0
-```AND 和 OR 是线性可分的：你可以画一条直线将 0 与 1 分开。XOR 不是。没有任何一条直线可以将 [0,1] 和 [1,0] 与 [0,0] 和 [1,1] 分开。```
+```AND 和 OR 是线性可分的：你可以画一条直线将 0 与 1 分开。XOR 不是。没有任何一条直线可以将 [0,1] 和 [1,0] 与 [0,0] 和 [1,1] 分开。
+
+```
 AND (separable):        XOR (not separable):
 
   x2                      x2
@@ -766,13 +786,21 @@ AND (separable):        XOR (not separable):
   0 ┤  0 / 0              0 ┤  0     1
     ┼──/──────── x1         ┼──────────── x1
        line works!          no single line works!
-```这是一个根本性的限制。单个感知器只能解决线性可分问题。明斯基和帕皮特于1969年证明了这一点，这几乎让神经网络研究停滞了整整一个十年。
+```
 
-解决方法：将感知器堆叠成多层。多层感知器可以通过将两个线性决策组合成一个非线性决策来解决异或（XOR）问题。```figure
+这是一个根本性的限制。单个感知器只能解决线性可分问题。明斯基和帕皮特于1969年证明了这一点，这几乎让神经网络研究停滞了整整一个十年。
+
+解决方法：将感知器堆叠成多层。多层感知器可以通过将两个线性决策组合成一个非线性决策来解决异或（XOR）问题。
+
+```figure
 perceptron-boundary
-```## 构建它
+```
 
-### 第一步：Perceptron 类```python
+## 构建它
+
+### 第一步：Perceptron 类
+
+```python
 class Perceptron:
     def __init__(self, n_inputs, learning_rate=0.1):
         self.weights = [0.0] * n_inputs
@@ -799,7 +827,11 @@ class Perceptron:
                 print(f"Converged at epoch {epoch + 1}")
                 return
         print(f"Did not converge after {epochs} epochs")
-```### 步骤 2：在逻辑门上进行训练```python
+```
+
+### 步骤 2：在逻辑门上进行训练
+
+```python
 and_data = [
     ([0, 0], 0),
     ([0, 1], 0),
@@ -836,7 +868,11 @@ p_not = Perceptron(1)
 p_not.train(not_data)
 for inputs, _ in not_data:
     print(f"  {inputs} -> {p_not.predict(inputs)}")
-```### 步骤 3：观察 XOR 失败```python
+```
+
+### 步骤 3：观察 XOR 失败
+
+```python
 xor_data = [
     ([0, 0], 0),
     ([0, 1], 1),
@@ -851,11 +887,15 @@ for inputs, expected in xor_data:
     result = p_xor.predict(inputs)
     status = "OK" if result == expected else "WRONG"
     print(f"  {inputs} -> {result} (expected {expected}) {status}")
-```它永远无法收敛。这是单个感知器无法学习异或（XOR）的硬性证明。
+```
+
+它永远无法收敛。这是单个感知器无法学习异或（XOR）的硬性证明。
 
 ### 步骤 4：用两层解决 XOR
 
-窍门：XOR = (x1 OR x2) AND NOT (x1 AND x2)。将三个感知器组合起来：```mermaid
+窍门：XOR = (x1 OR x2) AND NOT (x1 AND x2)。将三个感知器组合起来：
+
+```mermaid
 graph LR
     x1["x1"] --> OR["OR neuron"]
     x1 --> NAND["NAND neuron"]
@@ -890,11 +930,15 @@ print("\n=== XOR Gate (multi-layer network) ===")
 for inputs, expected in xor_data:
     result = xor_network(inputs[0], inputs[1])
     print(f"  {inputs} -> {result} (expected {expected})")
-```所有四个案例都正确。将感知机堆叠成层可以创建出单个感知机无法产生的决策边界。
+```
+
+所有四个案例都正确。将感知机堆叠成层可以创建出单个感知机无法产生的决策边界。
 
 ### 第5步：训练一个两层网络
 
-第4步手动设置了权重。这在XOR问题中有效，但在实际问题中，当你事先不知道正确的权重时，这种方法就不适用了。解决方法：将阶跃函数替换为Sigmoid函数，并通过反向传播自动学习权重。```python
+第4步手动设置了权重。这在XOR问题中有效，但在实际问题中，当你事先不知道正确的权重时，这种方法就不适用了。解决方法：将阶跃函数替换为Sigmoid函数，并通过反向传播自动学习权重。
+
+```python
 class TwoLayerNetwork:
     def __init__(self, learning_rate=0.5):
         import random
@@ -954,7 +998,9 @@ for inputs, expected in xor_data:
     result = net.forward(inputs)
     predicted = 1 if result >= 0.5 else 0
     print(f"  {inputs} -> {result:.4f} (rounded: {predicted}, expected {expected})")
-```与第4步相比有两个关键的不同之处。首先，sigmoid函数取代了阶跃函数——它是平滑的，因此梯度存在。其次，`train`方法从输出层向隐藏层反向传播误差，根据每个权重对误差的贡献成比例地调整每个权重。这就是用20行代码实现的反向传播。
+```
+
+与第4步相比有两个关键的不同之处。首先，sigmoid函数取代了阶跃函数——它是平滑的，因此梯度存在。其次，`train`方法从输出层向隐藏层反向传播误差，根据每个权重对误差的贡献成比例地调整每个权重。这就是用20行代码实现的反向传播。
 
 这是通向第03课的桥梁。`d_output`和`hidden_deltas`背后的数学是将链式法则应用于网络图。我们将在那里正确地推导它。
 
@@ -963,7 +1009,9 @@ for inputs, expected in xor_data:
 你刚刚从零开始构建的一切都存在于一个导入中：
 
 ```python
-``````python
+```
+
+```python
 from sklearn.linear_model import Perceptron as SkPerceptron
 import numpy as np
 
@@ -973,7 +1021,9 @@ y = np.array([0, 0, 0, 1])
 clf = SkPerceptron(max_iter=100, tol=1e-3)
 clf.fit(X, y)
 print([clf.predict([x])[0] for x in X])
-```五行代码。你的30行`Perceptron`类做的是同样的事情。sklearn版本增加了收敛检查、多种损失函数和支持稀疏输入的功能——但核心循环是一样的：加权求和、阶跃函数、根据误差更新权重。
+```
+
+五行代码。你的30行`Perceptron`类做的是同样的事情。sklearn版本增加了收敛检查、多种损失函数和支持稀疏输入的功能——但核心循环是一样的：加权求和、阶跃函数、根据误差更新权重。
 
 真正的差距在规模上显现。生产网络中会发生的变化：
 

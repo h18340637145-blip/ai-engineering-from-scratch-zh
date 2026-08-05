@@ -24,9 +24,13 @@
 
 ### 为什么集成有效
 
-假设你有 N 个独立的分类器，每个分类器的准确率都为 p > 0.5。多数投票的准确率为：```
+假设你有 N 个独立的分类器，每个分类器的准确率都为 p > 0.5。多数投票的准确率为：
+
+```
 P(majority correct) = sum over k > N/2 of C(N,k) * p^k * (1-p)^(N-k)
-```对于21个分类器，每个分类器的准确率为60%，多数投票的准确率约为74%。当有101个分类器时，准确率上升到84%。当模型犯下不同的错误时，这些错误会相互抵消。
+```
+
+对于21个分类器，每个分类器的准确率为60%，多数投票的准确率约为74%。当有101个分类器时，准确率上升到84%。当模型犯下不同的错误时，这些错误会相互抵消。
 
 关键的要求是**多样性**。如果所有模型都犯相同的错误，将它们组合在一起没有任何帮助。集成方法之所以有效，是因为它们通过以下方式产生多样化的模型：
 
@@ -37,7 +41,9 @@ P(majority correct) = sum over k > N/2 of C(N,k) * p^k * (1-p)^(N-k)
 
 ### Bagging（Bootstrap Aggregating）
 
-Bagging通过让每个模型在训练数据的不同bootstrap样本上进行训练来创造多样性。```mermaid
+Bagging通过让每个模型在训练数据的不同bootstrap样本上进行训练来创造多样性。
+
+```mermaid
 flowchart TD
     D[Training Data] --> B1[Bootstrap Sample 1]
     D --> B2[Bootstrap Sample 2]
@@ -55,7 +61,9 @@ flowchart TD
     MN --> V
 
     V --> P[Final Prediction]
-```从原始数据中进行有放回抽样，得到一个引导样本，其大小与原始数据相同。每个引导样本中大约有 63.2% 的唯一样本。剩下的 36.8%（袋外样本）提供了一个免费的验证集。
+```
+
+从原始数据中进行有放回抽样，得到一个引导样本，其大小与原始数据相同。每个引导样本中大约有 63.2% 的唯一样本。剩下的 36.8%（袋外样本）提供了一个免费的验证集。
 
 袋外抽样减少了方差，而不会显著增加偏差。每棵单独的树都会对其引导样本过拟合，但每棵树的过拟合方式不同，因此平均可以抵消噪声。
 
@@ -63,7 +71,9 @@ flowchart TD
 
 ### 提升（序列错误修正）
 
-提升方法依次训练模型。每个新模型都专注于前一个模型错误的示例。```mermaid
+提升方法依次训练模型。每个新模型都专注于前一个模型错误的示例。
+
+```mermaid
 flowchart LR
     D[Data with weights] --> M1[Model 1]
     M1 --> E1[Find errors]
@@ -73,7 +83,9 @@ flowchart LR
     E2 --> W2[Increase weights on errors]
     W2 --> M3[Model 3]
     M3 --> F[Weighted sum of all models]
-```提升方法可以减少偏差。每个新模型会纠正到目前为止集成模型的系统性误差。最终的预测结果是所有模型的加权和，其中表现更好的模型具有更高的权重。
+```
+
+提升方法可以减少偏差。每个新模型会纠正到目前为止集成模型的系统性误差。最终的预测结果是所有模型的加权和，其中表现更好的模型具有更高的权重。
 
 权衡：如果进行过多轮次，提升方法可能会过拟合，因为它会不断拟合更难的例子，其中一些可能是噪声。
 
@@ -81,7 +93,9 @@ flowchart LR
 
 AdaBoost（自适应提升）是第一个实用的提升算法。它可以与任何基础学习器一起工作，通常使用决策桩（深度为1的树）。
 
-算法：```
+算法：
+
+```
 1. Initialize sample weights: w_i = 1/N for all i
 
 2. For t = 1 to T:
@@ -95,11 +109,15 @@ AdaBoost（自适应提升）是第一个实用的提升算法。它可以与任
    e. Normalize weights to sum to 1
 
 3. Final prediction: H(x) = sign(sum(alpha_t * h_t(x)))
-```误差较低的模型会获得更高的 alpha。被错误分类的样本会获得更高的权重，因此下一个模型会更加关注它们。
+```
+
+误差较低的模型会获得更高的 alpha。被错误分类的样本会获得更高的权重，因此下一个模型会更加关注它们。
 
 ### 梯度提升
 
-梯度提升将提升方法推广到任意损失函数。它不是通过重新加权样本，而是将每个新模型拟合到当前集成模型的残差（损失函数的负梯度）。```
+梯度提升将提升方法推广到任意损失函数。它不是通过重新加权样本，而是将每个新模型拟合到当前集成模型的残差（损失函数的负梯度）。
+
+```
 1. Initialize: F_0(x) = argmin_c sum(L(y_i, c))
 
 2. For t = 1 to T:
@@ -112,7 +130,9 @@ AdaBoost（自适应提升）是第一个实用的提升算法。它可以与任
       F_t(x) = F_{t-1}(x) + learning_rate * gamma_t * h_t(x)
 
 3. Final prediction: F_T(x)
-```对于平方误差损失，伪残差就是实际的残差：`r_i = y_i - F_{t-1}(x_i)`。每一棵树实际上拟合的是之前集成模型的误差。
+```
+
+对于平方误差损失，伪残差就是实际的残差：`r_i = y_i - F_{t-1}(x_i)`。每一棵树实际上拟合的是之前集成模型的误差。
 
 学习率（收缩）控制每棵树的贡献程度。较小的学习率需要更多的树，但泛化能力更好。典型值：0.01 到 0.3。
 
@@ -131,7 +151,9 @@ XGBoost（eXtreme Gradient Boosting）是一种带有工程优化的梯度提升
 
 ### Stacking（元学习）
 
-Stacking使用多个基模型的预测结果作为元学习器的特征。```mermaid
+Stacking使用多个基模型的预测结果作为元学习器的特征。
+
+```mermaid
 flowchart TD
     D[Training Data] --> M1[Model 1: Random Forest]
     D --> M2[Model 2: SVM]
@@ -146,7 +168,9 @@ flowchart TD
     P3 --> META
 
     META --> F[Final Prediction]
-```元学习器学习对于哪些输入应该信任哪个基模型。如果随机森林在某些区域表现更好，而支持向量机在其他区域表现更好，元学习器将学会相应地进行路由。
+```
+
+元学习器学习对于哪些输入应该信任哪个基模型。如果随机森林在某些区域表现更好，而支持向量机在其他区域表现更好，元学习器将学会相应地进行路由。
 
 为了避免数据泄露，基模型的预测必须通过在训练集上进行交叉验证来生成。你永远不能在相同的数据上训练基模型并生成元特征。
 
@@ -161,7 +185,9 @@ flowchart TD
 
 ### 步骤 1：决策桩（基学习器）
 
-`code/ensembles.py` 中的代码从头开始实现了所有内容。我们从一个决策桩开始：一个只有一个分割点的树。```python
+`code/ensembles.py` 中的代码从头开始实现了所有内容。我们从一个决策桩开始：一个只有一个分割点的树。
+
+```python
 class DecisionStump:
     def __init__(self):
         self.feature_idx = None
@@ -192,7 +218,11 @@ class DecisionStump:
         idx = self.polarity * X[:, self.feature_idx] < self.polarity * self.threshold
         pred[idx] = -1
         return pred
-```### 步骤 2：从零开始实现 AdaBoost```python
+```
+
+### 步骤 2：从零开始实现 AdaBoost
+
+```python
 class AdaBoostScratch:
     def __init__(self, n_estimators=50):
         self.n_estimators = n_estimators
@@ -222,7 +252,11 @@ class AdaBoostScratch:
     def predict(self, X):
         total = sum(a * s.predict(X) for a, s in zip(self.alphas, self.stumps))
         return np.sign(total)
-```### 步骤 3：从零开始实现梯度提升```python
+```
+
+### 步骤 3：从零开始实现梯度提升
+
+```python
 class GradientBoostingScratch:
     def __init__(self, n_estimators=100, learning_rate=0.1, max_depth=3):
         self.n_estimators = n_estimators
@@ -248,7 +282,9 @@ class GradientBoostingScratch:
         for tree in self.trees:
             pred += self.lr * tree.predict(X)
         return pred
-```### 步骤4：与sklearn进行比较
+```
+
+### 步骤4：与sklearn进行比较
 
 该代码验证了我们的从零开始实现的模型与sklearn的`AdaBoostClassifier`和`GradientBoostingClassifier`的准确性相似，并将所有方法并排进行比较。
 

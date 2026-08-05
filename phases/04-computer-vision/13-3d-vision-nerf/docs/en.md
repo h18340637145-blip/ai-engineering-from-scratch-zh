@@ -26,23 +26,33 @@
 
 ### 点云
 
-点云是 $ \mathbb{R}^3 $ 中一组无序的 $ N $ 个点，每个点可选地具有特征（颜色、强度、法线）。```
+点云是 $ \mathbb{R}^3 $ 中一组无序的 $ N $ 个点，每个点可选地具有特征（颜色、强度、法线）。
+
+```
 cloud = [
   (x1, y1, z1, r1, g1, b1),
   (x2, y2, z2, r2, g2, b2),
   ...
   (xN, yN, zN, rN, gN, bN),
 ]
-```没有网格，没有连通性。两个特性使得神经网络难以处理：
+```
+
+没有网格，没有连通性。两个特性使得神经网络难以处理：
 
 - **排列不变性** — 输出不能依赖于点的顺序。
 - **变量 N** — 一个模型必须处理不同大小的点云。
 
-PointNet（Qi 等人，2017）通过一个想法解决了这两个问题：对每个点应用一个共享的 MLP，然后使用对称函数（最大池化）进行聚合。结果得到一个固定大小的向量，且不依赖于顺序。```
-f(P) = max_{p in P} MLP(p)
-```这是 PointNet 的核心所在。更深层次的变体（如 PointNet++、Point Transformer）增加了分层采样和局部聚合，但对称函数的技巧保持不变。
+PointNet（Qi 等人，2017）通过一个想法解决了这两个问题：对每个点应用一个共享的 MLP，然后使用对称函数（最大池化）进行聚合。结果得到一个固定大小的向量，且不依赖于顺序。
 
-### PointNet 架构```mermaid
+```
+f(P) = max_{p in P} MLP(p)
+```
+
+这是 PointNet 的核心所在。更深层次的变体（如 PointNet++、Point Transformer）增加了分层采样和局部聚合，但对称函数的技巧保持不变。
+
+### PointNet 架构
+
+```mermaid
 flowchart LR
     PTS["N points<br/>(x, y, z)"] --> MLP1["shared MLP<br/>(64, 64)"]
     MLP1 --> MLP2["shared MLP<br/>(64, 128, 1024)"]
@@ -54,11 +64,15 @@ flowchart LR
     style MLP1 fill:#dbeafe,stroke:#2563eb
     style MAX fill:#fef3c7,stroke:#d97706
     style CLS fill:#dcfce7,stroke:#16a34a
-```“共享 MLP”表示相同的 MLP 在每个点上独立运行。为了提高效率，实现为对点维度的 1x1 卷积。
+```
+
+“共享 MLP”表示相同的 MLP 在每个点上独立运行。为了提高效率，实现为对点维度的 1x1 卷积。
 
 ### 神经辐射场（NeRFs）
 
-NeRFs（Mildenhall 等人，2020）提出了一个问题“我们能否从 N 张照片重建一个 3D 场景？”，并用一个作为场景本身的神经网络来回答。该网络将 `(x, y, z, viewing_direction)` 映射到 `(density, colour)`。渲染新视角是对此网络进行的一次光线投射循环。```
+NeRFs（Mildenhall 等人，2020）提出了一个问题“我们能否从 N 张照片重建一个 3D 场景？”，并用一个作为场景本身的神经网络来回答。该网络将 `(x, y, z, viewing_direction)` 映射到 `(density, colour)`。渲染新视角是对此网络进行的一次光线投射循环。
+
+```
 NeRF MLP:  (x, y, z, theta, phi) -> (sigma, r, g, b)
 
 To render a pixel (u, v) of a new view:
@@ -67,20 +81,30 @@ To render a pixel (u, v) of a new view:
   3. Query the MLP at each point
   4. Composite the colours weighted by (1 - exp(-sigma * dt))
   5. The sum is the rendered pixel colour
-```损失函数将渲染的像素与训练照片中的真实像素进行比较。通过渲染步骤的反向传播来更新 MLP。没有 3D 真实值，没有显式的几何结构 —— 场景存储在 MLP 的权重中。
+```
+
+损失函数将渲染的像素与训练照片中的真实像素进行比较。通过渲染步骤的反向传播来更新 MLP。没有 3D 真实值，没有显式的几何结构 —— 场景存储在 MLP 的权重中。
 
 ### NeRF 中的位置编码
 
-在 `(x, y, z)` 上的普通 MLP 无法表示高频细节，因为 MLP 在频谱上偏向于低频。NeRF 通过在 MLP 之前将每个坐标编码为傅里叶特征向量来解决这个问题：```
-gamma(p) = (sin(2^0 pi p), cos(2^0 pi p), sin(2^1 pi p), cos(2^1 pi p), ...)
-```最多到 L=10 个频率层级。这是变压器用于位置的相同技巧，并且在扩散时间条件（第 10 课）中再次出现。没有它，NeRF 会显得模糊。
+在 `(x, y, z)` 上的普通 MLP 无法表示高频细节，因为 MLP 在频谱上偏向于低频。NeRF 通过在 MLP 之前将每个坐标编码为傅里叶特征向量来解决这个问题：
 
-### 体素渲染```
+```
+gamma(p) = (sin(2^0 pi p), cos(2^0 pi p), sin(2^1 pi p), cos(2^1 pi p), ...)
+```
+
+最多到 L=10 个频率层级。这是变压器用于位置的相同技巧，并且在扩散时间条件（第 10 课）中再次出现。没有它，NeRF 会显得模糊。
+
+### 体素渲染
+
+```
 C(r) = sum_i T_i * (1 - exp(-sigma_i * delta_i)) * c_i
 
 T_i  = exp(- sum_{j<i} sigma_j * delta_j)
 delta_i = t_{i+1} - t_i
-````T_i` 是透射率 —— 到达点 i 的光线有多少。`(1 - exp(-sigma_i * delta_i))` 是点 i 的不透明度。`c_i` 是颜色。最终像素是沿光线的加权和。
+```
+
+`T_i` 是透射率 —— 到达点 i 的光线有多少。`(1 - exp(-sigma_i * delta_i))` 是点 i 的不透明度。`c_i` 是颜色。最终像素是沿光线的加权和。
 
 ### 什么取代了 NeRF
 
@@ -102,7 +126,9 @@ delta_i = t_{i+1} - t_i
 
 ## 构建它
 
-### 第一步：PointNet 分类器```python
+### 第一步：PointNet 分类器
+
+```python
 import torch
 import torch.nn as nn
 
@@ -136,9 +162,13 @@ pts = torch.randn(4, 3, 1024)
 net = PointNet(num_classes=10)
 print(f"output: {net(pts).shape}")
 print(f"params: {sum(p.numel() for p in net.parameters()):,}")
-```约 1.6M 个参数。每个点云处理 1,024 个点。
+```
 
-### 步骤 2：位置编码```python
+约 1.6M 个参数。每个点云处理 1,024 个点。
+
+### 步骤 2：位置编码
+
+```python
 def positional_encoding(x, L=10):
     """
     x: (..., D) -> (..., D * 2 * L)
@@ -152,9 +182,13 @@ x = torch.randn(5, 3)
 y = positional_encoding(x, L=10)
 print(f"input:  {x.shape}")
 print(f"encoded: {y.shape}     # (5, 60)")
-```乘以 `2^l * pi` 会逐渐产生更高的频率。
+```
 
-### 步骤 3：Tiny NeRF MLP```python
+乘以 `2^l * pi` 会逐渐产生更高的频率。
+
+### 步骤 3：Tiny NeRF MLP
+
+```python
 class TinyNeRF(nn.Module):
     def __init__(self, L_pos=10, L_dir=4, hidden=128):
         super().__init__()
@@ -187,9 +221,13 @@ x = torch.randn(128, 3)
 d = torch.randn(128, 3)
 s, c = nerf(x, d)
 print(f"sigma: {s.shape}   rgb: {c.shape}")
-```与原始的 NeRF（具有深度为 8 的两个 MLP 主干）相比要小得多。但足以演示该架构。
+```
 
-### 步骤 4：沿光线进行体积渲染```python
+与原始的 NeRF（具有深度为 8 的两个 MLP 主干）相比要小得多。但足以演示该架构。
+
+### 步骤 4：沿光线进行体积渲染
+
+```python
 def volumetric_render(sigma, rgb, t_vals):
     """
     sigma: (..., N_samples)
@@ -212,7 +250,9 @@ rgb = torch.rand(N, 3)
 rendered, depth, weights = volumetric_render(sigma, rgb, t_vals)
 print(f"rendered colour: {rendered.tolist()}")
 print(f"depth:           {depth.item():.2f}")
-```一条光线，64个样本，合成一个RGB像素和一个深度。
+```
+
+一条光线，64个样本，合成一个RGB像素和一个深度。
 
 ## 使用它
 

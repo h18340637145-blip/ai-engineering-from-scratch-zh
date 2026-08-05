@@ -28,75 +28,127 @@
 
 矩阵乘法是可组合的。先将一个向量乘以矩阵A，然后乘以矩阵B，等同于将该向量乘以AB。这意味着堆叠十个线性层在数学上等同于一个具有一个大矩阵的线性层。所有这些参数、所有这些深度——浪费了。你需要某个东西来打破这个链条。这就是激活函数的作用。
 
-下面是证明。线性层计算f(x) = Wx + b。堆叠两个：```
+下面是证明。线性层计算f(x) = Wx + b。堆叠两个：
+
+```
 Layer 1: h = W1 * x + b1
 Layer 2: y = W2 * h + b2
-```替换：```
+```
+
+替换：
+
+```
 y = W2 * (W1 * x + b1) + b2
 y = (W2 * W1) * x + (W2 * b1 + b2)
 y = A * x + c
-```一层。在层之间插入一个非线性激活函数 g()：
+```
+
+一层。在层之间插入一个非线性激活函数 g()：
 
 ```python
 layer = Dense(units=64, activation='relu')
-``````
+```
+
+```
 h = g(W1 * x + b1)
 y = W2 * h + b2
-```现在替换过程被打破。W2 * g(W1 * x + b1) + b2 无法简化为一个单一的线性变换。网络可以表示非线性函数。每一层额外的激活函数都会增加表示能力。
+```
+
+现在替换过程被打破。W2 * g(W1 * x + b1) + b2 无法简化为一个单一的线性变换。网络可以表示非线性函数。每一层额外的激活函数都会增加表示能力。
 
 ### Sigmoid
 
-神经网络最初的激活函数。```
-sigmoid(x) = 1 / (1 + e^(-x))
-```输出范围：(0, 1)。平滑、可微，将任何实数映射到类似概率的值。
+神经网络最初的激活函数。
 
-导数：```
+```
+sigmoid(x) = 1 / (1 + e^(-x))
+```
+
+输出范围：(0, 1)。平滑、可微，将任何实数映射到类似概率的值。
+
+导数：
+
+```
 sigmoid'(x) = sigmoid(x) * (1 - sigmoid(x))
-```这个导数的最大值是 0.25，出现在 x = 0 处。在反向传播中，梯度会通过各层相乘。十个 sigmoid 层意味着梯度最多会被乘以 0.25 十次：```
+```
+
+这个导数的最大值是 0.25，出现在 x = 0 处。在反向传播中，梯度会通过各层相乘。十个 sigmoid 层意味着梯度最多会被乘以 0.25 十次：
+
+```
 0.25^10 = 0.000000953674
-```原始信号的百万分之一以下。这就是消失梯度问题。早期层的梯度变得非常小，以至于权重几乎不更新。网络似乎在学习——后面的层损失减少——但前面的层却冻结了。使用深层的sigmoid网络根本无法进行训练。
+```
+
+原始信号的百万分之一以下。这就是消失梯度问题。早期层的梯度变得非常小，以至于权重几乎不更新。网络似乎在学习——后面的层损失减少——但前面的层却冻结了。使用深层的sigmoid网络根本无法进行训练。
 
 附加问题：sigmoid的输出始终为正（0到1），这意味着权重上的梯度始终具有相同的符号。这会导致梯度下降过程中出现锯齿状波动。
 
 ### Tanh
 
-sigmoid的中心化版本。```
-tanh(x) = (e^x - e^(-x)) / (e^x + e^(-x))
-```输出范围：(-1, 1)。以零为中心，消除了锯齿问题。
+sigmoid的中心化版本。
 
-导数：```
+```
+tanh(x) = (e^x - e^(-x)) / (e^x + e^(-x))
+```
+
+输出范围：(-1, 1)。以零为中心，消除了锯齿问题。
+
+导数：
+
+```
 tanh'(x) = 1 - tanh(x)^2
-```在 x = 0 处，导数最大为 1.0 -- 比 sigmoid 函数好四倍。但梯度消失问题仍然存在。对于较大的正数或负数输入，导数会趋近于零。即使有十层网络，仍然会压缩梯度，只是程度较轻。
+```
+
+在 x = 0 处，导数最大为 1.0 -- 比 sigmoid 函数好四倍。但梯度消失问题仍然存在。对于较大的正数或负数输入，导数会趋近于零。即使有十层网络，仍然会压缩梯度，只是程度较轻。
 
 ### ReLU：突破性进展
 
-修正线性单元。由 Nair 和 Hinton 在 2010 年推广用于深度学习（该函数本身可追溯到 Fukushima 在 1969 年的工作），它改变了所有的一切。```
+修正线性单元。由 Nair 和 Hinton 在 2010 年推广用于深度学习（该函数本身可追溯到 Fukushima 在 1969 年的工作），它改变了所有的一切。
+
+```
 relu(x) = max(0, x)
-```输出范围：[0, infinity)。导数显然很简单：```
+```
+
+输出范围：[0, infinity)。导数显然很简单：
+
+```
 relu'(x) = 1  if x > 0
             0  if x <= 0
-```正输入不会出现梯度消失。梯度正好为 1，直接传递。这就是为什么深度网络变得可以训练 -- ReLU 在各层之间保留梯度的大小。
+```
+
+正输入不会出现梯度消失。梯度正好为 1，直接传递。这就是为什么深度网络变得可以训练 -- ReLU 在各层之间保留梯度的大小。
 
 但是存在一种失效模式：死亡神经元问题。如果一个神经元的加权输入始终为负（由于较大的负偏置或不幸的权重初始化），其输出始终为零，梯度始终为零，且不会更新。它将永久死亡。在实践中，ReLU 网络在训练过程中可能有 10-40% 的神经元死亡。
 
 ### Leaky ReLU
 
-修复死亡神经元的最简单方法。```
+修复死亡神经元的最简单方法。
+
+```
 leaky_relu(x) = x        if x > 0
                 alpha * x if x <= 0
-```其中 alpha 是一个小的常数，通常为 0.01。负数侧有一个较小的斜率而不是零，因此死神经元仍然可以获得梯度信号并恢复。
+```
+
+其中 alpha 是一个小的常数，通常为 0.01。负数侧有一个较小的斜率而不是零，因此死神经元仍然可以获得梯度信号并恢复。
 
 ### GELU：现代默认激活函数
 
-高斯误差线性单元。由 Hendrycks 和 Gimpel 于 2016 年引入。BERT、GPT 和大多数现代变压器模型的默认激活函数。```
+高斯误差线性单元。由 Hendrycks 和 Gimpel 于 2016 年引入。BERT、GPT 和大多数现代变压器模型的默认激活函数。
+
+```
 gelu(x) = x * Phi(x)
-```其中 Phi(x) 是标准正态分布的累积分布函数。实际中使用的近似方法：```
+```
+
+其中 Phi(x) 是标准正态分布的累积分布函数。实际中使用的近似方法：
+
+```
 gelu(x) ~= 0.5 * x * (1 + tanh(sqrt(2/pi) * (x + 0.044715 * x^3)))
 ```GELU 在所有地方都是平滑的，允许出现小的负值（与硬截断到零的 ReLU 不同），并且具有概率解释：它根据输入在高斯分布下为正的概率来对每个输入进行加权。这种平滑的门控机制在 transformer 架构中优于 ReLU，因为它提供了更好的梯度流动，并完全避免了死神经元问题。
 
 ### Swish / SiLU
 
-由 Ramachandran 等人在 2017 年通过自动化搜索发现的自门控激活函数。```
+由 Ramachandran 等人在 2017 年通过自动化搜索发现的自门控激活函数。
+
+```
 swish(x) = x * sigmoid(x)
 ```Swish 正式定义为 x * sigmoid(x)。Google 通过在激活函数空间上进行自动搜索发现了它——这是神经网络设计神经网络部分的一种方法。
 
@@ -104,11 +156,17 @@ swish(x) = x * sigmoid(x)
 
 ### Softmax：输出激活函数
 
-不用于隐藏层。Softmax 将一个原始分数（logits）的向量转换为概率分布。```
-softmax(x_i) = e^(x_i) / sum(e^(x_j) for all j)
-```每个输出都在 0 到 1 之间。所有输出的总和为 1。这使得它成为多类分类的标准最终激活函数。最大的 logit 获得最高的概率，但与 argmax 不同，softmax 是可微的，并且保留了关于相对置信度的信息。
+不用于隐藏层。Softmax 将一个原始分数（logits）的向量转换为概率分布。
 
-### 形状比较```mermaid
+```
+softmax(x_i) = e^(x_i) / sum(e^(x_j) for all j)
+```
+
+每个输出都在 0 到 1 之间。所有输出的总和为 1。这使得它成为多类分类的标准最终激活函数。最大的 logit 获得最高的概率，但与 argmax 不同，softmax 是可微的，并且保留了关于相对置信度的信息。
+
+### 形状比较
+
+```mermaid
 graph LR
     subgraph "Activation Functions"
         S["Sigmoid<br/>Range: (0,1)<br/>Saturates both ends"]
@@ -120,7 +178,11 @@ graph LR
     T -->|"Less severe but<br/>still vanishes"| Problem
     R -->|"Gradient = 1<br/>for x > 0"| Solution["Deep networks<br/>train fast"]
     G -->|"Smooth gradient<br/>everywhere"| Solution
-```### 梯度流比较```mermaid
+```
+
+### 梯度流比较
+
+```mermaid
 graph TD
     Input["Input Signal"] --> L1["Layer 1"]
     L1 --> L5["Layer 5"]
@@ -133,7 +195,11 @@ graph TD
         ReluGrad["ReLU: ~1.0"]
         GeluGrad["GELU: ~0.8"]
     end
-```### 何时使用哪种激活函数```mermaid
+```
+
+### 何时使用哪种激活函数
+
+```mermaid
 flowchart TD
     Start["What are you building?"] --> Hidden{"Hidden layers<br/>or output?"}
 
@@ -152,11 +218,15 @@ flowchart TD
 
 ```figure
 softmax-temperature
-```## 构建它
+```
+
+## 构建它
 
 ### 第一步：实现所有激活函数及其导数
 
-每个函数接受一个浮点数并返回一个浮点数。每个导数函数接受相同的输入并返回梯度。```python
+每个函数接受一个浮点数并返回一个浮点数。每个导数函数接受相同的输入并返回梯度。
+
+```python
 import math
 
 def sigmoid(x):
@@ -206,9 +276,13 @@ def softmax(xs):
     exps = [math.exp(x - max_x) for x in xs]
     total = sum(exps)
     return [e / total for e in exps]
-```### 步骤 2：可视化梯度消失的位置
+```
 
-计算从 -5 到 5 的 100 个等距点处的梯度。打印一个文本直方图，显示每个激活函数的梯度接近零的位置。```python
+### 步骤 2：可视化梯度消失的位置
+
+计算从 -5 到 5 的 100 个等距点处的梯度。打印一个文本直方图，显示每个激活函数的梯度接近零的位置。
+
+```python
 def gradient_scan(name, derivative_fn, start=-5, end=5, n=100):
     step = (end - start) / n
     near_zero = 0
@@ -229,9 +303,13 @@ gradient_scan("ReLU", relu_derivative)
 gradient_scan("Leaky ReLU", leaky_relu_derivative)
 gradient_scan("GELU", gelu_derivative)
 gradient_scan("Swish", swish_derivative)
-```### 步骤 3：消失梯度实验
+```
 
-使用 sigmoid 和 ReLU 通过 N 层进行前向传播。测量激活值的幅度变化。```python
+### 步骤 3：消失梯度实验
+
+使用 sigmoid 和 ReLU 通过 N 层进行前向传播。测量激活值的幅度变化。
+
+```python
 import random
 
 def vanishing_gradient_experiment(activation_fn, name, n_layers=10, n_inputs=5):
@@ -251,9 +329,13 @@ def vanishing_gradient_experiment(activation_fn, name, n_layers=10, n_inputs=5):
 vanishing_gradient_experiment(sigmoid, "Sigmoid")
 vanishing_gradient_experiment(relu, "ReLU")
 vanishing_gradient_experiment(gelu, "GELU")
-```### 步骤 4：死神经元检测器
+```
 
-创建一个 ReLU 网络，通过随机输入传递数据，统计有多少个神经元从未激活。```python
+### 步骤 4：死神经元检测器
+
+创建一个 ReLU 网络，通过随机输入传递数据，统计有多少个神经元从未激活。
+
+```python
 def dead_neuron_detector(n_inputs=5, hidden_size=20, n_samples=1000):
     random.seed(0)
     weights = [[random.gauss(0, 1) for _ in range(n_inputs)] for _ in range(hidden_size)]
@@ -284,9 +366,13 @@ def dead_neuron_detector(n_inputs=5, hidden_size=20, n_samples=1000):
         print(f"  Neuron {i:2d}: {c:4d}/{n_samples} fires [{status:4s}] {bar}")
 
 dead_neuron_detector()
-```### 步骤 5：训练比较 -- Sigmoid 与 ReLU 与 GELU
+```
 
-在 circle 数据集（圆内点 = 类 1，圆外点 = 类 0）上训练相同的两层网络，使用三种不同的激活函数。比较收敛速度。```python
+### 步骤 5：训练比较 -- Sigmoid 与 ReLU 与 GELU
+
+在 circle 数据集（圆内点 = 类 1，圆外点 = 类 0）上训练相同的两层网络，使用三种不同的激活函数。比较收敛速度。
+
+```python
 def make_circle_data(n=200, seed=42):
     random.seed(seed)
     data = []
@@ -373,9 +459,13 @@ for name, act_fn, act_d_fn in configs:
 print("\n=== Final Loss Comparison ===")
 for name, losses in results.items():
     print(f"  {name:10s}: start={losses[0]:.4f} -> end={losses[-1]:.4f} (improvement: {(1 - losses[-1]/losses[0])*100:.1f}%)")
-```## 使用它
+```
 
-PyTorch 以函数形式和模块形式同时提供了所有这些：```python
+## 使用它
+
+PyTorch 以函数形式和模块形式同时提供了所有这些：
+
+```python
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
