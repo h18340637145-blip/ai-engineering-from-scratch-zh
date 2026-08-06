@@ -2,11 +2,101 @@
   "lesson": "05-handler-looper-and-concurrency",
   "title": "Handler、Looper 与 MessageQueue",
   "questions": [
-    {"stage":"pre","question":"Handler.post() 的工作会先进入哪里？","options":["MessageQueue","磁盘缓存","Binder 驱动","LayoutManager"],"correct":0,"explanation":"Handler 将任务投递到所属 Looper 的消息队列。"},
-    {"stage":"check","question":"Looper.loop() 的核心职责是什么？","options":["创建 APK","持续取消息并分发","压缩图片","安装权限"],"correct":1,"explanation":"loop 持续从队列取消息并分发给 Handler。"},
-    {"stage":"check","question":"Android 主线程通常何时拥有 Looper？","options":["框架启动时已准备","只有调用 sleep 后","安装应用后才有","从不拥有"],"correct":0,"explanation":"主线程由框架准备了 Looper 和 MessageQueue。"},
-    {"stage":"check","question":"后台线程想使用 Handler 消息循环通常需要先做什么？","options":["调用 Looper.prepare()","调用 System.gc()","启动 Service","修改 Manifest"],"correct":0,"explanation":"后台线程需要显式准备 Looper。"},
-    {"stage":"post","question":"页面销毁时应如何处理延迟 Runnable？","options":["保留以便复用","移除不再需要的回调","改成静态全局列表","增加延迟时间"],"correct":1,"explanation":"移除回调可以避免页面被长期引用。"},
-    {"stage":"post","question":"消息队列通常按什么决定下一条执行的消息？","options":["类名字母顺序","投递线程优先级","到期时间","内存地址"],"correct":2,"explanation":"MessageQueue 按消息的时间顺序处理。"}
+    {
+      "stage": "pre",
+      "question": "Handler.post() 的工作会先进入哪里？",
+      "options": [
+        "MessageQueue",
+        "磁盘缓存",
+        "Binder 驱动",
+        "LayoutManager"
+      ],
+      "correct": 0,
+      "explanation": "Handler 将任务投递到所属 Looper 的消息队列。"
+    },
+    {
+      "stage": "check",
+      "question": "Looper.loop() 的核心职责是什么？",
+      "options": [
+        "创建 APK",
+        "持续取消息并分发",
+        "压缩图片",
+        "安装权限"
+      ],
+      "correct": 1,
+      "explanation": "loop 持续从队列取消息并分发给 Handler。"
+    },
+    {
+      "stage": "check",
+      "question": "Android 主线程通常何时拥有 Looper？",
+      "options": [
+        "框架启动时已准备",
+        "只有调用 sleep 后",
+        "安装应用后才有",
+        "从不拥有"
+      ],
+      "correct": 0,
+      "explanation": "主线程由框架准备了 Looper 和 MessageQueue。"
+    },
+    {
+      "stage": "check",
+      "question": "后台线程想使用 Handler 消息循环通常需要先做什么？",
+      "options": [
+        "调用 Looper.prepare()",
+        "调用 System.gc()",
+        "启动 Service",
+        "修改 Manifest"
+      ],
+      "correct": 0,
+      "explanation": "后台线程需要显式准备 Looper。"
+    },
+    {
+      "stage": "check",
+      "question": "一个线程中最多可以有几个 Looper 对象？",
+      "options": [
+        "1个",
+        "2个",
+        "没有限制",
+        "由系统内存决定"
+      ],
+      "correct": 0,
+      "explanation": "由于 Looper 是通过 ThreadLocal 存储的，一个线程只能绑定一个 Looper 对象。"
+    },
+    {
+      "stage": "check",
+      "question": "Handler 发送延迟消息（sendMessageDelayed）的实现原理是什么？",
+      "options": [
+        "启动一个子线程睡眠指定时间后发送",
+        "在 MessageQueue 中按触发时间 (when) 排序，未到时间时底层阻塞等待",
+        "使用系统 AlarmManager 定时唤醒",
+        "不断轮询判断时间是否到达"
+      ],
+      "correct": 1,
+      "explanation": "消息入队时会按目标触发时间 (when) 进行排序，Looper 轮询时如果发现最近的消息时间未到，会通过 epoll 机制阻塞等待，不会消耗 CPU。"
+    },
+    {
+      "stage": "post",
+      "question": "页面销毁时应如何处理延迟 Runnable？",
+      "options": [
+        "保留以便复用",
+        "移除不再需要的回调",
+        "改成静态全局列表",
+        "增加延迟时间"
+      ],
+      "correct": 1,
+      "explanation": "移除回调可以避免页面被长期引用。"
+    },
+    {
+      "stage": "post",
+      "question": "消息队列通常按什么决定下一条执行的消息？",
+      "options": [
+        "类名字母顺序",
+        "投递线程优先级",
+        "到期时间",
+        "内存地址"
+      ],
+      "correct": 2,
+      "explanation": "MessageQueue 按消息的时间顺序处理。"
+    }
   ]
 }

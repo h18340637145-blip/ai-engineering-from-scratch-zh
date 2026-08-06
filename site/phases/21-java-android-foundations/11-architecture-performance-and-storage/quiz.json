@@ -2,11 +2,101 @@
   "lesson": "11-architecture-performance-and-storage",
   "title": "架构、性能与跨进程存储",
   "questions": [
-    {"stage":"pre","question":"MVVM 中 View 主要观察谁暴露的状态？","options":["ViewModel","Binder 驱动","Bootloader","APK 签名器"],"correct":0,"explanation":"MVVM 中 View 观察 ViewModel 的状态。"},
-    {"stage":"check","question":"MVP 中 Presenter 的主要角色是什么？","options":["协调被动 View 与 Model","替代 GC","绘制 Kernel Logo","创建进程"],"correct":0,"explanation":"Presenter 协调 View 与 Model。"},
-    {"stage":"check","question":"性能优化开始前应该先做什么？","options":["随机重构","测量并定位热点","关闭所有动画","增加线程数"],"correct":1,"explanation":"应先用 Profiler、Perfetto 等工具测量。"},
-    {"stage":"check","question":"SharedPreferences 跨进程读写的主要问题是什么？","options":["不能保存字符串","不保证缓存一致性","只支持 root","一定会崩溃"],"correct":1,"explanation":"不同进程各自缓存，可能读旧值或竞争写入。"},
-    {"stage":"post","question":"跨进程共享结构化数据可使用什么？","options":["ContentProvider","单例 Activity","StringBuilder","ViewStub"],"correct":0,"explanation":"ContentProvider 通过 URI 和权限模型共享结构化数据。"},
-    {"stage":"post","question":"ViewModel 不应持有什么引用？","options":["View 引用","业务状态","仓库接口","SavedStateHandle"],"correct":0,"explanation":"持有 View 会造成生命周期耦合和泄漏风险。"}
+    {
+      "stage": "pre",
+      "question": "MVVM 中 View 主要观察谁暴露的状态？",
+      "options": [
+        "ViewModel",
+        "Binder 驱动",
+        "Bootloader",
+        "APK 签名器"
+      ],
+      "correct": 0,
+      "explanation": "MVVM 中 View 观察 ViewModel 的状态。"
+    },
+    {
+      "stage": "check",
+      "question": "MVP 中 Presenter 的主要角色是什么？",
+      "options": [
+        "协调被动 View 与 Model",
+        "替代 GC",
+        "绘制 Kernel Logo",
+        "创建进程"
+      ],
+      "correct": 0,
+      "explanation": "Presenter 协调 View 与 Model。"
+    },
+    {
+      "stage": "check",
+      "question": "性能优化开始前应该先做什么？",
+      "options": [
+        "随机重构",
+        "测量并定位热点",
+        "关闭所有动画",
+        "增加线程数"
+      ],
+      "correct": 1,
+      "explanation": "应先用 Profiler、Perfetto 等工具测量。"
+    },
+    {
+      "stage": "check",
+      "question": "SharedPreferences 跨进程读写的主要问题是什么？",
+      "options": [
+        "不能保存字符串",
+        "不保证缓存一致性",
+        "只支持 root",
+        "一定会崩溃"
+      ],
+      "correct": 1,
+      "explanation": "不同进程各自缓存，可能读旧值或竞争写入。"
+    },
+    {
+      "stage": "check",
+      "question": "在 MVVM 架构中，ViewModel 的主要职责是什么？",
+      "options": [
+        "直接操作 UI 控件 (如 TextView.setText)",
+        "处理数据逻辑并通过 LiveData/StateFlow 暴露给 View",
+        "负责与数据库进行最底层的 SQL 交互",
+        "管理 Activity 的生命周期流转"
+      ],
+      "correct": 1,
+      "explanation": "ViewModel 用于存储和管理与 UI 相关的界面数据，并且在生命周期变化时保留数据，但不应持有任何 View 引用。"
+    },
+    {
+      "stage": "check",
+      "question": "以下哪种方式不适合用于持久化存储大型结构化数据？",
+      "options": [
+        "SQLite / Room",
+        "SharedPreferences",
+        "文件存储",
+        "网络云端存储"
+      ],
+      "correct": 1,
+      "explanation": "SharedPreferences 会在内存中缓存整个 XML 文件，存储大型或复杂的结构化数据会导致性能问题和内存消耗过大。"
+    },
+    {
+      "stage": "post",
+      "question": "跨进程共享结构化数据可使用什么？",
+      "options": [
+        "ContentProvider",
+        "单例 Activity",
+        "StringBuilder",
+        "ViewStub"
+      ],
+      "correct": 0,
+      "explanation": "ContentProvider 通过 URI 和权限模型共享结构化数据。"
+    },
+    {
+      "stage": "post",
+      "question": "ViewModel 不应持有什么引用？",
+      "options": [
+        "View 引用",
+        "业务状态",
+        "仓库接口",
+        "SavedStateHandle"
+      ],
+      "correct": 0,
+      "explanation": "持有 View 会造成生命周期耦合和泄漏风险。"
+    }
   ]
 }

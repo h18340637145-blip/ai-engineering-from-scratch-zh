@@ -2,11 +2,101 @@
   "lesson": "14-system-diagnostics-and-stability",
   "title": "系统诊断日志与稳定性",
   "questions": [
-    {"stage":"pre","question":"哪个资料最适合查看设备当时的系统全貌和服务状态？","options":["Bugreport","单行 Logcat","StringBuilder","Android.bp"],"correct":0,"explanation":"Bugreport 汇集 dumpstate、属性、dumpsys 和日志等系统快照。"},
-    {"stage":"check","question":"Event Log 最适合做什么？","options":["还原组件和进程时间线","替代所有源码","修改签名","渲染视频"],"correct":0,"explanation":"Event Log 提供结构化生命周期事件。"},
-    {"stage":"check","question":"分析 ANR 时首要关注哪个线程？","options":["main","随机线程","GC 线程一定优先","只看 Binder 驱动"],"correct":0,"explanation":"应先看目标 PID 的 main 线程在等待什么。"},
-    {"stage":"check","question":"BinderProxy.transact 在线程栈中通常说明什么？","options":["同步等待 Binder 返回","图片解码成功","日志已关闭","GC 完成"],"correct":0,"explanation":"它是同步 Binder 调用等待的线索。"},
-    {"stage":"post","question":"am_proc_died 单独能证明什么？","options":["一定是 Java 崩溃","进程已死亡，但需结合其他日志判断原因","设备已重启","Binder 已满"],"correct":1,"explanation":"还需查 am_crash、am_kill、lmkd、tombstone 等。"},
-    {"stage":"post","question":"打开 ProtoLog 完成定位后应做什么？","options":["保持永久开启","立即关闭相关组","清空系统分区","删除 traces"],"correct":1,"explanation":"持续调试日志会增加性能和存储开销。"}
+    {
+      "stage": "pre",
+      "question": "哪个资料最适合查看设备当时的系统全貌和服务状态？",
+      "options": [
+        "Bugreport",
+        "单行 Logcat",
+        "StringBuilder",
+        "Android.bp"
+      ],
+      "correct": 0,
+      "explanation": "Bugreport 汇集 dumpstate、属性、dumpsys 和日志等系统快照。"
+    },
+    {
+      "stage": "check",
+      "question": "Event Log 最适合做什么？",
+      "options": [
+        "还原组件和进程时间线",
+        "替代所有源码",
+        "修改签名",
+        "渲染视频"
+      ],
+      "correct": 0,
+      "explanation": "Event Log 提供结构化生命周期事件。"
+    },
+    {
+      "stage": "check",
+      "question": "分析 ANR 时首要关注哪个线程？",
+      "options": [
+        "main",
+        "随机线程",
+        "GC 线程一定优先",
+        "只看 Binder 驱动"
+      ],
+      "correct": 0,
+      "explanation": "应先看目标 PID 的 main 线程在等待什么。"
+    },
+    {
+      "stage": "check",
+      "question": "BinderProxy.transact 在线程栈中通常说明什么？",
+      "options": [
+        "同步等待 Binder 返回",
+        "图片解码成功",
+        "日志已关闭",
+        "GC 完成"
+      ],
+      "correct": 0,
+      "explanation": "它是同步 Binder 调用等待的线索。"
+    },
+    {
+      "stage": "check",
+      "question": "想要查看当前系统中运行了哪些 Activity，通常使用哪个 dumpsys 命令？",
+      "options": [
+        "dumpsys window",
+        "dumpsys meminfo",
+        "dumpsys activity activities",
+        "dumpsys cpuinfo"
+      ],
+      "correct": 2,
+      "explanation": "dumpsys activity (或 activity activities) 用于输出 ActivityManager 的状态，包括任务栈和 Activity 信息。"
+    },
+    {
+      "stage": "check",
+      "question": "关于 Systrace/Perfetto，以下说法正确的是？",
+      "options": [
+        "它只能追踪 Java 层的异常",
+        "它可以提供设备整个系统的 CPU、线程、I/O 等时序图",
+        "使用它不需要设备开启开发者选项",
+        "它主要用于检测内存泄漏"
+      ],
+      "correct": 1,
+      "explanation": "Systrace/Perfetto 收集内核级和框架级的跟踪数据，提供高度详细的性能时序视图。"
+    },
+    {
+      "stage": "post",
+      "question": "am_proc_died 单独能证明什么？",
+      "options": [
+        "一定是 Java 崩溃",
+        "进程已死亡，但需结合其他日志判断原因",
+        "设备已重启",
+        "Binder 已满"
+      ],
+      "correct": 1,
+      "explanation": "还需查 am_crash、am_kill、lmkd、tombstone 等。"
+    },
+    {
+      "stage": "post",
+      "question": "打开 ProtoLog 完成定位后应做什么？",
+      "options": [
+        "保持永久开启",
+        "立即关闭相关组",
+        "清空系统分区",
+        "删除 traces"
+      ],
+      "correct": 1,
+      "explanation": "持续调试日志会增加性能和存储开销。"
+    }
   ]
 }

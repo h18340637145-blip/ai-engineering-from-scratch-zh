@@ -2,11 +2,101 @@
   "lesson": "09-framework-integration-lab",
   "title": "Framework 集成验收实验室",
   "questions": [
-    {"stage":"pre","question":"Framework 定制验收中，首先应把什么拆成独立检查项？","options":["启动、Zygote、Overlay、向导和权限","所有代码合成一项","只看 Launcher","只看 APK 大小"],"correct":0,"explanation":"独立检查项可隔离失败层。"},
-    {"stage":"check","question":"启动动画事件验收优先查看哪个日志缓冲区？","options":["events","radio","crash 仅此一个","不需要日志"],"correct":0,"explanation":"boot_progress 和 wm_boot_animation_done 可在 events 关联。"},
-    {"stage":"check","question":"Overlay 验收失败时最小的下一步是什么？","options":["查看 cmd overlay list","重写 Launcher","清空 data 分区","关闭 SELinux"],"correct":0,"explanation":"先用只读命令确认当前用户的 Overlay 状态。"},
-    {"stage":"check","question":"向导入口异常时应读取什么状态？","options":["device_provisioned 和 user_setup_complete","图片缓存命中率","StringBuilder 长度","Java hashCode"],"correct":0,"explanation":"两类 provisioning 状态共同决定入口。"},
-    {"stage":"post","question":"多个验收项失败时，正确的修复节奏是什么？","options":["同时修改所有层","从最早失败项收集证据并单层修复","只重启设备","删除测试"],"correct":1,"explanation":"单层、可验证的修改避免掩盖根因。"},
-    {"stage":"post","question":"全部条件通过后，建议的最终复验是什么？","options":["reboot 后读取 events 日志","只截图首页","删除 Overlay","停止 Zygote"],"correct":0,"explanation":"重启后再读取启动事件可验证完整链路。"}
+    {
+      "stage": "pre",
+      "question": "Framework 定制验收中，首先应把什么拆成独立检查项？",
+      "options": [
+        "启动、Zygote、Overlay、向导和权限",
+        "所有代码合成一项",
+        "只看 Launcher",
+        "只看 APK 大小"
+      ],
+      "correct": 0,
+      "explanation": "独立检查项可隔离失败层。"
+    },
+    {
+      "stage": "check",
+      "question": "启动动画事件验收优先查看哪个日志缓冲区？",
+      "options": [
+        "events",
+        "radio",
+        "crash 仅此一个",
+        "不需要日志"
+      ],
+      "correct": 0,
+      "explanation": "boot_progress 和 wm_boot_animation_done 可在 events 关联。"
+    },
+    {
+      "stage": "check",
+      "question": "Overlay 验收失败时最小的下一步是什么？",
+      "options": [
+        "查看 cmd overlay list",
+        "重写 Launcher",
+        "清空 data 分区",
+        "关闭 SELinux"
+      ],
+      "correct": 0,
+      "explanation": "先用只读命令确认当前用户的 Overlay 状态。"
+    },
+    {
+      "stage": "check",
+      "question": "向导入口异常时应读取什么状态？",
+      "options": [
+        "device_provisioned 和 user_setup_complete",
+        "图片缓存命中率",
+        "StringBuilder 长度",
+        "Java hashCode"
+      ],
+      "correct": 0,
+      "explanation": "两类 provisioning 状态共同决定入口。"
+    },
+    {
+      "stage": "check",
+      "question": "在修改 Android Framework 核心类 (如 Activity.java) 后，想要快速验证而不全编译系统，通常可以编译哪个模块？",
+      "options": [
+        "make kernel",
+        "make framework",
+        "make init",
+        "make bootimage"
+      ],
+      "correct": 1,
+      "explanation": "通常可以单独执行 make framework (或 make services) 然后将生成的 framework.jar push 到设备中并重启。"
+    },
+    {
+      "stage": "check",
+      "question": "如果修改了 System API 或公开 API，导致构建失败提示 API check failed，应该怎么做？",
+      "options": [
+        "直接忽略错误",
+        "修改系统源码去除 API 检查工具",
+        "执行 make update-api 以更新 current.txt 等 API 记录文件",
+        "将修改的 API 设为 private"
+      ],
+      "correct": 2,
+      "explanation": "构建系统会对比当前 API 与预定义的 API 列表。合法的 API 变更需要执行 make update-api (或 m update-api) 提交记录变更。"
+    },
+    {
+      "stage": "post",
+      "question": "多个验收项失败时，正确的修复节奏是什么？",
+      "options": [
+        "同时修改所有层",
+        "从最早失败项收集证据并单层修复",
+        "只重启设备",
+        "删除测试"
+      ],
+      "correct": 1,
+      "explanation": "单层、可验证的修改避免掩盖根因。"
+    },
+    {
+      "stage": "post",
+      "question": "全部条件通过后，建议的最终复验是什么？",
+      "options": [
+        "reboot 后读取 events 日志",
+        "只截图首页",
+        "删除 Overlay",
+        "停止 Zygote"
+      ],
+      "correct": 0,
+      "explanation": "重启后再读取启动事件可验证完整链路。"
+    }
   ]
 }

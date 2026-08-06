@@ -97,7 +97,7 @@ The `**Languages:**` field must match the languages with a `main.*` file in `cod
 }
 ```
 
-Exactly 6 questions: 1 pre + 3 check + 2 post. `correct` is zero-indexed. The site renderer only understands this shape — legacy `q/choices/answer` schemas crash silently.
+6-9 questions: 1 pre + 3-5 check + 2-3 post. `correct` is zero-indexed. The site renderer only understands this shape — legacy `q/choices/answer` schemas crash silently.
 
 ### code/
 

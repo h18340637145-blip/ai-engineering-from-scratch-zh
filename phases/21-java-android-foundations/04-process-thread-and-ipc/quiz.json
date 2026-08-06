@@ -2,11 +2,101 @@
   "lesson": "04-process-thread-and-ipc",
   "title": "进程、线程与 IPC",
   "questions": [
-    {"stage":"pre","question":"Android 主线程最重要的职责是什么？","options":["压缩所有图片","执行 UI 和组件回调","替代 Binder 驱动","持久化所有数据库"],"correct":1,"explanation":"主线程负责 UI 和组件生命周期，不能被耗时任务阻塞。"},
-    {"stage":"check","question":"跨进程方法调用的常见高效机制是什么？","options":["AIDL/Binder","SharedPreferences","ViewModel","RecyclerView"],"correct":0,"explanation":"Binder 是主要 IPC，AIDL 用于描述接口。"},
-    {"stage":"check","question":"一对多事件通知最适合什么机制？","options":["Broadcast","ArrayList","SQLite Cursor","StringBuilder"],"correct":0,"explanation":"Broadcast 用于一对多事件通知。"},
-    {"stage":"check","question":"Object.wait() 的正确描述是什么？","options":["不需要锁且不释放锁","必须持有监视器并释放它","创建新线程","永不超时"],"correct":1,"explanation":"wait 必须在同步上下文中调用，并释放监视器。"},
-    {"stage":"post","question":"Thread.sleep() 时已持有的监视器锁会怎样？","options":["立即释放","不释放","变为读锁","交给 Looper"],"correct":1,"explanation":"sleep 只暂停当前线程，不释放锁。"},
-    {"stage":"post","question":"主线程需要执行网络 I/O 时，合理做法是什么？","options":["直接同步执行","移到后台并回主线程更新 UI","调用 wait 无限等待","提高线程优先级"],"correct":1,"explanation":"耗时 I/O 应在后台运行。"}
+    {
+      "stage": "pre",
+      "question": "Android 主线程最重要的职责是什么？",
+      "options": [
+        "压缩所有图片",
+        "执行 UI 和组件回调",
+        "替代 Binder 驱动",
+        "持久化所有数据库"
+      ],
+      "correct": 1,
+      "explanation": "主线程负责 UI 和组件生命周期，不能被耗时任务阻塞。"
+    },
+    {
+      "stage": "check",
+      "question": "跨进程方法调用的常见高效机制是什么？",
+      "options": [
+        "AIDL/Binder",
+        "SharedPreferences",
+        "ViewModel",
+        "RecyclerView"
+      ],
+      "correct": 0,
+      "explanation": "Binder 是主要 IPC，AIDL 用于描述接口。"
+    },
+    {
+      "stage": "check",
+      "question": "一对多事件通知最适合什么机制？",
+      "options": [
+        "Broadcast",
+        "ArrayList",
+        "SQLite Cursor",
+        "StringBuilder"
+      ],
+      "correct": 0,
+      "explanation": "Broadcast 用于一对多事件通知。"
+    },
+    {
+      "stage": "check",
+      "question": "Object.wait() 的正确描述是什么？",
+      "options": [
+        "不需要锁且不释放锁",
+        "必须持有监视器并释放它",
+        "创建新线程",
+        "永不超时"
+      ],
+      "correct": 1,
+      "explanation": "wait 必须在同步上下文中调用，并释放监视器。"
+    },
+    {
+      "stage": "check",
+      "question": "Android 中以下哪种 IPC 机制传输数据的容量限制最严格？",
+      "options": [
+        "Socket",
+        "ContentProvider",
+        "Binder",
+        "共享内存 (Ashmem)"
+      ],
+      "correct": 2,
+      "explanation": "普通的 Binder 事务缓冲区大小通常限制在 1MB 左右（甚至更小），不适合传输极大数据。"
+    },
+    {
+      "stage": "check",
+      "question": "Android 默认情况下，一个应用的四大组件运行在什么位置？",
+      "options": [
+        "同一个进程的主线程",
+        "各自独立的进程",
+        "同一个进程的不同子线程",
+        "系统服务进程中"
+      ],
+      "correct": 0,
+      "explanation": "默认情况下，同一个应用的所有组件都运行在该应用进程的主线程（UI 线程）中。"
+    },
+    {
+      "stage": "post",
+      "question": "Thread.sleep() 时已持有的监视器锁会怎样？",
+      "options": [
+        "立即释放",
+        "不释放",
+        "变为读锁",
+        "交给 Looper"
+      ],
+      "correct": 1,
+      "explanation": "sleep 只暂停当前线程，不释放锁。"
+    },
+    {
+      "stage": "post",
+      "question": "主线程需要执行网络 I/O 时，合理做法是什么？",
+      "options": [
+        "直接同步执行",
+        "移到后台并回主线程更新 UI",
+        "调用 wait 无限等待",
+        "提高线程优先级"
+      ],
+      "correct": 1,
+      "explanation": "耗时 I/O 应在后台运行。"
+    }
   ]
 }

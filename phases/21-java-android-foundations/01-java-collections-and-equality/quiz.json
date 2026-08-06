@@ -2,11 +2,101 @@
   "lesson": "01-java-collections-and-equality",
   "title": "Java 集合与相等性",
   "questions": [
-    {"stage":"pre","question":"需要按键保存值时，哪种接口模型最贴切？","options":["List","Set","Map","数组"],"correct":2,"explanation":"Map 存储键值对，键不能重复。"},
-    {"stage":"check","question":"读多写少、需要随机访问的有序集合通常优先选什么？","options":["LinkedList","ArrayList","TreeSet","Hashtable"],"correct":1,"explanation":"ArrayList 基于动态数组，随机访问快。"},
-    {"stage":"check","question":"既要去重又要保留插入顺序，应选择什么？","options":["HashSet","TreeSet","LinkedHashSet","Vector"],"correct":2,"explanation":"LinkedHashSet 在去重基础上维护插入顺序。"},
-    {"stage":"check","question":"当两个对象的 equals() 为 true 时，hashCode() 必须满足什么？","options":["必须不同","必须相同","必须是内存地址","必须为正数"],"correct":1,"explanation":"相等对象必须具有相同哈希值。"},
-    {"stage":"post","question":"两个对象 hashCode() 相同可以直接证明它们逻辑相等吗？","options":["可以","只在 TreeMap 中可以","不可以，仍需 equals() 判断","只要是 String 就可以"],"correct":2,"explanation":"相同哈希值可能只是碰撞。"},
-    {"stage":"post","question":"自定义对象作为 HashMap 的键时，应怎样实现相等性？","options":["只重写 toString()","只重写 equals()","只重写 hashCode()","同时重写 equals() 和 hashCode()"],"correct":3,"explanation":"两者必须共同满足哈希集合的契约。"}
+    {
+      "stage": "pre",
+      "question": "需要按键保存值时，哪种接口模型最贴切？",
+      "options": [
+        "List",
+        "Set",
+        "Map",
+        "数组"
+      ],
+      "correct": 2,
+      "explanation": "Map 存储键值对，键不能重复。"
+    },
+    {
+      "stage": "check",
+      "question": "读多写少、需要随机访问的有序集合通常优先选什么？",
+      "options": [
+        "LinkedList",
+        "ArrayList",
+        "TreeSet",
+        "Hashtable"
+      ],
+      "correct": 1,
+      "explanation": "ArrayList 基于动态数组，随机访问快。"
+    },
+    {
+      "stage": "check",
+      "question": "既要去重又要保留插入顺序，应选择什么？",
+      "options": [
+        "HashSet",
+        "TreeSet",
+        "LinkedHashSet",
+        "Vector"
+      ],
+      "correct": 2,
+      "explanation": "LinkedHashSet 在去重基础上维护插入顺序。"
+    },
+    {
+      "stage": "check",
+      "question": "当两个对象的 equals() 为 true 时，hashCode() 必须满足什么？",
+      "options": [
+        "必须不同",
+        "必须相同",
+        "必须是内存地址",
+        "必须为正数"
+      ],
+      "correct": 1,
+      "explanation": "相等对象必须具有相同哈希值。"
+    },
+    {
+      "stage": "check",
+      "question": "HashMap 在什么情况下会将其内部结构从链表转换为红黑树？",
+      "options": [
+        "达到负载因子时",
+        "链表长度超过8且数组容量大于等于64时",
+        "一旦发生哈希冲突时",
+        "永远不会发生转换"
+      ],
+      "correct": 1,
+      "explanation": "在 Java 8 中，当单条链表长度超过 8 并且整个 HashMap 的容量大于等于 64 时，链表会转换为红黑树以优化查找效率。"
+    },
+    {
+      "stage": "check",
+      "question": "ConcurrentHashMap 是如何保证线程安全的（Java 8+）？",
+      "options": [
+        "使用全局锁（synchronized方法）",
+        "使用 CAS 和 synchronized 锁住链表或红黑树的首节点",
+        "使用分段锁 (Segment)",
+        "使用 ThreadLocal 隔离数据"
+      ],
+      "correct": 1,
+      "explanation": "Java 8 中的 ConcurrentHashMap 弃用了分段锁，改为使用 Node 数组 + CAS + synchronized 锁住桶的首节点来实现更细粒度的并发控制。"
+    },
+    {
+      "stage": "post",
+      "question": "两个对象 hashCode() 相同可以直接证明它们逻辑相等吗？",
+      "options": [
+        "可以",
+        "只在 TreeMap 中可以",
+        "不可以，仍需 equals() 判断",
+        "只要是 String 就可以"
+      ],
+      "correct": 2,
+      "explanation": "相同哈希值可能只是碰撞。"
+    },
+    {
+      "stage": "post",
+      "question": "自定义对象作为 HashMap 的键时，应怎样实现相等性？",
+      "options": [
+        "只重写 toString()",
+        "只重写 equals()",
+        "只重写 hashCode()",
+        "同时重写 equals() 和 hashCode()"
+      ],
+      "correct": 3,
+      "explanation": "两者必须共同满足哈希集合的契约。"
+    }
   ]
 }

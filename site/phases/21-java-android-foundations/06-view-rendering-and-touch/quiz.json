@@ -2,11 +2,101 @@
   "lesson": "06-view-rendering-and-touch",
   "title": "View 渲染与触摸分发",
   "questions": [
-    {"stage":"pre","question":"View 的主要绘制流程顺序是什么？","options":["draw→layout→measure","measure→layout→draw","layout→measure→draw","draw→measure→layout"],"correct":1,"explanation":"父容器先测量，再布局，最后绘制。"},
-    {"stage":"check","question":"仅像素内容变化、尺寸不变时通常调用什么？","options":["requestLayout()","invalidate()","finish()","reboot()"],"correct":1,"explanation":"invalidate 请求重绘。"},
-    {"stage":"check","question":"onInterceptTouchEvent() 属于哪个类型？","options":["普通 View","ViewGroup","ActivityResult","ContentProvider"],"correct":1,"explanation":"只有 ViewGroup 可以拦截子 View 事件。"},
-    {"stage":"check","question":"父容器接管子 View 的手势后，子 View 会收到什么？","options":["ACTION_CANCEL","ACTION_REBOOT","ACTION_ATTACH","ACTION_LAYOUT"],"correct":0,"explanation":"拦截后子 View 收到 CANCEL。"},
-    {"stage":"post","question":"子 View 不消费 ACTION_DOWN 通常意味着什么？","options":["必然收到 MOVE","通常不会再收到后续事件","父容器被销毁","系统自动重启"],"correct":1,"explanation":"DOWN 不被消费通常不会继续分发该手势序列。"},
-    {"stage":"post","question":"横向分页与纵向列表冲突时，优先依据什么判断归属？","options":["随机选择","移动方向与子容器可滚动性","字体大小","网络速度"],"correct":1,"explanation":"方向和当前可滚动能力决定事件归属。"}
+    {
+      "stage": "pre",
+      "question": "View 的主要绘制流程顺序是什么？",
+      "options": [
+        "draw→layout→measure",
+        "measure→layout→draw",
+        "layout→measure→draw",
+        "draw→measure→layout"
+      ],
+      "correct": 1,
+      "explanation": "父容器先测量，再布局，最后绘制。"
+    },
+    {
+      "stage": "check",
+      "question": "仅像素内容变化、尺寸不变时通常调用什么？",
+      "options": [
+        "requestLayout()",
+        "invalidate()",
+        "finish()",
+        "reboot()"
+      ],
+      "correct": 1,
+      "explanation": "invalidate 请求重绘。"
+    },
+    {
+      "stage": "check",
+      "question": "onInterceptTouchEvent() 属于哪个类型？",
+      "options": [
+        "普通 View",
+        "ViewGroup",
+        "ActivityResult",
+        "ContentProvider"
+      ],
+      "correct": 1,
+      "explanation": "只有 ViewGroup 可以拦截子 View 事件。"
+    },
+    {
+      "stage": "check",
+      "question": "父容器接管子 View 的手势后，子 View 会收到什么？",
+      "options": [
+        "ACTION_CANCEL",
+        "ACTION_REBOOT",
+        "ACTION_ATTACH",
+        "ACTION_LAYOUT"
+      ],
+      "correct": 0,
+      "explanation": "拦截后子 View 收到 CANCEL。"
+    },
+    {
+      "stage": "check",
+      "question": "View 事件分发机制中，如果 onTouchEvent 返回 true，代表什么？",
+      "options": [
+        "事件被丢弃",
+        "事件已消耗，不再向上级抛出",
+        "事件继续传递给父 View",
+        "触发 onClick 事件"
+      ],
+      "correct": 1,
+      "explanation": "onTouchEvent 返回 true 表示当前 View 处理并消耗了该触摸事件，事件终止传递。"
+    },
+    {
+      "stage": "check",
+      "question": "在自定义 View 时，通常在哪个方法中决定 View 的最终大小？",
+      "options": [
+        "onDraw",
+        "onLayout",
+        "onMeasure",
+        "onSizeChanged"
+      ],
+      "correct": 2,
+      "explanation": "onMeasure 方法用于测量 View 的大小，并需通过 setMeasuredDimension() 设置最终测量的宽和高。"
+    },
+    {
+      "stage": "post",
+      "question": "子 View 不消费 ACTION_DOWN 通常意味着什么？",
+      "options": [
+        "必然收到 MOVE",
+        "通常不会再收到后续事件",
+        "父容器被销毁",
+        "系统自动重启"
+      ],
+      "correct": 1,
+      "explanation": "DOWN 不被消费通常不会继续分发该手势序列。"
+    },
+    {
+      "stage": "post",
+      "question": "横向分页与纵向列表冲突时，优先依据什么判断归属？",
+      "options": [
+        "随机选择",
+        "移动方向与子容器可滚动性",
+        "字体大小",
+        "网络速度"
+      ],
+      "correct": 1,
+      "explanation": "方向和当前可滚动能力决定事件归属。"
+    }
   ]
 }

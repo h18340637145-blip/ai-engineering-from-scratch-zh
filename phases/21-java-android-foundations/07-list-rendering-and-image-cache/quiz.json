@@ -2,11 +2,101 @@
   "lesson": "07-list-rendering-and-image-cache",
   "title": "RecyclerView 与图片缓存",
   "questions": [
-    {"stage":"pre","question":"RecyclerView 通过什么支持线性、网格和瀑布流？","options":["LayoutManager","SystemServer","PackageManager","BroadcastReceiver"],"correct":0,"explanation":"LayoutManager 决定 RecyclerView 的布局策略。"},
-    {"stage":"check","question":"局部数据变化时推荐什么更新方式？","options":["总是 notifyDataSetChanged()","notifyItem...() 或 DiffUtil","重启 Activity","清空缓存"],"correct":1,"explanation":"局部更新避免整表刷新。"},
-    {"stage":"check","question":"嵌套横向列表可用什么减少重复创建？","options":["共享 RecycledViewPool","多个 HandlerThread","静态 Activity","MODE_MULTI_PROCESS"],"correct":0,"explanation":"共享复用池可以降低嵌套列表创建成本。"},
-    {"stage":"check","question":"典型图片读取的缓存优先级是什么？","options":["网络→磁盘→内存","内存→磁盘→网络","磁盘→网络→内存","只用网络"],"correct":1,"explanation":"内存最快，磁盘次之，网络最慢。"},
-    {"stage":"post","question":"为什么软引用不适合作为主要图片缓存？","options":["不能保存对象","回收时机不可控","无法多线程","只支持 PNG"],"correct":1,"explanation":"软引用可能导致缓存抖动。"},
-    {"stage":"post","question":"列表加载大图时应优先怎样处理？","options":["始终解码原图","按目标尺寸采样解码","每项创建新 Bitmap 永不复用","关闭缓存"],"correct":1,"explanation":"按目标尺寸解码可控制内存和解码成本。"}
+    {
+      "stage": "pre",
+      "question": "RecyclerView 通过什么支持线性、网格和瀑布流？",
+      "options": [
+        "LayoutManager",
+        "SystemServer",
+        "PackageManager",
+        "BroadcastReceiver"
+      ],
+      "correct": 0,
+      "explanation": "LayoutManager 决定 RecyclerView 的布局策略。"
+    },
+    {
+      "stage": "check",
+      "question": "局部数据变化时推荐什么更新方式？",
+      "options": [
+        "总是 notifyDataSetChanged()",
+        "notifyItem...() 或 DiffUtil",
+        "重启 Activity",
+        "清空缓存"
+      ],
+      "correct": 1,
+      "explanation": "局部更新避免整表刷新。"
+    },
+    {
+      "stage": "check",
+      "question": "嵌套横向列表可用什么减少重复创建？",
+      "options": [
+        "共享 RecycledViewPool",
+        "多个 HandlerThread",
+        "静态 Activity",
+        "MODE_MULTI_PROCESS"
+      ],
+      "correct": 0,
+      "explanation": "共享复用池可以降低嵌套列表创建成本。"
+    },
+    {
+      "stage": "check",
+      "question": "典型图片读取的缓存优先级是什么？",
+      "options": [
+        "网络→磁盘→内存",
+        "内存→磁盘→网络",
+        "磁盘→网络→内存",
+        "只用网络"
+      ],
+      "correct": 1,
+      "explanation": "内存最快，磁盘次之，网络最慢。"
+    },
+    {
+      "stage": "check",
+      "question": "RecyclerView 相比 ListView 性能更好的主要原因之一是什么？",
+      "options": [
+        "自动开启多线程加载",
+        "使用了四级缓存机制（如 Scrap, Cache, ViewCacheExtension, RecycledViewPool）",
+        "完全在 Native 层渲染",
+        "默认不加载图片"
+      ],
+      "correct": 1,
+      "explanation": "RecyclerView 提供了更灵活且多层次的缓存机制，能更高效地复用 ViewHolder。"
+    },
+    {
+      "stage": "check",
+      "question": "LruCache 内部主要基于什么数据结构实现的？",
+      "options": [
+        "HashMap",
+        "ArrayList",
+        "LinkedHashMap",
+        "LinkedList"
+      ],
+      "correct": 2,
+      "explanation": "LruCache 底层依赖 LinkedHashMap 的访问顺序 (access-order) 特性来淘汰最近最少使用的对象。"
+    },
+    {
+      "stage": "post",
+      "question": "为什么软引用不适合作为主要图片缓存？",
+      "options": [
+        "不能保存对象",
+        "回收时机不可控",
+        "无法多线程",
+        "只支持 PNG"
+      ],
+      "correct": 1,
+      "explanation": "软引用可能导致缓存抖动。"
+    },
+    {
+      "stage": "post",
+      "question": "列表加载大图时应优先怎样处理？",
+      "options": [
+        "始终解码原图",
+        "按目标尺寸采样解码",
+        "每项创建新 Bitmap 永不复用",
+        "关闭缓存"
+      ],
+      "correct": 1,
+      "explanation": "按目标尺寸解码可控制内存和解码成本。"
+    }
   ]
 }

@@ -2,11 +2,101 @@
   "lesson": "03-zygote-and-system-server",
   "title": "Zygote 与 SystemServer",
   "questions": [
-    {"stage":"pre","question":"大多数 Android Java 应用进程来自哪里？","options":["Zygote fork","Bootloader 直接启动","ADB 创建","SQLite 恢复"],"correct":0,"explanation":"应用进程和多数 Java 系统进程都是 Zygote 后代。"},
-    {"stage":"check","question":"init 根据哪个属性选择 Zygote rc 配置？","options":["ro.zygote","ro.debuggable","persist.sys.locale","ro.product.name"],"correct":0,"explanation":"ro.zygote 决定导入的 init.zygote rc 文件。"},
-    {"stage":"check","question":"Zygote 为什么预加载常用类和资源？","options":["为后续 fork 进程共享初始化成本","为了替代 Kernel","为了删除 APK","为了生成 Overlay"],"correct":0,"explanation":"预加载降低后续进程启动成本。"},
-    {"stage":"check","question":"Zygote 使用什么与系统服务请求建立通信入口？","options":["Unix domain socket","HTTP Cookie","RecyclerView","PNG 文件"],"correct":0,"explanation":"Zygote 创建 Unix domain socket。"},
-    {"stage":"post","question":"哪一个由 Zygote 先 fork？","options":["system_server","任意三方应用","bootloader","adb server"],"correct":0,"explanation":"带 --start-system-server 时先 fork SystemServer。"},
-    {"stage":"post","question":"检查设备上 Zygote 状态可用什么命令？","options":["adb shell ps -A | grep zygote","adb install zygote","git status zygote","wm size"],"correct":0,"explanation":"ps 可以显示 Zygote 进程。"}
+    {
+      "stage": "pre",
+      "question": "大多数 Android Java 应用进程来自哪里？",
+      "options": [
+        "Zygote fork",
+        "Bootloader 直接启动",
+        "ADB 创建",
+        "SQLite 恢复"
+      ],
+      "correct": 0,
+      "explanation": "应用进程和多数 Java 系统进程都是 Zygote 后代。"
+    },
+    {
+      "stage": "check",
+      "question": "init 根据哪个属性选择 Zygote rc 配置？",
+      "options": [
+        "ro.zygote",
+        "ro.debuggable",
+        "persist.sys.locale",
+        "ro.product.name"
+      ],
+      "correct": 0,
+      "explanation": "ro.zygote 决定导入的 init.zygote rc 文件。"
+    },
+    {
+      "stage": "check",
+      "question": "Zygote 为什么预加载常用类和资源？",
+      "options": [
+        "为后续 fork 进程共享初始化成本",
+        "为了替代 Kernel",
+        "为了删除 APK",
+        "为了生成 Overlay"
+      ],
+      "correct": 0,
+      "explanation": "预加载降低后续进程启动成本。"
+    },
+    {
+      "stage": "check",
+      "question": "Zygote 使用什么与系统服务请求建立通信入口？",
+      "options": [
+        "Unix domain socket",
+        "HTTP Cookie",
+        "RecyclerView",
+        "PNG 文件"
+      ],
+      "correct": 0,
+      "explanation": "Zygote 创建 Unix domain socket。"
+    },
+    {
+      "stage": "check",
+      "question": "为什么 Android 所有的应用进程都要通过 Zygote 来 fork？",
+      "options": [
+        "为了安全性检查",
+        "为了共享 Zygote 已经预加载的通用类和资源，加快启动速度并节省内存",
+        "因为 init 进程不能直接启动应用",
+        "因为只有 Zygote 拥有 root 权限"
+      ],
+      "correct": 1,
+      "explanation": "Zygote 在启动时预加载了常用的类和资源，通过 fork( ) 创建应用进程可以使用 Copy-On-Write 机制，大幅优化了启动速度和内存开销。"
+    },
+    {
+      "stage": "check",
+      "question": "SystemServer 进程是由谁启动的？",
+      "options": [
+        "直接由 init 进程启动",
+        "由 Zygote fork 而来",
+        "由 ActivityManagerService 启动",
+        "由 Bootloader 启动"
+      ],
+      "correct": 1,
+      "explanation": "SystemServer 是 Zygote 启动后主动 fork 出的第一个核心子进程，承载了绝大多数的 Android 系统服务。"
+    },
+    {
+      "stage": "post",
+      "question": "哪一个由 Zygote 先 fork？",
+      "options": [
+        "system_server",
+        "任意三方应用",
+        "bootloader",
+        "adb server"
+      ],
+      "correct": 0,
+      "explanation": "带 --start-system-server 时先 fork SystemServer。"
+    },
+    {
+      "stage": "post",
+      "question": "检查设备上 Zygote 状态可用什么命令？",
+      "options": [
+        "adb shell ps -A | grep zygote",
+        "adb install zygote",
+        "git status zygote",
+        "wm size"
+      ],
+      "correct": 0,
+      "explanation": "ps 可以显示 Zygote 进程。"
+    }
   ]
 }

@@ -2,11 +2,101 @@
   "lesson": "01-boot-chain-and-bootanimation",
   "title": "系统启动与开机动画",
   "questions": [
-    {"stage":"pre","question":"Android 用户空间的 bootanimation 通常由什么程序渲染？","options":["/system/bin/bootanimation","Bootloader","PackageManager","adb"],"correct":0,"explanation":"SurfaceFlinger 可用后，bootanimation 程序渲染 ZIP 动画。"},
-    {"stage":"check","question":"从 Kernel 后首先负责解析 rc 文件的进程是什么？","options":["init","Zygote","Launcher","SystemUI"],"correct":0,"explanation":"init 是 PID 1，解析 init.rc 和导入文件。"},
-    {"stage":"check","question":"bootanimation desc.txt 首行的三个字段是什么？","options":["宽 高 帧率","包名 版本 签名","用户 进程 权限","路径 类型 优先级"],"correct":0,"explanation":"首行定义动画尺寸和帧率。"},
-    {"stage":"check","question":"动画段类型 p 的含义是什么？","options":["必须播放完","启动完成时可中断","仅显示一帧","表示 PNG"],"correct":1,"explanation":"p 段可以在启动完成时中断。"},
-    {"stage":"post","question":"检查系统请求停止动画与 WindowManager 记录结束之间的间隔，应关联什么事件？","options":["stop_bootanim 与 wm_boot_animation_done","am_crash 与 am_anr","pm install 与 am start","ro.debuggable 与 ro.product"],"correct":0,"explanation":"这两个事件可用于定位动画退出阶段的间隔。"},
-    {"stage":"post","question":"为何 bootanimation.zip 推荐仅存储方式打包？","options":["为了改变 PNG 颜色","避免启动时解压开销","让 APK 自动签名","隐藏 desc.txt"],"correct":1,"explanation":"仅存储可减少运行时解压负担。"}
+    {
+      "stage": "pre",
+      "question": "Android 用户空间的 bootanimation 通常由什么程序渲染？",
+      "options": [
+        "/system/bin/bootanimation",
+        "Bootloader",
+        "PackageManager",
+        "adb"
+      ],
+      "correct": 0,
+      "explanation": "SurfaceFlinger 可用后，bootanimation 程序渲染 ZIP 动画。"
+    },
+    {
+      "stage": "check",
+      "question": "从 Kernel 后首先负责解析 rc 文件的进程是什么？",
+      "options": [
+        "init",
+        "Zygote",
+        "Launcher",
+        "SystemUI"
+      ],
+      "correct": 0,
+      "explanation": "init 是 PID 1，解析 init.rc 和导入文件。"
+    },
+    {
+      "stage": "check",
+      "question": "bootanimation desc.txt 首行的三个字段是什么？",
+      "options": [
+        "宽 高 帧率",
+        "包名 版本 签名",
+        "用户 进程 权限",
+        "路径 类型 优先级"
+      ],
+      "correct": 0,
+      "explanation": "首行定义动画尺寸和帧率。"
+    },
+    {
+      "stage": "check",
+      "question": "动画段类型 p 的含义是什么？",
+      "options": [
+        "必须播放完",
+        "启动完成时可中断",
+        "仅显示一帧",
+        "表示 PNG"
+      ],
+      "correct": 1,
+      "explanation": "p 段可以在启动完成时中断。"
+    },
+    {
+      "stage": "check",
+      "question": "Android 启动过程中，解析 init.rc 文件并启动关键系统服务的进程是哪个？",
+      "options": [
+        "Zygote",
+        "init 进程",
+        "SystemServer",
+        "Kernel"
+      ],
+      "correct": 1,
+      "explanation": "init 是内核启动后进入用户空间的第一个进程，负责挂载文件系统和解析 init.rc，从而启动 Zygote 等服务。"
+    },
+    {
+      "stage": "check",
+      "question": "Bootanimation (开机动画) 是由哪个进程启动的？",
+      "options": [
+        "SystemServer",
+        "SurfaceFlinger",
+        "Zygote",
+        "由 init 进程基于 init.rc 触发"
+      ],
+      "correct": 3,
+      "explanation": "bootanim 服务在 init.rc 中配置，通常由 SurfaceFlinger 发出信号或 init 直接根据条件触发启动。"
+    },
+    {
+      "stage": "post",
+      "question": "检查系统请求停止动画与 WindowManager 记录结束之间的间隔，应关联什么事件？",
+      "options": [
+        "stop_bootanim 与 wm_boot_animation_done",
+        "am_crash 与 am_anr",
+        "pm install 与 am start",
+        "ro.debuggable 与 ro.product"
+      ],
+      "correct": 0,
+      "explanation": "这两个事件可用于定位动画退出阶段的间隔。"
+    },
+    {
+      "stage": "post",
+      "question": "为何 bootanimation.zip 推荐仅存储方式打包？",
+      "options": [
+        "为了改变 PNG 颜色",
+        "避免启动时解压开销",
+        "让 APK 自动签名",
+        "隐藏 desc.txt"
+      ],
+      "correct": 1,
+      "explanation": "仅存储可减少运行时解压负担。"
+    }
   ]
 }

@@ -2,11 +2,101 @@
   "lesson": "08-gms-integration-and-customization",
   "title": "GMS 集成与自定义向导",
   "questions": [
-    {"stage":"pre","question":"量产 GMS 集成应使用什么材料？","options":["匹配版本和认证的正式交付包","来源不明的 Open GApps","任意 APK 压缩包","Monkey 输出"],"correct":0,"explanation":"GMS 受授权和兼容性约束。"},
-    {"stage":"check","question":"预置 APK 至少需要明确哪些信息？","options":["模块名、签名、分区、特权属性","头像、昵称、主题","RecyclerView 类型","GC 次数"],"correct":0,"explanation":"这些属性决定集成和权限边界。"},
-    {"stage":"check","question":"产品中追加包列表应使用什么，避免覆盖已有配置？","options":["PRODUCT_PACKAGES +=","PRODUCT_PACKAGES := 每次覆盖","rm -rf","System.exit"],"correct":0,"explanation":"+= 追加列表，不会清空前项。"},
-    {"stage":"check","question":"配置 XML 更适合通过什么模块类型安装？","options":["prebuilt_etc","android_app","cc_binary","Handler"],"correct":0,"explanation":"prebuilt_etc 用于预置配置文件。"},
-    {"stage":"post","question":"Partner Customization Receiver 的空实现能否完成适配？","options":["能","不能，需要对应版本的资源和流程","只在 userdebug 可以","只要声明 HOME"],"correct":1,"explanation":"必须按交付版本提供正确资源和流程。"},
-    {"stage":"post","question":"Wizard Script 中显式描述 result code 的价值是什么？","options":["让流程跳转可验证","增加 APK 大小","隐藏权限","替代 Overlay"],"correct":0,"explanation":"显式动作和结果码使向导流程可审查。"}
+    {
+      "stage": "pre",
+      "question": "量产 GMS 集成应使用什么材料？",
+      "options": [
+        "匹配版本和认证的正式交付包",
+        "来源不明的 Open GApps",
+        "任意 APK 压缩包",
+        "Monkey 输出"
+      ],
+      "correct": 0,
+      "explanation": "GMS 受授权和兼容性约束。"
+    },
+    {
+      "stage": "check",
+      "question": "预置 APK 至少需要明确哪些信息？",
+      "options": [
+        "模块名、签名、分区、特权属性",
+        "头像、昵称、主题",
+        "RecyclerView 类型",
+        "GC 次数"
+      ],
+      "correct": 0,
+      "explanation": "这些属性决定集成和权限边界。"
+    },
+    {
+      "stage": "check",
+      "question": "产品中追加包列表应使用什么，避免覆盖已有配置？",
+      "options": [
+        "PRODUCT_PACKAGES +=",
+        "PRODUCT_PACKAGES := 每次覆盖",
+        "rm -rf",
+        "System.exit"
+      ],
+      "correct": 0,
+      "explanation": "+= 追加列表，不会清空前项。"
+    },
+    {
+      "stage": "check",
+      "question": "配置 XML 更适合通过什么模块类型安装？",
+      "options": [
+        "prebuilt_etc",
+        "android_app",
+        "cc_binary",
+        "Handler"
+      ],
+      "correct": 0,
+      "explanation": "prebuilt_etc 用于预置配置文件。"
+    },
+    {
+      "stage": "check",
+      "question": "如果一款 Android 设备想要预装 Google 官方应用商店及服务 (GMS)，必须通过什么认证？",
+      "options": [
+        "FCC 认证",
+        "CTS、GTS 和 VTS 等一系列兼容性测试与认证",
+        "Google Play Store 上架审核",
+        "开源协议审核"
+      ],
+      "correct": 1,
+      "explanation": "Google 要求设备制造商通过兼容性测试套件 (CTS) 和 GMS 测试套件 (GTS) 等严格测试，才能合法预装 GMS。"
+    },
+    {
+      "stage": "check",
+      "question": "AOSP 原生系统与搭载 GMS 的系统在架构上的一个明显区别是什么？",
+      "options": [
+        "AOSP 无法运行 Java 应用",
+        "GMS 替换了系统的核心网络定位、推送服务 (FCM) 等模块的实现提供者",
+        "GMS 会完全替换掉系统的 SystemServer",
+        "AOSP 没有浏览器"
+      ],
+      "correct": 1,
+      "explanation": "GMS 将许多标准服务（如 NLP 网络定位、应用推送）重定向到了 Google 闭源的 Play Services 包中。"
+    },
+    {
+      "stage": "post",
+      "question": "Partner Customization Receiver 的空实现能否完成适配？",
+      "options": [
+        "能",
+        "不能，需要对应版本的资源和流程",
+        "只在 userdebug 可以",
+        "只要声明 HOME"
+      ],
+      "correct": 1,
+      "explanation": "必须按交付版本提供正确资源和流程。"
+    },
+    {
+      "stage": "post",
+      "question": "Wizard Script 中显式描述 result code 的价值是什么？",
+      "options": [
+        "让流程跳转可验证",
+        "增加 APK 大小",
+        "隐藏权限",
+        "替代 Overlay"
+      ],
+      "correct": 0,
+      "explanation": "显式动作和结果码使向导流程可审查。"
+    }
   ]
 }

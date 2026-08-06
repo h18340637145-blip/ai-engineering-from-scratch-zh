@@ -2,11 +2,101 @@
   "lesson": "13-linux-adb-and-device-operations",
   "title": "Linux、ADB 与设备操作",
   "questions": [
-    {"stage":"pre","question":"多台设备连接时，如何指定目标设备？","options":["adb -s <serial>","adb --all","pm -s","git -s"],"correct":0,"explanation":"-s 指定设备序列号。"},
-    {"stage":"check","question":"查看指定包 APK 路径的 shell 命令是什么？","options":["pm path <package>","am path <package>","wm path <package>","logcat path"],"correct":0,"explanation":"pm path 输出已安装 APK 路径。"},
-    {"stage":"check","question":"查看当前焦点窗口常用什么？","options":["dumpsys window","StringBuffer","AAPT2","zipalign"],"correct":0,"explanation":"dumpsys window 可输出 mCurrentFocus 等线索。"},
-    {"stage":"check","question":"仅查看某个应用进程的 Logcat 可结合什么？","options":["pidof 包名","TreeSet","ViewStub","R8"],"correct":0,"explanation":"使用 pidof 获取 PID 后可加 --pid 过滤。"},
-    {"stage":"post","question":"为什么 rm -rf * 不适合不确定目录？","options":["不能删除文件","目标范围可能极其广且难恢复","只会删除日志","ADB 不支持"],"correct":1,"explanation":"递归删除的通配符范围必须在执行前确认。"},
-    {"stage":"post","question":"setenforce 0 的正确使用边界是什么？","options":["生产设备长期关闭","受控调试设备短期使用后恢复","任何应用内调用","替代权限申请"],"correct":1,"explanation":"Permissive 会降低安全性，应限于受控调试。"}
+    {
+      "stage": "pre",
+      "question": "多台设备连接时，如何指定目标设备？",
+      "options": [
+        "adb -s <serial>",
+        "adb --all",
+        "pm -s",
+        "git -s"
+      ],
+      "correct": 0,
+      "explanation": "-s 指定设备序列号。"
+    },
+    {
+      "stage": "check",
+      "question": "查看指定包 APK 路径的 shell 命令是什么？",
+      "options": [
+        "pm path <package>",
+        "am path <package>",
+        "wm path <package>",
+        "logcat path"
+      ],
+      "correct": 0,
+      "explanation": "pm path 输出已安装 APK 路径。"
+    },
+    {
+      "stage": "check",
+      "question": "查看当前焦点窗口常用什么？",
+      "options": [
+        "dumpsys window",
+        "StringBuffer",
+        "AAPT2",
+        "zipalign"
+      ],
+      "correct": 0,
+      "explanation": "dumpsys window 可输出 mCurrentFocus 等线索。"
+    },
+    {
+      "stage": "check",
+      "question": "仅查看某个应用进程的 Logcat 可结合什么？",
+      "options": [
+        "pidof 包名",
+        "TreeSet",
+        "ViewStub",
+        "R8"
+      ],
+      "correct": 0,
+      "explanation": "使用 pidof 获取 PID 后可加 --pid 过滤。"
+    },
+    {
+      "stage": "check",
+      "question": "使用 adb 命令如何清除某个应用的数据及缓存？",
+      "options": [
+        "adb uninstall <包名>",
+        "adb shell pm clear <包名>",
+        "adb shell rm -rf /data/app",
+        "adb shell am force-stop <包名>"
+      ],
+      "correct": 1,
+      "explanation": "pm clear 命令用于重置应用，清除其在 /data/data/ 下的用户数据和缓存，等同于在设置中点击“清除数据”。"
+    },
+    {
+      "stage": "check",
+      "question": "Linux 中的 chmod 755 命令代表什么权限？",
+      "options": [
+        "所有者具有读写执行权限，其他人具有读和执行权限",
+        "所有者仅有读权限",
+        "所有人拥有全部权限",
+        "禁止任何写入操作"
+      ],
+      "correct": 0,
+      "explanation": "7 (4+2+1) 代表所有者拥有读、写、执行权限；5 (4+1) 代表属组和其他人拥有读和执行权限。"
+    },
+    {
+      "stage": "post",
+      "question": "为什么 rm -rf * 不适合不确定目录？",
+      "options": [
+        "不能删除文件",
+        "目标范围可能极其广且难恢复",
+        "只会删除日志",
+        "ADB 不支持"
+      ],
+      "correct": 1,
+      "explanation": "递归删除的通配符范围必须在执行前确认。"
+    },
+    {
+      "stage": "post",
+      "question": "setenforce 0 的正确使用边界是什么？",
+      "options": [
+        "生产设备长期关闭",
+        "受控调试设备短期使用后恢复",
+        "任何应用内调用",
+        "替代权限申请"
+      ],
+      "correct": 1,
+      "explanation": "Permissive 会降低安全性，应限于受控调试。"
+    }
   ]
 }

@@ -2,11 +2,101 @@
   "lesson": "07-setup-wizard-and-provisioning",
   "title": "开机向导与 Provisioning",
   "questions": [
-    {"stage":"pre","question":"表示设备级初始化完成的状态键是什么？","options":["device_provisioned","user_setup_complete","boot_completed","overlay_enabled"],"correct":0,"explanation":"device_provisioned 表示设备级 provisioning 状态。"},
-    {"stage":"check","question":"表示当前用户完成 Setup Wizard 的状态键是什么？","options":["user_setup_complete","ro.zygote","pm.path","LOG_NDEBUG"],"correct":0,"explanation":"user_setup_complete 是当前用户的完成状态。"},
-    {"stage":"check","question":"识别 Setup Wizard Activity 的关键类别是什么？","options":["android.intent.category.SETUP_WIZARD","android.intent.category.HOME","android.intent.category.BROWSABLE","android.intent.category.LAUNCHER"],"correct":0,"explanation":"SETUP_WIZARD 是向导入口的关键类别。"},
-    {"stage":"check","question":"为什么不应盲目同时声明 HOME？","options":["会参与桌面解析并可能与 Launcher 冲突","会关闭网络","会降低帧率","会让 JNI 失效"],"correct":0,"explanation":"HOME 类别会让组件成为桌面候选。"},
-    {"stage":"post","question":"完成向导后合理的 UI 收尾方式是什么？","options":["调用 System.exit(0)","写入状态并 finish()","无限循环等待","清空 /system"],"correct":1,"explanation":"普通 Activity 应 finish，而不是 System.exit。"},
-    {"stage":"post","question":"修改 provisioning 状态应在哪类设备上测试？","options":["不可恢复的量产设备","可恢复的调试设备","任何用户手机","没有存储的设备"],"correct":1,"explanation":"该状态会改变启动路径，应在可恢复环境测试。"}
+    {
+      "stage": "pre",
+      "question": "表示设备级初始化完成的状态键是什么？",
+      "options": [
+        "device_provisioned",
+        "user_setup_complete",
+        "boot_completed",
+        "overlay_enabled"
+      ],
+      "correct": 0,
+      "explanation": "device_provisioned 表示设备级 provisioning 状态。"
+    },
+    {
+      "stage": "check",
+      "question": "表示当前用户完成 Setup Wizard 的状态键是什么？",
+      "options": [
+        "user_setup_complete",
+        "ro.zygote",
+        "pm.path",
+        "LOG_NDEBUG"
+      ],
+      "correct": 0,
+      "explanation": "user_setup_complete 是当前用户的完成状态。"
+    },
+    {
+      "stage": "check",
+      "question": "识别 Setup Wizard Activity 的关键类别是什么？",
+      "options": [
+        "android.intent.category.SETUP_WIZARD",
+        "android.intent.category.HOME",
+        "android.intent.category.BROWSABLE",
+        "android.intent.category.LAUNCHER"
+      ],
+      "correct": 0,
+      "explanation": "SETUP_WIZARD 是向导入口的关键类别。"
+    },
+    {
+      "stage": "check",
+      "question": "为什么不应盲目同时声明 HOME？",
+      "options": [
+        "会参与桌面解析并可能与 Launcher 冲突",
+        "会关闭网络",
+        "会降低帧率",
+        "会让 JNI 失效"
+      ],
+      "correct": 0,
+      "explanation": "HOME 类别会让组件成为桌面候选。"
+    },
+    {
+      "stage": "check",
+      "question": "标识设备是否已经完成首次开机引导 (Setup Wizard) 的全局设置项通常是哪一个？",
+      "options": [
+        "adb_enabled",
+        "device_provisioned",
+        "user_setup_complete",
+        "install_non_market_apps"
+      ],
+      "correct": 1,
+      "explanation": "Settings.Global.DEVICE_PROVISIONED 用于标识整个设备是否已完成配置。通常还有 Settings.Secure.USER_SETUP_COMPLETE 标识当前用户。"
+    },
+    {
+      "stage": "check",
+      "question": "为什么在开机向导完成之前，按下 Home 键无效？",
+      "options": [
+        "Home 键物理屏蔽",
+        "开机向导应用捕获并禁用了 Home 键响应，且系统在未 provisioned 状态下会限制 Home 键跳转",
+        "桌面应用 (Launcher) 尚未被安装",
+        "内核禁用了所有按键输入"
+      ],
+      "correct": 1,
+      "explanation": "在 provisioning 未完成时，系统级策略 (PhoneWindowManager 等) 通常会限制 Home 键跳转，以强制用户完成引导。"
+    },
+    {
+      "stage": "post",
+      "question": "完成向导后合理的 UI 收尾方式是什么？",
+      "options": [
+        "调用 System.exit(0)",
+        "写入状态并 finish()",
+        "无限循环等待",
+        "清空 /system"
+      ],
+      "correct": 1,
+      "explanation": "普通 Activity 应 finish，而不是 System.exit。"
+    },
+    {
+      "stage": "post",
+      "question": "修改 provisioning 状态应在哪类设备上测试？",
+      "options": [
+        "不可恢复的量产设备",
+        "可恢复的调试设备",
+        "任何用户手机",
+        "没有存储的设备"
+      ],
+      "correct": 1,
+      "explanation": "该状态会改变启动路径，应在可恢复环境测试。"
+    }
   ]
 }

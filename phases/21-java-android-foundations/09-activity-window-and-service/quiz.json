@@ -2,11 +2,101 @@
   "lesson": "09-activity-window-and-service",
   "title": "Activity、Window 与 Service",
   "questions": [
-    {"stage":"pre","question":"Activity 首次进入前台的常见回调顺序是什么？","options":["onResume→onCreate→onStart","onCreate→onStart→onResume","onStart→onDestroy→onResume","onPause→onStop→onResume"],"correct":1,"explanation":"前台初始路径是 onCreate、onStart、onResume。"},
-    {"stage":"check","question":"为什么不能把关键状态只放在 onDestroy() 中保存？","options":["onDestroy 必定两次调用","已停止进程可能被直接终止","它只能在 Service 用","它没有参数"],"correct":1,"explanation":"系统可杀死停止进程而不调用 onDestroy。"},
-    {"stage":"check","question":"Fragment 里与 View 有关的观察者应绑定什么？","options":["viewLifecycleOwner","全局单例","Application","静态字段"],"correct":0,"explanation":"View 销毁后 Fragment 实例可能仍在。"},
-    {"stage":"check","question":"setContentView() 后顶层 View 树由谁持有？","options":["PhoneWindow/DecorView","Binder 驱动","SQLite","Logcat"],"correct":0,"explanation":"Activity 关联 PhoneWindow，PhoneWindow 持有 DecorView。"},
-    {"stage":"post","question":"singleTop 在目标实例位于栈顶时通常怎样处理？","options":["总是新建","复用并调用 onNewIntent()","清空整个任务栈","关闭应用"],"correct":1,"explanation":"singleTop 只复用栈顶实例。"},
-    {"stage":"post","question":"长期用户可见任务在 Android 8+ 通常需使用什么？","options":["前台服务","匿名内部类","静态广播","MODE_MULTI_PROCESS"],"correct":0,"explanation":"长期工作应满足前台服务或 WorkManager 的约束。"}
+    {
+      "stage": "pre",
+      "question": "Activity 首次进入前台的常见回调顺序是什么？",
+      "options": [
+        "onResume→onCreate→onStart",
+        "onCreate→onStart→onResume",
+        "onStart→onDestroy→onResume",
+        "onPause→onStop→onResume"
+      ],
+      "correct": 1,
+      "explanation": "前台初始路径是 onCreate、onStart、onResume。"
+    },
+    {
+      "stage": "check",
+      "question": "为什么不能把关键状态只放在 onDestroy() 中保存？",
+      "options": [
+        "onDestroy 必定两次调用",
+        "已停止进程可能被直接终止",
+        "它只能在 Service 用",
+        "它没有参数"
+      ],
+      "correct": 1,
+      "explanation": "系统可杀死停止进程而不调用 onDestroy。"
+    },
+    {
+      "stage": "check",
+      "question": "Fragment 里与 View 有关的观察者应绑定什么？",
+      "options": [
+        "viewLifecycleOwner",
+        "全局单例",
+        "Application",
+        "静态字段"
+      ],
+      "correct": 0,
+      "explanation": "View 销毁后 Fragment 实例可能仍在。"
+    },
+    {
+      "stage": "check",
+      "question": "setContentView() 后顶层 View 树由谁持有？",
+      "options": [
+        "PhoneWindow/DecorView",
+        "Binder 驱动",
+        "SQLite",
+        "Logcat"
+      ],
+      "correct": 0,
+      "explanation": "Activity 关联 PhoneWindow，PhoneWindow 持有 DecorView。"
+    },
+    {
+      "stage": "check",
+      "question": "从 Activity A 启动 Activity B 时，生命周期的调用顺序是怎样的？",
+      "options": [
+        "A.onPause -> B.onCreate -> B.onStart -> B.onResume -> A.onStop",
+        "A.onPause -> A.onStop -> B.onCreate -> B.onStart -> B.onResume",
+        "B.onCreate -> B.onStart -> B.onResume -> A.onPause -> A.onStop",
+        "A.onStop -> B.onCreate -> B.onStart -> B.onResume"
+      ],
+      "correct": 0,
+      "explanation": "当前 Activity 先执行 onPause，随后新 Activity 执行初始化和展示，最后再回调旧 Activity 的 onStop。"
+    },
+    {
+      "stage": "check",
+      "question": "如果想要在应用退出后 Service 依然能在后台长时间运行，通常需要怎么做？",
+      "options": [
+        "使用 bindService 启动",
+        "使用 startService 并在 Service 中返回 START_STICKY，且可能需要提升为前台服务",
+        "在 onCreate 中创建一个普通线程即可",
+        "在 AndroidManifest 中设置 persistent=\"true\""
+      ],
+      "correct": 1,
+      "explanation": "普通服务在应用进程被杀后会停止。返回 START_STICKY 可让系统尝试重启服务；但在高版本 Android 中，持久后台运行通常需要提升为前台服务 (Foreground Service)。"
+    },
+    {
+      "stage": "post",
+      "question": "singleTop 在目标实例位于栈顶时通常怎样处理？",
+      "options": [
+        "总是新建",
+        "复用并调用 onNewIntent()",
+        "清空整个任务栈",
+        "关闭应用"
+      ],
+      "correct": 1,
+      "explanation": "singleTop 只复用栈顶实例。"
+    },
+    {
+      "stage": "post",
+      "question": "长期用户可见任务在 Android 8+ 通常需使用什么？",
+      "options": [
+        "前台服务",
+        "匿名内部类",
+        "静态广播",
+        "MODE_MULTI_PROCESS"
+      ],
+      "correct": 0,
+      "explanation": "长期工作应满足前台服务或 WorkManager 的约束。"
+    }
   ]
 }
