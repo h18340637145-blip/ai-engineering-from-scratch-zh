@@ -1,0 +1,78 @@
+{
+  "lesson": "03-source-structure",
+  "title": "Launcher3 源码目录与核心架构",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Launcher3 的 QuickStep 相关源码位于哪个目录？",
+      "options": [
+        "packages/apps/Launcher3/src/",
+        "packages/apps/Launcher3/quickstep/",
+        "frameworks/base/services/",
+        "packages/apps/SystemUI/"
+      ],
+      "correct": 1,
+      "explanation": "QuickStep 能力的源码位于 packages/apps/Launcher3/quickstep/ 目录，与基础 Launcher3 源码分开管理。"
+    },
+    {
+      "stage": "check",
+      "question": "哪个类负责读取 launcher.db 数据库并逐行校验 ItemInfo 的合法性？",
+      "options": [
+        "Launcher.java",
+        "LauncherModel.java",
+        "LoaderCursor.java",
+        "LauncherProvider.java"
+      ],
+      "correct": 2,
+      "explanation": "LoaderCursor 负责从数据库逐行读取数据，校验坐标、类型等字段的合法性，丢弃非法 Item。"
+    },
+    {
+      "stage": "check",
+      "question": "ItemInfo 的 container 字段值为 -101 时，表示该 Item 位于哪里？",
+      "options": [
+        "桌面 Workspace",
+        "文件夹内部",
+        "Hotseat 底部常驻区域",
+        "应用抽屉"
+      ],
+      "correct": 2,
+      "explanation": "CONTAINER_HOTSEAT = -101，表示 Item 位于桌面底部的 Hotseat 常驻区域。"
+    },
+    {
+      "stage": "check",
+      "question": "DeviceProfile 和 InvariantDeviceProfile 的主要区别是什么？",
+      "options": [
+        "DeviceProfile 存储网格列数，InvariantDeviceProfile 存储实际像素尺寸",
+        "DeviceProfile 是实际布局参数，InvariantDeviceProfile 是稳定的网格和图标数配置",
+        "两者完全相同，只是命名不同",
+        "InvariantDeviceProfile 只在平板设备上使用"
+      ],
+      "correct": 1,
+      "explanation": "DeviceProfile 包含当前设备的实际像素尺寸和布局参数；InvariantDeviceProfile 存储网格列数、图标数等与屏幕密度无关的稳定配置。"
+    },
+    {
+      "stage": "post",
+      "question": "修改 Launcher3 默认布局后，不清除 Launcher 数据直接部署，通常会出现什么现象？",
+      "options": [
+        "新布局立即生效",
+        "Launcher 崩溃",
+        "新布局不生效，因为数据库只在首次创建时导入默认布局",
+        "需要重启设备才能生效"
+      ],
+      "correct": 2,
+      "explanation": "默认布局通常只在 launcher.db 首次创建时导入。数据库已存在时，修改默认布局 XML 不会重新导入，必须先清除 Launcher 数据。"
+    },
+    {
+      "stage": "post",
+      "question": "Launcher3 数据加载流水线的正确顺序是？",
+      "options": [
+        "Launcher → LoaderTask → LauncherModel → LoaderCursor → 渲染",
+        "launcher.db → LoaderCursor → LoaderTask → LauncherModel → Workspace 渲染",
+        "LauncherModel → LoaderCursor → launcher.db → LoaderTask → 渲染",
+        "LauncherProvider → Workspace → LoaderTask → LoaderCursor → 渲染"
+      ],
+      "correct": 1,
+      "explanation": "正确顺序：launcher.db → LoaderCursor（逐行读取校验）→ LoaderTask（后台加载） → LauncherModel（触发绑定回调）→ Workspace/Launcher（渲染到屏幕）。"
+    }
+  ]
+}

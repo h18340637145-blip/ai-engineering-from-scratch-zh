@@ -216,3 +216,7 @@ gh pr create --title "feat(phase-NN/MM): add <slug>" --body "<5-line summary>"
 ---
 
 Last reviewed: 2026-05-27.
+
+每次更新前先阅读 AGENTS.md->session-handoff.md->product.md->architecture.md
+如需求和文档有冲突，以需求为准，并更新对应文档
+每次功能开发结束时，检查文档是否需要更新，如功能变化，需要更新文档

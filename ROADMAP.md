@@ -611,6 +611,23 @@ Total estimated time: ~314 hours, at your own pace.
 
 ---
 
-**Total: 20 phases, 503 lessons | 503 complete | ~1,050 hours estimated**
+## Phase 20: Android Framework: Launcher3 — ✅ (~15 hours)
+
+| # | Project | Status | Est. |
+|---|---------|--------|------|
+| 01 | [Launcher3 是什么](phases/20-android-framework-launcher/01-launcher3-intro) | ✅ | ~90 min |
+| 02 | [Logcat 与调试工具](phases/20-android-framework-launcher/02-logcat-and-tooling) | ✅ | ~90 min |
+| 03 | [源码目录结构分析](phases/20-android-framework-launcher/03-source-structure) | ✅ | ~90 min |
+| 04 | [启动链路时序分析](phases/20-android-framework-launcher/04-startup-trace) | ✅ | ~90 min |
+| 05 | [默认布局 XML 解析](phases/20-android-framework-launcher/05-default-layout) | ✅ | ~90 min |
+| 06 | [Partner APK 发现](phases/20-android-framework-launcher/06-partner-overlay) | ✅ | ~90 min |
+| 07 | [rank ↔ 双排坐标映射](phases/20-android-framework-launcher/07-dual-hotseat) | ✅ | ~90 min |
+| 08 | [PagedView 吸附决策](phases/20-android-framework-launcher/08-paged-workspace) | ✅ | ~90 min |
+| 09 | [InputConsumer 路由](phases/20-android-framework-launcher/09-recents-and-quickstep) | ✅ | ~90 min |
+| 10 | [文件夹数据库操作](phases/20-android-framework-launcher/10-folders-and-widgets) | ✅ | ~90 min |
+
+---
+
+**Total: 21 phases, 513 lessons | 513 complete | ~1,065 hours estimated**
 
 Want to help? Pick any ⬚ lesson and submit a PR. See [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -1,0 +1,78 @@
+{
+  "lesson": "02-logcat-and-tooling",
+  "title": "Logcat 与调试工具：在 AOSP 中看见系统在做什么",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "在使用 adb logcat 复现问题之前，通常应该先执行哪个命令？",
+      "options": [
+        "adb logcat -d",
+        "adb logcat -c",
+        "adb reboot",
+        "adb shell pm clear com.android.launcher3"
+      ],
+      "correct": 1,
+      "explanation": "adb logcat -c 清空历史日志缓冲区，避免旧日志干扰问题分析。"
+    },
+    {
+      "stage": "check",
+      "question": "以下哪个命令只显示 LauncherStudy 标签的 Debug 及以上级别日志？",
+      "options": [
+        "adb logcat LauncherStudy",
+        "adb logcat -s LauncherStudy:D",
+        "adb logcat -f LauncherStudy",
+        "adb logcat -v LauncherStudy:D"
+      ],
+      "correct": 1,
+      "explanation": "adb logcat -s TAG:LEVEL 是过滤指定 Tag 和最低等级的标准用法。"
+    },
+    {
+      "stage": "check",
+      "question": "在 adb logcat 的日志等级中，哪个等级的优先级最高？",
+      "options": [
+        "Verbose (V)",
+        "Debug (D)",
+        "Error (E)",
+        "Fatal (F)"
+      ],
+      "correct": 3,
+      "explanation": "Fatal (F) 的优先级最高，表示严重错误。日志等级从低到高：V < D < I < W < E < F。"
+    },
+    {
+      "stage": "check",
+      "question": "以下哪个命令可以同时排除大量 ACTION_MOVE 触摸日志？",
+      "options": [
+        "adb logcat -s ACTION_MOVE:V",
+        "adb logcat -d | grep ACTION_MOVE",
+        "adb logcat -d | grep -vE \"ACTION_MOVE\"",
+        "adb logcat --exclude ACTION_MOVE"
+      ],
+      "correct": 2,
+      "explanation": "grep -vE 是排除匹配行的标准用法，-v 表示反向匹配，-E 支持扩展正则。"
+    },
+    {
+      "stage": "post",
+      "question": "你怀疑 Launcher3 首次启动时没有加载数据库，应该先执行哪个命令？",
+      "options": [
+        "adb shell pm clear com.android.launcher3 && adb logcat -s LauncherStudy:D",
+        "adb install -r Launcher3QuickStep.apk",
+        "adb logcat -d | grep LoaderTask",
+        "adb reboot"
+      ],
+      "correct": 0,
+      "explanation": "清除 Launcher 数据会强制下次启动重建数据库，然后用日志观察 LoaderTask 的执行是最直接的验证方法。"
+    },
+    {
+      "stage": "post",
+      "question": "以下 Java 日志埋点代码，执行后用 adb logcat -s LauncherStudy:D 可以看到吗？",
+      "options": [
+        "Log.v(\"LauncherStudy\", \"message\"): 可以看到",
+        "Log.d(\"LauncherStudy\", \"message\"): 可以看到",
+        "Log.v(\"LauncherStudy\", \"message\"): 不能看到，因为 V 低于 D",
+        "Log.d(\"OtherTag\", \"message\"): 可以看到"
+      ],
+      "correct": 2,
+      "explanation": "adb logcat -s LauncherStudy:D 要求最低等级 D，Verbose (V) 低于 D 会被过滤掉。"
+    }
+  ]
+}

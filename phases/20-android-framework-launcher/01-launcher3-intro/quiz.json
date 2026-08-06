@@ -1,0 +1,78 @@
+{
+  "lesson": "01-launcher3-intro",
+  "title": "Launcher3 是什么：系统桌面在 Android 中的角色",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Launcher3 在 Android 系统架构中处于哪一层？",
+      "options": [
+        "应用层（Application Layer）",
+        "Framework 层",
+        "Native 层",
+        "Linux 内核层"
+      ],
+      "correct": 0,
+      "explanation": "Launcher3 是运行在 Android Framework 之上的系统桌面应用，属于应用层，通过 Binder IPC 调用 Framework 服务。"
+    },
+    {
+      "stage": "check",
+      "question": "以下哪个 Intent Category 声明使 Activity 成为系统桌面候选？",
+      "options": [
+        "android.intent.category.LAUNCHER",
+        "android.intent.category.HOME",
+        "android.intent.category.DEFAULT",
+        "android.intent.category.MAIN"
+      ],
+      "correct": 1,
+      "explanation": "android.intent.category.HOME 是系统识别桌面候选的核心声明，必须与 ACTION_MAIN 配合使用。"
+    },
+    {
+      "stage": "check",
+      "question": "Launcher3QuickStep 相对于 Launcher3 新增的主要能力是？",
+      "options": [
+        "All Apps 抽屉",
+        "Workspace 桌面分页",
+        "最近任务 Overview 和全面屏手势导航",
+        "文件夹和桌面小组件"
+      ],
+      "correct": 2,
+      "explanation": "QuickStep 在 Launcher3 基础上增加了最近任务 Overview、上滑手势、与 SystemUI 的 RecentsAnimation 交互等能力。"
+    },
+    {
+      "stage": "check",
+      "question": "Launcher3 通过哪种机制与 Framework 服务（如 ActivityTaskManagerService）通信？",
+      "options": [
+        "直接函数调用",
+        "Socket 套接字",
+        "Binder IPC",
+        "共享内存"
+      ],
+      "correct": 2,
+      "explanation": "Android 应用层与 Framework 之间的通信机制是 Binder IPC，Launcher3 通过 Binder 调用系统服务。"
+    },
+    {
+      "stage": "post",
+      "question": "用户点击桌面图标后，以下哪项描述正确反映了调用链的第一步？",
+      "options": [
+        "PackageManagerService 直接启动目标 Activity",
+        "Launcher3 获取 ComponentName / Intent 后调用 startActivity()",
+        "WindowManagerService 创建新窗口",
+        "Linux 内核直接加载目标进程"
+      ],
+      "correct": 1,
+      "explanation": "点击图标后，Launcher3 首先获取目标应用的 ComponentName，构建 Intent，然后调用 startActivity()，随后由 ActivityTaskManagerService 处理启动请求。"
+    },
+    {
+      "stage": "post",
+      "question": "如果你在 AOSP 设备上开发了一个新桌面应用，且它没有声明 CATEGORY_HOME，会发生什么？",
+      "options": [
+        "系统会自动添加 CATEGORY_HOME 声明",
+        "应用可以启动，但按 Home 键不会回到该桌面",
+        "应用无法安装到系统分区",
+        "应用会在启动时崩溃"
+      ],
+      "correct": 1,
+      "explanation": "没有 CATEGORY_HOME 声明的 Activity 不会被系统识别为桌面候选。按 Home 键时系统找不到它，会回到原来的默认桌面。"
+    }
+  ]
+}

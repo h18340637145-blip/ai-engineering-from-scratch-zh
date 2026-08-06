@@ -1,0 +1,78 @@
+{
+  "lesson": "10-folders-and-widgets",
+  "title": "文件夹与小组件：数据库更新与默认小部件添加",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Launcher3 中文件夹创建后，数据库中如何表示文件夹内的图标？",
+      "options": [
+        "文件夹是独立的表",
+        "图标的 container 字段设置为文件夹的 ID",
+        "图标的 screen 字段设置为 -999",
+        "文件夹不存储在数据库中"
+      ],
+      "correct": 1,
+      "explanation": "文件夹内的图标在 favorites 表中，container 字段存储的是文件夹 Item 的 ID（而不是 CONTAINER_DESKTOP 或 CONTAINER_HOTSEAT）。"
+    },
+    {
+      "stage": "check",
+      "question": "用户重命名文件夹后，Launcher3 如何更新数据？",
+      "options": [
+        "修改文件夹内所有图标的 title",
+        "更新文件夹 Item 自身在 favorites 表中的 title 字段",
+        "重建整个数据库",
+        "通过 Intent 通知 SystemUI"
+      ],
+      "correct": 1,
+      "explanation": "文件夹重命名只更新 favorites 表中文件夹 Item（itemType=ITEM_TYPE_FOLDER）自身的 title 字段，子图标不受影响。"
+    },
+    {
+      "stage": "check",
+      "question": "以下哪个命令可以查询 Launcher3 数据库中所有文件夹？",
+      "options": [
+        "adb shell sqlite3 .../launcher.db \"SELECT * FROM folders;\"",
+        "adb shell sqlite3 .../launcher.db \"SELECT * FROM favorites WHERE itemType=2;\"",
+        "adb shell dumpsys launcher --folders",
+        "adb shell pm list packages --folders"
+      ],
+      "correct": 1,
+      "explanation": "文件夹的 itemType=2（ITEM_TYPE_FOLDER），存储在 favorites 表中，没有单独的 folders 表。"
+    },
+    {
+      "stage": "check",
+      "question": "Launcher3 中的 FeatureFlags 有什么作用？",
+      "options": [
+        "控制是否启用 Material You",
+        "控制调试版和发布版的功能差异，通过系统属性或 adb 命令切换",
+        "管理用户的 Google 账号登录状态",
+        "控制 adb 调试模式"
+      ],
+      "correct": 1,
+      "explanation": "FeatureFlags 是 Launcher3 的功能开关机制，可以通过 adb shell device_config 命令或构建变量来开启或关闭实验性功能，方便调试和 A/B 测试。"
+    },
+    {
+      "stage": "post",
+      "question": "你想在 Launcher3 首次启动时自动添加一个时钟小组件，应该在哪里实现？",
+      "options": [
+        "在 Launcher.onCreate() 中直接调用 addAppWidget()",
+        "在默认布局 XML 中添加 <appwidget> 节点，或在 LoaderTask 首次加载后回调中添加",
+        "修改 AppWidgetService",
+        "在 SystemUI 的初始化代码中添加"
+      ],
+      "correct": 1,
+      "explanation": "可以在默认布局 XML 中声明 <appwidget> 节点，或在检测到数据库首次创建后，在 LoaderTask 的回调中调用 AppWidgetManager API 添加默认小组件。"
+    },
+    {
+      "stage": "post",
+      "question": "一个 AppWidget 在数据库中的 spanX=2、spanY=2 表示什么？",
+      "options": [
+        "该小组件有 2 个独立的子 View",
+        "该小组件横向占 2 格、纵向占 2 格网格单元",
+        "该小组件有 2 个版本",
+        "该小组件在 Hotseat 的第 2 排"
+      ],
+      "correct": 1,
+      "explanation": "spanX 和 spanY 是小组件在网格中占用的单元格数量。spanX=2、spanY=2 表示该小组件是一个 2×2 的小部件，占据 2 列 × 2 行的网格空间。"
+    }
+  ]
+}

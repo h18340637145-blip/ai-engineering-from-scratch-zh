@@ -1,0 +1,78 @@
+{
+  "lesson": "09-recents-and-quickstep",
+  "title": "最近任务与 QuickStep：上滑手势的系统调用链",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "QuickStep 上滑进入最近任务时，手势的系统级入口是哪个类？",
+      "options": [
+        "Launcher.java",
+        "TouchInteractionService",
+        "RecentsView",
+        "SystemUI"
+      ],
+      "correct": 1,
+      "explanation": "TouchInteractionService 是 QuickStep 手势导航的全局输入入口，运行在 Launcher 进程中，负责拦截全局触摸事件。"
+    },
+    {
+      "stage": "check",
+      "question": "在其他应用中上滑进入最近任务时，哪个类负责处理该输入？",
+      "options": [
+        "TouchInteractionService",
+        "OtherActivityInputConsumer",
+        "RecentsView",
+        "DragController"
+      ],
+      "correct": 1,
+      "explanation": "当用户在其他应用（非 Launcher）中触发上滑手势时，OtherActivityInputConsumer 负责处理该输入事件并启动 RecentsAnimation。"
+    },
+    {
+      "stage": "check",
+      "question": "RecentsAnimation 的主要作用是什么？",
+      "options": [
+        "渲染最近任务缩略图",
+        "在切换到最近任务界面时提供流畅的窗口动画过渡",
+        "管理任务栈排序",
+        "处理触摸事件分发"
+      ],
+      "correct": 1,
+      "explanation": "RecentsAnimation 负责在当前应用和 RecentsView（最近任务界面）之间提供流畅的动画过渡效果，由 WindowManagerService 协调执行。"
+    },
+    {
+      "stage": "check",
+      "question": "三键导航中点击最近任务按钮，入口方法是？",
+      "options": [
+        "TouchInteractionService.onInputEvent()",
+        "OverviewCommandHelper 处理 SHOW_OVERVIEW 命令",
+        "Launcher.onKeyDown()",
+        "RecentsView.show()"
+      ],
+      "correct": 1,
+      "explanation": "三键导航点击最近任务按钮时，SystemUI 发送 SHOW_OVERVIEW 命令，由 OverviewCommandHelper 接收并处理，最终显示 RecentsView。"
+    },
+    {
+      "stage": "post",
+      "question": "通过 adb 命令查询当前任务栈状态，应使用哪个命令？",
+      "options": [
+        "adb shell ps | grep launcher",
+        "adb shell dumpsys activity activities",
+        "adb shell logcat -s RecentsView:D",
+        "adb shell pm list packages"
+      ],
+      "correct": 1,
+      "explanation": "adb shell dumpsys activity activities 输出 ActivityTaskManagerService 管理的所有任务栈和 Activity 状态，是查看当前任务栈的标准命令。"
+    },
+    {
+      "stage": "post",
+      "question": "QuickStep 手势的关键特性是什么？",
+      "options": [
+        "完全在 SystemUI 进程中执行",
+        "通过 Binder 在 Launcher 和 SystemUI 之间协作，但手势识别在 Launcher 进程的 TouchInteractionService 中",
+        "完全在 Framework 层执行，不需要 Launcher",
+        "通过 InputFlinger 直接处理"
+      ],
+      "correct": 1,
+      "explanation": "QuickStep 手势的识别在 Launcher 进程的 TouchInteractionService 中执行，但需要和 SystemUI 通过 Binder（IOverviewProxy 接口）协作完成窗口动画和任务切换。"
+    }
+  ]
+}

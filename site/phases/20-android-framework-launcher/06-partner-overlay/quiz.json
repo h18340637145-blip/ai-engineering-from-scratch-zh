@@ -1,0 +1,78 @@
+{
+  "lesson": "06-partner-overlay",
+  "title": "Partner APK 与 Overlay：非侵入式定制布局和壁纸",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Partner APK 定制机制的核心优势是什么？",
+      "options": [
+        "比修改 Launcher3 源码性能更好",
+        "OEM 无需修改 Launcher3 源码即可提供定制内容",
+        "Partner APK 可以安装到用户分区",
+        "Partner APK 支持热更新"
+      ],
+      "correct": 1,
+      "explanation": "Partner APK 是 Launcher3 提供的非侵入式定制机制，OEM 通过独立系统 APK 提供壁纸和布局，无需 fork 或修改 Launcher3 源码。"
+    },
+    {
+      "stage": "check",
+      "question": "Launcher3 通过什么方式发现 Partner APK？",
+      "options": [
+        "扫描 /system/partner 目录",
+        "读取 AndroidManifest 中的 meta-data",
+        "查询注册了 PARTNER_CUSTOMIZATION Action 的 BroadcastReceiver",
+        "检查 /data/local/tmp/partner.apk"
+      ],
+      "correct": 2,
+      "explanation": "Launcher3 调用 PackageManager.queryBroadcastReceivers() 查询所有注册了 com.android.launcher3.action.PARTNER_CUSTOMIZATION Action 的组件，找到 Partner APK。"
+    },
+    {
+      "stage": "check",
+      "question": "一个用户自行安装的 APK（非系统应用）也注册了 PARTNER_CUSTOMIZATION Action，Launcher3 会将其识别为 Partner 吗？",
+      "options": [
+        "会，只要 Action 正确就行",
+        "不会，Partner APK 必须是系统应用",
+        "需要在 Launcher3 设置中手动授权",
+        "会，但只能提供壁纸，不能提供布局"
+      ],
+      "correct": 1,
+      "explanation": "PartnerProvider 会额外验证 APK 是否为系统应用（安装在系统分区）。非系统应用即使注册了 Action 也会被过滤掉。"
+    },
+    {
+      "stage": "check",
+      "question": "Partner APK 中壁纸资源不显示，以下哪项不是常见原因？",
+      "options": [
+        "drawable 名称与 string-array 中的条目名不一致",
+        "APK 安装到了用户分区而非系统分区",
+        "图片分辨率太高",
+        "BroadcastReceiver 被 enabled=false 禁用"
+      ],
+      "correct": 2,
+      "explanation": "图片分辨率高会影响显示效果，但不会导致 Partner APK 无法发现或壁纸完全不显示。其余三项都是 Partner APK 发现失败的已知原因。"
+    },
+    {
+      "stage": "post",
+      "question": "验证 Partner APK 已被设备识别的最直接命令是？",
+      "options": [
+        "adb shell pm list packages | grep partner",
+        "adb shell cmd package query-receivers -a com.android.launcher3.action.PARTNER_CUSTOMIZATION",
+        "adb logcat -s PartnerProvider:D",
+        "adb shell dumpsys launcher"
+      ],
+      "correct": 1,
+      "explanation": "直接查询注册了 PARTNER_CUSTOMIZATION Action 的 Receiver，是验证 Partner APK 是否被系统识别的最精确方法。"
+    },
+    {
+      "stage": "post",
+      "question": "Resource Overlay 和 Partner APK 的主要区别是什么？",
+      "options": [
+        "Overlay 不需要打包成 APK",
+        "Partner APK 可以独立发布和更新，Overlay 通常与目标包绑定部署",
+        "Overlay 支持动态壁纸，Partner APK 不支持",
+        "两者功能完全相同"
+      ],
+      "correct": 1,
+      "explanation": "Partner APK 是独立的系统应用，可以单独打包和更新；Resource Overlay 通常需要与目标应用（Launcher3）的构建系统集成，独立发布更复杂。"
+    }
+  ]
+}

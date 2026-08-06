@@ -1,0 +1,78 @@
+{
+  "lesson": "04-startup-trace",
+  "title": "启动链路追踪：从 onCreate 到 finishBindingItems",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Launcher3 启动时，哪个方法是 UI 线程加载视图的入口？",
+      "options": [
+        "LoaderTask.run()",
+        "LauncherModel.startLoader()",
+        "Launcher.setupViews()",
+        "LoaderCursor.loadWorkspace()"
+      ],
+      "correct": 2,
+      "explanation": "setupViews() 在 UI 线程（主线程）中执行，负责初始化 Workspace、Hotseat 等视图组件。"
+    },
+    {
+      "stage": "check",
+      "question": "LoaderTask 在哪个线程中执行？",
+      "options": [
+        "UI 主线程（Main Thread）",
+        "Binder 线程",
+        "后台工作线程",
+        "RenderThread"
+      ],
+      "correct": 2,
+      "explanation": "LoaderTask 在后台线程中执行数据库读取，避免阻塞 UI 线程。加载完成后通过回调切换到 UI 线程绑定视图。"
+    },
+    {
+      "stage": "check",
+      "question": "以下哪个步骤在启动链路中排在 bindWorkspace 之后？",
+      "options": [
+        "Launcher.onCreate",
+        "LauncherModel.startLoader",
+        "LoaderTask.loadWorkspace",
+        "loadAllApps"
+      ],
+      "correct": 3,
+      "explanation": "启动顺序：onCreate → setupViews → startLoader → LoaderTask.run → loadWorkspace → bindWorkspace → loadAllApps → bindAllApplications → finishBindingItems。"
+    },
+    {
+      "stage": "check",
+      "question": "你想修改 Launcher3 加载桌面数据的行为，应该在哪里添加日志和修改代码？",
+      "options": [
+        "Launcher.onCreate()",
+        "LoaderTask.loadWorkspace()",
+        "DeviceProfile 构造函数",
+        "InvariantDeviceProfile.initGrid()"
+      ],
+      "correct": 1,
+      "explanation": "桌面数据加载的核心逻辑在 LoaderTask.loadWorkspace() 中，这里负责从数据库读取所有桌面 Item 并组装。"
+    },
+    {
+      "stage": "post",
+      "question": "通过日志你发现 finishBindingItems 比 loadWorkspace 晚了 2 秒，最可能的原因是？",
+      "options": [
+        "Launcher.onCreate 执行太慢",
+        "数据库中存储的 Item 太多，LoaderTask 加载耗时",
+        "DeviceProfile 计算错误",
+        "adb logcat 时间精度不够"
+      ],
+      "correct": 1,
+      "explanation": "loadWorkspace 到 finishBindingItems 之间包含数据库读取、LoaderCursor 校验、bindWorkspace 回调等步骤，Item 越多耗时越长。"
+    },
+    {
+      "stage": "post",
+      "question": "在 Launcher3 中，bindWorkspace 回调是在 UI 线程还是后台线程执行？为什么？",
+      "options": [
+        "后台线程，因为数据量大",
+        "UI 线程，因为需要更新 View 视图",
+        "RenderThread，因为涉及绘制",
+        "Binder 线程，因为是跨进程回调"
+      ],
+      "correct": 1,
+      "explanation": "Android 要求所有 View 更新必须在 UI（主）线程执行。LoaderTask 在后台线程加载数据，通过 Handler.post() 切换到 UI 线程执行 bind 回调。"
+    }
+  ]
+}

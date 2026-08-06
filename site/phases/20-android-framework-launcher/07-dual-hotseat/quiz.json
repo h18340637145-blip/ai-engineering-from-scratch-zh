@@ -1,0 +1,78 @@
+{
+  "lesson": "07-dual-hotseat",
+  "title": "双排 Hotseat：从数据到视图的协同改造",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "在 Launcher3 数据库中，Hotseat 图标的 screenId 字段存储的是什么？",
+      "options": [
+        "Workspace 页面编号",
+        "图标在 Hotseat 中的 rank（位置序号）",
+        "图标的数据库 ID",
+        "Hotseat 行号"
+      ],
+      "correct": 1,
+      "explanation": "Hotseat 图标的 screenId/screen 字段存储的是 rank（从 0 开始的位置序号），而不是 Workspace 页面 ID。"
+    },
+    {
+      "stage": "check",
+      "question": "实现双排 Hotseat 需要改动哪些层次？（选择最完整的选项）",
+      "options": [
+        "只修改 Hotseat.java 视图布局",
+        "修改 DeviceProfile 和 Hotseat.java",
+        "修改 InvariantDeviceProfile、DeviceProfile、Hotseat.java、LauncherModel、DragController",
+        "修改数据库 schema 和 Hotseat.java"
+      ],
+      "correct": 2,
+      "explanation": "双排 Hotseat 不是单纯的视图改造，需要从配置（InvariantDeviceProfile）→ 尺寸（DeviceProfile）→ 视图（Hotseat）→ 数据绑定（LauncherModel）→ 拖拽（DragController）五个层次协同修改。"
+    },
+    {
+      "stage": "check",
+      "question": "双排 Hotseat 中，rank=7 在每排 5 列的布局下应映射到哪个坐标？",
+      "options": [
+        "row=1, col=2",
+        "row=1, col=7",
+        "row=2, col=2",
+        "row=0, col=7"
+      ],
+      "correct": 0,
+      "explanation": "row = 7 // 5 = 1，col = 7 % 5 = 2，所以 rank=7 映射到 (row=1, col=2)。"
+    },
+    {
+      "stage": "check",
+      "question": "验证双排 Hotseat 图标坐标是否正确写入数据库，应查询哪个字段组合？",
+      "options": [
+        "id, title, container",
+        "title, screen, cellX, cellY WHERE container=-101",
+        "title, screenId, spanX, spanY",
+        "package_name, cellX WHERE screen=0"
+      ],
+      "correct": 1,
+      "explanation": "需要查询 container=-101（CONTAINER_HOTSEAT）的 Item，并关注 screen（rank）、cellX、cellY 字段来验证坐标映射是否正确。"
+    },
+    {
+      "stage": "post",
+      "question": "实现双排 Hotseat 后，用户将一个图标从桌面拖拽到 Hotseat 第二排，图标落到错误位置，最可能需要修改哪里？",
+      "options": [
+        "Hotseat.java 的视图高度",
+        "InvariantDeviceProfile.numHotseatIcons",
+        "DragController 中的拖拽目标落点计算逻辑",
+        "数据库 schema"
+      ],
+      "correct": 2,
+      "explanation": "拖拽落点计算在 DragController 中，它需要知道 Hotseat 是双排布局才能正确将像素坐标转换为 (row, col) 网格坐标，进而计算 rank 并写入数据库。"
+    },
+    {
+      "stage": "post",
+      "question": "以下哪项是 rank_to_cell 函数的正确逆操作？",
+      "options": [
+        "rank = row + col * cols",
+        "rank = row * cols + col",
+        "rank = col * rows + row",
+        "rank = (row + col) / 2"
+      ],
+      "correct": 1,
+      "explanation": "rank = row * cols + col 是 rank_to_cell 的正确逆操作，与 Python 中的 row = rank // cols, col = rank % cols 互为逆运算。"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "lesson": "08-paged-workspace",
+  "title": "桌面左右滑动：PagedView 触摸事件与 OverScroller 动画",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "桌面左右滑动时，哪个类负责管理分页逻辑？",
+      "options": [
+        "Workspace.java",
+        "PagedView.java",
+        "DragLayer.java",
+        "Launcher.java"
+      ],
+      "correct": 1,
+      "explanation": "Workspace 继承自 PagedView，分页滑动的核心逻辑（触摸事件处理、OverScroller 控制）在 PagedView.java 中实现。"
+    },
+    {
+      "stage": "check",
+      "question": "ACTION_UP 事件后，Launcher3 通过哪个方法决定回到原页还是翻到下一页？",
+      "options": [
+        "scrollTo()",
+        "snapToPageWithVelocity()",
+        "computeScroll()",
+        "mScroller.startScroll()"
+      ],
+      "correct": 1,
+      "explanation": "snapToPageWithVelocity() 根据手指抬起时的速度和位移综合判断目标页，然后调用 OverScroller.startScroll() 启动动画。"
+    },
+    {
+      "stage": "check",
+      "question": "OverScroller 在分页动画中的作用是什么？",
+      "options": [
+        "直接移动 View 的位置",
+        "每帧计算应该滚动到哪个 X 坐标，由 View 的 computeScroll 读取并应用",
+        "替代 ViewPager",
+        "处理多点触控手势"
+      ],
+      "correct": 1,
+      "explanation": "OverScroller 是一个计算器，不直接移动 View。它根据 startScroll() 的参数，每帧通过 computeScrollOffset() 计算出当前应该到达的位置，由 PagedView.computeScroll() 读取后调用 scrollTo()。"
+    },
+    {
+      "stage": "check",
+      "question": "mCurrentPage 和 mNextPage 的区别是什么？",
+      "options": [
+        "两者完全相同",
+        "mCurrentPage 是正在显示的页，mNextPage 是动画目标页",
+        "mNextPage 是上一页",
+        "mCurrentPage 只在 AOSP 12 中使用"
+      ],
+      "correct": 1,
+      "explanation": "mCurrentPage 是当前稳定显示的页面编号，mNextPage 是正在吸附或即将到达的目标页编号。动画完成后 mCurrentPage 更新为 mNextPage 的值。"
+    },
+    {
+      "stage": "post",
+      "question": "你在 PagedView.java 中添加了日志，但 adb logcat 中看不到 ACTION_DOWN 的日志，最可能的原因是？",
+      "options": [
+        "日志等级设置错误",
+        "onInterceptTouchEvent 被 DragLayer 拦截了触摸事件，事件未到达 PagedView",
+        "adb 连接断开",
+        "logcat 缓冲区已满"
+      ],
+      "correct": 1,
+      "explanation": "DragLayer 是最外层容器，在 onInterceptTouchEvent 中可能会消费或拦截触摸事件，导致 PagedView 收不到该事件。这是调试 Launcher3 触摸事件时的常见情况。"
+    },
+    {
+      "stage": "post",
+      "question": "要让桌面吸附到特定页（如第 2 页），应该在哪里调用什么方法？",
+      "options": [
+        "在 onCreate 中直接设置 mCurrentPage=2",
+        "调用 workspace.snapToPage(2) 触发 OverScroller 动画",
+        "修改数据库中的 screen 字段",
+        "在 DragController 中设置目标页"
+      ],
+      "correct": 1,
+      "explanation": "workspace.snapToPage(index) 是跳转到指定页面的正确 API，内部会调用 OverScroller.startScroll() 启动平滑动画，最终更新 mCurrentPage。"
+    }
+  ]
+}

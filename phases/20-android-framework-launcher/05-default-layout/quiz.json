@@ -1,0 +1,78 @@
+{
+  "lesson": "05-default-layout",
+  "title": "默认桌面布局：指定首次启动时的图标排列",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Launcher3 默认桌面布局配置文件通常位于哪个目录？",
+      "options": [
+        "packages/apps/Launcher3/src/",
+        "packages/apps/Launcher3/res/xml/",
+        "frameworks/base/core/res/xml/",
+        "device/<vendor>/common/overlay/"
+      ],
+      "correct": 1,
+      "explanation": "默认布局 XML 文件位于 packages/apps/Launcher3/res/xml/ 目录，文件名类似 default_workspace_5x5.xml。"
+    },
+    {
+      "stage": "check",
+      "question": "修改 default_workspace XML 后，不做其他操作直接在设备上测试，为什么布局不变？",
+      "options": [
+        "XML 解析有 bug",
+        "需要重启 adb server",
+        "默认布局只在数据库首次创建时导入，数据库已存在则不重新读取",
+        "需要修改 launcher_layout 属性才能生效"
+      ],
+      "correct": 2,
+      "explanation": "LauncherProvider 在 launcher.db 不存在时才会导入默认布局。数据库已存在时，修改 XML 不会自动生效，必须清除 Launcher 数据（pm clear）重建数据库。"
+    },
+    {
+      "stage": "check",
+      "question": "在默认布局 XML 中，将图标放置到 Hotseat 时应使用哪个 container 值？",
+      "options": [
+        "-100 (CONTAINER_DESKTOP)",
+        "-101 (CONTAINER_HOTSEAT)",
+        "0 (第一页)",
+        "1 (第二页)"
+      ],
+      "correct": 1,
+      "explanation": "CONTAINER_HOTSEAT = -101，用于标记图标放在桌面底部的 Hotseat 常驻区域。"
+    },
+    {
+      "stage": "check",
+      "question": "你在默认布局 XML 中添加了一个应用，编译部署清除数据后，该图标未出现在桌面，最可能的原因是？",
+      "options": [
+        "adb push 失败",
+        "className 拼写错误，无法解析为有效组件",
+        "screen 属性必须从 1 开始",
+        "只有系统应用才能出现在默认布局"
+      ],
+      "correct": 1,
+      "explanation": "DefaultLayoutParser 在解析 <favorite> 时会尝试找到对应的 Activity，如果 packageName 或 className 不正确，该 Item 会被静默跳过，不会显示错误。"
+    },
+    {
+      "stage": "post",
+      "question": "验证默认布局修改成功的最直接方法是？",
+      "options": [
+        "查看编译日志",
+        "adb shell pm clear com.android.launcher3 后按 Home 键，并用 sqlite3 查询 favorites 表",
+        "重启设备后观察",
+        "修改 InvariantDeviceProfile 中的网格配置"
+      ],
+      "correct": 1,
+      "explanation": "清除数据后按 Home 键触发数据库重建，用 sqlite3 查询 favorites 表可以直接看到导入的数据，同时在桌面上目视验证图标位置。"
+    },
+    {
+      "stage": "post",
+      "question": "一个 5×5 网格的 Launcher，默认布局中某个 Widget 的 cellX=3、spanX=3，会发生什么？",
+      "options": [
+        "Widget 正常显示，自动截断到边界",
+        "Launcher 崩溃",
+        "该 Widget 被 LoaderCursor 或 DefaultLayoutParser 过滤掉，不渲染",
+        "Widget 显示在第二页"
+      ],
+      "correct": 2,
+      "explanation": "cellX=3 + spanX=3 = 6 > 5（网格列数），坐标越界。Launcher3 的布局解析器会丢弃该 Item 而不崩溃，也不会截断，日志中通常会有警告信息。"
+    }
+  ]
+}

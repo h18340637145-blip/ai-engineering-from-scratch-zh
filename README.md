@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-1a1a1a?style=flat-square&labelColor=fafaf5" alt="MIT License"></a>
-  <a href="ROADMAP.md"><img src="https://img.shields.io/badge/lessons-503-3553ff?style=flat-square&labelColor=fafaf5" alt="503 lessons"></a>
+  <a href="ROADMAP.md"><img src="https://img.shields.io/badge/lessons-513-3553ff?style=flat-square&labelColor=fafaf5" alt="513 lessons"></a>
   <a href="#contents"><img src="https://img.shields.io/badge/phases-20-3553ff?style=flat-square&labelColor=fafaf5" alt="20 phases"></a>
   <a href="https://github.com/rohitg00/ai-engineering-from-scratch/stargazers"><img src="https://img.shields.io/github/stars/rohitg00/ai-engineering-from-scratch?style=flat-square&labelColor=fafaf5&color=3553ff" alt="GitHub stars"></a>
   <a href="https://aiengineeringfromscratch.com"><img src="https://img.shields.io/badge/web-aiengineeringfromscratch.com-3553ff?style=flat-square&labelColor=fafaf5" alt="Website"></a>
@@ -948,6 +948,25 @@ Each Phase 14 workbench lesson (31-42) ships a `mission.md` briefing the agent b
 | 85 | [Content Classifier Integration](phases/19-capstone-projects/85-content-classifier-integration/) | I. Safety harness | Python |
 | 86 | [Constitutional Rules Engine](phases/19-capstone-projects/86-constitutional-rules-engine/) | I. Safety harness | Python, YAML |
 | 87 | [End-to-End Safety Gate](phases/19-capstone-projects/87-end-to-end-safety-gate/) | I. Safety harness | Python |
+
+</details>
+
+<details id="phase-20">
+<summary><b>Phase 20 — Android Framework: Launcher3</b> &nbsp;<code>10 lessons</code>&nbsp; <em>Deep dive into AOSP Launcher3 architecture and framework interactions.</em></summary>
+<br/>
+
+| # | Project | Track | Lang |
+|:---:|---------|----------|------|
+| 01 | [Launcher3 是什么](phases/20-android-framework-launcher/01-launcher3-intro/) | A. Android Framework | Python |
+| 02 | [Logcat 与调试工具](phases/20-android-framework-launcher/02-logcat-and-tooling/) | A. Android Framework | Python |
+| 03 | [源码目录结构分析](phases/20-android-framework-launcher/03-source-structure/) | A. Android Framework | Python |
+| 04 | [启动链路时序分析](phases/20-android-framework-launcher/04-startup-trace/) | B. Core Components | Python |
+| 05 | [默认布局 XML 解析](phases/20-android-framework-launcher/05-default-layout/) | B. Core Components | Python |
+| 06 | [Partner APK 发现](phases/20-android-framework-launcher/06-partner-overlay/) | C. Customization | Python |
+| 07 | [rank ↔ 双排坐标映射](phases/20-android-framework-launcher/07-dual-hotseat/) | C. Customization | Python |
+| 08 | [PagedView 吸附决策](phases/20-android-framework-launcher/08-paged-workspace/) | D. UI Interaction | Python |
+| 09 | [InputConsumer 路由](phases/20-android-framework-launcher/09-recents-and-quickstep/) | D. UI Interaction | Python |
+| 10 | [文件夹数据库操作](phases/20-android-framework-launcher/10-folders-and-widgets/) | E. Data Model | Python |
 
 </details>
 
