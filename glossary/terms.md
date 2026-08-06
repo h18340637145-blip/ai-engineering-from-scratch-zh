@@ -384,3 +384,41 @@
 ### Zero-Shot
 - **What people say:** "No training needed"
 - **What it actually means:** Using a model on a task it wasn't explicitly trained for, with no task-specific examples in the prompt. The model generalizes from pre-training. Works because large models have seen enough variety to handle new task formats.
+
+## Android Framework
+
+### ANR
+- **What people say:** "应用卡住了"
+- **What it actually means:** Application Not Responding。系统判断输入事件、广播、Service 或 Provider 操作没有在允许的响应窗口内完成。定位从 ANR Reason、时间戳和目标进程的 main 线程 trace 开始。
+
+### Binder
+- **What people say:** "Android 的 IPC"
+- **What it actually means:** Android 的主要本地跨进程通信机制。客户端代理通过 Binder 驱动将事务发送给服务端线程池并等待回复。事务有大小限制，大图片和大集合应改用其他数据路径。
+
+### BootAnimation
+- **What people say:** "开机 Logo"
+- **What it actually means:** SurfaceFlinger 可用后由 `/system/bin/bootanimation` 渲染的 Android 用户空间启动动画。它通常读取包含 `desc.txt` 与有序帧目录的存储型 ZIP；它不同于 bootloader 或 Kernel splash 图形。
+
+### Looper
+- **What people say:** "主线程循环"
+- **What it actually means:** 每个线程可拥有的事件循环，持续从 MessageQueue 取出到期消息并分发给 Handler。Android 框架已为 main 线程准备 Looper；后台线程想接收队列任务则需显式准备。
+
+### LMKD
+- **What people say:** "Android 杀掉了我的应用"
+- **What it actually means:** Low Memory Killer Daemon。在内存压力下，它按内存状态和进程优先级回收进程。LMKD kill 本身不能证明 Java 崩溃；需要关联 PID、OOM adj、内存压力和 ActivityManager 事件。
+
+### Overlay (SRO/RRO)
+- **What people say:** "替换 Android 资源的方式"
+- **What it actually means:** 资源定制机制。Static Resource Overlay 在构建或打包时确定；Runtime Resource Overlay 可按用户启停，并由目标包、类别、启用状态和优先级解析。
+
+### Setup Wizard
+- **What people say:** "首次开机应用"
+- **What it actually means:** 设备与当前用户完成初始化前展示的 provisioning 流程。它由 `device_provisioned`、`user_setup_complete` 和 SETUP_WIZARD Intent 类别共同影响；随意声明 HOME 会与 Launcher 解析冲突。
+
+### SystemServer
+- **What people say:** "Android 系统服务进程"
+- **What it actually means:** 从 Zygote fork 出来的核心 Java 系统进程。它承载 ActivityManager、PackageManager 等核心服务；它健康启动后，普通应用组件才能正常启动。
+
+### Zygote
+- **What people say:** "Android 应用的父进程"
+- **What it actually means:** init 通过 app_process 启动的进程，负责预加载常用类和资源、暴露 Unix domain socket、fork SystemServer，并在之后 fork 大多数 Java 应用进程。

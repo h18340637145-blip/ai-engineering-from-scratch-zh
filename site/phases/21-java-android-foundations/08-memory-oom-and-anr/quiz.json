@@ -1,0 +1,12 @@
+{
+  "lesson": "08-memory-oom-and-anr",
+  "title": "内存泄漏、OOM 与 ANR",
+  "questions": [
+    {"stage":"pre","question":"不再需要的对象仍被强引用、无法回收，称为什么？","options":["内存泄漏","冷启动","热修复","代码混淆"],"correct":0,"explanation":"内存泄漏是对象不再需要却仍可达。"},
+    {"stage":"check","question":"OutOfMemoryError 表示什么？","options":["网络超时","进程申请内存失败","页面已恢复","Binder 一定成功"],"correct":1,"explanation":"OOM 表示内存分配失败。"},
+    {"stage":"check","question":"Input dispatching timed out 最直接指向什么问题？","options":["ANR","APK 签名失败","资源 Overlay 冲突","字符串编码"],"correct":0,"explanation":"这是输入分发超时的常见 ANR 线索。"},
+    {"stage":"check","question":"静态单例持有 Activity 时，优先替换为什么？","options":["Application Context","新的 Activity","Thread.sleep","Bitmap"],"correct":0,"explanation":"Application Context 生命周期更适合全局对象。"},
+    {"stage":"post","question":"lmkd Killing 进程最准确的含义是什么？","options":["Java 异常崩溃","系统在内存压力下回收进程","应用签名失效","网络协议错误"],"correct":1,"explanation":"LMKD 是低内存回收守护进程。"},
+    {"stage":"post","question":"页面销毁后仍有 Handler 延迟任务，首先应做什么？","options":["增加延迟","移除消息和回调","强制 GC","重复注册监听器"],"correct":1,"explanation":"移除失效回调可避免引用泄漏。"}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "lesson": "05-resource-overlays",
+  "title": "资源 Overlay",
+  "questions": [
+    {"stage":"pre","question":"运行时可启停的资源覆盖机制是什么？","options":["RRO","SRO","JNI","AIDL"],"correct":0,"explanation":"RRO 是 Runtime Resource Overlay。"},
+    {"stage":"check","question":"产品固定、编译期的资源覆盖通常使用什么？","options":["SRO","RRO","Monkey","Zygote"],"correct":0,"explanation":"SRO 适合固定产品资源定制。"},
+    {"stage":"check","question":"RRO manifest 中哪个字段表示目标包？","options":["android:targetPackage","android:label","android:versionCode","android:theme"],"correct":0,"explanation":"targetPackage 指向被覆盖包。"},
+    {"stage":"check","question":"同一类别多个静态 RRO 之间通常由什么决定优先级？","options":["android:priority","包名长度","PNG 尺寸","安装时间随机数"],"correct":0,"explanation":"priority 决定同类静态 RRO 的覆盖顺序。"},
+    {"stage":"post","question":"导航模式等同类别为何常使用 setEnabledExclusiveInCategory？","options":["让所有 Overlay 同时开启","保证类别内只有一个启用","删除目标资源","创建新用户"],"correct":1,"explanation":"同一导航类别需要互斥。"},
+    {"stage":"post","question":"查看当前用户 Overlay 状态使用什么？","options":["adb shell cmd overlay list --user current","adb shell pm path overlay","git overlay list","wm overlay"],"correct":0,"explanation":"cmd overlay list 可列出当前用户状态。"}
+  ]
+}

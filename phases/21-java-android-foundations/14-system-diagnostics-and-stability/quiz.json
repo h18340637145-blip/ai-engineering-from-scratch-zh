@@ -1,0 +1,12 @@
+{
+  "lesson": "14-system-diagnostics-and-stability",
+  "title": "系统诊断日志与稳定性",
+  "questions": [
+    {"stage":"pre","question":"哪个资料最适合查看设备当时的系统全貌和服务状态？","options":["Bugreport","单行 Logcat","StringBuilder","Android.bp"],"correct":0,"explanation":"Bugreport 汇集 dumpstate、属性、dumpsys 和日志等系统快照。"},
+    {"stage":"check","question":"Event Log 最适合做什么？","options":["还原组件和进程时间线","替代所有源码","修改签名","渲染视频"],"correct":0,"explanation":"Event Log 提供结构化生命周期事件。"},
+    {"stage":"check","question":"分析 ANR 时首要关注哪个线程？","options":["main","随机线程","GC 线程一定优先","只看 Binder 驱动"],"correct":0,"explanation":"应先看目标 PID 的 main 线程在等待什么。"},
+    {"stage":"check","question":"BinderProxy.transact 在线程栈中通常说明什么？","options":["同步等待 Binder 返回","图片解码成功","日志已关闭","GC 完成"],"correct":0,"explanation":"它是同步 Binder 调用等待的线索。"},
+    {"stage":"post","question":"am_proc_died 单独能证明什么？","options":["一定是 Java 崩溃","进程已死亡，但需结合其他日志判断原因","设备已重启","Binder 已满"],"correct":1,"explanation":"还需查 am_crash、am_kill、lmkd、tombstone 等。"},
+    {"stage":"post","question":"打开 ProtoLog 完成定位后应做什么？","options":["保持永久开启","立即关闭相关组","清空系统分区","删除 traces"],"correct":1,"explanation":"持续调试日志会增加性能和存储开销。"}
+  ]
+}

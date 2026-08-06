@@ -1,0 +1,12 @@
+{
+  "lesson": "10-media-jni-network-and-security",
+  "title": "多媒体、JNI、网络与安全",
+  "questions": [
+    {"stage":"pre","question":"音视频同步中不可省略的关键数据是什么？","options":["时间戳","文件名颜色","Java 注释","屏幕密度"],"correct":0,"explanation":"时间戳用于保持音视频同步。"},
+    {"stage":"check","question":"TCP 的核心传输特性是什么？","options":["无连接且不保证顺序","可靠、有序的字节流","只能传图片","不需要 Socket"],"correct":1,"explanation":"TCP 面向连接并提供可靠、有序传输。"},
+    {"stage":"check","question":"低延迟且可容忍丢包的场景通常选什么？","options":["UDP","TCP","SQLite","AIDL"],"correct":0,"explanation":"UDP 开销低但不保证到达和顺序。"},
+    {"stage":"check","question":"大量业务数据加密通常使用什么？","options":["AES","MD5","SHA-1","Java 序列化"],"correct":0,"explanation":"AES 是常用对称加密算法。"},
+    {"stage":"post","question":"RSA/ECC 更常用于什么？","options":["直接加密巨大视频","签名或安全协商密钥","替代所有哈希","绘制 Surface"],"correct":1,"explanation":"非对称算法常用于签名和密钥协商。"},
+    {"stage":"post","question":"以下哪种情况更能证明 JNI 是合理选择？","options":["只是习惯 C++","复用受控 Native 库或性能敏感编解码","不想写测试","需要修改颜色"],"correct":1,"explanation":"JNI 会增加复杂度，应有明确收益。"}
+  ]
+}

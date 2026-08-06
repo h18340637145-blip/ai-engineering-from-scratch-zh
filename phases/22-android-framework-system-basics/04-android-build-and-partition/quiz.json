@@ -1,0 +1,12 @@
+{
+  "lesson": "04-android-build-and-partition",
+  "title": "Android 构建与分区配置",
+  "questions": [
+    {"stage":"pre","question":"选择 AOSP 产品和编译变体的常用命令是什么？","options":["lunch <product>-<variant>","adb lunch","pm lunch","zipalign lunch"],"correct":0,"explanation":"lunch 设置产品和构建变体。"},
+    {"stage":"check","question":"Android.bp 使用的构建系统是什么？","options":["Soong","Maven","npm","Monkey"],"correct":0,"explanation":"Android.bp 是 Soong 的声明式构建文件。"},
+    {"stage":"check","question":"android_app 模块主要产出什么？","options":["APK","Kernel","PNG","Bugreport"],"correct":0,"explanation":"android_app 构建 APK。"},
+    {"stage":"check","question":"LOCAL_PRIVILEGED_MODULE 为 true 时通常安装为什么目录类别？","options":["priv-app","data/anr","bootloader","cache/monkey"],"correct":0,"explanation":"特权应用安装到 priv-app 类目录。"},
+    {"stage":"post","question":"只把 APK 放入 priv-app 是否自动获得全部权限？","options":["是","否，还需要签名、allowlist 与 SELinux 等条件","只要重启即可","只需 sharedUserId"],"correct":1,"explanation":"特权权限由多项策略共同决定。"},
+    {"stage":"post","question":"发生 artifact path requirement 错误时首先应检查什么？","options":["模块和产品分区归属","字体大小","Logcat 颜色","是否用了 ArrayList"],"correct":0,"explanation":"优先修复分区归属，再考虑显式允许路径。"}
+  ]
+}

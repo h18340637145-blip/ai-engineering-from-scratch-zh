@@ -1,0 +1,12 @@
+{
+  "lesson": "08-gms-integration-and-customization",
+  "title": "GMS 集成与自定义向导",
+  "questions": [
+    {"stage":"pre","question":"量产 GMS 集成应使用什么材料？","options":["匹配版本和认证的正式交付包","来源不明的 Open GApps","任意 APK 压缩包","Monkey 输出"],"correct":0,"explanation":"GMS 受授权和兼容性约束。"},
+    {"stage":"check","question":"预置 APK 至少需要明确哪些信息？","options":["模块名、签名、分区、特权属性","头像、昵称、主题","RecyclerView 类型","GC 次数"],"correct":0,"explanation":"这些属性决定集成和权限边界。"},
+    {"stage":"check","question":"产品中追加包列表应使用什么，避免覆盖已有配置？","options":["PRODUCT_PACKAGES +=","PRODUCT_PACKAGES := 每次覆盖","rm -rf","System.exit"],"correct":0,"explanation":"+= 追加列表，不会清空前项。"},
+    {"stage":"check","question":"配置 XML 更适合通过什么模块类型安装？","options":["prebuilt_etc","android_app","cc_binary","Handler"],"correct":0,"explanation":"prebuilt_etc 用于预置配置文件。"},
+    {"stage":"post","question":"Partner Customization Receiver 的空实现能否完成适配？","options":["能","不能，需要对应版本的资源和流程","只在 userdebug 可以","只要声明 HOME"],"correct":1,"explanation":"必须按交付版本提供正确资源和流程。"},
+    {"stage":"post","question":"Wizard Script 中显式描述 result code 的价值是什么？","options":["让流程跳转可验证","增加 APK 大小","隐藏权限","替代 Overlay"],"correct":0,"explanation":"显式动作和结果码使向导流程可审查。"}
+  ]
+}

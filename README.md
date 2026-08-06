@@ -4,8 +4,8 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-1a1a1a?style=flat-square&labelColor=fafaf5" alt="MIT License"></a>
-  <a href="ROADMAP.md"><img src="https://img.shields.io/badge/lessons-513-3553ff?style=flat-square&labelColor=fafaf5" alt="513 lessons"></a>
-  <a href="#contents"><img src="https://img.shields.io/badge/phases-21-3553ff?style=flat-square&labelColor=fafaf5" alt="21 phases"></a>
+  <a href="ROADMAP.md"><img src="https://img.shields.io/badge/lessons-536-3553ff?style=flat-square&labelColor=fafaf5" alt="536 lessons"></a>
+  <a href="#contents"><img src="https://img.shields.io/badge/phases-23-3553ff?style=flat-square&labelColor=fafaf5" alt="23 phases"></a>
   <a href="https://github.com/rohitg00/ai-engineering-from-scratch/stargazers"><img src="https://img.shields.io/github/stars/rohitg00/ai-engineering-from-scratch?style=flat-square&labelColor=fafaf5&color=3553ff" alt="GitHub stars"></a>
   <a href="https://aiengineeringfromscratch.com"><img src="https://img.shields.io/badge/web-aiengineeringfromscratch.com-3553ff?style=flat-square&labelColor=fafaf5" alt="Website"></a>
 </p>
@@ -19,7 +19,7 @@
 > **84% of students already use AI tools. Only 18% feel prepared to use them
 > professionally.** This curriculum closes that gap.
 >
-> 513 lessons. 21 phases. ~320 hours. Python, TypeScript, Rust, Julia. Every lesson ships
+> 536 lessons. 23 phases. ~320 hours. Python, TypeScript, Rust, Julia. Every lesson ships
 > a reusable artifact: a prompt, a skill, an agent, an MCP server. Free, open source, MIT.
 >
 > You don't just learn AI. You build it. End-to-end. By hand.
@@ -35,7 +35,7 @@ flashy agent demo somewhere else. The pieces rarely line up. You ship a chatbot 
 explain its loss curve. You hook a function to an agent but can't say what attention does
 inside the model that's calling it.
 
-This curriculum is the spine. 21 phases, 513 lessons, four languages: Python, TypeScript,
+This curriculum is the spine. 23 phases, 536 lessons, four languages: Python, TypeScript,
 Rust, Julia. Linear algebra at one end, autonomous swarms at the other. Every algorithm
 gets built from raw math first. Backprop. Tokenizer. Attention. Agent loop. By the time
 PyTorch shows up, you already know what it's doing under the hood.
@@ -198,7 +198,7 @@ Other curricula end with *"congratulations, you learned X."* Each lesson here en
 </table>
 
 > Install the lot with `python3 scripts/install_skills.py`. Real tools, not homework.
-> By the end of the curriculum, you have a portfolio of 513 artifacts you actually
+> By the end of the curriculum, you have a portfolio of 536 artifacts you actually
 > understand because you built them.
 
 ### FIG_002 · A worked sample
@@ -970,6 +970,47 @@ Each Phase 14 workbench lesson (31-42) ships a `mission.md` briefing the agent b
 
 </details>
 
+<details id="phase-21">
+<summary><b>Phase 21 — Java 与 Android 基础</b> &nbsp;<code>14 lessons</code>&nbsp; <em>从 Java 语义到 Android 运行时、性能、诊断与设备工具。</em></summary>
+<br/>
+
+| # | Lesson | Type | Lang |
+|:---:|---------|------|------|
+| 01 | [Java 集合与相等性](phases/21-java-android-foundations/01-java-collections-and-equality/) | Build | Python |
+| 02 | [Java 对象模型、泛型与字符串](phases/21-java-android-foundations/02-java-oop-generics-and-strings/) | Build | Python |
+| 03 | [反射、序列化与 GC](phases/21-java-android-foundations/03-reflection-serialization-and-gc/) | Build | Python |
+| 04 | [进程、线程与 IPC](phases/21-java-android-foundations/04-process-thread-and-ipc/) | Build | Python |
+| 05 | [Handler、Looper 与并发](phases/21-java-android-foundations/05-handler-looper-and-concurrency/) | Build | Python |
+| 06 | [View 渲染与触摸分发](phases/21-java-android-foundations/06-view-rendering-and-touch/) | Build | Python |
+| 07 | [列表渲染与图片缓存](phases/21-java-android-foundations/07-list-rendering-and-image-cache/) | Build | Python |
+| 08 | [内存泄漏、OOM 与 ANR](phases/21-java-android-foundations/08-memory-oom-and-anr/) | Build | Python |
+| 09 | [Activity、Window 与 Service](phases/21-java-android-foundations/09-activity-window-and-service/) | Build | Python |
+| 10 | [多媒体、JNI、网络与安全](phases/21-java-android-foundations/10-media-jni-network-and-security/) | Build | Python |
+| 11 | [架构、性能与跨进程存储](phases/21-java-android-foundations/11-architecture-performance-and-storage/) | Build | Python |
+| 12 | [Binder、类加载、构建与安装](phases/21-java-android-foundations/12-binder-classloading-build-and-install/) | Build | Python |
+| 13 | [Linux、ADB 与设备操作](phases/21-java-android-foundations/13-linux-adb-and-device-operations/) | Build | Python |
+| 14 | [系统诊断日志与稳定性](phases/21-java-android-foundations/14-system-diagnostics-and-stability/) | Build | Python |
+
+</details>
+
+<details id="phase-22">
+<summary><b>Phase 22 — Android Framework 系统基础</b> &nbsp;<code>9 lessons</code>&nbsp; <em>以启动、Zygote、构建、Overlay、设置和开机向导为中心的系统工程实践。</em></summary>
+<br/>
+
+| # | Lesson | Type | Lang |
+|:---:|---------|------|------|
+| 01 | [系统启动与开机动画](phases/22-android-framework-system-basics/01-boot-chain-and-bootanimation/) | Build | Python |
+| 02 | [Native 日志与调用栈](phases/22-android-framework-system-basics/02-native-log-and-callstack/) | Build | Python |
+| 03 | [Zygote 与 SystemServer](phases/22-android-framework-system-basics/03-zygote-and-system-server/) | Build | Python |
+| 04 | [Android 构建与分区配置](phases/22-android-framework-system-basics/04-android-build-and-partition/) | Build | Python |
+| 05 | [资源 Overlay](phases/22-android-framework-system-basics/05-resource-overlays/) | Build | Python |
+| 06 | [系统属性与跨进程设置](phases/22-android-framework-system-basics/06-system-properties-and-settings/) | Build | Python |
+| 07 | [开机向导与 Provisioning](phases/22-android-framework-system-basics/07-setup-wizard-and-provisioning/) | Build | Python |
+| 08 | [GMS 集成与自定义向导](phases/22-android-framework-system-basics/08-gms-integration-and-customization/) | Build | Python |
+| 09 | [Framework 集成验收实验室](phases/22-android-framework-system-basics/09-framework-integration-lab/) | Build | Python |
+
+</details>
+
 ```
 ░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
 ```
@@ -990,7 +1031,7 @@ Real tools, not homework.
 
 ### Install every course skill into your agent
 
-The repo ships 398 skills and 99 prompts under `phases/**/outputs/`.
+The repo ships 421 skills and 99 prompts under `phases/**/outputs/`.
 
 **Recommended: install via [skills.sh](https://skills.sh).** No clone, no Python,
 detects your agent's skills directory automatically:
@@ -1184,7 +1225,7 @@ relative links inside lesson docs.
 
 ## Sponsor the work
 
-Free, MIT-licensed, 513 lessons. The curriculum is maintained on sponsorship alone. Cash only.
+Free, MIT-licensed, 536 lessons. The curriculum is maintained on sponsorship alone. Cash only.
 
 **Reach (verified 2026-05-14):** 55,593 monthly visitors · 90,709 page views · 7.5K stars ·
 Twitter/X is the #1 acquisition channel.

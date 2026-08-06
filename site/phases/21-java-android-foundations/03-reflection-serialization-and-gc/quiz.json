@@ -1,0 +1,12 @@
+{
+  "lesson": "03-reflection-serialization-and-gc",
+  "title": "反射、序列化与 GC",
+  "questions": [
+    {"stage":"pre","question":"反射主要让程序在什么阶段获取类型信息？","options":["编译时","运行时","安装时","关机时"],"correct":1,"explanation":"反射在运行时访问类、字段和方法。"},
+    {"stage":"check","question":"为什么不应反序列化不可信输入？","options":["会丢失注释","可能引入安全风险","一定更慢","无法保存字节"],"correct":1,"explanation":"不可信字节流可能触发危险对象图或行为。"},
+    {"stage":"check","question":"以下哪项是常见 GC Root？","options":["未引用的临时对象","线程栈局部变量","磁盘缓存文件","注释文本"],"correct":1,"explanation":"线程栈、静态字段、JNI 引用等可作为 GC Roots。"},
+    {"stage":"check","question":"弱引用通常何时会被回收？","options":["永不回收","下一次 GC 时","仅重启时","只在磁盘满时"],"correct":1,"explanation":"弱引用通常在下一次 GC 时被回收。"},
+    {"stage":"post","question":"两个对象互相引用但没有任何 GC Root 可达时，会怎样？","options":["永远泄漏","不能编译","仍可被回收","自动变为软引用"],"correct":2,"explanation":"Java GC 使用可达性分析，不是引用计数。"},
+    {"stage":"post","question":"Integer.parseInt('ff', 16) 的结果类型是什么？","options":["String","long","int","Integer 数组"],"correct":2,"explanation":"parseInt 返回基本类型 int。"}
+  ]
+}

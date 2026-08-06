@@ -1,0 +1,12 @@
+{
+  "lesson": "02-java-oop-generics-and-strings",
+  "title": "Java 对象模型、泛型与字符串",
+  "questions": [
+    {"stage":"pre","question":"Java 的 String 主要特性是什么？","options":["可变且不安全","不可变","只能保存 ASCII","不能做键"],"correct":1,"explanation":"String 是不可变对象。"},
+    {"stage":"check","question":"单线程大量拼接字符串时推荐什么？","options":["String","StringBuilder","StringBuffer","char[] 只能手写"],"correct":1,"explanation":"StringBuilder 适合单线程频繁拼接。"},
+    {"stage":"check","question":"? extends T 最安全的主要操作是什么？","options":["写入 T","读取 T","删除所有元素","创建新线程"],"correct":1,"explanation":"extends 表示生产者，适合读取。"},
+    {"stage":"check","question":"? super Integer 最安全的主要操作是什么？","options":["读取为 Integer","写入 Integer","假设元素是 Number","按下标排序"],"correct":1,"explanation":"super 表示消费者，适合写入。"},
+    {"stage":"post","question":"有共享实例状态和部分默认实现的类型层次通常优先什么？","options":["抽象类","枚举","注解","数组"],"correct":0,"explanation":"抽象类可保存实例字段和部分实现。"},
+    {"stage":"post","question":"静态内部类能直接访问外部类的什么成员？","options":["所有实例成员","仅静态成员","仅局部变量","没有任何成员"],"correct":1,"explanation":"静态内部类不依赖外部类实例。"}
+  ]
+}

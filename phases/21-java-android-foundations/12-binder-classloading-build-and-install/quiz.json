@@ -1,0 +1,12 @@
+{
+  "lesson": "12-binder-classloading-build-and-install",
+  "title": "Binder、类加载、构建与安装",
+  "questions": [
+    {"stage":"pre","question":"Android 的核心本地 IPC 机制是什么？","options":["Binder","RecyclerView","Gradle Wrapper","SharedPreferences"],"correct":0,"explanation":"Binder 是 Android 的主要本地跨进程通信机制。"},
+    {"stage":"check","question":"为什么不应通过 Binder 传递大位图或大集合？","options":["会改变颜色","存在事务大小限制","无法序列化","一定没有权限"],"correct":1,"explanation":"Binder 事务大小有限，应改变数据流。"},
+    {"stage":"check","question":"加载已安装应用和系统路径代码的类加载器通常是什么？","options":["PathClassLoader","DexClassLoader","URLClassLoader","Bootloader"],"correct":0,"explanation":"PathClassLoader 用于安装包和系统路径。"},
+    {"stage":"check","question":"现代 Android 构建中，哪个工具将字节码转换为 DEX？","options":["D8","AAPT2","zipalign","Monkey"],"correct":0,"explanation":"D8 负责 DEX 转换。"},
+    {"stage":"post","question":"AAPT2 的主要职责是什么？","options":["编译和链接资源","抓取 Logcat","启动 Service","签发证书"],"correct":0,"explanation":"AAPT2 处理 Android 资源。"},
+    {"stage":"post","question":"安装完成时 Package Manager 会做什么？","options":["只复制 APK","解析校验包、记录组件权限并准备数据目录","直接运行所有 Activity","删除 ART"],"correct":1,"explanation":"Package Manager 维护包及组件状态。"}
+  ]
+}

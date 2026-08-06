@@ -628,6 +628,43 @@ Total estimated time: ~314 hours, at your own pace.
 
 ---
 
-**Total: 21 phases, 513 lessons | 513 complete | ~1,065 hours estimated**
+## Phase 21: Java 与 Android 基础 — ✅ (~21 hours)
+
+| # | Lesson | Status | Est. |
+|---|--------|--------|------|
+| 01 | [Java 集合与相等性](phases/21-java-android-foundations/01-java-collections-and-equality) | ✅ | ~90 min |
+| 02 | [Java 对象模型、泛型与字符串](phases/21-java-android-foundations/02-java-oop-generics-and-strings) | ✅ | ~90 min |
+| 03 | [反射、序列化与 GC](phases/21-java-android-foundations/03-reflection-serialization-and-gc) | ✅ | ~90 min |
+| 04 | [进程、线程与 IPC](phases/21-java-android-foundations/04-process-thread-and-ipc) | ✅ | ~90 min |
+| 05 | [Handler、Looper 与并发](phases/21-java-android-foundations/05-handler-looper-and-concurrency) | ✅ | ~90 min |
+| 06 | [View 渲染与触摸分发](phases/21-java-android-foundations/06-view-rendering-and-touch) | ✅ | ~90 min |
+| 07 | [列表渲染与图片缓存](phases/21-java-android-foundations/07-list-rendering-and-image-cache) | ✅ | ~90 min |
+| 08 | [内存泄漏、OOM 与 ANR](phases/21-java-android-foundations/08-memory-oom-and-anr) | ✅ | ~90 min |
+| 09 | [Activity、Window 与 Service](phases/21-java-android-foundations/09-activity-window-and-service) | ✅ | ~90 min |
+| 10 | [多媒体、JNI、网络与安全](phases/21-java-android-foundations/10-media-jni-network-and-security) | ✅ | ~90 min |
+| 11 | [架构、性能与跨进程存储](phases/21-java-android-foundations/11-architecture-performance-and-storage) | ✅ | ~90 min |
+| 12 | [Binder、类加载、构建与安装](phases/21-java-android-foundations/12-binder-classloading-build-and-install) | ✅ | ~90 min |
+| 13 | [Linux、ADB 与设备操作](phases/21-java-android-foundations/13-linux-adb-and-device-operations) | ✅ | ~90 min |
+| 14 | [系统诊断日志与稳定性](phases/21-java-android-foundations/14-system-diagnostics-and-stability) | ✅ | ~90 min |
+
+---
+
+## Phase 22: Android Framework 系统基础 — ✅ (~13.5 hours)
+
+| # | Lesson | Status | Est. |
+|---|--------|--------|------|
+| 01 | [系统启动与开机动画](phases/22-android-framework-system-basics/01-boot-chain-and-bootanimation) | ✅ | ~90 min |
+| 02 | [Native 日志与调用栈](phases/22-android-framework-system-basics/02-native-log-and-callstack) | ✅ | ~90 min |
+| 03 | [Zygote 与 SystemServer](phases/22-android-framework-system-basics/03-zygote-and-system-server) | ✅ | ~90 min |
+| 04 | [Android 构建与分区配置](phases/22-android-framework-system-basics/04-android-build-and-partition) | ✅ | ~90 min |
+| 05 | [资源 Overlay](phases/22-android-framework-system-basics/05-resource-overlays) | ✅ | ~90 min |
+| 06 | [系统属性与跨进程设置](phases/22-android-framework-system-basics/06-system-properties-and-settings) | ✅ | ~90 min |
+| 07 | [开机向导与 Provisioning](phases/22-android-framework-system-basics/07-setup-wizard-and-provisioning) | ✅ | ~90 min |
+| 08 | [GMS 集成与自定义向导](phases/22-android-framework-system-basics/08-gms-integration-and-customization) | ✅ | ~90 min |
+| 09 | [Framework 集成验收实验室](phases/22-android-framework-system-basics/09-framework-integration-lab) | ✅ | ~90 min |
+
+---
+
+**Total: 23 phases, 536 lessons | 536 complete | ~1,100 hours estimated**
 
 Want to help? Pick any ⬚ lesson and submit a PR. See [CONTRIBUTING.md](CONTRIBUTING.md).

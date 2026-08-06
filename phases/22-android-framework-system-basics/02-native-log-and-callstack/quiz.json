@@ -1,0 +1,12 @@
+{
+  "lesson": "02-native-log-and-callstack",
+  "title": "Native 日志与调用栈",
+  "questions": [
+    {"stage":"pre","question":"LOG_NDEBUG 为 0 通常表示什么？","options":["不禁用 debug 日志","删除所有日志","只启用错误日志","关闭系统"],"correct":0,"explanation":"0 表示调试日志没有被禁用。"},
+    {"stage":"check","question":"使用 android::CallStack 需要哪个常见库？","options":["libutils","libsqlite","libcamera","libbinder_ndk"],"correct":0,"explanation":"CallStack 位于 libutils。"},
+    {"stage":"check","question":"使用 Native Log API 需要哪个常见库？","options":["liblog","libpng","libcrypto","libart"],"correct":0,"explanation":"日志 API 对应 liblog。"},
+    {"stage":"check","question":"为什么不能机械加入 libcutils？","options":["它不能被构建系统识别","只有源代码实际引用其 API 时才需要","它会删除 CallStack","它只能用于 Java"],"correct":1,"explanation":"依赖应由真实 API 使用决定。"},
+    {"stage":"post","question":"调用栈不完整时，优先检查什么？","options":["符号、优化级别和运行环境","图片格式","布局层级","用户语言"],"correct":0,"explanation":"符号和优化会影响可读栈。"},
+    {"stage":"post","question":"验证目标 Native 模块日志的合适方式是什么？","options":["只改 Android.bp 不编译","只编译目标模块并用 Tag 过滤 Logcat","清空系统分区","重写所有依赖"],"correct":1,"explanation":"应最小化编译范围并过滤目标 Tag。"}
+  ]
+}

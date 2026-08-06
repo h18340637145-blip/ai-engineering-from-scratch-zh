@@ -1,0 +1,12 @@
+{
+  "lesson": "06-system-properties-and-settings",
+  "title": "系统属性与跨进程设置",
+  "questions": [
+    {"stage":"pre","question":"启动后通常只读的系统属性前缀是什么？","options":["ro.","persist.","debug.","user."],"correct":0,"explanation":"ro.* 属性在启动后只读。"},
+    {"stage":"check","question":"普通第三方应用应如何对待 android.os.SystemProperties？","options":["直接依赖隐藏 API","优先公开 API、Settings 或 Binder","只改 ro 属性","用它替代所有数据库"],"correct":1,"explanation":"SystemProperties 属于隐藏/系统 API。"},
+    {"stage":"check","question":"监听 Settings 键变化常用什么机制？","options":["ContentObserver","StringBuffer","BootAnimation","TreeMap"],"correct":0,"explanation":"ContentObserver 可观察 Settings URI。"},
+    {"stage":"check","question":"组件结束时对 ContentObserver 应做什么？","options":["继续保留","注销","改为静态变量","重启系统"],"correct":1,"explanation":"必须 unregisterContentObserver 避免泄漏。"},
+    {"stage":"post","question":"WRITE_SECURE_SETTINGS 的权限级别接近什么？","options":["普通运行时权限","签名/特权权限","无需权限","网络权限"],"correct":1,"explanation":"它需要系统身份、签名和 allowlist 等条件。"},
+    {"stage":"post","question":"写入 Settings 前首先要确认什么？","options":["表的范围、权限和当前用户","图片颜色","APK 名字长度","数组下标"],"correct":0,"explanation":"System、Secure、Global 的范围和权限不同。"}
+  ]
+}
